@@ -30,6 +30,7 @@ data class SettingsUiState(
     val dailyReminderOn: Boolean = true,
     val reminderTime: LocalTime = UserSettings.DEFAULT_REMINDER_TIME,
     val incomingTranslation: Boolean = true,
+    val floatingTranslationEnabled: Boolean = false,
     val learningFromMessages: Boolean = true,
     /** The language AlterLingua itself is shown in (independent of the source and target languages). */
     val appLanguage: Language = UserSettings().appLanguage,
@@ -61,6 +62,7 @@ class SettingsViewModel(
             dailyReminderOn = it.dailyReminderEnabled,
             reminderTime = it.reminderTime,
             incomingTranslation = it.incomingTranslationEnabled,
+            floatingTranslationEnabled = it.floatingTranslationEnabled,
             learningFromMessages = it.learningFromMessagesEnabled,
             appLanguage = it.appLanguage,
             detectSourceAutomatically = it.detectSourceAutomatically,
@@ -101,6 +103,9 @@ class SettingsViewModel(
     fun onDailyReminderChanged(enabled: Boolean) = save { it.copy(dailyReminderEnabled = enabled) }
 
     fun onIncomingTranslationChanged(enabled: Boolean) = save { it.copy(incomingTranslationEnabled = enabled) }
+
+    /** Turns the floating translation bubble on or off (needs "Display over other apps"; off by default). */
+    fun onFloatingTranslationChanged(enabled: Boolean) = save { it.copy(floatingTranslationEnabled = enabled) }
 
     fun onLearningFromMessagesChanged(enabled: Boolean) = save { it.copy(learningFromMessagesEnabled = enabled) }
 

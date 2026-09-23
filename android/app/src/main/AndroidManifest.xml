@@ -21,11 +21,19 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!--
-        Notifications: AlterLingua posts its own "translated message" notification for incoming WhatsApp messages
-        (Android 13+ asks the user first, after an explanation in the app). It reads only WhatsApp's notifications,
-        through the notification access the user grants in Android settings.
+        Notifications: AlterLingua posts its own "translated message" notification for incoming messages from a
+        supported chat app (Android 13+ asks the user first, after an explanation in the app). It reads only those
+        apps' notifications, through the notification access the user grants in Android settings.
     -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        Optional floating translation bubble (off by default, see UserSettings.floatingTranslationEnabled): draws a
+        small window on top of other apps showing the same translated text the notification already shows. The user
+        must separately grant this in Android's "Display over other apps" settings; nothing here reads another app's
+        screen content (no AccessibilityService is declared or used anywhere in AlterLingua).
+    -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application

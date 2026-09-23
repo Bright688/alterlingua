@@ -52,5 +52,6 @@ class SetupViewModel(
         notificationAccess = checker.notificationAccessGranted(),
         postNotifications = checker.postNotificationsAllowed(),
         microphone = microphoneStatus(checker.microphoneGranted(), askedBefore, rationale),
+        overlayPermission = checker.overlayPermissionGranted(),
     )
 }

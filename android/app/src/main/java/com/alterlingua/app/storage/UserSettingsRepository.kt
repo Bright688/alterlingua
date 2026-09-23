@@ -53,6 +53,7 @@ internal object SettingsKeys {
     val ReminderMinuteOfDay = intPreferencesKey("reminder_minute_of_day")
     val MicrophonePermissionAsked = booleanPreferencesKey("microphone_permission_asked")
     val IncomingTranslationEnabled = booleanPreferencesKey("incoming_translation_enabled")
+    val FloatingTranslationEnabled = booleanPreferencesKey("floating_translation_enabled")
     val LearningFromMessagesEnabled = booleanPreferencesKey("learning_from_messages_enabled")
 }
 
@@ -110,6 +111,7 @@ internal fun Preferences.toUserSettings(): UserSettings {
         },
         microphonePermissionAsked = this[SettingsKeys.MicrophonePermissionAsked] ?: defaults.microphonePermissionAsked,
         incomingTranslationEnabled = this[SettingsKeys.IncomingTranslationEnabled] ?: defaults.incomingTranslationEnabled,
+        floatingTranslationEnabled = this[SettingsKeys.FloatingTranslationEnabled] ?: defaults.floatingTranslationEnabled,
         learningFromMessagesEnabled = this[SettingsKeys.LearningFromMessagesEnabled] ?: defaults.learningFromMessagesEnabled,
         keyboardStyles = Languages.supported.mapNotNull { language ->
             this[SettingsKeys.keyboardStyleFor(language.code)]
@@ -138,6 +140,7 @@ private fun androidx.datastore.preferences.core.MutablePreferences.write(setting
     this[SettingsKeys.ReminderMinuteOfDay] = settings.reminderTime.hour * 60 + settings.reminderTime.minute
     this[SettingsKeys.MicrophonePermissionAsked] = settings.microphonePermissionAsked
     this[SettingsKeys.IncomingTranslationEnabled] = settings.incomingTranslationEnabled
+    this[SettingsKeys.FloatingTranslationEnabled] = settings.floatingTranslationEnabled
     this[SettingsKeys.LearningFromMessagesEnabled] = settings.learningFromMessagesEnabled
 }
 

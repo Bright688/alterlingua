@@ -246,6 +246,8 @@
     <string name="set_translate_whatsapp_messages">Traduci i messaggi in arrivo</string>
     <string name="set_whatsapp_desc">Quando qualcuno scrive in un’altra lingua, AlterLingua mostra una traduzione in %1$s come notifica separata.</string>
     <string name="set_it_only_reads_the_text">Legge solo il testo che le tue app di chat (WhatsApp, Telegram, Messenger, Signal) mostrano nelle notifiche, mai la chat stessa, e non salva i messaggi. Serve l’accesso alle notifiche (vedi Configurazione qui sotto).</string>
+    <string name="set_floating_translation">Mostra una traduzione flottante</string>
+    <string name="set_floating_translation_desc">Mostra la stessa traduzione anche come piccola bolla sopra la chat mentre è aperta. Usa lo stesso messaggio già letto dalla notifica qui sopra, mai lo schermo della chat stessa. Serve "Visualizza sopra altre app".</string>
     <string name="set_privacy">Privacy</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua conserva solo le parole che impari, quante volte le incontri e il loro stato di apprendimento. I tuoi messaggi non vengono salvati.</string>
     <string name="set_export_my_learning_data">Esporta i miei dati di apprendimento</string>

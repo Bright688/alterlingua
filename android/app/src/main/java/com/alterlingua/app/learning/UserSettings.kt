@@ -78,6 +78,12 @@ data class UserSettings(
     val learningFromMessagesEnabled: Boolean = true,
     /** Whether incoming messages from a supported chat app (see IncomingSources) are translated into the user's own language (needs notification access). */
     val incomingTranslationEnabled: Boolean = true,
+    /**
+     * Whether a translated incoming message also shows as a small floating bubble (needs "Display over other apps").
+     * Off by default: this is an extra, more visible layer on top of [incomingTranslationEnabled]'s notification, not
+     * a replacement for it, and the permission it needs is more sensitive than notification access.
+     */
+    val floatingTranslationEnabled: Boolean = false,
     /** True once the system microphone question has been shown. Lets setup tell "never asked" from "blocked". */
     val microphonePermissionAsked: Boolean = false,
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */

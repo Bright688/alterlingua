@@ -344,6 +344,19 @@ Originally WhatsApp-only; widened on 2026-09-23 to a small whitelist of known ch
 | Learning signals from incoming messages, entitlement/quota limits | NOT STARTED |
 | Known limits: only what the source app puts in its notification — an app or a user set to "sender name only" (Signal offers this) gives nothing to translate, correctly skipped as hidden content; media-only messages have no text; the group "Name: text" form used by very old WhatsApp versions is not split | — |
 
+### Optional add-on: floating translation bubble (2026-09-23)
+
+A second, opt-in way to show the same translated text: a small floating window drawn on top of whatever app is open, using Android's "Display over other apps" permission (`SYSTEM_ALERT_WINDOW` / `TYPE_APPLICATION_OVERLAY`) — not `AccessibilityService`, which was investigated and deliberately not used (see the 2026-09-23 build-log entry). It is fed by the exact same translated conversation the notification above is built from; it does not read any app's screen.
+
+| Item | Status |
+|---|---|
+| `CompositeTranslationPresenter`: shows a translated conversation through every presenter that can (the existing notification, and this new bubble); a translation is not skipped just because one of the two is unavailable | IMPLEMENTED — 5 unit tests |
+| `FloatingBubblePresenter`: draws a small card (sender/text, "Translated from …") near the top of the screen for ~8 seconds, tap to open the chat, gone if the permission or the setting is off | IMPLEMENTED — not unit tested (WindowManager/Settings.canDrawOverlays are Android-framework calls, same as the existing notification presenter has no direct unit test either) |
+| Settings: **"Show a floating translation"** switch (off by default) in the "Incoming messages" card, with a permission-status chip and an "App settings" button shown only while the switch is on and the permission is missing | IMPLEMENTED — 1 new unit test, plus `SetupViewModel`/`SetupChecker` wiring for `overlayPermissionGranted()` |
+| New permission: `SYSTEM_ALERT_WINDOW` (declared, user grants it separately in Android settings; nothing works without it) | IMPLEMENTED |
+| Privacy-audit regression tests updated: the manifest permission whitelist now includes `SYSTEM_ALERT_WINDOW`, and a new test asserts no `AccessibilityService` is ever declared | IMPLEMENTED |
+| Trying it with a **real overlay on a real phone** (permission grant flow, bubble appears/auto-dismisses, tap opens the chat, coexists with the keyboard) | NOT STARTED — needs your phone |
+
 ### Device test, two or more language configurations
 
 The backend's development translator only knows a few sample sentences, and detects their language. Use these exact texts:

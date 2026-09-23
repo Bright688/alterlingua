@@ -105,7 +105,9 @@ class PrivacyAuditTest {
     @Test fun onlyTheNecessaryPermissionsAreRequested() {
         val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
         val permissions = Regex("""<uses-permission android:name="([^"]+)"""").findAll(main).map { it.groupValues[1].substringAfterLast('.') }.toSet()
-        assertEquals(setOf("RECORD_AUDIO", "INTERNET", "ACCESS_NETWORK_STATE", "POST_NOTIFICATIONS"), permissions)
+        // SYSTEM_ALERT_WINDOW is the optional floating translation bubble (off by default, needs its own separately
+        // granted "Display over other apps" permission); it draws a window on top of other apps but never reads one.
+        assertEquals(setOf("RECORD_AUDIO", "INTERNET", "ACCESS_NETWORK_STATE", "POST_NOTIFICATIONS", "SYSTEM_ALERT_WINDOW"), permissions)
         assertTrue(main.contains("android:allowBackup=\"false\""))
         assertTrue("the microphone is optional for install", main.contains("android.hardware.microphone\" android:required=\"false\""))
     }
@@ -118,6 +120,16 @@ class PrivacyAuditTest {
         assertEquals(listOf(".MainActivity", ".share.ShareVoiceActivity", ".keyboard.AlterLinguaKeyboardService", ".notifications.AlterLinguaNotificationListener"), exported)
         assertTrue(main.contains("android.permission.BIND_INPUT_METHOD"))
         assertTrue(main.contains("android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"))
+    }
+
+    @Test fun noAccessibilityServiceIsDeclared() {
+        // Deliberate: reading another app's screen via AccessibilityService was investigated for the floating
+        // translation bubble and rejected in favour of the narrower NotificationListenerService, which already gets
+        // the same text without the extra Play Store scrutiny (see docs/build-log.md, 2026-09-23). No manifest
+        // service may bind to it. (A source-text scan is not used here: FloatingBubblePresenter.kt legitimately
+        // names AccessibilityService in a comment to explain why it is not used.)
+        val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
+        assertFalse(main.contains("BIND_ACCESSIBILITY_SERVICE"))
     }
 
     @Test fun theNotificationListenerReadsOnlyTheMessagingAppsAndTheTranslatedNotificationIsPrivateOnTheLockScreen() {

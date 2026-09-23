@@ -246,6 +246,8 @@
     <string name="set_translate_whatsapp_messages">翻译收到的消息</string>
     <string name="set_whatsapp_desc">当有人用其他语言写消息时，AlterLingua 会以独立通知显示%1$s译文。</string>
     <string name="set_it_only_reads_the_text">它只读取聊天应用（WhatsApp、Telegram、Messenger、Signal）在通知中显示的文本，从不读取聊天本身，也不保存消息。需要通知使用权（见下方“设置向导”）。</string>
+    <string name="set_floating_translation">显示悬浮翻译</string>
+    <string name="set_floating_translation_desc">打开聊天时，还会在聊天上方以小气泡显示同一条译文，使用的是上面通知已经读取的同一条消息，绝不读取聊天本身的屏幕内容。需要“显示在其他应用上层”权限。</string>
     <string name="set_privacy">隐私</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua 只保留您学习的词汇、遇到它们的次数以及学习状态。您的消息不会被保存。</string>
     <string name="set_export_my_learning_data">导出我的学习数据</string>

@@ -86,6 +86,7 @@ class DataStoreUserSettingsRepositoryTest {
             reminderTime = LocalTime.of(7, 45),
             microphonePermissionAsked = true,
             incomingTranslationEnabled = false,
+            floatingTranslationEnabled = true,
             learningFromMessagesEnabled = false,
         )
 

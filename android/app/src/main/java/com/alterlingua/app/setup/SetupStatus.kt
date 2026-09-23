@@ -26,6 +26,8 @@ data class SetupStatus(
     /** AlterLingua may post its own notifications (needed to show translated messages). */
     val postNotifications: Boolean = false,
     val microphone: MicrophoneStatus = MicrophoneStatus.NOT_ASKED,
+    /** AlterLingua may draw over other apps (needed for the floating translation bubble; off by default and optional). */
+    val overlayPermission: Boolean = false,
 ) {
     /** The keyboard is turned on and is the one currently in use. */
     val keyboardReady: Boolean get() = keyboardEnabled && keyboardSelected

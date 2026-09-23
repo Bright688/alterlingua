@@ -246,6 +246,8 @@
     <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>
     <string name="set_it_only_reads_the_text">Es liest nur den Text, den deine Chat-Apps (WhatsApp, Telegram, Messenger, Signal) in ihren Benachrichtigungen zeigen, nie den Chat selbst, und speichert die Nachrichten nicht. Es braucht Benachrichtigungszugriff (siehe Einrichtung unten).</string>
+    <string name="set_floating_translation">Schwebende Übersetzung anzeigen</string>
+    <string name="set_floating_translation_desc">Zeigt dieselbe Übersetzung zusätzlich als kleine Blase über dem geöffneten Chat. Nutzt dieselbe Nachricht, die die Benachrichtigung oben bereits liest, nie den Bildschirm des Chats selbst. Braucht \"Über anderen Apps anzeigen\".</string>
     <string name="set_privacy">Datenschutz</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua behält nur die Wörter, die du lernst, wie oft du ihnen begegnest und ihren Lernstatus. Deine Nachrichten werden nicht gespeichert.</string>
     <string name="set_export_my_learning_data">Meine Lerndaten exportieren</string>

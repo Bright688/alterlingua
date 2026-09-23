@@ -30,6 +30,8 @@ import com.alterlingua.app.learning.engine.LearningPipeline
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.PipelineRecorder
 import com.alterlingua.app.learning.engine.RuleBasedAnalyzer
+import com.alterlingua.app.notifications.CompositeTranslationPresenter
+import com.alterlingua.app.notifications.FloatingBubblePresenter
 import com.alterlingua.app.notifications.IncomingStatus
 import com.alterlingua.app.notifications.IncomingTranslator
 import com.alterlingua.app.notifications.SeenMessages
@@ -86,10 +88,17 @@ class AlterLinguaApplication : Application() {
     @Volatile
     private var appLanguageNow: com.alterlingua.app.learning.Language? = null
 
+    /** Whether the floating translation bubble is turned on, kept up to date for the presenter's synchronous [FloatingBubblePresenter.canPost]. */
+    @Volatile
+    private var floatingTranslationEnabledNow: Boolean = false
+
     override fun onCreate() {
         super.onCreate()
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
-            userSettings.settings.collect { appLanguageNow = it.appLanguage.takeIf { _ -> it.appLanguageChosen } }
+            userSettings.settings.collect {
+                appLanguageNow = it.appLanguage.takeIf { _ -> it.appLanguageChosen }
+                floatingTranslationEnabledNow = it.floatingTranslationEnabled
+            }
         }
         // Audio left behind by a crash or a killed process is removed; recordings younger than an hour are left alone.
         Thread({ temporaryAudio.sweep() }, "alterlingua-audio-cleanup").apply { isDaemon = true }.start()
@@ -146,15 +155,23 @@ class AlterLinguaApplication : Application() {
     val incomingStatus: IncomingStatus by lazy { IncomingStatus() }
 
     /**
-     * Translates incoming WhatsApp messages into the user's own language. Its memory (which messages were seen and the
-     * text of the translated notifications) lives only in this process and is never saved.
+     * Translates incoming messages from a supported chat app (see IncomingSources) into the user's own language. Its
+     * memory (which messages were seen and the text of the translated notifications) lives only in this process and
+     * is never saved.
      */
     val incomingTranslator: IncomingTranslator by lazy {
         IncomingTranslator(
             api = translationApi,
             nativeLanguage = { userSettings.settings.first().nativeLanguage },
             enabled = { userSettings.settings.first().incomingTranslationEnabled },
-            presenter = TranslatedNotificationPresenter(this, appLanguage = { appLanguageNow }),
+            presenter = CompositeTranslationPresenter(
+                listOf(
+                    TranslatedNotificationPresenter(this, appLanguage = { appLanguageNow }),
+                    // Off by default; needs "Display over other apps". Fed by the same translated text as the
+                    // notification above, never by reading another app's screen (CLAUDE.md section 39).
+                    FloatingBubblePresenter(this, enabled = { floatingTranslationEnabledNow }, appLanguage = { appLanguageNow }),
+                ),
+            ),
             seen = SeenMessages(),
             outcomes = incomingStatus,
             learning = learningRecorder,

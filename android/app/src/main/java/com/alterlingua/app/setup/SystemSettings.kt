@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.core.net.toUri
 import com.alterlingua.app.notifications.AlterLinguaNotificationListener
 
 /** The Android system screens the setup steps send the user to. */
@@ -37,6 +38,10 @@ object SystemSettings {
     /** AlterLingua's own page in Android settings (permissions, "Allow restricted settings" menu). */
     fun appDetails(context: Context): Intent =
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+
+    /** AlterLingua's "Display over other apps" page, for the optional floating translation bubble. */
+    fun overlayPermission(context: Context): Intent =
+        Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:${context.packageName}".toUri())
 }
 
 /**
