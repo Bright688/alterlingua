@@ -3,15 +3,32 @@ package com.alterlingua.app.notifications
 import com.alterlingua.app.BuildConfig
 
 /**
- * The apps whose notifications AlterLingua reads: WhatsApp only. Nothing from any other app is ever looked at.
- * Debug builds add AlterLingua itself, so the feature can be tried with test messages (see docs/progress.md).
+ * The chat apps whose notifications AlterLingua reads. Nothing from any app outside this list is ever looked at
+ * (CLAUDE.md sections 21, 38): a new app is added here, not by teaching the notification listener or the translator
+ * about it individually. Debug builds add AlterLingua itself, so the feature can be tried with test messages (see
+ * docs/progress.md).
  */
 object IncomingSources {
     const val WHATSAPP = "com.whatsapp"
 
+    /** Package name to the app's own display name (used to recognise the placeholder title some apps post when they hide message content, e.g. plain "Telegram" instead of a sender). */
+    private val KNOWN: Map<String, String> = mapOf(
+        WHATSAPP to "WhatsApp",
+        "com.whatsapp.w4b" to "WhatsApp Business",
+        "org.telegram.messenger" to "Telegram",
+        "com.facebook.orca" to "Messenger",
+        "org.thoughtcrime.securesms" to "Signal",
+    )
+
     private val extra: Set<String> = BuildConfig.EXTRA_INCOMING_PACKAGES.split(',').map { it.trim() }.filter { it.isNotEmpty() }.toSet()
 
-    fun accepts(packageName: String): Boolean = packageName == WHATSAPP || packageName in extra
+    fun accepts(packageName: String): Boolean = packageName in KNOWN || packageName in extra
+
+    /** Null when the package has no known display name (an extra debug-only package). */
+    fun displayNameOf(packageName: String): String? = KNOWN[packageName]
+
+    /** For Settings copy: the apps this build can translate incoming messages from. */
+    val displayNames: List<String> get() = KNOWN.values.toList()
 }
 
 /** One message inside a notification, as Android exposes it. */

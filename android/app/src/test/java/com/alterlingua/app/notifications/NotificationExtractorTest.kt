@@ -17,6 +17,9 @@ class NotificationExtractorTest {
 
     private fun extract(s: NotificationSnapshot) = NotificationExtractor.extract(s, whatsappOnly)
 
+    /** Uses the real, full source list, for tests about which apps are accepted rather than about extraction itself. */
+    private fun extractFromAnySupportedApp(s: NotificationSnapshot) = NotificationExtractor.extract(s)
+
     private fun skipped(s: NotificationSnapshot) = (extract(s) as Extraction.Skipped).reason
 
     private fun messages(s: NotificationSnapshot) = extract(s) as Extraction.Messages
@@ -54,7 +57,7 @@ class NotificationExtractorTest {
 
     @Test
     fun otherAppsAreNeverRead() {
-        for (pkg in listOf("com.telegram", "com.google.android.gm", "org.thoughtcrime.securesms", "com.whatsapp.fake")) {
+        for (pkg in listOf("com.instagram.android", "com.google.android.gm", "com.viber.voip", "com.whatsapp.fake")) {
             assertEquals(pkg, SkipReason.NOT_A_SOURCE, skipped(snapshot(pkg = pkg)))
         }
     }
@@ -65,10 +68,21 @@ class NotificationExtractorTest {
     }
 
     @Test
-    fun theDefaultSourceListIsWhatsAppPlusOnlyWhatTheBuildAdds() {
-        assertTrue(IncomingSources.accepts("com.whatsapp"))
-        assertTrue(!IncomingSources.accepts("com.telegram"))
-        assertTrue(!IncomingSources.accepts("com.whatsapp.w4b"))
+    fun theDefaultSourceListCoversTheSupportedChatApps_andNothingElse() {
+        for (pkg in listOf("com.whatsapp", "com.whatsapp.w4b", "org.telegram.messenger", "com.facebook.orca", "org.thoughtcrime.securesms")) {
+            assertTrue(pkg, IncomingSources.accepts(pkg))
+        }
+        for (pkg in listOf("com.instagram.android", "com.google.android.gm", "com.viber.voip")) {
+            assertTrue(pkg, !IncomingSources.accepts(pkg))
+        }
+    }
+
+    @Test
+    fun aGenericPlaceholderUnderTheAppNameIsHidden_forEverySupportedApp() {
+        for ((pkg, name) in mapOf("com.whatsapp" to "WhatsApp", "org.telegram.messenger" to "Telegram", "com.facebook.orca" to "Messenger", "org.thoughtcrime.securesms" to "Signal")) {
+            val result = extractFromAnySupportedApp(snapshot(pkg = pkg, title = name, text = "1 new message"))
+            assertEquals(pkg, SkipReason.HIDDEN_CONTENT, (result as Extraction.Skipped).reason)
+        }
     }
 
     // ---- grouped, ongoing and non-message notifications ----

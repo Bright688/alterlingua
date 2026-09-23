@@ -85,7 +85,7 @@
     <string name="failure_voice_not_configured">此版本尚未设置语音翻译。</string>
     <string name="failure_voice_partial">听懂了这些词，但无法翻译。</string>
     <string name="notif_channel_name">已翻译的消息</string>
-    <string name="notif_channel_description">收到的 WhatsApp 消息的翻译，以安静的通知形式显示。</string>
+    <string name="notif_channel_description">收到消息的翻译，以安静的通知形式显示。</string>
     <string name="notif_translated_from">译自%1$s</string>
     <string name="notif_public_text">已翻译的消息</string>
     <string name="share_voice_label">AlterLingua 翻译</string>
@@ -205,7 +205,7 @@
     <string name="onb_if_the_switch_is_greyed">如果开关是灰色的，说明 Android 正在限制从 Play 商店以外安装的应用。请打开 AlterLingua 的应用信息，点按 ⋮ 菜单，选择“允许受限制的设置”，然后重试。</string>
     <string name="onb_open_app_info">打开应用信息</string>
     <string name="onb_show_translations">显示翻译</string>
-    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua 会把每条翻译后的消息显示为一条独立的安静通知，位于 WhatsApp 通知旁边。它绝不会更改 WhatsApp 自己的消息。Android 13 及更高版本会先征求您的许可。</string>
+    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua 会把每条翻译后的消息显示为一条独立的安静通知，位于原通知旁边。它绝不会更改聊天应用自己的消息。Android 13 及更高版本会先征求您的许可。</string>
     <string name="onb_notification_settings">通知设置</string>
     <string name="onb_allow_notifications">允许通知</string>
     <string name="onb_you_can_turn_this_off">您可以随时在 Android 设置或 AlterLingua 设置中关闭。</string>
@@ -243,9 +243,9 @@
     <string name="set_learn_from_my_messages">从我的消息中学习</string>
     <string name="set_learn_desc">AlterLingua 会从它翻译的消息中挑出有用的%1$s词汇和短语，只保留这些词以及您遇到它们的次数，绝不保留消息本身。</string>
     <string name="set_remind_me_at">在 %1$s 提醒我完成 3 项课程。</string>
-    <string name="set_translate_whatsapp_messages">翻译 WhatsApp 消息</string>
+    <string name="set_translate_whatsapp_messages">翻译收到的消息</string>
     <string name="set_whatsapp_desc">当有人用其他语言写消息时，AlterLingua 会以独立通知显示%1$s译文。</string>
-    <string name="set_it_only_reads_the_text">它只读取 WhatsApp 在通知中显示的文本，从不读取聊天本身，也不保存消息。需要通知使用权（见下方“设置向导”）。</string>
+    <string name="set_it_only_reads_the_text">它只读取聊天应用（WhatsApp、Telegram、Messenger、Signal）在通知中显示的文本，从不读取聊天本身，也不保存消息。需要通知使用权（见下方“设置向导”）。</string>
     <string name="set_privacy">隐私</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua 只保留您学习的词汇、遇到它们的次数以及学习状态。您的消息不会被保存。</string>
     <string name="set_export_my_learning_data">导出我的学习数据</string>

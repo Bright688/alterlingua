@@ -7,9 +7,8 @@ package com.alterlingua.app.notifications
 object NotificationExtractor {
 
     private const val MAX_CHARS = 5_000
-    private const val WHATSAPP_NAME = "whatsapp"
 
-    /** WhatsApp starts a notification for a photo, voice note and similar with one of these. There is no text to translate. */
+    /** A chat app starts a notification for a photo, voice note and similar with one of these. There is no text to translate. */
     private val mediaMarkers = listOf("📷", "📸", "🎥", "🎬", "🎤", "🎧", "📄", "📍", "📎", "🖼", "🎵", "📹")
 
     fun extract(snapshot: NotificationSnapshot, isSource: (String) -> Boolean = IncomingSources::accepts): Extraction {
@@ -27,7 +26,8 @@ object NotificationExtractor {
             snapshot.messages.map { IncomingMessage(it.sender?.trim().takeUnless { s -> s.isNullOrEmpty() } ?: title, it.text?.trim().orEmpty(), it.timestamp) }
         } else {
             // A plain notification: the title names the sender, and the text is the message.
-            if (title.equals(WHATSAPP_NAME, ignoreCase = true)) return skip(SkipReason.HIDDEN_CONTENT) // the app's own name means a placeholder
+            val ownName = IncomingSources.displayNameOf(snapshot.packageName)
+            if (ownName != null && title.equals(ownName, ignoreCase = true)) return skip(SkipReason.HIDDEN_CONTENT) // the app's own name means a placeholder
             val text = (snapshot.bigText?.takeIf { it.isNotBlank() } ?: snapshot.text).orEmpty().trim()
             listOf(IncomingMessage(title, text, snapshot.postTime))
         }

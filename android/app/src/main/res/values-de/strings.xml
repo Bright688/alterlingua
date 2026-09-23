@@ -85,7 +85,7 @@
     <string name="failure_voice_not_configured">Die Sprachübersetzung ist in dieser Version nicht eingerichtet.</string>
     <string name="failure_voice_partial">Ich habe die Wörter verstanden, konnte sie aber nicht übersetzen.</string>
     <string name="notif_channel_name">Übersetzte Nachrichten</string>
-    <string name="notif_channel_description">Übersetzungen eingehender WhatsApp-Nachrichten, dezent als Benachrichtigungen angezeigt.</string>
+    <string name="notif_channel_description">Übersetzungen eingehender Nachrichten, dezent als Benachrichtigungen angezeigt.</string>
     <string name="notif_translated_from">Übersetzt aus: %1$s</string>
     <string name="notif_public_text">Übersetzte Nachricht</string>
     <string name="share_voice_label">AlterLingua Übersetzen</string>
@@ -205,7 +205,7 @@
     <string name="onb_if_the_switch_is_greyed">Wenn der Schalter ausgegraut ist, blockiert Android Apps, die außerhalb des Play Stores installiert wurden. Öffne die App-Info von AlterLingua, tippe auf das Menü ⋮, wähle „Eingeschränkte Einstellungen zulassen“ und versuche es erneut.</string>
     <string name="onb_open_app_info">App-Info öffnen</string>
     <string name="onb_show_translations">Übersetzungen anzeigen</string>
-    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua zeigt jede übersetzte Nachricht als eigene, dezente Benachrichtigung neben der von WhatsApp. WhatsApps eigene Nachrichten werden nie verändert. Android 13 und neuer fragen zuerst nach deiner Erlaubnis.</string>
+    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua zeigt jede übersetzte Nachricht als eigene, dezente Benachrichtigung neben dem Original. Die Nachrichten der Chat-App selbst werden nie verändert. Android 13 und neuer fragen zuerst nach deiner Erlaubnis.</string>
     <string name="onb_notification_settings">Benachrichtigungseinstellungen</string>
     <string name="onb_allow_notifications">Benachrichtigungen erlauben</string>
     <string name="onb_you_can_turn_this_off">Du kannst das jederzeit in den Android-Einstellungen oder in den AlterLingua-Einstellungen ausschalten.</string>
@@ -243,9 +243,9 @@
     <string name="set_learn_from_my_messages">Aus meinen Nachrichten lernen</string>
     <string name="set_learn_desc">AlterLingua wählt aus Nachrichten, die es übersetzt, nützliche Wörter und Wendungen auf %1$s aus. Es behält nur diese Wörter und wie oft du ihnen begegnest, nie die Nachrichten.</string>
     <string name="set_remind_me_at">Erinnere mich um %1$s an meine Lektion mit 3 Einträgen.</string>
-    <string name="set_translate_whatsapp_messages">WhatsApp-Nachrichten übersetzen</string>
+    <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>
-    <string name="set_it_only_reads_the_text">Es liest nur den Text, den WhatsApp in seinen Benachrichtigungen zeigt, nie den Chat selbst, und speichert die Nachrichten nicht. Es braucht Benachrichtigungszugriff (siehe Einrichtung unten).</string>
+    <string name="set_it_only_reads_the_text">Es liest nur den Text, den deine Chat-Apps (WhatsApp, Telegram, Messenger, Signal) in ihren Benachrichtigungen zeigen, nie den Chat selbst, und speichert die Nachrichten nicht. Es braucht Benachrichtigungszugriff (siehe Einrichtung unten).</string>
     <string name="set_privacy">Datenschutz</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua behält nur die Wörter, die du lernst, wie oft du ihnen begegnest und ihren Lernstatus. Deine Nachrichten werden nicht gespeichert.</string>
     <string name="set_export_my_learning_data">Meine Lerndaten exportieren</string>

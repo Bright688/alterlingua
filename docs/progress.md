@@ -28,7 +28,7 @@ Please confirm which numbering to use going forward.
 | 8 | Outgoing WhatsApp text translation | IMPLEMENTED | Translate reads the composer text, calls `POST /v1/translate` with the selected target, replaces the text, offers Undo; every failure keeps the original. 199 unit tests pass; the real client was also run against the real backend. The backend only has a **development stand-in translator** (a few sample phrases). **Not yet tried on the phone: Gate B needs you.** |
 | 9 | Backend voice translation | IMPLEMENTED | `POST /v1/audio/translate`: audio, speech-to-text, source-language detection, translation, with a speech-provider abstraction and capability checks. 162 backend tests pass; the server was started and the route called with curl on this machine. Only a **development stand-in** recogniser exists (it does not recognise speech). Not connected to the Android app. |
 | 10 | Keyboard microphone | IMPLEMENTED | Microphone opens a voice panel: records, uploads to `POST /v1/audio/translate`, shows Original and Translated, and inserts the translation as text (never sends). 240 unit tests pass; the real client was also run against the real backend. The backend recogniser is a **development stand-in** (it does not recognise speech). **Not yet tried on the phone: Gate C needs you.** |
-| 11 | Incoming WhatsApp text translation | IMPLEMENTED | Prototype: a notification listener reads only WhatsApp's notifications, translates a message into the user's selected native language through the backend, and posts its own AlterLingua notification ("Marie / Are you coming tomorrow? / Translated from Français"). 303 unit tests pass; the real client was run against the real backend. The backend translator is a **development stand-in** (a few sample phrases). **Not yet tried on the phone or with real WhatsApp.** |
+| 11 | Incoming text translation (WhatsApp, Telegram, Messenger, Signal) | IMPLEMENTED | Prototype: a notification listener reads notifications from a small whitelist of known chat apps (`IncomingSources`: WhatsApp, WhatsApp Business, Telegram, Messenger, Signal — widened from WhatsApp-only on 2026-09-23), translates a message into the user's selected native language through the backend, and posts its own AlterLingua notification ("Marie / Are you coming tomorrow? / Translated from Français"). 303 unit tests pass; the real client was run against the real backend. The backend translator is a **development stand-in** (a few sample phrases). **Not yet tried on the phone with a real message from Telegram, Messenger or Signal (WhatsApp was manually verified earlier).** |
 | 12 | Learning event extraction | IMPLEMENTED | Foundation: a language-aware linguistic-analysis abstraction, candidate extraction (words, phrases, expressions) for all eight languages including 中文 and 日本語 with dictionary segmentation, a `LearningEvent` pipeline hooked into outgoing text, voice and incoming translations, and an in-memory exposure store. Only short units are kept, never messages. 343 unit tests pass. **No screen shows the units yet (Words UI is later), and nothing is saved to disk yet (Personal Language Map is next).** |
 | 13 | Personal Language Map | IMPLEMENTED | A Room database with one map per language, a `LanguageMapService`, and a simple explainable mastery calculation (UNKNOWN, LEARNING, FAMILIAR, MASTERED). The learning pipeline now saves units into it. 382 unit tests pass. **No screen shows it yet (Words UI is next) and nothing feeds it help requests, lessons or recognitions yet.** Not yet tried on the phone. |
 | 14 | Words UI | NOT STARTED | The Words tab exists with sample data (see 2b). |
@@ -316,13 +316,15 @@ Android docs consulted first: `MediaRecorder` (recording, foreground-only microp
 13. **Password field:** in a browser login page tap a password box and the microphone: "Voice input isn't available in this field."
 14. Watch the backend terminal: only languages, audio size and timings, never the text.
 
-## Milestone 11 detail: incoming WhatsApp translation (prototype)
+## Milestone 11 detail: incoming message translation (prototype)
 
 Android docs consulted first: `NotificationListenerService` (`onNotificationPosted`, `onNotificationRemoved`), `StatusBarNotification` and `Notification.extras`, `NotificationCompat.MessagingStyle`, group summaries and visibility, and the `POST_NOTIFICATIONS` runtime permission (Android 13+).
 
+Originally WhatsApp-only; widened on 2026-09-23 to a small whitelist of known chat apps (see the 2026-09-23 build-log entry for why an `AccessibilityService`-based "read any app's live chat screen" approach was investigated and **not** used).
+
 | Item | Status |
 |---|---|
-| `AlterLinguaNotificationListener` (a real `NotificationListenerService`) reads notifications from **`com.whatsapp` only**; every other app's notification is dropped on its package name before any content is looked at | IMPLEMENTED |
+| `AlterLinguaNotificationListener` (a real `NotificationListenerService`) reads notifications from a small whitelist of known chat apps only (`IncomingSources`: WhatsApp, WhatsApp Business, Telegram, Messenger, Signal); every other app's notification is dropped on its package name before any content is looked at | IMPLEMENTED |
 | Reads only what Android exposes to a listener: title, text, big text, messaging-style messages (with sender names, conversation title, group flag), category, flags, visibility. No private storage, no unofficial API, no accessibility service | IMPLEMENTED |
 | Translates into the user's **selected native language** (read for every message; English is never assumed): `POST /v1/translate` with `source=auto`, `target=<native>`, `context=messaging`, `tone=natural` | IMPLEMENTED |
 | Shows AlterLingua's own notification: title = sender (or group name), text = the translation, small line **"Translated from Français"** (source language in its own name), quiet channel, lock screen shows only "Translated message" | IMPLEMENTED — not looked at on the phone |
@@ -331,7 +333,7 @@ Android docs consulted first: `NotificationListenerService` (`onNotificationPost
 | When WhatsApp's notification goes away (chat opened or dismissed), AlterLingua's translation is removed and its text forgotten. Tapping AlterLingua's notification runs WhatsApp's own "open chat" action, as the notification offers it | IMPLEMENTED |
 | The conversation bubble in WhatsApp is never claimed to be, or attempted to be, rewritten | IMPLEMENTED |
 | Nothing is saved: duplicates are tracked by a one-way hash in memory (bounded, expires); translated text is held in memory only while its notification exists; nothing is logged; the settings store holds no messages | IMPLEMENTED |
-| Settings: **"Translate WhatsApp messages"** switch (on by default, needs notification access) and one line about how the last incoming message ended (no text) | IMPLEMENTED |
+| Settings: **"Translate incoming messages"** switch (on by default, needs notification access, one shared toggle for every supported app) and one line about how the last incoming message ended (no text) | IMPLEMENTED |
 | Setup: a new "Show translations" step for the notification permission (Android 13+ asks first; explained before the button), also in Settings → Setup; status detected live | IMPLEMENTED |
 | New permission: `POST_NOTIFICATIONS` | IMPLEMENTED |
 | Debug builds only: a test aid so it can be tried without a second phone (an `adb` command posts a WhatsApp-shaped test message from AlterLingua itself); the release build contains neither the aid nor the extra source | IMPLEMENTED |
@@ -340,7 +342,7 @@ Android docs consulted first: `NotificationListenerService` (`onNotificationPost
 | Trying it with **real WhatsApp** and with a real notification listener | NOT STARTED — needs your phone |
 | A real translation provider on the backend | NOT STARTED — the fake provider only knows a few sample sentences |
 | Learning signals from incoming messages, entitlement/quota limits | NOT STARTED |
-| Known limits: only what WhatsApp puts in its notification (previews turned off by WhatsApp or hidden by Android give nothing to translate); media-only messages have no text; the group "Name: text" form used by very old WhatsApp versions is not split; WhatsApp Business (`com.whatsapp.w4b`) is not included | — |
+| Known limits: only what the source app puts in its notification — an app or a user set to "sender name only" (Signal offers this) gives nothing to translate, correctly skipped as hidden content; media-only messages have no text; the group "Name: text" form used by very old WhatsApp versions is not split | — |
 
 ### Device test, two or more language configurations
 
@@ -350,7 +352,7 @@ The backend's development translator only knows a few sample sentences, and dete
 **Before you start**
 1. Start the backend (`cd backend && .venv/bin/uvicorn app.main:app_factory --factory --port 8000`) and, with the phone connected, run `adb reverse tcp:8000 tcp:8000`. Install the new build with Run ▶ from Android Studio.
 2. In AlterLingua open onboarding step 6 "Incoming messages" (or Settings → Setup). **Notification access:** tap "Open notification access", switch AlterLingua on (if the switch is greyed out use "Open app info", ⋮, "Allow restricted settings", then retry). **Show translations:** tap "Allow notifications" and allow the Android 13+ question. Both should read "Access allowed" / "Allowed".
-3. In Settings, "Translate WhatsApp messages" is on.
+3. In Settings, "Translate incoming messages" is on.
 
 **Two ways to send a message.** (a) *Real WhatsApp:* have another person or phone send you the sentence in a WhatsApp chat, with WhatsApp notification previews on. (b) *Without a second phone (debug build only):* run, with your phone connected,
 `adb shell am broadcast -n com.alterlingua.app/.notifications.DebugTestMessageReceiver -a com.alterlingua.app.DEBUG_TEST_MESSAGE --es sender "Marie" --es text "Tu viens demain ?"`

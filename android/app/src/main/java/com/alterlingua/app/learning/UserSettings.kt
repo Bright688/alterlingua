@@ -76,7 +76,7 @@ data class UserSettings(
     val reminderTime: LocalTime = DEFAULT_REMINDER_TIME,
     /** Whether AlterLingua picks useful words and phrases out of translated messages. It keeps only those units, never the messages. */
     val learningFromMessagesEnabled: Boolean = true,
-    /** Whether incoming WhatsApp messages are translated into the user's own language (needs notification access). */
+    /** Whether incoming messages from a supported chat app (see IncomingSources) are translated into the user's own language (needs notification access). */
     val incomingTranslationEnabled: Boolean = true,
     /** True once the system microphone question has been shown. Lets setup tell "never asked" from "blocked". */
     val microphonePermissionAsked: Boolean = false,

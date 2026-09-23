@@ -10,11 +10,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
- * Listens to notifications so incoming WhatsApp messages can be translated (CLAUDE.md sections 21 and 38).
+ * Listens to notifications so incoming messages can be translated (CLAUDE.md sections 21 and 38).
  *
- * Only notifications from accepted sources (WhatsApp) are ever read; every other app's notification is dropped on
- * its package name alone, before any of its content is looked at. What is read is only what Android exposes to a
- * notification listener. Nothing is stored, and the WhatsApp conversation itself is never touched.
+ * Only notifications from accepted sources (see [IncomingSources]) are ever read; every other app's notification is
+ * dropped on its package name alone, before any of its content is looked at. What is read is only what Android
+ * exposes to a notification listener. Nothing is stored, and the original conversation itself is never touched.
  */
 class AlterLinguaNotificationListener : NotificationListenerService() {
 

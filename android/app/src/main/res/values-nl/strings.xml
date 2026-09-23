@@ -85,7 +85,7 @@
     <string name="failure_voice_not_configured">Spraakvertaling is in deze versie niet ingesteld.</string>
     <string name="failure_voice_partial">Ik begreep de woorden maar kon ze niet vertalen.</string>
     <string name="notif_channel_name">Vertaalde berichten</string>
-    <string name="notif_channel_description">Vertalingen van binnenkomende WhatsApp-berichten, rustig getoond als meldingen.</string>
+    <string name="notif_channel_description">Vertalingen van binnenkomende berichten, rustig getoond als meldingen.</string>
     <string name="notif_translated_from">Vertaald uit: %1$s</string>
     <string name="notif_public_text">Vertaald bericht</string>
     <string name="share_voice_label">AlterLingua Vertalen</string>
@@ -205,7 +205,7 @@
     <string name="onb_if_the_switch_is_greyed">Als de schakelaar grijs is, blokkeert Android apps die buiten de Play Store zijn geïnstalleerd. Open de app-info van AlterLingua, tik op het menu ⋮, kies „Beperkte instellingen toestaan” en probeer het opnieuw.</string>
     <string name="onb_open_app_info">App-info openen</string>
     <string name="onb_show_translations">Vertalingen tonen</string>
-    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua toont elk vertaald bericht als een eigen, rustige melding naast die van WhatsApp. De berichten van WhatsApp zelf worden nooit gewijzigd. Android 13 en nieuwer vragen eerst om je toestemming.</string>
+    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua toont elk vertaald bericht als een eigen, rustige melding naast het origineel. De berichten van de chat-app zelf worden nooit gewijzigd. Android 13 en nieuwer vragen eerst om je toestemming.</string>
     <string name="onb_notification_settings">Meldingsinstellingen</string>
     <string name="onb_allow_notifications">Meldingen toestaan</string>
     <string name="onb_you_can_turn_this_off">Je kunt dit altijd uitzetten in de Android-instellingen of in de AlterLingua-instellingen.</string>
@@ -243,9 +243,9 @@
     <string name="set_learn_from_my_messages">Leren van mijn berichten</string>
     <string name="set_learn_desc">AlterLingua haalt nuttige woorden en zinnen in het %1$s uit berichten die het vertaalt. Het bewaart alleen die woorden en hoe vaak je ze tegenkomt, nooit de berichten.</string>
     <string name="set_remind_me_at">Herinner me om %1$s aan mijn les van 3 items.</string>
-    <string name="set_translate_whatsapp_messages">WhatsApp-berichten vertalen</string>
+    <string name="set_translate_whatsapp_messages">Binnenkomende berichten vertalen</string>
     <string name="set_whatsapp_desc">Als iemand in een andere taal schrijft, toont AlterLingua een vertaling in het %1$s als eigen melding.</string>
-    <string name="set_it_only_reads_the_text">Het leest alleen de tekst die WhatsApp in zijn meldingen toont, nooit de chat zelf, en slaat de berichten niet op. Het heeft toegang tot meldingen nodig (zie Installatie hieronder).</string>
+    <string name="set_it_only_reads_the_text">Het leest alleen de tekst die je chat-apps (WhatsApp, Telegram, Messenger, Signal) in hun meldingen tonen, nooit de chat zelf, en slaat de berichten niet op. Het heeft toegang tot meldingen nodig (zie Installatie hieronder).</string>
     <string name="set_privacy">Privacy</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua bewaart alleen de woorden die je leert, hoe vaak je ze tegenkomt en hun leerstatus. Je berichten worden niet opgeslagen.</string>
     <string name="set_export_my_learning_data">Mijn leergegevens exporteren</string>

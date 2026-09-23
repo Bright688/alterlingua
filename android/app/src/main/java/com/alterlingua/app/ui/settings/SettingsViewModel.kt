@@ -37,7 +37,7 @@ data class SettingsUiState(
     val autoTranslateEnabled: Boolean = false,
     /** The typing styles of the language typed in, when it has more than one (中文, 日本語); empty for every other language. */
     val keyboardStyleChoices: List<KeyboardStyleChoice> = emptyList(),
-    /** How the latest incoming WhatsApp message ended (no message text). */
+    /** How the latest incoming message ended (no message text). */
     val lastIncoming: IncomingOutcome? = null,
     /** The result of the last "Delete all learning data": null before, true when everything was removed. */
     val dataErased: Boolean? = null,

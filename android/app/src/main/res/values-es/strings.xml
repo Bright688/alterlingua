@@ -85,7 +85,7 @@
     <string name="failure_voice_not_configured">La traducción de voz no está configurada en esta versión.</string>
     <string name="failure_voice_partial">Entendí las palabras pero no pude traducirlas.</string>
     <string name="notif_channel_name">Mensajes traducidos</string>
-    <string name="notif_channel_description">Traducciones de los mensajes de WhatsApp recibidos, mostradas de forma discreta como notificaciones.</string>
+    <string name="notif_channel_description">Traducciones de los mensajes recibidos, mostradas de forma discreta como notificaciones.</string>
     <string name="notif_translated_from">Traducido de: %1$s</string>
     <string name="notif_public_text">Mensaje traducido</string>
     <string name="share_voice_label">AlterLingua Traducir</string>
@@ -205,7 +205,7 @@
     <string name="onb_if_the_switch_is_greyed">Si el interruptor está atenuado, Android bloquea las apps instaladas fuera de Play Store. Abre la información de la app AlterLingua, toca el menú ⋮, elige «Permitir ajustes restringidos» y vuelve a intentarlo.</string>
     <string name="onb_open_app_info">Abrir información de la app</string>
     <string name="onb_show_translations">Mostrar traducciones</string>
-    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua muestra cada mensaje traducido como una notificación discreta, junto a la de WhatsApp. Nunca cambia los mensajes de WhatsApp. Android 13 y posteriores piden tu permiso primero.</string>
+    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua muestra cada mensaje traducido como una notificación discreta, junto a la original. Nunca cambia los mensajes de la app de chat. Android 13 y posteriores piden tu permiso primero.</string>
     <string name="onb_notification_settings">Ajustes de notificaciones</string>
     <string name="onb_allow_notifications">Permitir notificaciones</string>
     <string name="onb_you_can_turn_this_off">Puedes desactivarlo en cualquier momento en los ajustes de Android o en la configuración de AlterLingua.</string>
@@ -243,9 +243,9 @@
     <string name="set_learn_from_my_messages">Aprender de mis mensajes</string>
     <string name="set_learn_desc">AlterLingua selecciona palabras y frases útiles en %1$s de los mensajes que traduce. Solo guarda esas palabras y con qué frecuencia las encuentras, nunca los mensajes.</string>
     <string name="set_remind_me_at">Recordarme mi lección de 3 elementos a las %1$s.</string>
-    <string name="set_translate_whatsapp_messages">Traducir mensajes de WhatsApp</string>
+    <string name="set_translate_whatsapp_messages">Traducir mensajes entrantes</string>
     <string name="set_whatsapp_desc">Cuando alguien escribe en otro idioma, AlterLingua muestra una traducción en %1$s como su propia notificación.</string>
-    <string name="set_it_only_reads_the_text">Solo lee el texto que WhatsApp muestra en sus notificaciones, nunca el chat en sí, y no guarda los mensajes. Necesita acceso a notificaciones (consulta Preparación más abajo).</string>
+    <string name="set_it_only_reads_the_text">Solo lee el texto que tus apps de chat (WhatsApp, Telegram, Messenger, Signal) muestran en sus notificaciones, nunca el chat en sí, y no guarda los mensajes. Necesita acceso a notificaciones (consulta Preparación más abajo).</string>
     <string name="set_privacy">Privacidad</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua solo guarda las palabras que aprendes, con qué frecuencia las encuentras y su estado de aprendizaje. Tus mensajes no se guardan.</string>
     <string name="set_export_my_learning_data">Exportar mis datos de aprendizaje</string>

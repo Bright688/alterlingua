@@ -85,7 +85,7 @@
     <string name="failure_voice_not_configured">このバージョンでは音声翻訳が設定されていません。</string>
     <string name="failure_voice_partial">言葉は認識できましたが、翻訳できませんでした。</string>
     <string name="notif_channel_name">翻訳されたメッセージ</string>
-    <string name="notif_channel_description">受信した WhatsApp メッセージの翻訳を、通知として控えめに表示します。</string>
+    <string name="notif_channel_description">受信したメッセージの翻訳を、通知として控えめに表示します。</string>
     <string name="notif_translated_from">%1$sから翻訳</string>
     <string name="notif_public_text">翻訳されたメッセージ</string>
     <string name="share_voice_label">AlterLingua 翻訳</string>
@@ -205,7 +205,7 @@
     <string name="onb_if_the_switch_is_greyed">スイッチがグレーの場合、Android は Play ストア以外からインストールしたアプリを制限しています。AlterLingua のアプリ情報を開き、⋮ メニューから「制限付き設定を許可」を選んで、もう一度お試しください。</string>
     <string name="onb_open_app_info">アプリ情報を開く</string>
     <string name="onb_show_translations">翻訳を表示</string>
-    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua は、翻訳した各メッセージを WhatsApp の通知の隣に、控えめな独立した通知として表示します。WhatsApp 自身のメッセージは変更しません。Android 13 以降では、先に許可を求められます。</string>
+    <string name="onb_alterlingua_shows_each_translated_message">AlterLingua は、翻訳した各メッセージを元の通知の隣に、控えめな独立した通知として表示します。チャットアプリ自身のメッセージは変更しません。Android 13 以降では、先に許可を求められます。</string>
     <string name="onb_notification_settings">通知設定</string>
     <string name="onb_allow_notifications">通知を許可</string>
     <string name="onb_you_can_turn_this_off">Android の設定または AlterLingua の設定で、いつでもオフにできます。</string>
@@ -243,9 +243,9 @@
     <string name="set_learn_from_my_messages">自分のメッセージから学ぶ</string>
     <string name="set_learn_desc">AlterLingua は翻訳したメッセージから役立つ%1$sの単語やフレーズを選び出します。保持するのはその単語と出会った回数だけで、メッセージは保存しません。</string>
     <string name="set_remind_me_at">%1$sに 3 項目のレッスンを知らせる。</string>
-    <string name="set_translate_whatsapp_messages">WhatsApp のメッセージを翻訳</string>
+    <string name="set_translate_whatsapp_messages">受信メッセージを翻訳</string>
     <string name="set_whatsapp_desc">相手が別の言語で書いたとき、AlterLingua は%1$sの翻訳を独立した通知として表示します。</string>
-    <string name="set_it_only_reads_the_text">WhatsApp が通知に表示するテキストだけを読み取り、チャット自体は読みません。メッセージは保存されません。通知へのアクセスが必要です（下の「セットアップ」を参照）。</string>
+    <string name="set_it_only_reads_the_text">チャットアプリ（WhatsApp、Telegram、Messenger、Signal）が通知に表示するテキストだけを読み取り、チャット自体は読みません。メッセージは保存されません。通知へのアクセスが必要です（下の「セットアップ」を参照）。</string>
     <string name="set_privacy">プライバシー</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua が保持するのは、学んだ単語、出会った回数、学習の状態だけです。メッセージは保存されません。</string>
     <string name="set_export_my_learning_data">学習データを書き出す</string>
