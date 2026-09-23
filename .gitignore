@@ -1,0 +1,35 @@
+# Secrets and local configuration (never commit these)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Backend (Python) - used from the FastAPI milestone onward
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Keys, signing files and local data must never be committed (audit finding)
+*.jks
+*.keystore
+keystore.properties
+local.properties
+*.db
+*.sqlite
+*.apk
+*.aab
+*.log
+
+# Mozc binaries (built by scripts/build-mozc.sh; see docs/input-engines.md)
+android/app/src/mozc/jniLibs/
+android/app/src/mozc/assets/
+android/app/src/rime/jniLibs/

@@ -1,0 +1,4 @@
+"""User identity and preferences (later milestone).
+
+Prepared as an empty module of the modular monolith; intentionally has no code yet.
+"""

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The keyboard's name in Android's lists is the label of the service in the manifest ("AlterLingua"). -->
+<input-method xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="com.alterlingua.app.MainActivity"
+    android:supportsSwitchingToNextInputMethod="true" />

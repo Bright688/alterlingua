@@ -1,0 +1,21 @@
+# {$ALTERLINGUA_DOMAIN} is a host name that points at this server, for example api.example.com or 203-0-113-7.sslip.io.
+{$ALTERLINGUA_DOMAIN} {
+	# Audio uploads are limited to 10 MiB by the API; refuse anything much bigger before it reaches it.
+	request_body {
+		max_size 12MB
+	}
+	reverse_proxy api:8000
+	# The API sends no private content in headers or logs; do not add access logging of bodies or queries here.
+	log {
+		output stdout
+		format filter {
+			wrap console
+			fields {
+				request>headers delete
+				request>uri query {
+					delete all
+				}
+			}
+		}
+	}
+}

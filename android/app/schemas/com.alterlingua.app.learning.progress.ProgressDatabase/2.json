@@ -1,0 +1,188 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "c4b621d0e4c584f89cd35db899d5012c",
+    "entities": [
+      {
+        "tableName": "daily_progress",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `language` TEXT NOT NULL, `wordsMet` INTEGER NOT NULL, `wordsAssisted` INTEGER NOT NULL, `newWords` INTEGER NOT NULL, `helpRequests` INTEGER NOT NULL, `lessonCards` INTEGER NOT NULL, `practiceTries` INTEGER NOT NULL, `practiceGood` INTEGER NOT NULL, `hasSnapshot` INTEGER NOT NULL DEFAULT 0, `encountered` INTEGER NOT NULL, `learning` INTEGER NOT NULL, `familiar` INTEGER NOT NULL, `mastered` INTEGER NOT NULL, `translationsOutgoingText` INTEGER NOT NULL DEFAULT 0, `translationsOutgoingVoice` INTEGER NOT NULL DEFAULT 0, `translationsIncomingText` INTEGER NOT NULL DEFAULT 0, `translationsIncomingVoice` INTEGER NOT NULL DEFAULT 0, `toLearning` INTEGER NOT NULL DEFAULT 0, `toFamiliar` INTEGER NOT NULL DEFAULT 0, `toMastered` INTEGER NOT NULL DEFAULT 0, `lessonsCompleted` INTEGER NOT NULL DEFAULT 0, `actionsFullSupport` INTEGER NOT NULL DEFAULT 0, `actionsAdaptive` INTEGER NOT NULL DEFAULT 0, `actionsOnDemand` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`date`, `language`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "language",
+            "columnName": "language",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordsMet",
+            "columnName": "wordsMet",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordsAssisted",
+            "columnName": "wordsAssisted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "newWords",
+            "columnName": "newWords",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "helpRequests",
+            "columnName": "helpRequests",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lessonCards",
+            "columnName": "lessonCards",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practiceTries",
+            "columnName": "practiceTries",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practiceGood",
+            "columnName": "practiceGood",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSnapshot",
+            "columnName": "hasSnapshot",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "encountered",
+            "columnName": "encountered",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learning",
+            "columnName": "learning",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "familiar",
+            "columnName": "familiar",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mastered",
+            "columnName": "mastered",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "translationsOutgoingText",
+            "columnName": "translationsOutgoingText",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "translationsOutgoingVoice",
+            "columnName": "translationsOutgoingVoice",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "translationsIncomingText",
+            "columnName": "translationsIncomingText",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "translationsIncomingVoice",
+            "columnName": "translationsIncomingVoice",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "toLearning",
+            "columnName": "toLearning",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "toFamiliar",
+            "columnName": "toFamiliar",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "toMastered",
+            "columnName": "toMastered",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "lessonsCompleted",
+            "columnName": "lessonsCompleted",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "actionsFullSupport",
+            "columnName": "actionsFullSupport",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "actionsAdaptive",
+            "columnName": "actionsAdaptive",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "actionsOnDemand",
+            "columnName": "actionsOnDemand",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date",
+            "language"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c4b621d0e4c584f89cd35db899d5012c')"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only this one private cache folder can ever be shared: the generated translated voice messages. -->
+<paths>
+    <cache-path name="spoken" path="spoken_audio/" />
+</paths>

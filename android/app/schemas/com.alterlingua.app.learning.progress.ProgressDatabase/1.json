@@ -1,0 +1,111 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "6050d182182d1f81fa2a0fd821bec0e7",
+    "entities": [
+      {
+        "tableName": "daily_progress",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `language` TEXT NOT NULL, `wordsMet` INTEGER NOT NULL, `wordsAssisted` INTEGER NOT NULL, `newWords` INTEGER NOT NULL, `helpRequests` INTEGER NOT NULL, `lessonCards` INTEGER NOT NULL, `practiceTries` INTEGER NOT NULL, `practiceGood` INTEGER NOT NULL, `hasSnapshot` INTEGER NOT NULL DEFAULT 0, `encountered` INTEGER NOT NULL, `learning` INTEGER NOT NULL, `familiar` INTEGER NOT NULL, `mastered` INTEGER NOT NULL, PRIMARY KEY(`date`, `language`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "language",
+            "columnName": "language",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordsMet",
+            "columnName": "wordsMet",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wordsAssisted",
+            "columnName": "wordsAssisted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "newWords",
+            "columnName": "newWords",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "helpRequests",
+            "columnName": "helpRequests",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lessonCards",
+            "columnName": "lessonCards",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practiceTries",
+            "columnName": "practiceTries",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practiceGood",
+            "columnName": "practiceGood",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSnapshot",
+            "columnName": "hasSnapshot",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "encountered",
+            "columnName": "encountered",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learning",
+            "columnName": "learning",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "familiar",
+            "columnName": "familiar",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mastered",
+            "columnName": "mastered",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date",
+            "language"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6050d182182d1f81fa2a0fd821bec0e7')"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+Initialize AlterLingua as a native Android project using Kotlin and Jetpack Compose. Create the Gradle Wrapper and complete Android project structure in the existing directory. Select mutually compatible current stable versions of Gradle, Android Gradle Plugin, Kotlin, and Compose. Do not require a globally installed Gradle.

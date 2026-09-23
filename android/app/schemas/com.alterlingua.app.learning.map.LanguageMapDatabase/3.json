@@ -1,0 +1,168 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "a0616070c746ca949680e3111ab2882d",
+    "entities": [
+      {
+        "tableName": "language_map_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `language` TEXT NOT NULL, `normalized` TEXT NOT NULL, `type` TEXT NOT NULL, `displayForm` TEXT NOT NULL, `meaning` TEXT, `meaningLanguage` TEXT, `exposureCount` INTEGER NOT NULL, `helpRequests` INTEGER NOT NULL, `lessonEncounters` INTEGER NOT NULL, `correctRecognitions` INTEGER NOT NULL, `incorrectRecognitions` INTEGER NOT NULL, `firstSeen` INTEGER NOT NULL, `lastSeen` INTEGER NOT NULL, `masteryScore` REAL NOT NULL, `masteryState` TEXT NOT NULL, `usefulness` REAL NOT NULL DEFAULT 0, `lastContext` TEXT, `lastLessonAt` INTEGER NOT NULL DEFAULT 0, `lastHelpAt` INTEGER NOT NULL DEFAULT 0)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "language",
+            "columnName": "language",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normalized",
+            "columnName": "normalized",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayForm",
+            "columnName": "displayForm",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meaning",
+            "columnName": "meaning",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "meaningLanguage",
+            "columnName": "meaningLanguage",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "exposureCount",
+            "columnName": "exposureCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "helpRequests",
+            "columnName": "helpRequests",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lessonEncounters",
+            "columnName": "lessonEncounters",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "correctRecognitions",
+            "columnName": "correctRecognitions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incorrectRecognitions",
+            "columnName": "incorrectRecognitions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstSeen",
+            "columnName": "firstSeen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSeen",
+            "columnName": "lastSeen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "masteryScore",
+            "columnName": "masteryScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "masteryState",
+            "columnName": "masteryState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usefulness",
+            "columnName": "usefulness",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "lastContext",
+            "columnName": "lastContext",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lastLessonAt",
+            "columnName": "lastLessonAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "lastHelpAt",
+            "columnName": "lastHelpAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_language_map_items_language_normalized_type",
+            "unique": true,
+            "columnNames": [
+              "language",
+              "normalized",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_language_map_items_language_normalized_type` ON `${TABLE_NAME}` (`language`, `normalized`, `type`)"
+          },
+          {
+            "name": "index_language_map_items_language_masteryState",
+            "unique": false,
+            "columnNames": [
+              "language",
+              "masteryState"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_language_map_items_language_masteryState` ON `${TABLE_NAME}` (`language`, `masteryState`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a0616070c746ca949680e3111ab2882d')"
+    ]
+  }
+}

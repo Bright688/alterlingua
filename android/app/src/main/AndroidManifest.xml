@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Microphone: declared now, but only requested at runtime from the microphone setup screen, after
+        its explanation. Nothing is recorded yet. Not required to install, so the app still installs on
+        devices without a microphone. Each later milestone adds only the permission it needs.
+
+        Backup and device transfer are off (res/xml/backup_rules.xml and data_extraction_rules.xml):
+        AlterLingua will hold private learning data, so nothing is copied unless a later milestone
+        explicitly opts in.
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!--
+        Network: the keyboard sends the text the user chose to translate to the AlterLingua backend, and only when
+        Translate is tapped. ACCESS_NETWORK_STATE is used only to tell "you are offline" from "server not
+        reachable" after a request has failed.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+        Notifications: AlterLingua posts its own "translated message" notification for incoming WhatsApp messages
+        (Android 13+ asks the user first, after an explanation in the app). It reads only WhatsApp's notifications,
+        through the notification access the user grants in Android settings.
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:name=".AlterLinguaApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AlterLingua">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Share target for audio: choosing AlterLingua in Android's Share sheet on a WhatsApp voice note opens this
+            screen with a temporary read permission for that one item. Only audio types are accepted.
+        -->
+        <activity
+            android:name=".share.ShareVoiceActivity"
+            android:exported="true"
+            android:label="@string/share_voice_label">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Translated outgoing voice: record, hear the translation spoken, share it. Opened from AlterLingua's Home tab only.
+        -->
+        <activity
+            android:name=".speak.SpeakActivity"
+            android:exported="false"
+            android:label="@string/speak_title" />
+
+        <!--
+            Lets the Share sheet read one generated voice message, with a temporary permission granted per share. It covers only
+            the folder named in res/xml/spoken_audio_paths.xml and is not exported.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/spoken_audio_paths" />
+        </provider>
+
+        <!--
+            A keyboard cannot show Android's permission question itself, so it opens this invisible screen, which asks
+            (after the keyboard has explained why) and closes. Not started by any other app.
+        -->
+        <activity
+            android:name=".keyboard.MicrophonePermissionActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AlterLingua.Translucent" />
+
+        <!--
+            The AlterLingua keyboard (an input method). Its name in Android's lists is the label below. It types
+            text through the field's InputConnection and never stores, logs or sends what is typed.
+        -->
+        <service
+            android:name=".keyboard.AlterLinguaKeyboardService"
+            android:exported="true"
+            android:label="@string/keyboard_name"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
+
+        <!--
+            Placeholder notification listener so Android lists AlterLingua under notification access.
+            It does nothing and reads no notification (translation arrives in milestone 11).
+        -->
+        <service
+            android:name=".notifications.AlterLinguaNotificationListener"
+            android:exported="true"
+            android:label="@string/notification_listener_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

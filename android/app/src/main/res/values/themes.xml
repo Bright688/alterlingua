@@ -1,0 +1,12 @@
+<resources>
+    <!-- Window theme shown before Compose draws. Compose supplies the real look. -->
+    <style name="Theme.AlterLingua" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- The invisible screen that only asks for the microphone permission on behalf of the keyboard. -->
+    <style name="Theme.AlterLingua.Translucent" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>
