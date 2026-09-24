@@ -84,6 +84,15 @@ data class UserSettings(
      * a replacement for it, and the permission it needs is more sensitive than notification access.
      */
     val floatingTranslationEnabled: Boolean = false,
+    /**
+     * Whether AlterLingua reads a supported chat app's own screen live, while it is open, so a translation can appear
+     * without waiting for a notification (needs Android's separately-granted Accessibility permission for
+     * AlterLinguaAccessibilityService). Off by default: this is the most sensitive of the incoming-translation
+     * options, and requires its own explicit in-app consent before the setting can be turned on (see SettingsScreen).
+     */
+    val liveChatTranslationEnabled: Boolean = false,
+    /** True once the user has seen and agreed to the in-app disclosure for [liveChatTranslationEnabled] at least once. */
+    val liveChatTranslationConsentGiven: Boolean = false,
     /** True once the system microphone question has been shown. Lets setup tell "never asked" from "blocked". */
     val microphonePermissionAsked: Boolean = false,
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */

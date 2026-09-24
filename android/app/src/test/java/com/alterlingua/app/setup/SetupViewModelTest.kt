@@ -15,12 +15,14 @@ private class FakeChecker : SetupChecker {
     var microphone = false
     var postNotifications = false
     var overlayPermission = false
+    var accessibilityService = false
     override fun keyboardEnabled() = enabled
     override fun keyboardSelected() = selected
     override fun notificationAccessGranted() = notifications
     override fun microphoneGranted() = microphone
     override fun postNotificationsAllowed() = postNotifications
     override fun overlayPermissionGranted() = overlayPermission
+    override fun accessibilityServiceEnabled() = accessibilityService
 }
 
 class SetupViewModelTest {
@@ -112,6 +114,18 @@ class SetupViewModelTest {
         checker.overlayPermission = false // switched off in Android settings
         vm.refresh(showMicrophoneRationale = false)
         assertFalse(vm.status.value.overlayPermission)
+    }
+
+    @Test
+    fun theAccessibilityServiceStatusIsReadFromAndroid() {
+        val vm = viewModel()
+        assertFalse(vm.status.value.accessibilityServiceEnabled)
+        checker.accessibilityService = true
+        vm.refresh(showMicrophoneRationale = false)
+        assertTrue(vm.status.value.accessibilityServiceEnabled)
+        checker.accessibilityService = false // switched off in Android settings
+        vm.refresh(showMicrophoneRationale = false)
+        assertFalse(vm.status.value.accessibilityServiceEnabled)
     }
 
     @Test

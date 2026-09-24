@@ -30,6 +30,7 @@ import com.alterlingua.app.learning.engine.LearningPipeline
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.PipelineRecorder
 import com.alterlingua.app.learning.engine.RuleBasedAnalyzer
+import com.alterlingua.app.accessibility.LiveChatTranslator
 import com.alterlingua.app.notifications.CompositeTranslationPresenter
 import com.alterlingua.app.notifications.FloatingBubblePresenter
 import com.alterlingua.app.notifications.IncomingStatus
@@ -92,12 +93,22 @@ class AlterLinguaApplication : Application() {
     @Volatile
     private var floatingTranslationEnabledNow: Boolean = false
 
+    /** Whether live chat-screen translation is turned on, kept up to date for the same reason as [floatingTranslationEnabledNow]. */
+    @Volatile
+    private var liveChatTranslationEnabledNow: Boolean = false
+
+    /** Which messages have already been offered for translation, shared between the notification-based and the
+     * live-screen-based translator, so "Delete all learning data" clearing it via [incomingTranslator]'s own
+     * [IncomingTranslator.clear] clears both at once. */
+    private val seenMessages: SeenMessages by lazy { SeenMessages() }
+
     override fun onCreate() {
         super.onCreate()
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
             userSettings.settings.collect {
                 appLanguageNow = it.appLanguage.takeIf { _ -> it.appLanguageChosen }
                 floatingTranslationEnabledNow = it.floatingTranslationEnabled
+                liveChatTranslationEnabledNow = it.liveChatTranslationEnabled
             }
         }
         // Audio left behind by a crash or a killed process is removed; recordings younger than an hour are left alone.
@@ -172,10 +183,26 @@ class AlterLinguaApplication : Application() {
                     FloatingBubblePresenter(this, enabled = { floatingTranslationEnabledNow }, appLanguage = { appLanguageNow }),
                 ),
             ),
-            seen = SeenMessages(),
+            seen = seenMessages,
             outcomes = incomingStatus,
             learning = learningRecorder,
             assistanceMode = { userSettings.settings.first().assistanceMode },
+        )
+    }
+
+    /**
+     * Translates text read live off a supported chat app's own screen while it is open (see AlterLinguaAccessibilityService).
+     * Off by default, and inert without Android's Accessibility permission. Shown only as a floating bubble, never a
+     * system notification, since the user is already looking at the chat this came from.
+     */
+    val liveChatTranslator: LiveChatTranslator by lazy {
+        LiveChatTranslator(
+            api = translationApi,
+            nativeLanguage = { userSettings.settings.first().nativeLanguage },
+            enabled = { userSettings.settings.first().liveChatTranslationEnabled },
+            presenter = FloatingBubblePresenter(this, enabled = { liveChatTranslationEnabledNow }, appLanguage = { appLanguageNow }),
+            seen = seenMessages,
+            learning = learningRecorder,
         )
     }
 

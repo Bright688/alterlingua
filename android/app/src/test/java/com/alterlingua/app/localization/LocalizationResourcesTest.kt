@@ -11,7 +11,7 @@ import java.io.File
 class LocalizationResourcesTest {
     private val res = listOf("src/main/res", "app/src/main/res").map(::File).first { it.exists() }
     private val locales = listOf("fr", "es", "de", "it", "nl", "zh", "ja")
-    private val brand = setOf("app_name", "keyboard_name", "notification_listener_name", "notif_public_title")
+    private val brand = setOf("app_name", "keyboard_name", "notification_listener_name", "notif_public_title", "accessibility_service_name")
 
     private fun strings(folder: String): Map<String, String> {
         val text = File(res, "$folder/strings.xml").readText(Charsets.UTF_8)

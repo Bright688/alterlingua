@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="accessibility_service_description">Lee el texto en pantalla de WhatsApp, Telegram, Messenger o Signal mientras una de esas apps está abierta, para que AlterLingua pueda mostrar una traducción sin esperar una notificación. AlterLingua es una herramienta de traducción, no una herramienta de accesibilidad para personas con discapacidad. Desactivado de forma predeterminada; actívalo en los ajustes de AlterLingua.</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_learn">Aprender</string>
     <string name="nav_words">Palabras</string>
@@ -248,6 +249,10 @@
     <string name="set_it_only_reads_the_text">Solo lee el texto que tus apps de chat (WhatsApp, Telegram, Messenger, Signal) muestran en sus notificaciones, nunca el chat en sí, y no guarda los mensajes. Necesita acceso a notificaciones (consulta Preparación más abajo).</string>
     <string name="set_floating_translation">Mostrar una traducción flotante</string>
     <string name="set_floating_translation_desc">Muestra también la misma traducción como una pequeña burbuja sobre el chat mientras lo tienes abierto. Usa el mismo mensaje que ya lee la notificación de arriba, nunca la pantalla del chat en sí. Necesita "Mostrar sobre otras apps".</string>
+    <string name="set_live_chat_translation">Leer las pantallas de chat en vivo</string>
+    <string name="set_live_chat_translation_desc">Muestra una traducción en el momento en que aparece un mensaje nuevo en pantalla en una app de chat compatible, sin esperar una notificación. Necesita el permiso de Accesibilidad de Android.</string>
+    <string name="set_live_chat_consent_body">Cuando esto está activado, AlterLingua lee el texto que se muestra en pantalla en WhatsApp, Telegram, Messenger o Signal mientras una de esas apps está abierta — nunca fotos, notas de voz ni lo que escribes, y solo mientras estés usando una app compatible. Ese texto se envía al servicio de traducción de AlterLingua y se te muestra como una traducción; nunca se guarda, y no se comparte con nadie más. Esto necesita el permiso de Accesibilidad de Android, que concedes por separado después de aceptar aquí. AlterLingua es una herramienta de traducción, no una herramienta de accesibilidad para personas con discapacidad.</string>
+    <string name="set_turn_on">Activar</string>
     <string name="set_privacy">Privacidad</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua solo guarda las palabras que aprendes, con qué frecuencia las encuentras y su estado de aprendizaje. Tus mensajes no se guardan.</string>
     <string name="set_export_my_learning_data">Exportar mis datos de aprendizaje</string>

@@ -9,6 +9,7 @@ import com.alterlingua.app.learning.engine.UnitType
 import com.alterlingua.app.learning.engine.Usefulness
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.notifications.IncomingMessage
+import com.alterlingua.app.notifications.IncomingSources
 import com.alterlingua.app.notifications.NotificationSnapshot
 import com.alterlingua.app.notifications.SnapshotMessage
 import com.alterlingua.app.notifications.TranslatedConversation
@@ -116,20 +117,29 @@ class PrivacyAuditTest {
         val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
         val exported = Regex("""<(activity|service|receiver|provider)\s+android:name="([^"]+)"[^>]*?android:exported="true"""", RegexOption.DOT_MATCHES_ALL)
             .findAll(main).map { it.groupValues[2] }.toList()
-        // The launcher screen, the audio Share target, the keyboard and the notification listener (each bound by the system only).
-        assertEquals(listOf(".MainActivity", ".share.ShareVoiceActivity", ".keyboard.AlterLinguaKeyboardService", ".notifications.AlterLinguaNotificationListener"), exported)
+        // The launcher screen, the audio Share target, the keyboard, the notification listener and the (optional,
+        // off-by-default) accessibility service, each bound by the system only.
+        assertEquals(
+            listOf(".MainActivity", ".share.ShareVoiceActivity", ".keyboard.AlterLinguaKeyboardService", ".notifications.AlterLinguaNotificationListener", ".accessibility.AlterLinguaAccessibilityService"),
+            exported,
+        )
         assertTrue(main.contains("android.permission.BIND_INPUT_METHOD"))
         assertTrue(main.contains("android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"))
+        assertTrue(main.contains("android.permission.BIND_ACCESSIBILITY_SERVICE"))
     }
 
-    @Test fun noAccessibilityServiceIsDeclared() {
-        // Deliberate: reading another app's screen via AccessibilityService was investigated for the floating
-        // translation bubble and rejected in favour of the narrower NotificationListenerService, which already gets
-        // the same text without the extra Play Store scrutiny (see docs/build-log.md, 2026-09-23). No manifest
-        // service may bind to it. (A source-text scan is not used here: FloatingBubblePresenter.kt legitimately
-        // names AccessibilityService in a comment to explain why it is not used.)
-        val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
-        assertFalse(main.contains("BIND_ACCESSIBILITY_SERVICE"))
+    @Test fun theAccessibilityServiceIsScopedToExactlyTheKnownChatApps_andNeverClaimsToBeAnAccessibilityTool() {
+        // Deliberate (see docs/build-log.md): reading a chat app's own screen live, not only its notifications,
+        // needs AccessibilityService. Scope is minimised at the OS level, not only in code: android:packageNames in
+        // accessibility_service_config.xml must list exactly the apps IncomingSources itself knows about — nothing
+        // more — so this test breaks if the two lists are ever allowed to drift apart. AlterLingua is a translation
+        // feature, not an accessibility tool for people with disabilities, and must never claim to be one: claiming
+        // isAccessibilityTool="true" without that being true is exactly the kind of deceptive declaration Google
+        // Play's Accessibility API policy explicitly penalises with app suspension or developer account termination.
+        val config = File(sourceRoot.parentFile, "res/xml/accessibility_service_config.xml").readText()
+        assertFalse(config.contains("isAccessibilityTool=\"true\""))
+        val configuredPackages = Regex("""android:packageNames="([^"]+)"""").find(config)!!.groupValues[1].split(',').toSet()
+        assertEquals(IncomingSources.knownPackages, configuredPackages)
     }
 
     @Test fun theNotificationListenerReadsOnlyTheMessagingAppsAndTheTranslatedNotificationIsPrivateOnTheLockScreen() {

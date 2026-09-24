@@ -31,6 +31,8 @@ data class SettingsUiState(
     val reminderTime: LocalTime = UserSettings.DEFAULT_REMINDER_TIME,
     val incomingTranslation: Boolean = true,
     val floatingTranslationEnabled: Boolean = false,
+    val liveChatTranslationEnabled: Boolean = false,
+    val liveChatTranslationConsentGiven: Boolean = false,
     val learningFromMessages: Boolean = true,
     /** The language AlterLingua itself is shown in (independent of the source and target languages). */
     val appLanguage: Language = UserSettings().appLanguage,
@@ -63,6 +65,8 @@ class SettingsViewModel(
             reminderTime = it.reminderTime,
             incomingTranslation = it.incomingTranslationEnabled,
             floatingTranslationEnabled = it.floatingTranslationEnabled,
+            liveChatTranslationEnabled = it.liveChatTranslationEnabled,
+            liveChatTranslationConsentGiven = it.liveChatTranslationConsentGiven,
             learningFromMessages = it.learningFromMessagesEnabled,
             appLanguage = it.appLanguage,
             detectSourceAutomatically = it.detectSourceAutomatically,
@@ -106,6 +110,15 @@ class SettingsViewModel(
 
     /** Turns the floating translation bubble on or off (needs "Display over other apps"; off by default). */
     fun onFloatingTranslationChanged(enabled: Boolean) = save { it.copy(floatingTranslationEnabled = enabled) }
+
+    /**
+     * Turns live chat-screen translation on or off (needs Android's Accessibility permission, granted separately).
+     * Off by default. The Settings screen always shows the in-app consent explanation before calling this with
+     * `true`; this call itself is what records that consent was given, so it is not asked again on this device.
+     */
+    fun onLiveChatTranslationChanged(enabled: Boolean) = save {
+        it.copy(liveChatTranslationEnabled = enabled, liveChatTranslationConsentGiven = it.liveChatTranslationConsentGiven || enabled)
+    }
 
     fun onLearningFromMessagesChanged(enabled: Boolean) = save { it.copy(learningFromMessagesEnabled = enabled) }
 

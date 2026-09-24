@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Scope is restricted here, not only in code: android:packageNames means Android itself never delivers an event
+    from any app outside this list to AlterLinguaAccessibilityService. Adding a supported chat app means adding it
+    both here and to IncomingSources.kt — the two lists are meant to match.
+
+    isAccessibilityTool is deliberately omitted (defaults to false): AlterLingua is a translation feature, not an
+    accessibility tool for people with disabilities, and does not claim to be one (see docs/build-log.md).
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:notificationTimeout="300"
+    android:canRetrieveWindowContent="true"
+    android:packageNames="com.whatsapp,com.whatsapp.w4b,org.telegram.messenger,com.facebook.orca,org.thoughtcrime.securesms"
+    android:description="@string/accessibility_service_description" />

@@ -53,5 +53,6 @@ class SetupViewModel(
         postNotifications = checker.postNotificationsAllowed(),
         microphone = microphoneStatus(checker.microphoneGranted(), askedBefore, rationale),
         overlayPermission = checker.overlayPermissionGranted(),
+        accessibilityServiceEnabled = checker.accessibilityServiceEnabled(),
     )
 }

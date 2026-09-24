@@ -42,6 +42,10 @@ object SystemSettings {
     /** AlterLingua's "Display over other apps" page, for the optional floating translation bubble. */
     fun overlayPermission(context: Context): Intent =
         Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:${context.packageName}".toUri())
+
+    /** Android's Accessibility settings list, where the user switches AlterLinguaAccessibilityService on (there is no
+     * reliable, OEM-independent way to deep-link straight to one specific service's own page). */
+    fun accessibilitySettings(): Intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 }
 
 /**

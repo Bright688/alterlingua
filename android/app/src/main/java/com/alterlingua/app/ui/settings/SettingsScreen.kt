@@ -41,6 +41,7 @@ import com.alterlingua.app.ui.components.AlterLinguaCard
 import com.alterlingua.app.ui.components.ScreenFrame
 import com.alterlingua.app.ui.setup.SetupSettingsRows
 import com.alterlingua.app.ui.setup.SetupUi
+import com.alterlingua.app.ui.setup.accessibilityServiceStatusLabel
 import com.alterlingua.app.ui.setup.overlayPermissionStatusLabel
 import com.alterlingua.app.ui.setup.rememberSetupUi
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
@@ -62,6 +63,7 @@ fun SettingsRoute(
         onDailyReminderChanged = viewModel::onDailyReminderChanged,
         onIncomingTranslationChanged = viewModel::onIncomingTranslationChanged,
         onFloatingTranslationChanged = viewModel::onFloatingTranslationChanged,
+        onLiveChatTranslationChanged = viewModel::onLiveChatTranslationChanged,
         onLearningFromMessagesChanged = viewModel::onLearningFromMessagesChanged,
         onEraseLearningData = viewModel::onEraseLearningData,
         onAppLanguageSelected = viewModel::onAppLanguageSelected,
@@ -83,6 +85,7 @@ fun SettingsScreen(
     setup: SetupUi = SetupUi.None,
     onIncomingTranslationChanged: (Boolean) -> Unit = {},
     onFloatingTranslationChanged: (Boolean) -> Unit = {},
+    onLiveChatTranslationChanged: (Boolean) -> Unit = {},
     onLearningFromMessagesChanged: (Boolean) -> Unit = {},
     onEraseLearningData: () -> Unit = {},
     onAppLanguageSelected: (Language) -> Unit = {},
@@ -116,6 +119,29 @@ fun SettingsScreen(
     }
     var showLicences by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     if (showLicences) LicencesDialog(onDismiss = { showLicences = false })
+    var showLiveChatConsent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    if (showLiveChatConsent) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showLiveChatConsent = false },
+            title = { Text(stringResource(R.string.set_live_chat_translation)) },
+            text = { Text(stringResource(R.string.set_live_chat_consent_body)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        showLiveChatConsent = false
+                        onLiveChatTranslationChanged(true)
+                    },
+                    modifier = Modifier.testTag("live_chat_consent_agree"),
+                ) { Text(stringResource(R.string.set_turn_on)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = { showLiveChatConsent = false },
+                    modifier = Modifier.testTag("live_chat_consent_cancel"),
+                ) { Text(stringResource(R.string.voice_cancel)) }
+            },
+        )
+    }
     ScreenFrame(
         title = stringResource(R.string.nav_settings),
         testTag = "screen_settings",
@@ -367,6 +393,49 @@ fun SettingsScreen(
                     androidx.compose.material3.OutlinedButton(
                         onClick = setup.actions.onOpenOverlayPermission,
                         modifier = Modifier.testTag("floating_translation_permission_action"),
+                    ) { Text(stringResource(R.string.setup_app_settings)) }
+                }
+            }
+            HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.set_live_chat_translation),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.set_live_chat_translation_desc),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = state.liveChatTranslationEnabled,
+                    onCheckedChange = { turningOn ->
+                        if (turningOn && !state.liveChatTranslationConsentGiven) showLiveChatConsent = true else onLiveChatTranslationChanged(turningOn)
+                    },
+                    modifier = Modifier.testTag("live_chat_translation_switch"),
+                )
+            }
+            if (state.liveChatTranslationEnabled && !setup.status.accessibilityServiceEnabled) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    com.alterlingua.app.ui.setup.SetupStatusChip(
+                        accessibilityServiceStatusLabel(setup.status),
+                        done = false,
+                        modifier = Modifier.testTag("live_chat_translation_permission_status"),
+                    )
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = setup.actions.onOpenAccessibilitySettings,
+                        modifier = Modifier.testTag("live_chat_translation_permission_action"),
                     ) { Text(stringResource(R.string.setup_app_settings)) }
                 }
             }

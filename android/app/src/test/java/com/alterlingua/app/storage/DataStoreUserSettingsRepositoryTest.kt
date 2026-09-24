@@ -87,6 +87,8 @@ class DataStoreUserSettingsRepositoryTest {
             microphonePermissionAsked = true,
             incomingTranslationEnabled = false,
             floatingTranslationEnabled = true,
+            liveChatTranslationEnabled = true,
+            liveChatTranslationConsentGiven = true,
             learningFromMessagesEnabled = false,
         )
 

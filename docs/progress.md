@@ -346,7 +346,7 @@ Originally WhatsApp-only; widened on 2026-09-23 to a small whitelist of known ch
 
 ### Optional add-on: floating translation bubble (2026-09-23)
 
-A second, opt-in way to show the same translated text: a small floating window drawn on top of whatever app is open, using Android's "Display over other apps" permission (`SYSTEM_ALERT_WINDOW` / `TYPE_APPLICATION_OVERLAY`) — not `AccessibilityService`, which was investigated and deliberately not used (see the 2026-09-23 build-log entry). It is fed by the exact same translated conversation the notification above is built from; it does not read any app's screen.
+A second, opt-in way to show the same translated text: a small floating window drawn on top of whatever app is open, using Android's "Display over other apps" permission (`SYSTEM_ALERT_WINDOW` / `TYPE_APPLICATION_OVERLAY`). It is fed by the exact same translated conversation the notification above is built from; it does not read any app's screen. (At the time this was built, `AccessibilityService` had just been investigated and deliberately not used for this — that decision was later revisited; see the next section.)
 
 | Item | Status |
 |---|---|
@@ -354,8 +354,22 @@ A second, opt-in way to show the same translated text: a small floating window d
 | `FloatingBubblePresenter`: draws a small card (sender/text, "Translated from …") near the top of the screen for ~8 seconds, tap to open the chat, gone if the permission or the setting is off | IMPLEMENTED — not unit tested (WindowManager/Settings.canDrawOverlays are Android-framework calls, same as the existing notification presenter has no direct unit test either) |
 | Settings: **"Show a floating translation"** switch (off by default) in the "Incoming messages" card, with a permission-status chip and an "App settings" button shown only while the switch is on and the permission is missing | IMPLEMENTED — 1 new unit test, plus `SetupViewModel`/`SetupChecker` wiring for `overlayPermissionGranted()` |
 | New permission: `SYSTEM_ALERT_WINDOW` (declared, user grants it separately in Android settings; nothing works without it) | IMPLEMENTED |
-| Privacy-audit regression tests updated: the manifest permission whitelist now includes `SYSTEM_ALERT_WINDOW`, and a new test asserts no `AccessibilityService` is ever declared | IMPLEMENTED |
+| Privacy-audit regression tests updated: the manifest permission whitelist now includes `SYSTEM_ALERT_WINDOW` | IMPLEMENTED |
 | Trying it with a **real overlay on a real phone** (permission grant flow, bubble appears/auto-dismisses, tap opens the chat, coexists with the keyboard) | NOT STARTED — needs your phone |
+
+### Optional add-on: live chat-screen translation via AccessibilityService (2026-09-24)
+
+The owner explicitly asked to revisit the earlier decision and use `AccessibilityService` after all, once the trade-off (Google Play's Accessibility API policy allows non-accessibility use with an in-app disclosure and a Play Console declaration, but reviews narrow-API alternatives more favourably; misuse risks app suspension or developer account termination) was understood. Scoped narrowly per CLAUDE.md section 39: text only (no screen-reading path can extract another app's voice-note audio — that stays the manual Share flow), restricted at the OS level to exactly the same apps `IncomingSources` already knows about, off by default, and gated behind its own in-app consent dialog (not just a plain switch) as Google's policy requires for a non-accessibility-tool app.
+
+| Item | Status |
+|---|---|
+| `AlterLinguaAccessibilityService`, scoped via `res/xml/accessibility_service_config.xml`'s `android:packageNames` to exactly WhatsApp, WhatsApp Business, Telegram, Messenger and Signal — Android itself never delivers any other app's events to it | IMPLEMENTED — not run on a device |
+| `AccessibilityTreeReader` (walks the live screen's node tree into plain `ScreenNode`s) → `ChatScreenExtractor` (a pure, heavily-tested heuristic: never the box being typed into, never blank/emoji/very-long text, de-duplicated) → `LiveChatTranslator` (translates and shows via a floating bubble only — never a second system notification for a chat already on screen) | IMPLEMENTED — `ChatScreenExtractor` 9 unit tests, `LiveChatTranslator` 10 unit tests |
+| Settings: **"Read chat screens live"** switch (off by default) in the "Incoming messages" card; turning it on for the first time always shows an in-app consent dialog naming exactly what is read, how it is used, and that it is not saved, before the Accessibility permission is even requested — required by Google Play's policy for an app that is not an accessibility tool | IMPLEMENTED — 1 new unit test for the setting/consent-recorded logic |
+| `AlterLinguaAccessibilityService` never declares `isAccessibilityTool`, and its manifest description says plainly it is a translation tool, not an accessibility tool for people with disabilities | IMPLEMENTED |
+| Privacy-audit regression tests: the exported-component list now includes the accessibility service with `BIND_ACCESSIBILITY_SERVICE`, and a new test locks the config's `android:packageNames` to always equal `IncomingSources`' own known-package set (so the two can never silently drift apart) | IMPLEMENTED |
+| Known limits, expected to need real-device tuning: screen text has no structure the way a notification does, so a stray "Typing…" indicator or timestamp may occasionally be offered for translation once (never repeatedly, thanks to de-duplication); there is no real per-conversation title or sender available from the screen, so the bubble is titled with the app's own name only | — |
+| Trying it on a **real phone**: granting Accessibility for AlterLingua, opening a supported chat app, confirming a translation appears live without waiting for a notification, and confirming the heuristic's false-positive rate is acceptable in practice | NOT STARTED — needs your phone |
 
 ### Device test, two or more language configurations
 

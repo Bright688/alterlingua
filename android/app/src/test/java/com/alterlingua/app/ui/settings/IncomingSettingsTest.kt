@@ -49,6 +49,22 @@ class IncomingSettingsTest {
     }
 
     @Test
+    fun liveChatTranslationIsOffByDefault_turningItOnRecordsConsent_turningItOffKeepsConsentRecorded() {
+        val repo = FakeUserSettingsRepository()
+        val vm = SettingsViewModel(repo)
+        assertFalse(vm.uiState.value.liveChatTranslationEnabled)
+        assertFalse(vm.uiState.value.liveChatTranslationConsentGiven)
+
+        vm.onLiveChatTranslationChanged(true)
+        assertTrue(repo.current.liveChatTranslationEnabled)
+        assertTrue(repo.current.liveChatTranslationConsentGiven)
+
+        vm.onLiveChatTranslationChanged(false)
+        assertFalse(repo.current.liveChatTranslationEnabled)
+        assertTrue(repo.current.liveChatTranslationConsentGiven) // not re-asked once already given
+    }
+
+    @Test
     fun learningFromMessagesIsOnByDefault_andCanBeSwitchedOff_withoutTouchingTheOtherSwitches() {
         val repo = FakeUserSettingsRepository(UserSettings(incomingTranslationEnabled = false))
         val vm = SettingsViewModel(repo)

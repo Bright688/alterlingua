@@ -57,9 +57,10 @@ class SetupActions(
     val onRequestPostNotifications: () -> Unit,
     val onOpenNotificationSettings: () -> Unit,
     val onOpenOverlayPermission: () -> Unit,
+    val onOpenAccessibilitySettings: () -> Unit,
 ) {
     companion object {
-        val None = SetupActions({}, {}, {}, {}, {}, {}, {}, {})
+        val None = SetupActions({}, {}, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -124,6 +125,7 @@ fun rememberSetupUi(viewModel: SetupViewModel = viewModel(factory = AppViewModel
                 },
                 onOpenNotificationSettings = { context.openSettings(SystemSettings.appNotificationSettings(context), SystemSettings.appDetails(context)) },
                 onOpenOverlayPermission = { context.openSettings(SystemSettings.overlayPermission(context), SystemSettings.appDetails(context)) },
+                onOpenAccessibilitySettings = { context.openSettings(SystemSettings.accessibilitySettings()) },
             ),
         )
     }
@@ -157,6 +159,10 @@ internal fun postNotificationsStatusLabel(status: SetupStatus): String =
 @Composable
 internal fun overlayPermissionStatusLabel(status: SetupStatus): String =
     stringResource(if (status.overlayPermission) R.string.setup_allowed else R.string.setup_not_allowed)
+
+@Composable
+internal fun accessibilityServiceStatusLabel(status: SetupStatus): String =
+    stringResource(if (status.accessibilityServiceEnabled) R.string.setup_allowed else R.string.setup_not_allowed)
 
 @Composable
 internal fun microphoneStatusLabel(status: SetupStatus): String = stringResource(

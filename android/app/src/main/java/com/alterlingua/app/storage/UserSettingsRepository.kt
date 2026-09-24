@@ -54,6 +54,8 @@ internal object SettingsKeys {
     val MicrophonePermissionAsked = booleanPreferencesKey("microphone_permission_asked")
     val IncomingTranslationEnabled = booleanPreferencesKey("incoming_translation_enabled")
     val FloatingTranslationEnabled = booleanPreferencesKey("floating_translation_enabled")
+    val LiveChatTranslationEnabled = booleanPreferencesKey("live_chat_translation_enabled")
+    val LiveChatTranslationConsentGiven = booleanPreferencesKey("live_chat_translation_consent_given")
     val LearningFromMessagesEnabled = booleanPreferencesKey("learning_from_messages_enabled")
 }
 
@@ -112,6 +114,8 @@ internal fun Preferences.toUserSettings(): UserSettings {
         microphonePermissionAsked = this[SettingsKeys.MicrophonePermissionAsked] ?: defaults.microphonePermissionAsked,
         incomingTranslationEnabled = this[SettingsKeys.IncomingTranslationEnabled] ?: defaults.incomingTranslationEnabled,
         floatingTranslationEnabled = this[SettingsKeys.FloatingTranslationEnabled] ?: defaults.floatingTranslationEnabled,
+        liveChatTranslationEnabled = this[SettingsKeys.LiveChatTranslationEnabled] ?: defaults.liveChatTranslationEnabled,
+        liveChatTranslationConsentGiven = this[SettingsKeys.LiveChatTranslationConsentGiven] ?: defaults.liveChatTranslationConsentGiven,
         learningFromMessagesEnabled = this[SettingsKeys.LearningFromMessagesEnabled] ?: defaults.learningFromMessagesEnabled,
         keyboardStyles = Languages.supported.mapNotNull { language ->
             this[SettingsKeys.keyboardStyleFor(language.code)]
@@ -141,6 +145,8 @@ private fun androidx.datastore.preferences.core.MutablePreferences.write(setting
     this[SettingsKeys.MicrophonePermissionAsked] = settings.microphonePermissionAsked
     this[SettingsKeys.IncomingTranslationEnabled] = settings.incomingTranslationEnabled
     this[SettingsKeys.FloatingTranslationEnabled] = settings.floatingTranslationEnabled
+    this[SettingsKeys.LiveChatTranslationEnabled] = settings.liveChatTranslationEnabled
+    this[SettingsKeys.LiveChatTranslationConsentGiven] = settings.liveChatTranslationConsentGiven
     this[SettingsKeys.LearningFromMessagesEnabled] = settings.learningFromMessagesEnabled
 }
 

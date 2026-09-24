@@ -27,6 +27,10 @@ object IncomingSources {
     /** Null when the package has no known display name (an extra debug-only package). */
     fun displayNameOf(packageName: String): String? = KNOWN[packageName]
 
+    /** The package names this build knows about (excluding debug-only extras), kept for tests that must stay in
+     * lock-step with res/xml/accessibility_service_config.xml's own list of the same apps. */
+    val knownPackages: Set<String> get() = KNOWN.keys
+
     /** For Settings copy: the apps this build can translate incoming messages from. */
     val displayNames: List<String> get() = KNOWN.values.toList()
 }
