@@ -31,11 +31,15 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val liveChatTranslator get() = (application as AlterLinguaApplication).liveChatTranslator
 
+    /** Caps how often a content-changed flood can turn into a tree walk and a translate call (see its own doc for why). */
+    private val throttle = ScreenReadThrottle()
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         val e = event ?: return
         if (e.eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && e.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
         val packageName = e.packageName?.toString() ?: return
         if (!IncomingSources.accepts(packageName)) return // belt and braces: the config's packageNames already restricts delivery to this point
+        if (!throttle.tryAcquire()) return
         val root = rootInActiveWindow ?: return
         val texts = ChatScreenExtractor.extract(AccessibilityTreeReader.read(root))
         if (texts.isNotEmpty()) scope.launch { liveChatTranslator.handle(packageName, texts) }
