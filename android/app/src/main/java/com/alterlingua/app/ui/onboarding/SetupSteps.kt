@@ -17,9 +17,11 @@ import com.alterlingua.app.ui.setup.SetupItemCard
 import com.alterlingua.app.ui.setup.SetupPrimaryButton
 import com.alterlingua.app.ui.setup.SetupSecondaryButton
 import com.alterlingua.app.ui.setup.SetupUi
+import com.alterlingua.app.ui.setup.accessibilityServiceStatusLabel
 import com.alterlingua.app.ui.setup.keyboardStatusLabel
 import com.alterlingua.app.ui.setup.microphoneStatusLabel
 import com.alterlingua.app.ui.setup.notificationStatusLabel
+import com.alterlingua.app.ui.setup.overlayPermissionStatusLabel
 import com.alterlingua.app.ui.setup.postNotificationsStatusLabel
 
 // ---------------------------------------------------------------------------------------------
@@ -113,6 +115,56 @@ internal fun NotificationsStep(setup: SetupUi) {
             }
         }
         NoteRow(Icons.Filled.Info, stringResource(R.string.onb_you_can_turn_this_off))
+    }
+}
+
+@Composable
+internal fun FloatingTranslationStep(setup: SetupUi) {
+    val status = setup.status
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        StepTitle(
+            title = stringResource(R.string.set_floating_translation),
+            subtitle = stringResource(R.string.onb_floating_translation_subtitle),
+        )
+        SetupItemCard(
+            title = stringResource(R.string.set_floating_translation),
+            statusText = overlayPermissionStatusLabel(status),
+            done = status.overlayPermission,
+            statusTag = "setup_status_overlay",
+            description = stringResource(R.string.set_floating_translation_desc),
+        ) {
+            if (status.overlayPermission) {
+                SetupSecondaryButton(stringResource(R.string.setup_app_settings), "setup_overlay_settings", setup.actions.onOpenOverlayPermission)
+            } else {
+                SetupPrimaryButton(stringResource(R.string.set_turn_on), "setup_overlay_turn_on", onClick = setup.actions.onEnableFloatingTranslation)
+            }
+        }
+        NoteRow(Icons.Filled.Info, stringResource(R.string.onb_you_can_turn_this_off))
+    }
+}
+
+@Composable
+internal fun LiveChatTranslationStep(setup: SetupUi) {
+    val status = setup.status
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        StepTitle(
+            title = stringResource(R.string.set_live_chat_translation),
+            subtitle = stringResource(R.string.onb_live_chat_translation_subtitle),
+        )
+        SetupItemCard(
+            title = stringResource(R.string.set_live_chat_translation),
+            statusText = accessibilityServiceStatusLabel(status),
+            done = status.accessibilityServiceEnabled,
+            statusTag = "setup_status_accessibility",
+            description = stringResource(R.string.set_live_chat_consent_body),
+        ) {
+            if (status.accessibilityServiceEnabled) {
+                SetupSecondaryButton(stringResource(R.string.setup_app_settings), "setup_accessibility_settings", setup.actions.onOpenAccessibilitySettings)
+            } else {
+                SetupPrimaryButton(stringResource(R.string.set_turn_on), "setup_accessibility_turn_on", onClick = setup.actions.onAgreeToLiveChatTranslation)
+            }
+        }
+        NoteRow(Icons.Filled.Info, stringResource(R.string.onb_live_chat_translation_note))
     }
 }
 

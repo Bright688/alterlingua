@@ -210,6 +210,9 @@
     <string name="onb_notification_settings">通知設定</string>
     <string name="onb_allow_notifications">通知を許可</string>
     <string name="onb_you_can_turn_this_off">Android の設定または AlterLingua の設定で、いつでもオフにできます。</string>
+    <string name="onb_floating_translation_subtitle">これは任意の機能で、既定でオフです。通知ですでに受け取っている翻訳と同じものを、チャットの上に直接表示します。</string>
+    <string name="onb_live_chat_translation_subtitle">これは任意の機能で、既定でオフです。これがなくても、AlterLingua はすでに通知から翻訳を表示できます。</string>
+    <string name="onb_live_chat_translation_note">これは AlterLingua の設定でいつでもオン・オフを切り替えられます。これがなくても入力は常に使えます。</string>
     <string name="onb_later_you_ll_be_able">メッセージを話して、選んだ言語で書き起こせます。</string>
     <string name="onb_microphone_permission">マイクの許可</string>
     <string name="onb_tapping_the_button_below_makes">下のボタンをタップすると、AlterLingua がマイクを使ってよいか Android が確認します。録音は、ご自身でマイクをタップしたときだけ行われます。マイクなしでも続けられます。</string>

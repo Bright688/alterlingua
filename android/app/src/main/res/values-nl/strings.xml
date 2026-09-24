@@ -210,6 +210,9 @@
     <string name="onb_notification_settings">Meldingsinstellingen</string>
     <string name="onb_allow_notifications">Meldingen toestaan</string>
     <string name="onb_you_can_turn_this_off">Je kunt dit altijd uitzetten in de Android-instellingen of in de AlterLingua-instellingen.</string>
+    <string name="onb_floating_translation_subtitle">Dit is optioneel en standaard uitgeschakeld. Het toont dezelfde vertaling die je al via een melding krijgt, direct boven de chat.</string>
+    <string name="onb_live_chat_translation_subtitle">Dit is optioneel en standaard uitgeschakeld. AlterLingua kan al vertalingen tonen vanuit meldingen zonder dit.</string>
+    <string name="onb_live_chat_translation_note">Je kunt dit altijd aan- of uitzetten in de AlterLingua-instellingen. Typen werkt altijd, ook zonder dit.</string>
     <string name="onb_later_you_ll_be_able">Je kunt een bericht inspreken en het laten schrijven in de gekozen taal.</string>
     <string name="onb_microphone_permission">Microfoontoestemming</string>
     <string name="onb_tapping_the_button_below_makes">Als je hieronder tikt, vraagt Android of AlterLingua de microfoon mag gebruiken. Er wordt pas opgenomen nadat je zelf op de microfoon tikt. Je kunt ook zonder doorgaan.</string>

@@ -210,6 +210,9 @@
     <string name="onb_notification_settings">Benachrichtigungseinstellungen</string>
     <string name="onb_allow_notifications">Benachrichtigungen erlauben</string>
     <string name="onb_you_can_turn_this_off">Du kannst das jederzeit in den Android-Einstellungen oder in den AlterLingua-Einstellungen ausschalten.</string>
+    <string name="onb_floating_translation_subtitle">Das ist optional und standardmäßig aus. Es zeigt dieselbe Übersetzung, die du bereits per Benachrichtigung erhältst, direkt über dem Chat.</string>
+    <string name="onb_live_chat_translation_subtitle">Das ist optional und standardmäßig aus. AlterLingua kann auch ohne dies bereits Übersetzungen aus Benachrichtigungen zeigen.</string>
+    <string name="onb_live_chat_translation_note">Du kannst dies jederzeit in den AlterLingua-Einstellungen ein- oder ausschalten. Tippen funktioniert immer auch ohne dies.</string>
     <string name="onb_later_you_ll_be_able">Du kannst eine Nachricht sprechen und sie in der gewählten Sprache schreiben lassen.</string>
     <string name="onb_microphone_permission">Mikrofonberechtigung</string>
     <string name="onb_tapping_the_button_below_makes">Wenn du unten tippst, fragt Android, ob AlterLingua das Mikrofon verwenden darf. Es nimmt nur auf, nachdem du selbst auf das Mikrofon getippt hast. Du kannst auch ohne fortfahren.</string>

@@ -46,6 +46,21 @@ class SetupViewModel(
         viewModelScope.launch { repository.update { it.copy(microphonePermissionAsked = true) } }
     }
 
+    /** Turns the floating translation bubble on (needs "Display over other apps", requested separately by the caller right after). */
+    fun onFloatingTranslationEnabled() {
+        viewModelScope.launch { repository.update { it.copy(floatingTranslationEnabled = true) } }
+    }
+
+    /**
+     * The user read the in-app disclosure for live chat-screen translation and agreed to turn it on (shown in full
+     * on its own onboarding/Settings step before this is ever called — see CLAUDE.md section 39 and the Google Play
+     * Accessibility API policy's in-app disclosure and consent requirement). Android's own Accessibility permission
+     * is requested separately right after, by the caller.
+     */
+    fun onLiveChatTranslationAgreed() {
+        viewModelScope.launch { repository.update { it.copy(liveChatTranslationEnabled = true, liveChatTranslationConsentGiven = true) } }
+    }
+
     private fun readStatus(askedBefore: Boolean, rationale: Boolean) = SetupStatus(
         keyboardEnabled = checker.keyboardEnabled(),
         keyboardSelected = checker.keyboardSelected(),

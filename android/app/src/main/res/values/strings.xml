@@ -235,6 +235,9 @@
     <string name="onb_notification_settings">Notification settings</string>
     <string name="onb_allow_notifications">Allow notifications</string>
     <string name="onb_you_can_turn_this_off">You can turn this off any time in Android settings or later in AlterLingua Settings.</string>
+    <string name="onb_floating_translation_subtitle">This is optional, and off by default. It shows the same translation you already get from notifications, right on top of the chat.</string>
+    <string name="onb_live_chat_translation_subtitle">This is optional, and off by default. AlterLingua can already show translations from notifications without it.</string>
+    <string name="onb_live_chat_translation_note">You can turn this on or off any time in AlterLingua Settings. Typing always works without it.</string>
     <string name="onb_later_you_ll_be_able">You can speak a message and have it written in your chosen language.</string>
     <string name="onb_microphone_permission">Microphone permission</string>
     <string name="onb_tapping_the_button_below_makes">Tapping the button below makes Android ask whether AlterLingua may use the microphone. It only records after you tap the microphone yourself. You can continue without it.</string>

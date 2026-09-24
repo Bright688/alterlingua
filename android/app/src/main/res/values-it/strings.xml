@@ -210,6 +210,9 @@
     <string name="onb_notification_settings">Impostazioni notifiche</string>
     <string name="onb_allow_notifications">Consenti notifiche</string>
     <string name="onb_you_can_turn_this_off">Puoi disattivarlo in qualsiasi momento nelle impostazioni di Android o in quelle di AlterLingua.</string>
+    <string name="onb_floating_translation_subtitle">Questo è facoltativo ed è disattivato per impostazione predefinita. Mostra la stessa traduzione già ricevuta tramite notifica, proprio sopra la chat.</string>
+    <string name="onb_live_chat_translation_subtitle">Questo è facoltativo ed è disattivato per impostazione predefinita. AlterLingua può già mostrare traduzioni dalle notifiche senza di esso.</string>
+    <string name="onb_live_chat_translation_note">Puoi attivare o disattivare questa opzione in qualsiasi momento nelle impostazioni di AlterLingua. La digitazione funziona sempre senza di essa.</string>
     <string name="onb_later_you_ll_be_able">Puoi dire un messaggio e farlo scrivere nella lingua scelta.</string>
     <string name="onb_microphone_permission">Autorizzazione microfono</string>
     <string name="onb_tapping_the_button_below_makes">Toccando il pulsante qui sotto, Android chiede se AlterLingua può usare il microfono. Registra solo dopo che tocchi tu il microfono. Puoi continuare senza.</string>

@@ -58,9 +58,11 @@ class SetupActions(
     val onOpenNotificationSettings: () -> Unit,
     val onOpenOverlayPermission: () -> Unit,
     val onOpenAccessibilitySettings: () -> Unit,
+    val onEnableFloatingTranslation: () -> Unit,
+    val onAgreeToLiveChatTranslation: () -> Unit,
 ) {
     companion object {
-        val None = SetupActions({}, {}, {}, {}, {}, {}, {}, {}, {})
+        val None = SetupActions({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -126,6 +128,14 @@ fun rememberSetupUi(viewModel: SetupViewModel = viewModel(factory = AppViewModel
                 onOpenNotificationSettings = { context.openSettings(SystemSettings.appNotificationSettings(context), SystemSettings.appDetails(context)) },
                 onOpenOverlayPermission = { context.openSettings(SystemSettings.overlayPermission(context), SystemSettings.appDetails(context)) },
                 onOpenAccessibilitySettings = { context.openSettings(SystemSettings.accessibilitySettings()) },
+                onEnableFloatingTranslation = {
+                    viewModel.onFloatingTranslationEnabled()
+                    context.openSettings(SystemSettings.overlayPermission(context), SystemSettings.appDetails(context))
+                },
+                onAgreeToLiveChatTranslation = {
+                    viewModel.onLiveChatTranslationAgreed()
+                    context.openSettings(SystemSettings.accessibilitySettings())
+                },
             ),
         )
     }

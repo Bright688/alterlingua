@@ -210,6 +210,9 @@
     <string name="onb_notification_settings">通知设置</string>
     <string name="onb_allow_notifications">允许通知</string>
     <string name="onb_you_can_turn_this_off">您可以随时在 Android 设置或 AlterLingua 设置中关闭。</string>
+    <string name="onb_floating_translation_subtitle">此功能可选，默认关闭。它会把您已经通过通知收到的译文，直接显示在聊天上方。</string>
+    <string name="onb_live_chat_translation_subtitle">此功能可选，默认关闭。即使不开启，AlterLingua 也已经可以通过通知显示译文。</string>
+    <string name="onb_live_chat_translation_note">您可以随时在 AlterLingua 设置中开启或关闭此功能。不开启它，打字功能也始终可用。</string>
     <string name="onb_later_you_ll_be_able">您可以说出一条消息，并让它以您选择的语言写出。</string>
     <string name="onb_microphone_permission">麦克风权限</string>
     <string name="onb_tapping_the_button_below_makes">点按下方按钮后，Android 会询问是否允许 AlterLingua 使用麦克风。只有在您自己点按麦克风后才会录音。您也可以不使用麦克风继续。</string>

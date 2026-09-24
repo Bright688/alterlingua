@@ -117,6 +117,24 @@ class SetupViewModelTest {
     }
 
     @Test
+    fun enablingFloatingTranslation_turnsItOn() {
+        val vm = viewModel()
+        assertFalse(repo.current.floatingTranslationEnabled)
+        vm.onFloatingTranslationEnabled()
+        assertTrue(repo.current.floatingTranslationEnabled)
+    }
+
+    @Test
+    fun agreeingToLiveChatTranslation_turnsItOnAndRecordsConsent() {
+        val vm = viewModel()
+        assertFalse(repo.current.liveChatTranslationEnabled)
+        assertFalse(repo.current.liveChatTranslationConsentGiven)
+        vm.onLiveChatTranslationAgreed()
+        assertTrue(repo.current.liveChatTranslationEnabled)
+        assertTrue(repo.current.liveChatTranslationConsentGiven)
+    }
+
+    @Test
     fun theAccessibilityServiceStatusIsReadFromAndroid() {
         val vm = viewModel()
         assertFalse(vm.status.value.accessibilityServiceEnabled)

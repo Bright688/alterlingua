@@ -170,6 +170,8 @@ private fun StepContent(
         )
         OnboardingStep.KEYBOARD -> KeyboardStep(setup)
         OnboardingStep.NOTIFICATIONS -> NotificationsStep(setup)
+        OnboardingStep.FLOATING_TRANSLATION -> FloatingTranslationStep(setup)
+        OnboardingStep.LIVE_CHAT_TRANSLATION -> LiveChatTranslationStep(setup)
         OnboardingStep.MICROPHONE -> MicrophoneStep(setup)
         OnboardingStep.COMPLETE -> CompleteStep(settings, setup.status)
     }
@@ -186,6 +188,8 @@ private fun OnboardingStep.titleRes(): Int = when (this) {
     OnboardingStep.REMINDER -> R.string.onb_step_reminder
     OnboardingStep.KEYBOARD -> R.string.onb_step_keyboard
     OnboardingStep.NOTIFICATIONS -> R.string.onb_step_incoming
+    OnboardingStep.FLOATING_TRANSLATION -> R.string.set_floating_translation
+    OnboardingStep.LIVE_CHAT_TRANSLATION -> R.string.set_live_chat_translation
     OnboardingStep.MICROPHONE -> R.string.onb_step_microphone
     OnboardingStep.COMPLETE -> R.string.onb_step_complete
 }
@@ -196,6 +200,8 @@ private fun OnboardingStep.buttonRes(reminderOn: Boolean, setup: SetupUi): Int =
     OnboardingStep.REMINDER -> if (reminderOn) R.string.onb_set_reminder_continue else R.string.action_continue
     OnboardingStep.KEYBOARD -> if (setup.status.keyboardReady) R.string.action_continue else R.string.onb_skip_for_now
     OnboardingStep.NOTIFICATIONS -> if (setup.status.notificationAccess) R.string.action_continue else R.string.onb_skip_for_now
+    OnboardingStep.FLOATING_TRANSLATION -> if (setup.status.overlayPermission) R.string.action_continue else R.string.onb_skip_for_now
+    OnboardingStep.LIVE_CHAT_TRANSLATION -> if (setup.status.accessibilityServiceEnabled) R.string.action_continue else R.string.onb_skip_for_now
     OnboardingStep.MICROPHONE -> if (setup.status.microphone == MicrophoneStatus.GRANTED) R.string.action_continue else R.string.onb_continue_without_mic
     OnboardingStep.COMPLETE -> R.string.onb_start_using
 }

@@ -53,9 +53,11 @@ import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.LearningPurpose
 import com.alterlingua.app.learning.UserSettings
 import com.alterlingua.app.setup.SetupStatus
+import com.alterlingua.app.ui.setup.accessibilityServiceStatusLabel
 import com.alterlingua.app.ui.setup.keyboardStatusLabel
 import com.alterlingua.app.ui.setup.microphoneStatusLabel
 import com.alterlingua.app.ui.setup.notificationStatusLabel
+import com.alterlingua.app.ui.setup.overlayPermissionStatusLabel
 import com.alterlingua.app.ui.components.LanguageMenu
 import com.alterlingua.app.ui.components.NavIcons
 import com.alterlingua.app.ui.components.AlterLinguaCard
@@ -618,6 +620,8 @@ internal fun CompleteStep(settings: UserSettings, setup: SetupStatus = SetupStat
             )
             SummaryRow(stringResource(R.string.onb_step_keyboard), keyboardStatusLabel(setup))
             SummaryRow(stringResource(R.string.onb_incoming_messages), notificationStatusLabel(setup))
+            SummaryRow(stringResource(R.string.set_floating_translation), overlayPermissionStatusLabel(setup))
+            SummaryRow(stringResource(R.string.set_live_chat_translation), accessibilityServiceStatusLabel(setup))
             SummaryRow(stringResource(R.string.onb_step_microphone), microphoneStatusLabel(setup))
         }
     }
