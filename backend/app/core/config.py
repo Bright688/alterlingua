@@ -69,7 +69,7 @@ class Settings(BaseSettings):
 
     # Cloudflare Workers AI (used when a provider is set to "cloudflare", or as the fallback leg of "fallback").
     # Needs both a token and an account id: set them only in the environment or .env, never in code.
-    cloudflare_api_key: SecretStr | None = None
+    cloudflare_api_token: SecretStr | None = None
     cloudflare_account_id: str = ""
     cloudflare_base_url: str = "https://api.cloudflare.com/client/v4"
     cloudflare_translation_model: str = "@cf/qwen/qwen3-30b-a3b-fp8"

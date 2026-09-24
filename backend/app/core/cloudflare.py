@@ -14,15 +14,15 @@ from app.core.errors import ConfigurationError, ProviderError, ProviderTimeoutEr
 
 class CloudflareClient:
     def __init__(self, settings: Settings, *, transport: httpx.AsyncBaseTransport | None = None) -> None:
-        if settings.cloudflare_api_key is None or not settings.cloudflare_api_key.get_secret_value().strip():
+        if settings.cloudflare_api_token is None or not settings.cloudflare_api_token.get_secret_value().strip():
             raise ConfigurationError(
-                "The Cloudflare Workers AI provider needs ALTERLINGUA_CLOUDFLARE_API_KEY (set it in the environment or .env)."
+                "The Cloudflare Workers AI provider needs ALTERLINGUA_CLOUDFLARE_API_TOKEN (set it in the environment or .env)."
             )
         if not settings.cloudflare_account_id.strip():
             raise ConfigurationError(
                 "The Cloudflare Workers AI provider needs ALTERLINGUA_CLOUDFLARE_ACCOUNT_ID (set it in the environment or .env)."
             )
-        self._key = settings.cloudflare_api_key.get_secret_value().strip()
+        self._key = settings.cloudflare_api_token.get_secret_value().strip()
         account_id = settings.cloudflare_account_id.strip()
         self._base = f"{settings.cloudflare_base_url.rstrip('/')}/accounts/{account_id}/ai/v1"
         self._transport = transport

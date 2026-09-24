@@ -1441,3 +1441,19 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Separately, still true and not yet fixed:** the Mistral fallback key is still expired. Groq alone is working normally again now that the flood is gone, but there is still no safety net if Groq has a genuine transient blip. A fresh Mistral key from the owner is needed to restore it; this is an account/credentials matter, not something fixable from code.
 
 **Lesson for any future accessibility-service or notification-service work in this codebase:** an event source outside this app's control (another app's UI, in this case) must never be trusted to fire at a reasonable rate. `IncomingTranslator`'s notification path was already safe by construction — a notification only re-posts when the source app actually has something new to say. A live screen read has no such natural ceiling and needs an explicit one, as `ScreenReadThrottle` now provides.
+
+## 2026-09-24 — Translation fallback moved from Mistral to Cloudflare Workers AI (Qwen3-30B-A3B FP8)
+
+**Owner request:** "replace mistral with Cloudflare Workers AI + Qwen3 30B A3B FP8", after the Mistral fallback proved unusable.
+
+**Why Mistral was dropped.** Its key had expired on 2026-09-22; three replacement keys from the owner's account were then tried, and every one authenticated fine but returned `x-ratelimit-limit-req-minute: 0` — with both `mistral-small-latest` and the exact `mistral-small-2603` name from the account's own Limits page (which showed non-zero quotas). That points to an account-side hold only Mistral can see, not a key, model-name or code problem. Along the way one help-centre link cited from a web search turned out to be a 404, so guidance from that source was re-checked against the live API instead of trusted.
+
+**Built (backend only):**
+- `app/core/cloudflare.py` — `CloudflareClient`, a copy of `GroqClient`'s shape. The one difference: Cloudflare puts the account id in the URL path (`/accounts/{id}/ai/v1`), so the client needs both a token and an account id and refuses to start without either.
+- `app/translation/cloudflare_provider.py` — `CloudflareTranslationProvider`, same JSON-answer contract, prompt and parsing as the Groq/Mistral providers, via Cloudflare's OpenAI-compatible `/chat/completions`. Default model `@cf/qwen/qwen3-30b-a3b-fp8`.
+- Settings `cloudflare_api_token`, `cloudflare_account_id`, `cloudflare_base_url`, `cloudflare_translation_model`. The token setting is named `..._API_TOKEN` (Cloudflare's own word, and what the owner's `.env` already used) rather than `..._API_KEY` as first drafted.
+- `registry.py`: the `fallback` chain is now **Groq → Cloudflare**; a leg with missing credentials is skipped as before. `mistral` stays registered as a standalone provider because Mistral is still what STT/TTS use — that was deliberately not touched.
+
+**Verification:** 297 of 297 backend tests pass (new `test_cloudflare_providers.py`; the fallback-chain test updated for the new order). **Manually verified live:** the owner's real Cloudflare credentials returned HTTP 200 with valid JSON in the exact expected shape (`response_format: json_object` is accepted); the deployed server reports `provider=fallback(groq>cloudflare)`; and the Cloudflare leg run alone on the server, with Groq bypassed, translated "Tu viens demain ?" to English with the source auto-detected as French in 1.7s.
+
+**Notes:** Qwen3 returns a `reasoning` field alongside the answer, which costs some output tokens and latency on this leg (~1.7s here versus ~0.3–0.9s for Groq); acceptable for a fallback, and worth revisiting if Cloudflare ever becomes primary. The old Mistral key is still in the server's `.env`, used only by STT/TTS. Not checked: whether Mistral's STT/TTS are affected by the same account hold.

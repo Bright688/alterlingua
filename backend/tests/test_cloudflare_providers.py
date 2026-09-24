@@ -29,7 +29,7 @@ ACCOUNT = "test-account-id"
 
 
 def settings(**overrides) -> Settings:
-    return Settings(_env_file=None, cloudflare_api_key=KEY, cloudflare_account_id=ACCOUNT, **overrides)
+    return Settings(_env_file=None, cloudflare_api_token=KEY, cloudflare_account_id=ACCOUNT, **overrides)
 
 
 def client_with(handler) -> CloudflareClient:
@@ -49,7 +49,7 @@ def test_the_provider_refuses_to_start_without_a_key():
 
 def test_the_provider_refuses_to_start_without_an_account_id():
     with pytest.raises(ConfigurationError):
-        CloudflareClient(Settings(_env_file=None, cloudflare_api_key=KEY))
+        CloudflareClient(Settings(_env_file=None, cloudflare_api_token=KEY))
 
 
 @pytest.mark.parametrize(

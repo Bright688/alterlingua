@@ -173,18 +173,18 @@ def test_the_registry_wires_groq_then_cloudflare_and_skips_a_leg_with_no_key():
     from app.translation.registry import create_provider
 
     both = create_provider(
-        Settings(_env_file=None, translation_provider="fallback", groq_api_key=KEY, cloudflare_api_key="c", cloudflare_account_id="acct"),
+        Settings(_env_file=None, translation_provider="fallback", groq_api_key=KEY, cloudflare_api_token="c", cloudflare_account_id="acct"),
     )
     assert both.name == "fallback(groq>cloudflare)"
 
     only_cloudflare = create_provider(
-        Settings(_env_file=None, translation_provider="fallback", cloudflare_api_key="c", cloudflare_account_id="acct"),
+        Settings(_env_file=None, translation_provider="fallback", cloudflare_api_token="c", cloudflare_account_id="acct"),
     )
     assert only_cloudflare.name == "fallback(cloudflare)"
 
     # A key with no account id is the same as not configured: the leg is skipped, same as a missing key.
     with pytest.raises(ConfigurationError):
-        create_provider(Settings(_env_file=None, translation_provider="fallback", cloudflare_api_key="c"))
+        create_provider(Settings(_env_file=None, translation_provider="fallback", cloudflare_api_token="c"))
 
     with pytest.raises(ConfigurationError):
         create_provider(Settings(_env_file=None, translation_provider="fallback"))
