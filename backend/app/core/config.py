@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     temp_dir: str = ""
 
     # Which translation provider to use: "fake" (a development stand-in, never a real translation), "mistral", "groq",
-    # or "fallback" (tries Groq first, then Mistral if Groq fails or is not configured).
+    # "cloudflare", or "fallback" (tries Groq first, then Cloudflare Workers AI if Groq fails or is not configured).
     translation_provider: str = "fake"
     # Longest text accepted, counted in Unicode characters (not bytes).
     max_text_chars: int = Field(default=5000, ge=1, le=100_000)
@@ -66,6 +66,13 @@ class Settings(BaseSettings):
     groq_api_key: SecretStr | None = None
     groq_base_url: str = "https://api.groq.com/openai"
     groq_translation_model: str = "openai/gpt-oss-120b"
+
+    # Cloudflare Workers AI (used when a provider is set to "cloudflare", or as the fallback leg of "fallback").
+    # Needs both a token and an account id: set them only in the environment or .env, never in code.
+    cloudflare_api_key: SecretStr | None = None
+    cloudflare_account_id: str = ""
+    cloudflare_base_url: str = "https://api.cloudflare.com/client/v4"
+    cloudflare_translation_model: str = "@cf/qwen/qwen3-30b-a3b-fp8"
 
 
 @lru_cache
