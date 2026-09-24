@@ -293,6 +293,26 @@ internal fun SetupSettingsRows(setup: SetupUi) {
             onClick = setup.actions.onOpenNotificationAccess,
         )
         SettingsSetupRow(
+            title = stringResource(R.string.set_floating_translation),
+            statusText = overlayPermissionStatusLabel(status),
+            done = status.overlayPermission,
+            statusTag = "settings_status_overlay",
+            description = stringResource(R.string.set_floating_translation_desc),
+            buttonText = stringResource(if (status.overlayPermission) R.string.setup_app_settings else R.string.set_turn_on),
+            buttonTag = "settings_overlay_action",
+            onClick = if (status.overlayPermission) setup.actions.onOpenOverlayPermission else setup.actions.onEnableFloatingTranslation,
+        )
+        SettingsSetupRow(
+            title = stringResource(R.string.set_live_chat_translation),
+            statusText = accessibilityServiceStatusLabel(status),
+            done = status.accessibilityServiceEnabled,
+            statusTag = "settings_status_accessibility",
+            description = stringResource(R.string.set_live_chat_consent_body),
+            buttonText = stringResource(if (status.accessibilityServiceEnabled) R.string.setup_app_settings else R.string.set_turn_on),
+            buttonTag = "settings_accessibility_action",
+            onClick = if (status.accessibilityServiceEnabled) setup.actions.onOpenAccessibilitySettings else setup.actions.onAgreeToLiveChatTranslation,
+        )
+        SettingsSetupRow(
             title = stringResource(R.string.setup_translation_notifications),
             statusText = postNotificationsStatusLabel(status),
             done = status.postNotifications,
