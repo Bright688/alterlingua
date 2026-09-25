@@ -1472,3 +1472,23 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Also:** `main.py` now logs a `request_rejected` line with the path, status and error *code* (never any text) for every controlled error, so two requests with the same status can be told apart. That gap is what made this slow to diagnose.
 
 **Verification:** 301 backend tests pass (the old test that pinned the failing behaviour was replaced by three: language detected from the transcript, target-language speech returned as it is, and still undetected when the translator cannot tell). Deployed to the production server; a live end-to-end call (synthetic English speech, `source=auto`, target `fr` and `en`) returned HTTP 200 with the language detected. IMPLEMENTED and verified against the live server with synthetic audio; NOT yet verified with the owner's real voice note.
+
+
+---
+
+## 2026-09-25 — Accurate transcription of unclear voice notes: Whisper large-v3 on Groq, Cloudflare Whisper as fallback
+
+**Request (owner):** the shared voice note must be understood clearly, each word and sentence, even when the recording is unclear, and translated accurately. After a question about Azure, the owner chose: **Groq Whisper large-v3** (free tier: 2,000 requests/day, 28,800 audio seconds/day) and **Cloudflare Whisper large-v3-turbo** (free tier: 10,000 neurons/day).
+
+**Why:** the only speech engine was Mistral's small Voxtral model. Wording can't fix words the recogniser got wrong, so the recogniser itself had to be stronger. Whisper large-v3 is trained on a lot of noisy and accented speech, and reports the language it heard.
+
+**Built (backend, `speech/`):** `groq_stt_provider.py` (multipart upload, temperature 0, verbose JSON, upload named after its real format because Groq decodes by extension, Ogg for WhatsApp voice notes), `cloudflare_stt_provider.py` (native `/ai/run/` endpoint, base64 audio; `CloudflareClient.run` added, the OpenAI-compatible path is unchanged), `fallback_provider.py` (tries the engines in order; moves on when an engine fails, is out of quota, does not support the format or language, **or hears nothing**: unclear audio is exactly where one engine can return an empty transcript while another still gets the words), `whisper_languages.py` (Whisper says "french", the rest of the app uses `fr`; a language outside the catalogue is still reported by its code so it is refused as unsupported rather than mistaken for another). `GroqClient.post` gained multipart support. Registry: `groq`, `cloudflare`, `fallback` (groq>cloudflare; an engine without credentials is left out); `mistral` stays available. Server `deploy/.env`: `ALTERLINGUA_STT_PROVIDER=fallback`.
+
+**Decision:** the extra benchmark I had proposed (a Voxtral-vs-Whisper comparison) was skipped once the owner chose the engines; the live check below verified the chosen ones instead. No claim is made that Whisper beats Voxtral on the owner's real voice notes; that was not measured.
+
+**Verification:**
+- 353 backend tests pass (52 new: language names, upload naming per format, no audio echoed in errors, fallback on failure / silence / unsupported language, capabilities, registry, the shared-voice-note route).
+- Live, on the deployed server, with **synthetic** speech only (Mistral voice, so English), printing only error rates: both engines alone and the full route, on clean WAV, a **real Ogg/Opus file** (the WhatsApp format), and WAV with added noise. Word error rate about 3% clean and down to 3 dB signal-to-noise; 15% (Cloudflare) and 18% (Groq) when the noise is as loud as the speech (0 dB). Language detected every time; route returned HTTP 200; 0.4 to 0.7 s for Groq, 1.3 to 4.8 s for Cloudflare.
+- **Not verified:** the owner's real voice note; French, Spanish, Chinese or other languages (the only synthetic voice available was English); real-world noise such as crowds or wind, which is not white noise.
+
+**Privacy:** `docs/privacy.md` now has a Groq / Cloudflare section, including that a second company sees the audio when the first engine fails or hears nothing, and that both companies' retention terms are not verified.

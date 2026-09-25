@@ -66,6 +66,9 @@ class Settings(BaseSettings):
     groq_api_key: SecretStr | None = None
     groq_base_url: str = "https://api.groq.com/openai"
     groq_translation_model: str = "openai/gpt-oss-120b"
+    # Speech recognition on Groq: OpenAI's open Whisper large-v3, strong on noisy or unclear speech, and it reports the
+    # language it heard.
+    groq_stt_model: str = "whisper-large-v3"
 
     # Cloudflare Workers AI (used when a provider is set to "cloudflare", or as the fallback leg of "fallback").
     # Needs both a token and an account id: set them only in the environment or .env, never in code.
@@ -73,6 +76,8 @@ class Settings(BaseSettings):
     cloudflare_account_id: str = ""
     cloudflare_base_url: str = "https://api.cloudflare.com/client/v4"
     cloudflare_translation_model: str = "@cf/qwen/qwen3-30b-a3b-fp8"
+    # Speech recognition on Cloudflare: Whisper large-v3-turbo (the fallback after Groq's Whisper large-v3).
+    cloudflare_stt_model: str = "@cf/openai/whisper-large-v3-turbo"
 
 
 @lru_cache

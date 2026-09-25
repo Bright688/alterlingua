@@ -27,11 +27,12 @@ class GroqClient:
             transport=self._transport,
         )
 
-    async def post(self, path: str, *, timeout: float, json: dict | None = None) -> dict:
-        """Sends a POST and returns the JSON answer. Raises the app's controlled errors; their text never holds message content."""
+    async def post(self, path: str, *, timeout: float, json: dict | None = None, data: dict | None = None, files: dict | None = None) -> dict:
+        """Sends a POST (JSON, or a multipart upload for audio) and returns the JSON answer. Raises the app's controlled
+        errors; their text never holds message content."""
         try:
             async with self._client(timeout) as client:
-                response = await client.post(path, json=json)
+                response = await client.post(path, json=json, data=data, files=files)
         except httpx.TimeoutException:
             raise ProviderTimeoutError("The provider took too long to answer.", provider="groq") from None
         except httpx.HTTPError:

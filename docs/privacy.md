@@ -184,3 +184,12 @@ Translation, speech-to-text and text-to-speech can be sent to Mistral AI (`ALTER
 - **What our server keeps:** nothing. No message, transcript or audio is stored or logged; temporary audio is deleted after use.
 - **Access:** the API needs a secret token; requests are rate limited. The token in an app can be extracted, so real accounts remain a later milestone.
 - **Not verified:** what Mistral does with data beyond its published terms; whether its audio endpoints qualify for zero retention.
+
+## Backend providers: Groq and Cloudflare Workers AI (translation from 2026-09-24, speech recognition from 2026-09-25)
+
+The default chains are now: translation Groq, then Cloudflare (Qwen); speech recognition Groq (Whisper large-v3), then Cloudflare (Whisper large-v3-turbo). Mistral remains available as a standalone provider and is still used for text-to-speech. For each request this means the **text of a message or the voice recording leaves our server for Groq, and for Cloudflare if Groq fails or hears nothing**, when the user presses Translate, uses the microphone, shares a voice note or asks to hear a translation.
+
+- **What our server keeps:** nothing. No message, transcript or audio is stored or logged; temporary audio is deleted after use. The server logs only the kind of event, the provider that failed and error *codes* (`request_rejected path status code`), never text or audio.
+- **What is sent, and how:** Groq receives the audio as an uploaded file; Cloudflare receives it base64-encoded in the request body. Each request uses the server's own key/token, never the user's.
+- **A second company sees the audio when the first fails.** With the fallback chain, an unclear recording that Groq cannot transcribe is also sent to Cloudflare. That is the point of the fallback for unclear audio, and it should be stated in the privacy policy.
+- **Not verified:** each provider's retention and training terms for API data (Groq, Cloudflare Workers AI), and whether either offers a zero-retention setting. These must be checked against their current published terms **before real messages are sent**; until then, only sample or the owner's own test messages should be used.

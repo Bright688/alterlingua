@@ -24,21 +24,35 @@ class CloudflareClient:
             )
         self._key = settings.cloudflare_api_token.get_secret_value().strip()
         account_id = settings.cloudflare_account_id.strip()
-        self._base = f"{settings.cloudflare_base_url.rstrip('/')}/accounts/{account_id}/ai/v1"
+        self._account_base = f"{settings.cloudflare_base_url.rstrip('/')}/accounts/{account_id}/ai"
+        self._base = f"{self._account_base}/v1"
         self._transport = transport
 
-    def _client(self, timeout: float) -> httpx.AsyncClient:
+    def _client(self, timeout: float, base: str | None = None) -> httpx.AsyncClient:
         return httpx.AsyncClient(
-            base_url=self._base,
+            base_url=base or self._base,
             headers={"Authorization": f"Bearer {self._key}"},
             timeout=timeout,
             transport=self._transport,
         )
 
     async def post(self, path: str, *, timeout: float, json: dict | None = None) -> dict:
-        """Sends a POST and returns the JSON answer. Raises the app's controlled errors; their text never holds message content."""
+        """Sends a POST to the OpenAI-compatible endpoint and returns the JSON answer. Raises the app's controlled errors;
+        their text never holds message content."""
+        return await self._send(path, timeout=timeout, json=json, base=self._base)
+
+    async def run(self, model: str, *, timeout: float, json: dict) -> dict:
+        """Runs a Workers AI model on Cloudflare's native endpoint (needed for Whisper, which the OpenAI-compatible endpoint does
+        not serve) and returns the model's ``result`` object."""
+        body = await self._send(f"/run/{model}", timeout=timeout, json=json, base=self._account_base)
+        result = body.get("result")
+        if not isinstance(result, dict):
+            raise ProviderError("The provider returned an unexpected answer.", provider="cloudflare")
+        return result
+
+    async def _send(self, path: str, *, timeout: float, json: dict | None, base: str) -> dict:
         try:
-            async with self._client(timeout) as client:
+            async with self._client(timeout, base) as client:
                 response = await client.post(path, json=json)
         except httpx.TimeoutException:
             raise ProviderTimeoutError("The provider took too long to answer.", provider="cloudflare") from None
