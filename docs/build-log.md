@@ -1559,3 +1559,14 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Fix (Android):** `VoiceApi.translate` gained an overload with `hints` (default delegates to the old one, so the keyboard flow and the test fakes are unchanged); `HttpVoiceApi` sends them as a `hints` form field only when given; the shared-voice-note flow sends the learning language first, then the user's own (French then English in the owner's case).
 
 **Verification:** 837 Android unit tests and 377 backend tests pass (new: hints on the wire, hints order per user, second opinion wins / loses on confidence / skips failures / never second-guesses a supported language, an unsupported language still refused, log line carries the code but no content). Backend deployed to the server and app installed on the phone. IMPLEMENTED, not MANUALLY VERIFIED: the owner's real French voice note has not been re-tried, and the retry path itself has only been exercised with scripted engines, not against a real misdetected recording.
+
+
+---
+
+## 2026-09-25 — Tell the user when a voice note was unclear
+
+**Why:** the owner reported that a shared French voice note is "not listened to correctly". Recognition can only be made better, not perfect, on a poor recording; so the app now says so when the server reports that the speech engine was not sure of its words, instead of presenting a possibly wrong transcript as fact.
+
+**Change:** the server's voice answer may carry `clarity` (`clear` / `unclear`). `HttpVoiceApi` reads it (`VoiceTranslation.unclear`, false when absent, so older servers and engines that do not report confidence behave as before); `SharedVoiceViewModel` carries it into `VoiceNoteResult.unclear`; the result screen shows a notice card above the transcript ("This recording was unclear, so some words may be wrong…") in all 8 languages.
+
+**Verification:** 839 Android unit tests pass (new: unclear is parsed from the answer and defaults to false; it reaches the result screen model). The build has NOT been installed on the phone yet because it was not connected to adb at the time. The notice has not been seen on screen.

@@ -58,6 +58,8 @@ data class VoiceNoteResult(
     val savedToMap: Boolean,
     val canListen: Boolean,
     val playing: Boolean = false,
+    /** The recording was unclear, so some words of the transcript may be wrong (shown to the user as a notice). */
+    val unclear: Boolean = false,
 ) {
     /** Never printed: this holds private text, so it cannot reach a log or a crash report. */
     override fun toString(): String = "VoiceNoteResult(redacted)"
@@ -200,12 +202,12 @@ class SharedVoiceViewModel(
             is VoiceResult.Success -> {
                 deleteKept() // processed: the audio is no longer needed
                 state.value = SharedVoiceState.Working(SharedVoiceState.Step.FINDING_LANGUAGE)
-                setResult(buildResult(answer.value.sourceLanguage, answer.value.transcript, answer.value.translation, native, prefs.learningFromMessagesEnabled))
+                setResult(buildResult(answer.value.sourceLanguage, answer.value.transcript, answer.value.translation, native, prefs.learningFromMessagesEnabled, answer.value.unclear))
             }
         }
     }
 
-    private suspend fun buildResult(sourceCode: String, transcript: String, translation: String, native: Language, learningEnabled: Boolean): VoiceNoteResult {
+    private suspend fun buildResult(sourceCode: String, transcript: String, translation: String, native: Language, learningEnabled: Boolean, unclear: Boolean): VoiceNoteResult {
         val original = Languages.fromCode(sourceCode)
         val same = sourceCode == native.code
         var units = emptyList<LearningCandidate>()
@@ -232,7 +234,7 @@ class SharedVoiceViewModel(
             }.awaitAll()
         }
         val canListen = speaker.canSpeak(native)
-        return VoiceNoteResult(original, sourceCode, transcript, native, translation, same, shown, saved && learningEnabled, canListen)
+        return VoiceNoteResult(original, sourceCode, transcript, native, translation, same, shown, saved && learningEnabled, canListen, unclear = unclear)
     }
 
     /** The few most useful words or phrases in the voice note, without overlaps. */

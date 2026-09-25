@@ -399,6 +399,7 @@
     <string name="vn_original_lang">Original: %1$s</string>
     <string name="vn_your_language">Your language: %1$s</string>
     <string name="vn_original_transcript">Original transcript</string>
+    <string name="vn_unclear_notice">This recording was unclear, so some words may be wrong. The transcript and translation are the best AlterLingua could make of it.</string>
     <string name="vn_translation">Translation</string>
     <string name="vn_listen">Listen to translation</string>
     <string name="vn_listen_no_voice">Listen (no %1$s voice on this phone)</string>

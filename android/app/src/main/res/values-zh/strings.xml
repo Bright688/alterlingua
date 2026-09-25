@@ -370,6 +370,7 @@
     <string name="vn_original_lang">原文：%1$s</string>
     <string name="vn_your_language">您的语言：%1$s</string>
     <string name="vn_original_transcript">原文转写</string>
+    <string name="vn_unclear_notice">这段录音不够清晰，部分词语可能有误。转写和翻译是 AlterLingua 尽力得出的结果。</string>
     <string name="vn_translation">译文</string>
     <string name="vn_listen">收听译文</string>
     <string name="vn_listen_no_voice">收听（此手机没有%1$s语音）</string>

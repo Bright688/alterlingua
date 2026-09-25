@@ -118,8 +118,8 @@ class SharedVoiceViewModelTest {
         learning = learning, speaker = speaker, io = Dispatchers.Unconfined,
     )
 
-    private fun ok(source: String = "fr", transcript: String = transcriptFr, target: String = "en", translation: String = "I just spoke with the supplier; the goods will be available tomorrow.") =
-        VoiceResult.Success(VoiceTranslation(source, transcript, target, translation))
+    private fun ok(source: String = "fr", transcript: String = transcriptFr, target: String = "en", translation: String = "I just spoke with the supplier; the goods will be available tomorrow.", unclear: Boolean = false) =
+        VoiceResult.Success(VoiceTranslation(source, transcript, target, translation, unclear))
 
     private val transcriptFr = "Je viens de parler au fournisseur, la marchandise sera bien disponible demain."
 
@@ -149,6 +149,16 @@ class SharedVoiceViewModelTest {
         assertEquals("en", call.target)
         assertTrue("the copy existed while it was uploaded", call.existed)
         assertEquals(oggBytes.size.toLong(), call.size)
+    }
+
+    @Test fun aRecordingTheServiceCalledUnclear_isMarkedSo_andAClearOneIsNot() {
+        api.results += ok(unclear = true)
+        val unclear = viewModel().also { it.start(address) }.result()
+        assertTrue("the transcript is still shown", unclear.transcript.isNotBlank())
+        assertTrue(unclear.unclear)
+
+        api.results += ok()
+        assertFalse(viewModel().also { it.start(address) }.result().unclear)
     }
 
     @Test fun theLikelyLanguagesAreSentAsHints_theLearningLanguageFirst_soAnUnclearNoteCanBeRetried() {

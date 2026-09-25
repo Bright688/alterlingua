@@ -9,6 +9,7 @@ import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -102,6 +103,18 @@ class HttpVoiceApiTest {
     private fun Received.field(name: String) = String(parts.first { it.name == name }.bytes, Charsets.UTF_8)
 
     // ---- what is sent ----
+
+    @Test
+    fun anUnclearRecordingIsFlagged_andAnyOtherAnswerIsNot() {
+        val unclear = server { it.reply(200, JSONObject(mapOf("source_language" to "fr", "transcript" to "x", "target_language" to "en", "translation" to "y", "clarity" to "unclear")).toString()) }
+        assertTrue((send(api(unclear), source = "auto", target = "en") as VoiceResult.Success).value.unclear)
+
+        val clear = server { it.reply(200, JSONObject(mapOf("source_language" to "fr", "transcript" to "x", "target_language" to "en", "translation" to "y", "clarity" to "clear")).toString()) }
+        assertFalse((send(api(clear), source = "auto", target = "en") as VoiceResult.Success).value.unclear)
+
+        val silent = server { it.reply(200, json("fr", "x", "en", "y")) } // an older server, or an engine that does not say
+        assertFalse((send(api(silent), source = "auto", target = "en") as VoiceResult.Success).value.unclear)
+    }
 
     @Test
     fun likelyLanguagesAreSentAsHints_onlyWhenGiven_asPlainCodes() {

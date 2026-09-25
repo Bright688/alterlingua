@@ -35,7 +35,14 @@ enum class VoiceFailure(val canRetry: Boolean) {
 }
 
 /** What the backend answered for a recording. */
-data class VoiceTranslation(val sourceLanguage: String, val transcript: String, val targetLanguage: String, val translation: String) {
+data class VoiceTranslation(
+    val sourceLanguage: String,
+    val transcript: String,
+    val targetLanguage: String,
+    val translation: String,
+    /** The speech recogniser was not sure of its words (noise, a poor recording): some may be wrong, and the user is told. */
+    val unclear: Boolean = false,
+) {
     /** Never printed: this holds private text, so it cannot reach a log or a crash report. */
     override fun toString(): String = "VoiceTranslation(redacted)"
 }

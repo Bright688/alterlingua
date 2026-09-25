@@ -370,6 +370,7 @@
     <string name="vn_original_lang">Original: %1$s</string>
     <string name="vn_your_language">Tu idioma: %1$s</string>
     <string name="vn_original_transcript">Transcripción original</string>
+    <string name="vn_unclear_notice">Esta grabación no se oye con claridad, así que algunas palabras pueden ser incorrectas. La transcripción y la traducción son lo mejor que AlterLingua pudo hacer.</string>
     <string name="vn_translation">Traducción</string>
     <string name="vn_listen">Escuchar la traducción</string>
     <string name="vn_listen_no_voice">Escuchar (este teléfono no tiene voz en %1$s)</string>

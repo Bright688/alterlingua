@@ -370,6 +370,7 @@
     <string name="vn_original_lang">原文：%1$s</string>
     <string name="vn_your_language">あなたの言語：%1$s</string>
     <string name="vn_original_transcript">元の文字起こし</string>
+    <string name="vn_unclear_notice">この録音は聞き取りにくかったため、誤っている単語があるかもしれません。文字起こしと翻訳は、AlterLingua が聞き取れた範囲での最善の結果です。</string>
     <string name="vn_translation">翻訳</string>
     <string name="vn_listen">翻訳を聞く</string>
     <string name="vn_listen_no_voice">聞く（この端末に%1$sの音声がありません）</string>

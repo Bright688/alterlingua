@@ -370,6 +370,7 @@
     <string name="vn_original_lang">Original: %1$s</string>
     <string name="vn_your_language">Deine Sprache: %1$s</string>
     <string name="vn_original_transcript">Originaltranskript</string>
+    <string name="vn_unclear_notice">Diese Aufnahme war undeutlich, deshalb können einige Wörter falsch sein. Transkript und Übersetzung sind das Beste, was AlterLingua daraus machen konnte.</string>
     <string name="vn_translation">Übersetzung</string>
     <string name="vn_listen">Übersetzung anhören</string>
     <string name="vn_listen_no_voice">Anhören (keine Stimme für %1$s auf diesem Telefon)</string>

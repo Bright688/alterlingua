@@ -108,6 +108,17 @@ private fun ResultContent(result: VoiceNoteResult, onListen: () -> Unit, onRevie
         TagPill(stringResource(R.string.vn_your_language, result.userLanguage.nativeName))
     }
 
+    if (result.unclear) {
+        AlterLinguaCard {
+            Text(
+                stringResource(R.string.vn_unclear_notice),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.testTag("shared_voice_unclear"),
+            )
+        }
+    }
+
     AlterLinguaCard {
         Text(stringResource(R.string.vn_original_transcript), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(result.transcript, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.testTag("shared_voice_transcript"))

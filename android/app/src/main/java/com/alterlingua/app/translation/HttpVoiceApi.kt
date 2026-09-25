@@ -165,7 +165,7 @@ class HttpVoiceApi(
                 answeredTarget != target.lowercase(Locale.ROOT) || source.isBlank() -> failed
                 // Words were understood but no translation came back: keep what was heard.
                 translation.isBlank() -> VoiceResult.Failure(VoiceFailure.PARTIAL, heard = transcript)
-                else -> VoiceResult.Success(VoiceTranslation(source, transcript, answeredTarget, translation))
+                else -> VoiceResult.Success(VoiceTranslation(source, transcript, answeredTarget, translation, unclear = json.optString("clarity") == "unclear"))
             }
         } catch (_: JSONException) {
             failed

@@ -370,6 +370,7 @@
     <string name="vn_original_lang">Origineel: %1$s</string>
     <string name="vn_your_language">Jouw taal: %1$s</string>
     <string name="vn_original_transcript">Originele transcriptie</string>
+    <string name="vn_unclear_notice">Deze opname was onduidelijk, dus sommige woorden kunnen fout zijn. De transcriptie en vertaling zijn het beste wat AlterLingua ervan kon maken.</string>
     <string name="vn_translation">Vertaling</string>
     <string name="vn_listen">Vertaling beluisteren</string>
     <string name="vn_listen_no_voice">Beluisteren (geen stem voor het %1$s op deze telefoon)</string>
