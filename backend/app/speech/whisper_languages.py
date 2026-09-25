@@ -24,6 +24,24 @@ _NAMES: dict[str, str] = {
 }
 
 
+def confidence_of(segments: object) -> float | None:
+    """The mean ``avg_logprob`` of Whisper's segments (weighted by their length when known), or None if none report it."""
+    if not isinstance(segments, list):
+        return None
+    total = weight = 0.0
+    for segment in segments:
+        if not isinstance(segment, dict):
+            continue
+        logprob = segment.get("avg_logprob")
+        if not isinstance(logprob, (int, float)) or isinstance(logprob, bool):
+            continue
+        start, end = segment.get("start"), segment.get("end")
+        length = (end - start) if isinstance(start, (int, float)) and isinstance(end, (int, float)) and end > start else 1.0
+        total += logprob * length
+        weight += length
+    return total / weight if weight else None
+
+
 def to_code(reported: object) -> str | None:
     """"French", "fr" or "fr-FR" -> "fr"; None when nothing usable was reported."""
     if not isinstance(reported, str):

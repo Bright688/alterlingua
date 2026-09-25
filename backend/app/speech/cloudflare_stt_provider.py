@@ -11,7 +11,7 @@ from app.core.cloudflare import CloudflareClient
 from app.core.config import Settings
 from app.core.errors import ProviderError
 from app.speech.provider import SpeechCapabilities, SpeechRequest, SpeechResult, SpeechToTextProvider
-from app.speech.whisper_languages import to_code
+from app.speech.whisper_languages import confidence_of, to_code
 from app.translation.languages import LANGUAGES
 
 
@@ -35,4 +35,4 @@ class CloudflareSpeechToTextProvider(SpeechToTextProvider):
         if not isinstance(text, str):
             raise ProviderError("The provider returned an unusable transcript.", provider=self.name)
         info = result.get("transcription_info")
-        return SpeechResult(text, to_code(info.get("language")) if isinstance(info, dict) else None)
+        return SpeechResult(text, to_code(info.get("language")) if isinstance(info, dict) else None, confidence_of(result.get("segments")))

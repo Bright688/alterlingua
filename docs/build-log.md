@@ -1492,3 +1492,14 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 - **Not verified:** the owner's real voice note; French, Spanish, Chinese or other languages (the only synthetic voice available was English); real-world noise such as crowds or wind, which is not white noise.
 
 **Privacy:** `docs/privacy.md` now has a Groq / Cloudflare section, including that a second company sees the audio when the first engine fails or hears nothing, and that both companies' retention terms are not verified.
+
+
+---
+
+## 2026-09-25 — Second opinion for voice notes whose language was misdetected (backend)
+
+**Problem:** a shared French voice note was refused with `unsupported_language` (server log: `request_rejected status=422 code=unsupported_language`, 357 ms). Automatic language detection on a short or unclear recording is unreliable; the engine named a language outside the catalogue and the request was refused although the words were recognisable in French.
+
+**Change:** `POST /v1/audio/translate` accepts an optional `hints` form field (comma-separated language codes, cleaned, de-duplicated, at most three). Only when `source=auto` and detection either named a language outside the catalogue or returned an empty transcript, `SpeechTranslationService._second_opinion` transcribes the recording again forced to each hint the engine can recognise and keeps the attempt with the best confidence. `SpeechResult.confidence` (the length-weighted mean of Whisper's `avg_logprob`, from Groq and, when reported, Cloudflare) is new. An attempt below -1.0 is discarded so speech in a genuinely unsupported language is still refused rather than turned into nonsense; failed attempts are skipped; without confidence the first hint wins; a supported detected language and an explicit source are never second-guessed. `request_rejected` log lines now include the language code and role when the value is a short code (`language=yo role=source`).
+
+**Verification:** 377 backend tests pass (25 new across the second opinion, hint cleaning, confidence, and the log line). Deployed to the server; health check 200. The retry path was exercised with scripted engines only, not against a real misdetected recording (the exact language the engine named for the owner's note was not logged at the time). Android sends the hints (see the Android branch's build log).

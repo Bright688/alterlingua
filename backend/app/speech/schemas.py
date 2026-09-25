@@ -15,6 +15,25 @@ class AudioTranslateOptions(BaseModel):
     source: str = AUTO  # the language spoken, or "auto" to detect it
     context: Context = "messaging"
     tone: Tone = "natural"
+    # Languages the speaker is likely to be using, most likely first (the app sends the user's learning language and own
+    # language). Only used when automatic detection names a language we cannot translate or hears nothing, to try again
+    # with these instead of giving up. Codes that are not valid languages are ignored.
+    hints: list[str] = []
+
+    @field_validator("hints", mode="before")
+    @classmethod
+    def _clean_hints(cls, value: object) -> list[str]:
+        if isinstance(value, str):
+            value = value.split(",")
+        cleaned: list[str] = []
+        for item in value if isinstance(value, (list, tuple)) else []:
+            try:
+                code = _clean_language_code(str(item), allow_auto=False)
+            except ValueError:
+                continue
+            if code not in cleaned:
+                cleaned.append(code)
+        return cleaned[:3]
 
     @field_validator("source")
     @classmethod

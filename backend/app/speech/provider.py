@@ -32,6 +32,9 @@ class SpeechRequest:
 class SpeechResult:
     transcript: str
     detected_language: str | None = None  # required when the request's language was None
+    # How sure the engine is, as the mean log-probability of the words it chose (0 is certain, more negative is less sure).
+    # Only some engines report it; None when unknown. Used to choose between two attempts at the same recording.
+    confidence: float | None = None
 
 
 class SpeechToTextProvider(ABC):

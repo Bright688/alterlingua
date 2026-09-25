@@ -316,3 +316,39 @@ def test_a_shared_voice_note_through_the_route_detects_the_language_via_the_chai
         "/v1/audio/translate", files={"audio": ("clip.wav", make_wav(), "audio/wav")}, data={"source": "auto", "target": "en"}
     )
     assert response.status_code == 200 and response.json()["source_language"] == "fr"
+
+
+# ---- confidence ---------------------------------------------------------------------------------------------------------------
+
+def test_confidence_is_the_length_weighted_mean_of_the_segments_avg_logprob():
+    from app.speech.whisper_languages import confidence_of
+
+    segments = [{"start": 0.0, "end": 1.0, "avg_logprob": -0.2}, {"start": 1.0, "end": 4.0, "avg_logprob": -0.6}]
+    assert confidence_of(segments) == pytest.approx((-0.2 * 1 + -0.6 * 3) / 4)
+
+
+@pytest.mark.parametrize("segments", [None, [], "x", [{}], [{"avg_logprob": "high"}], [{"avg_logprob": True}], ["x"]])
+def test_confidence_is_none_when_nothing_usable_is_reported(segments):
+    from app.speech.whisper_languages import confidence_of
+
+    assert confidence_of(segments) is None
+
+
+def test_segments_without_times_count_equally():
+    from app.speech.whisper_languages import confidence_of
+
+    assert confidence_of([{"avg_logprob": -0.2}, {"avg_logprob": -0.4}]) == pytest.approx(-0.3)
+
+
+async def test_groq_returns_the_confidence_of_its_answer(tmp_path):
+    body = {"text": "Bonjour", "language": "french", "segments": [{"start": 0, "end": 2, "avg_logprob": -0.25}]}
+    provider = GroqSpeechToTextProvider(settings(), client=groq_with(lambda r: httpx.Response(200, json=body)))
+    result = await provider.transcribe(SpeechRequest(audio_file(tmp_path), "audio/ogg", None))
+    assert result.confidence == pytest.approx(-0.25)
+
+
+async def test_cloudflare_returns_the_confidence_when_it_reports_segments(tmp_path):
+    body = {"result": {"text": "Bonjour", "transcription_info": {"language": "fr"}, "segments": [{"avg_logprob": -0.5}]}}
+    provider = CloudflareSpeechToTextProvider(settings(), client=cloudflare_with(lambda r: httpx.Response(200, json=body)))
+    result = await provider.transcribe(SpeechRequest(audio_file(tmp_path), "audio/ogg", None))
+    assert result.confidence == pytest.approx(-0.5)

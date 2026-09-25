@@ -67,10 +67,11 @@ async def translate_audio(
     source: str = Form("auto", description="The language spoken, or 'auto' to detect it."),
     context: str = Form("messaging"),
     tone: str = Form("natural"),
+    hints: str = Form("", description="Optional comma-separated languages the speaker is likely to use, most likely first."),
     service: SpeechTranslationService = Depends(get_speech_service),
 ) -> AudioTranslateResponse:
     try:
-        options = AudioTranslateOptions(target=target, source=source, context=context, tone=tone)
+        options = AudioTranslateOptions(target=target, source=source, context=context, tone=tone, hints=hints)
     except ValidationError as error:
         # Only the field and the problem are reported, never the submitted values.
         details = [{"field": ".".join(str(p) for p in item["loc"]), "message": item["msg"]} for item in error.errors()]

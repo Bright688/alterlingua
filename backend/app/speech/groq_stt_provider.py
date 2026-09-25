@@ -9,7 +9,7 @@ from app.core.config import Settings
 from app.core.errors import ProviderError
 from app.core.groq import GroqClient
 from app.speech.provider import SpeechCapabilities, SpeechRequest, SpeechResult, SpeechToTextProvider
-from app.speech.whisper_languages import to_code
+from app.speech.whisper_languages import confidence_of, to_code
 from app.translation.languages import LANGUAGES
 
 # Groq decides how to decode an upload from its file name, so the name must carry the right extension.
@@ -53,4 +53,4 @@ class GroqSpeechToTextProvider(SpeechToTextProvider):
         text = body.get("text")
         if not isinstance(text, str):
             raise ProviderError("The provider returned an unusable transcript.", provider=self.name)
-        return SpeechResult(text, to_code(body.get("language")))
+        return SpeechResult(text, to_code(body.get("language")), confidence_of(body.get("segments")))

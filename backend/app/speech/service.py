@@ -11,19 +11,26 @@ import unicodedata
 
 from app.core.errors import (
     AutoDetectUnavailableError,
+    ProviderError,
     ProviderTimeoutError,
+    ProviderUnavailableError,
     SpeechNotRecognizedError,
     UnsupportedLanguageError,
 )
 from app.core.logging import kv
 from app.speech.audio import TemporaryAudio
-from app.speech.provider import SpeechRequest, SpeechToTextProvider
+from app.speech.provider import SpeechRequest, SpeechResult, SpeechToTextProvider
 from app.speech.schemas import AudioTranslateOptions, AudioTranslateResponse
 from app.translation.languages import AUTO, LANGUAGES
 from app.translation.schemas import TranslateRequest
 from app.translation.service import TranslationService
 
 logger = logging.getLogger(__name__)
+
+# A second attempt forced to a likely language is only trusted if the engine is at least this sure of its words (the mean
+# log-probability; Whisper's own default cut-off for "this attempt failed" is the same -1.0). Below it the words are most
+# likely nonsense from forcing the wrong language, and the honest answer is that the language is not supported.
+_MIN_FORCED_CONFIDENCE = -1.0
 
 
 def _clean_transcript(text: str) -> str:
@@ -70,14 +77,63 @@ class SpeechTranslationService:
                 supported=sorted(c for c, lang in LANGUAGES.items() if lang.speech_to_text_supported and c in caps.languages),
             )
 
-    async def translate_audio(self, audio: TemporaryAudio, options: AudioTranslateOptions, target: str, spoken: str | None) -> AudioTranslateResponse:
-        started = time.perf_counter()
+    async def _transcribe(self, audio: TemporaryAudio, language: str | None) -> SpeechResult:
         try:
-            result = await asyncio.wait_for(
-                self._stt.transcribe(SpeechRequest(audio.path, audio.content_type, spoken)), timeout=self._timeout
+            return await asyncio.wait_for(
+                self._stt.transcribe(SpeechRequest(audio.path, audio.content_type, language)), timeout=self._timeout
             )
         except TimeoutError:
             raise ProviderTimeoutError("Speech recognition took too long.", provider=self._stt.name, stage="speech_to_text") from None
+
+    async def _second_opinion(self, audio: TemporaryAudio, hints: list[str], first: SpeechResult) -> SpeechResult:
+        """Tries the recording again in each of the [hints] languages, for when automatic detection failed.
+
+        Speech engines guess the language of a short or unclear recording from very little, and a wrong guess (a French voice
+        note taken for Yoruba, say) makes the whole request fail although the words were perfectly recognisable in French. So
+        when detection named a language we cannot use, or heard nothing, the recording is transcribed again forced to each
+        likely language, and the attempt the engine is most sure of wins. An attempt it is not sure of is discarded, so speech
+        in a language that really is unsupported is still refused rather than turned into a nonsense translation. Returns
+        [first] unchanged when no attempt is good enough.
+        """
+        supported = self._stt.capabilities().languages
+        attempts: list[SpeechResult] = []
+        for code in hints:
+            language = LANGUAGES.get(code)
+            if language is None or not language.speech_to_text_supported or code not in supported:
+                continue
+            try:
+                attempt = await self._transcribe(audio, code)
+            except (ProviderError, ProviderUnavailableError, ProviderTimeoutError) as error:
+                logger.warning("speech_second_opinion_failed %s", kv(language=code, error=type(error).__name__))
+                continue
+            if not _clean_transcript(attempt.transcript):
+                continue
+            if attempt.confidence is not None and attempt.confidence < _MIN_FORCED_CONFIDENCE:
+                continue
+            attempts.append(SpeechResult(attempt.transcript, code, attempt.confidence))
+        if not attempts:
+            return first
+        scored = [a for a in attempts if a.confidence is not None]
+        chosen = max(scored, key=lambda a: a.confidence or 0.0) if len(scored) == len(attempts) else attempts[0]
+        logger.info(
+            "speech_second_opinion %s",
+            kv(
+                first_language=first.detected_language or "none",
+                tried=",".join(a.detected_language or "" for a in attempts),
+                chosen=chosen.detected_language,
+                confidence=round(chosen.confidence, 2) if chosen.confidence is not None else "unknown",
+            ),
+        )
+        return chosen
+
+    async def translate_audio(self, audio: TemporaryAudio, options: AudioTranslateOptions, target: str, spoken: str | None) -> AudioTranslateResponse:
+        started = time.perf_counter()
+        result = await self._transcribe(audio, spoken)
+
+        if spoken is None and options.hints:
+            detected = (result.detected_language or "").lower()
+            if not _clean_transcript(result.transcript) or (detected and detected not in LANGUAGES):
+                result = await self._second_opinion(audio, options.hints, result)
 
         transcript = _clean_transcript(result.transcript)
         if not transcript:

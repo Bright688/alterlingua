@@ -1,6 +1,7 @@
 """Application factory and error handling."""
 
 import logging
+import re
 import time
 from collections.abc import Awaitable, Callable
 
@@ -112,7 +113,13 @@ def create_app(
     async def handle_app_error(request: Request, error: AppError) -> JSONResponse:
         # The error's code names the kind of problem (never any text from the request), so a rejected request can be
         # told apart from another with the same status.
-        logger.info("request_rejected %s", kv(path=request.url.path, status=error.status_code, code=error.code))
+        fields: dict[str, object] = {"path": request.url.path, "status": error.status_code, "code": error.code}
+        for name in ("language", "role"):
+            value = error.details.get(name)
+            # Only a short language code or role word is ever logged, so nothing from the request or recording can get in.
+            if isinstance(value, str) and re.fullmatch(r"[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})?", value):
+                fields[name] = value
+        logger.info("request_rejected %s", kv(**fields))
         return JSONResponse(status_code=error.status_code, content=error.to_body())
 
     @app.exception_handler(RequestValidationError)
