@@ -83,46 +83,43 @@ class CaptionOverlay(private val context: Context) {
     }
 }
 
-/** Text size and box geometry of a caption, in pixels for this display. */
+/** Text sizes and box geometry of a caption, in pixels for this display. */
 class CaptionMetrics(context: Context) {
-    private val density = context.resources.displayMetrics.density
-    val textSizePx: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12f, context.resources.displayMetrics)
-    val paddingH: Int = (8 * density).toInt()
-    val paddingV: Int = (3 * density).toInt()
+    private val displayMetrics = context.resources.displayMetrics
+    private val density = displayMetrics.density
+    val paddingH: Int = (6 * density).toInt()
+
+    /** Tight vertical padding: in a run of messages from one sender there are only ~12 px between them. */
+    val paddingV: Int = (0.5f * density).toInt().coerceAtLeast(1)
     val marginPx: Int = (8 * density).toInt()
-    val minWidthPx: Int = (140 * density).toInt()
-    val cornerPx: Float = 8 * density
-    val compactTextSizePx: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10f, context.resources.displayMetrics)
-    private val compactPaddingV: Int = (1 * density).toInt()
+    val cornerPx: Float = 6 * density
 
-    /** Height of one line of caption including its top and bottom padding. */
-    val lineHeightPx: Int = TextPaint().also { it.textSize = textSizePx }.fontMetricsInt.let { (it.descent - it.ascent) + 2 * paddingV }
+    /** The text sizes a caption may use, largest first; the largest that fits the room under its message is chosen. */
+    val textSizesPx: List<Float> = listOf(10f, 8.5f, 7.5f, 7f).map { TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, it, displayMetrics) }
 
-    /** Height of the single smaller line used when there is only a sliver of room. */
-    val compactLineHeightPx: Int = TextPaint().also { it.textSize = compactTextSizePx }.fontMetricsInt.let { (it.descent - it.ascent) + 2 * compactPaddingV }
+    private val measurePaints = HashMap<Float, TextPaint>()
 
-    private val measurePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).also { it.textSize = textSizePx }
-    private val measureCompactPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).also { it.textSize = compactTextSizePx }
+    private fun paintFor(sizePx: Float): TextPaint =
+        measurePaints.getOrPut(sizePx) { TextPaint(Paint.ANTI_ALIAS_FLAG).also { it.textSize = sizePx } }
 
-    /** How many lines [text] takes in a caption box [widthPx] wide, measured with the same paint the caption is drawn with. */
-    private fun measureLines(text: String, widthPx: Int, compact: Boolean): Int {
-        val paint = if (compact) measureCompactPaint else measurePaint
+    /** Height of one line at [sizePx], including the box's own top and bottom padding. */
+    private fun lineHeightFor(sizePx: Float): Int = paintFor(sizePx).fontMetricsInt.let { (it.descent - it.ascent) + 2 * paddingV }
+
+    /** How many lines [text] takes in a caption box [widthPx] wide at [sizePx], with the paint the caption is drawn with. */
+    private fun measureLines(text: String, widthPx: Int, sizePx: Float): Int {
         val textWidth = (widthPx - 2 * paddingH).coerceAtLeast(1)
-        return StaticLayout.Builder.obtain(text, 0, text.length, paint, textWidth).build().lineCount.coerceAtLeast(1)
+        return StaticLayout.Builder.obtain(text, 0, text.length, paintFor(sizePx), textWidth).setIncludePad(false).build().lineCount.coerceAtLeast(1)
     }
 
     /** The numbers [CaptionPlacer] needs. */
     val sizes: CaptionSizes = CaptionSizes(
-        lineHeightPx = lineHeightPx,
-        compactLineHeightPx = compactLineHeightPx,
+        textSizesPx = textSizesPx,
+        lineHeightPx = ::lineHeightFor,
         marginPx = marginPx,
-        minWidthPx = minWidthPx,
-        sideMinWidthPx = (96 * density).toInt(),
-        sideGapPx = (16 * density).toInt(),
+        minWidthPx = (200 * density).toInt(),
+        overlapAllowancePx = (4 * density).toInt(),
         measureLines = ::measureLines,
     )
-
-    fun paddingVFor(compact: Boolean): Int = if (compact) compactPaddingV else paddingV
 }
 
 private class CaptionView(context: Context, private val metrics: CaptionMetrics) : View(context) {
@@ -132,26 +129,30 @@ private class CaptionView(context: Context, private val metrics: CaptionMetrics)
     private val background = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = if (night) 0xF01E2A36.toInt() else 0xF0EAF4FF.toInt() }
     private val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = context.resources.displayMetrics.density
+        strokeWidth = context.resources.displayMetrics.density * 0.75f
         color = if (night) 0x804FA3E8.toInt() else 0x802F80C8.toInt()
     }
-    private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = metrics.textSizePx
-        color = if (night) 0xFFE8F1FA.toInt() else 0xFF0B2A4A.toInt()
-    }
-    private val compactPaint = TextPaint(textPaint).apply { textSize = metrics.compactTextSizePx }
+    private val textColor = if (night) 0xFFE8F1FA.toInt() else 0xFF0B2A4A.toInt()
+    private val paints = HashMap<Float, TextPaint>()
     private val origin = IntArray(2)
+
+    private fun paintFor(sizePx: Float): TextPaint = paints.getOrPut(sizePx) {
+        TextPaint(Paint.ANTI_ALIAS_FLAG).also {
+            it.textSize = sizePx
+            it.color = textColor
+        }
+    }
 
     override fun onDraw(canvas: Canvas) {
         // The window starts at the screen's top-left, but the status bar or a cut-out can still offset it a little,
         // so every caption is moved by wherever this view really is on the screen.
         getLocationOnScreen(origin)
+        val padV = metrics.paddingV
         for (caption in captions) {
-            val paint = if (caption.compact) compactPaint else textPaint
-            val padV = metrics.paddingVFor(caption.compact)
             val textWidth = (caption.width - 2 * metrics.paddingH).coerceAtLeast(1)
-            val layout = StaticLayout.Builder.obtain(caption.text, 0, caption.text.length, paint, textWidth)
+            val layout = StaticLayout.Builder.obtain(caption.text, 0, caption.text.length, paintFor(caption.textSizePx), textWidth)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setIncludePad(false)
                 .setMaxLines(caption.maxLines)
                 .setEllipsize(TextUtils.TruncateAt.END)
                 .build()

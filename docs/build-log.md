@@ -1518,3 +1518,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Test added:** a run of five consecutive bubbles modelled on the owner's screen (720 px wide, 2.0 density): every message gets a caption, nothing is covered, no captions overlap.
 
 **Verification:** 837 unit tests pass, 0 failures. Installed on the phone (service stayed bound). IMPLEMENTED, not MANUALLY VERIFIED: the owner has not yet seen this version.
+
+
+---
+
+## 2026-09-25 — Always under the message, with a smaller caption
+
+**Feedback (owner):** "it should always be under the message but just make the translated bubble height always smaller for all so that it won't block the next original message". This replaced the previous under / beside / compact fallback order.
+
+**Measurement first:** instead of guessing gaps, positions (never text) of WhatsApp's message views were read from the phone with `dumpsys activity top` and resolved to absolute screen coordinates from the indentation nesting: each message text box is 55 px tall, 12 px apart in a run from one sender (28 to 45 px between different senders), with the time stamp inside the same box at its lower right. So a 34 px caption cannot fit under a message in a tight run without covering the next one.
+
+**Change:** `CaptionPlacer` now places every caption directly under its message. Room = distance to the next protected thing in that column (+ a 4 dp allowance into the next text box's empty top padding, never into the text box above the keyboard). The caption's text size is chosen from about 10 / 8.5 / 7.5 / 7 sp: the largest that shows the whole translation in that room, else the smallest with an ellipsis, else no caption. Vertical padding was cut to about 1 px and line metrics are the same for measuring and drawing (`setIncludePad(false)`). Beside/compact placement was removed.
+
+**Trade-off, stated to the owner:** in a tight run, captions are about 7 sp, small; and a long translation there is cut with an ellipsis.
+
+**Verification:** 834 unit tests, 0 failures (one unrelated coroutine test, `OnDemandHelpTest`, timed out once on a very slow build and passed on re-run). Installed on the phone; IMPLEMENTED, not yet MANUALLY VERIFIED by the owner.
