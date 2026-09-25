@@ -31,10 +31,13 @@ _SYSTEM = (
 class GroqTranslationProvider(TranslationProvider):
     name = "groq"
 
-    def __init__(self, settings: Settings, *, client: GroqClient | None = None) -> None:
+    def __init__(self, settings: Settings, *, client: GroqClient | None = None, model: str | None = None) -> None:
         self._client = client or GroqClient(settings)
-        self._model = settings.groq_translation_model
+        self._model = model or settings.groq_translation_model
+        self._effort = settings.groq_reasoning_effort.strip()
         self._timeout = settings.provider_timeout_seconds
+        if self._model != settings.groq_translation_model:
+            self.name = f"groq({self._model.rsplit('/', 1)[-1]})"  # the second Groq model in a fallback chain
 
     def capabilities(self) -> ProviderCapabilities:
         return ProviderCapabilities(languages=frozenset(LANGUAGES), auto_detect=True)
@@ -42,19 +45,18 @@ class GroqTranslationProvider(TranslationProvider):
     async def translate(self, request: ProviderRequest) -> ProviderResult:
         source = LANGUAGES[request.source].english_name if request.source else "whatever language it is written in"
         target = LANGUAGES[request.target].english_name
-        body = await self._client.post(
-            "/v1/chat/completions",
-            timeout=self._timeout,
-            json={
-                "model": self._model,
-                "temperature": 0,
-                "response_format": {"type": "json_object"},
-                "messages": [
-                    {"role": "system", "content": _SYSTEM.format(source=source, target=target, tone=request.tone or "natural")},
-                    {"role": "user", "content": request.text},
-                ],
-            },
-        )
+        payload: dict = {
+            "model": self._model,
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": _SYSTEM.format(source=source, target=target, tone=request.tone or "natural")},
+                {"role": "user", "content": request.text},
+            ],
+        }
+        if self._effort:
+            payload["reasoning_effort"] = self._effort
+        body = await self._client.post("/v1/chat/completions", timeout=self._timeout, json=payload)
         try:
             content = body["choices"][0]["message"]["content"]
             answer = json.loads(content) if isinstance(content, str) else None

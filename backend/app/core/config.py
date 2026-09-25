@@ -66,6 +66,12 @@ class Settings(BaseSettings):
     groq_api_key: SecretStr | None = None
     groq_base_url: str = "https://api.groq.com/openai"
     groq_translation_model: str = "openai/gpt-oss-120b"
+    # A second, smaller Groq model tried when the first is out of its free daily allowance (each model has its own limit:
+    # the first is 200,000 tokens a day, about 500 translations, which was used up in one day of testing). Empty leaves it out.
+    groq_translation_fallback_model: str = "openai/gpt-oss-20b"
+    # How hard the gpt-oss models think before answering: "low" cuts the tokens spent on a translation by about a third and
+    # answers faster, which stretches the free allowance. Empty sends nothing (needed for models that do not take it).
+    groq_reasoning_effort: str = "low"
     # Speech recognition on Groq: OpenAI's open Whisper large-v3, strong on noisy or unclear speech, and it reports the
     # language it heard.
     groq_stt_model: str = "whisper-large-v3"

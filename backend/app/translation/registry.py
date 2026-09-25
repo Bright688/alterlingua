@@ -13,14 +13,20 @@ from app.translation.provider import TranslationProvider
 
 
 def _fallback(settings: Settings) -> TranslationProvider:
-    """Groq first, then Cloudflare Workers AI. A leg with no key (or account id) configured is left out rather than
-    failing the whole chain. Mistral was the fallback leg here until 2026-09-24, when its account's translation
+    """Groq first, then a second, smaller Groq model (Groq's free daily allowance is per model), then Cloudflare Workers AI.
+    A leg with no key (or account id) configured is left out rather than failing the whole chain. Mistral was the fallback leg here until 2026-09-24, when its account's translation
     models turned out to be stuck at a 0 requests/minute limit on Mistral's side (not a key or code problem — see
     docs/build-log.md); "mistral" is still available as a standalone provider, just not in this chain."""
     legs: list[TranslationProvider] = []
-    for factory in (GroqTranslationProvider, CloudflareTranslationProvider):
+    factories: list[Callable[[], TranslationProvider]] = [lambda: GroqTranslationProvider(settings)]
+    second_model = settings.groq_translation_fallback_model.strip()
+    if second_model and second_model != settings.groq_translation_model:
+        # Groq's free allowance is per model, so a second, smaller model keeps translation going when the first has used its own.
+        factories.append(lambda: GroqTranslationProvider(settings, model=second_model))
+    factories.append(lambda: CloudflareTranslationProvider(settings))
+    for factory in factories:
         try:
-            legs.append(factory(settings))
+            legs.append(factory())
         except ConfigurationError:
             continue
     return FallbackTranslationProvider(legs)

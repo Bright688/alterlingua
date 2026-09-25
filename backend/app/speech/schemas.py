@@ -1,5 +1,7 @@
 """Request options and response for POST /v1/audio/translate."""
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.translation.languages import AUTO
@@ -51,6 +53,9 @@ class AudioTranslateResponse(BaseModel):
     transcript: str
     target_language: str
     translation: str
+    # "unclear" when the speech engine was not sure of its words (noise, a poor recording), so the app can say some words may
+    # be wrong; "clear" when it was. Left out when the engine does not report how sure it is.
+    clarity: Literal["clear", "unclear"] | None = None
 
 
 class AudioSpeakOptions(AudioTranslateOptions):

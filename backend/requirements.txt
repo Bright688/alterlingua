@@ -3,3 +3,6 @@ uvicorn[standard]>=0.53,<1
 pydantic-settings>=2.15,<3
 python-multipart>=0.0.20,<1
 httpx>=0.28,<1
+# Levels voice notes before speech recognition (app/speech/normalize.py); PyAV bundles the audio decoders.
+av>=14,<20
+numpy>=2,<3

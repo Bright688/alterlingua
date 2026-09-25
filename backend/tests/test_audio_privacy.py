@@ -74,7 +74,12 @@ def test_the_temporary_file_is_deleted_even_when_processing_fails(tmp_path, stt)
 def test_the_temporary_file_is_deleted_when_translation_fails(tmp_path):
     stt = StubSpeech()
     client = make_client(SpyProvider(error=errors.ProviderError("x")), stt, temp_dir=str(tmp_path))
-    assert post(client, target="fr").status_code == 502
+    # The words were understood, so the transcript is returned with an empty translation; either way nothing is left behind.
+    assert post(client, target="fr").status_code == 200
+    assert temp_files(tmp_path) == []
+    # And when the translator is needed to detect the language, the request fails outright.
+    detecting = make_client(SpyProvider(error=errors.ProviderError("x")), StubSpeech(detected=""), temp_dir=str(tmp_path))
+    assert post(detecting, source="auto", target="fr").status_code == 502
     assert temp_files(tmp_path) == []
 
 
@@ -124,9 +129,11 @@ def test_failures_log_no_transcript(caplog, error):
 
 
 def test_error_bodies_never_echo_the_transcript():
-    stt = StubSpeech(transcripts={"en": SECRET})
-    response = post(make_client(SpyProvider(error=errors.ProviderError("failed")), stt), target="fr")
-    assert "invoice" not in response.text
+    # (A translation outage after the words were understood is a success that carries the transcript on purpose; an error
+    # is when the translator is needed to detect the language and is down.)
+    stt = StubSpeech(detected="", transcripts={"en": SECRET})
+    response = post(make_client(SpyProvider(error=errors.ProviderError("failed")), stt), source="auto", target="fr")
+    assert response.status_code == 502 and "invoice" not in response.text
     response = post(make_client(stt=StubSpeech(error=RuntimeError(SECRET))))
     assert response.status_code == 500 and "invoice" not in response.text
 

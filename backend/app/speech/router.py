@@ -59,7 +59,7 @@ async def speak_audio(
         await audio.close()
 
 
-@router.post("/translate", response_model=AudioTranslateResponse)
+@router.post("/translate", response_model=AudioTranslateResponse, response_model_exclude_none=True)
 async def translate_audio(
     request: Request,
     audio: UploadFile = File(description="The recording (wav, mp3, m4a/mp4, aac, ogg/opus, webm, flac, amr)."),
@@ -83,6 +83,6 @@ async def translate_audio(
         async with temporary_audio(
             audio, audio.content_type, max_bytes=settings.max_audio_bytes, directory=settings.temp_dir
         ) as recording:
-            return await service.translate_audio(recording, options, checked_target, spoken)
+            return await service.translate_audio(recording, options, checked_target, spoken, allow_partial=True)
     finally:
         await audio.close()

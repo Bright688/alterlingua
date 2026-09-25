@@ -220,12 +220,31 @@ def test_nothing_recognised_is_a_controlled_error():
     assert response.json()["error"]["code"] == "speech_not_recognized"
 
 
-def test_a_failing_translation_step_is_a_controlled_error():
+@pytest.mark.parametrize("error_name", ["ProviderError", "ProviderUnavailableError", "ProviderTimeoutError"])
+def test_when_only_the_translation_step_fails_the_transcript_is_still_returned_with_an_empty_translation(error_name):
+    # The words were understood; the translator is rate-limited or down. Losing the transcript too would be worse.
+    from app.core import errors
+
+    spy = SpyProvider(error=getattr(errors, error_name)("x"))
+    response = post(make_client(spy, StubSpeech(transcripts={"en": "Are you coming tomorrow?"})), source="en", target="fr")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["transcript"] == "Are you coming tomorrow?" and body["translation"] == ""
+    assert (body["source_language"], body["target_language"]) == ("en", "fr")
+
+
+def test_a_translation_problem_that_is_not_an_outage_is_still_an_error():
+    # A request that cannot be translated at all is refused, not answered with an empty translation.
+    response = post(make_client(SpyProvider(languages=("en", "es"))), source="en", target="fr")
+    assert response.status_code == 422
+
+
+def test_a_failing_translation_step_still_fails_when_the_translation_is_needed_to_detect_the_language():
     from app.core.errors import ProviderError
 
-    response = post(make_client(SpyProvider(error=ProviderError("x"))), source="en", target="fr")
-    assert response.status_code == 502
-    assert response.json()["error"]["code"] == "provider_error"
+    stt = StubSpeech(detected="", transcripts={"en": "a sentence"})
+    response = post(make_client(SpyProvider(error=ProviderError("x")), stt), source="auto", target="fr")
+    assert response.status_code == 502 and response.json()["error"]["code"] == "provider_error"
 
 
 def test_health_reports_the_speech_provider(client):

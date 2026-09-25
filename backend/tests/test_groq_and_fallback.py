@@ -87,6 +87,50 @@ async def test_translation_request_shape_and_result():
     assert sent["path"] == "/openai/v1/chat/completions"
     assert sent["model"] == "openai/gpt-oss-120b"
     assert sent["response_format"] == {"type": "json_object"}
+    assert sent["reasoning_effort"] == "low"  # spends fewer tokens per translation, which stretches the free daily allowance
+
+
+async def test_reasoning_effort_is_left_out_when_configured_empty():
+    sent = {}
+
+    def handler(request):
+        sent.update(json.loads(request.content))
+        return chat_answer("Hi", "fr")
+
+    provider = GroqTranslationProvider(settings(groq_reasoning_effort=""), client=client_with(handler))
+    await provider.translate(ProviderRequest("Salut", "fr", "en", "messaging", "natural"))
+    assert "reasoning_effort" not in sent
+
+
+async def test_the_second_groq_model_uses_its_own_model_and_is_named_after_it():
+    sent = {}
+
+    def handler(request):
+        sent.update(json.loads(request.content))
+        return chat_answer("Hi", "fr")
+
+    provider = GroqTranslationProvider(settings(), client=client_with(handler), model="openai/gpt-oss-20b")
+    await provider.translate(ProviderRequest("Salut", "fr", "en", "messaging", "natural"))
+    assert sent["model"] == "openai/gpt-oss-20b" and provider.name == "groq(gpt-oss-20b)"
+    assert GroqTranslationProvider(settings(), client=client_with(handler)).name == "groq"
+
+
+async def test_when_the_first_groq_model_is_out_of_its_daily_allowance_the_second_one_translates():
+    seen = []
+
+    def handler(request):
+        model = json.loads(request.content)["model"]
+        seen.append(model)
+        if model == "openai/gpt-oss-120b":
+            return httpx.Response(429, json={"error": {"message": "Rate limit reached on tokens per day (TPD)"}})
+        return chat_answer("Hi", "fr")
+
+    chain = FallbackTranslationProvider([
+        GroqTranslationProvider(settings(), client=client_with(handler)),
+        GroqTranslationProvider(settings(), client=client_with(handler), model="openai/gpt-oss-20b"),
+    ])
+    result = await chain.translate(ProviderRequest("Salut", "fr", "en", "messaging", "natural"))
+    assert result.translation == "Hi" and seen == ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 
 
 async def test_auto_detect_uses_the_detected_language():
@@ -175,7 +219,16 @@ def test_the_registry_wires_groq_then_cloudflare_and_skips_a_leg_with_no_key():
     both = create_provider(
         Settings(_env_file=None, translation_provider="fallback", groq_api_key=KEY, cloudflare_api_token="c", cloudflare_account_id="acct"),
     )
-    assert both.name == "fallback(groq>cloudflare)"
+    assert both.name == "fallback(groq>groq(gpt-oss-20b)>cloudflare)"
+
+    # The second Groq model can be turned off (empty) or set to the same model (no point trying it twice).
+    assert create_provider(
+        Settings(_env_file=None, translation_provider="fallback", groq_api_key=KEY, cloudflare_api_token="c", cloudflare_account_id="acct",
+                 groq_translation_fallback_model=""),
+    ).name == "fallback(groq>cloudflare)"
+    assert create_provider(
+        Settings(_env_file=None, translation_provider="fallback", groq_api_key=KEY, groq_translation_fallback_model="openai/gpt-oss-120b"),
+    ).name == "fallback(groq)"
 
     only_cloudflare = create_provider(
         Settings(_env_file=None, translation_provider="fallback", cloudflare_api_token="c", cloudflare_account_id="acct"),
