@@ -85,8 +85,28 @@ def test_a_detected_language_that_is_not_supported_is_a_controlled_error():
     assert response.json()["error"]["code"] == "unsupported_language"
 
 
-def test_no_language_reported_for_auto_is_undetected():
-    stt = StubSpeech(detected="")  # the provider reports nothing
+@pytest.mark.parametrize("heard", ["fr", "es", "ja"])
+def test_when_the_speech_engine_names_no_language_the_translator_detects_it_from_the_transcript(heard):
+    # Mistral's Voxtral transcribes but leaves `language` empty, even when asked (found on the live service: every
+    # shared voice note, which is sent with source=auto, failed with source_language_undetected because of this).
+    stt = StubSpeech(detected="", transcripts={"en": SAMPLE_PHRASES[heard]})
+    response = post(make_client(stt=stt), source="auto", target="de")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["source_language"] == heard
+    assert body["transcript"] == SAMPLE_PHRASES[heard]
+    assert body["translation"] == SAMPLE_PHRASES["de"]
+
+
+def test_speech_in_the_target_language_with_no_language_reported_is_returned_as_it_is():
+    stt = StubSpeech(detected="", transcripts={"en": SAMPLE_PHRASES["fr"]})
+    body = post(make_client(stt=stt), source="auto", target="fr").json()
+    assert body["source_language"] == "fr"
+    assert body["transcript"] == body["translation"] == SAMPLE_PHRASES["fr"]
+
+
+def test_if_neither_the_speech_engine_nor_the_translator_can_tell_the_language_it_is_undetected():
+    stt = StubSpeech(detected="", transcripts={"en": "a sentence the development translator has never seen"})
     response = post(make_client(stt=stt), source="auto")
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "source_language_undetected"

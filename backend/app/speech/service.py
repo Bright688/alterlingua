@@ -12,7 +12,6 @@ import unicodedata
 from app.core.errors import (
     AutoDetectUnavailableError,
     ProviderTimeoutError,
-    SourceLanguageUndetectedError,
     SpeechNotRecognizedError,
     UnsupportedLanguageError,
 )
@@ -85,15 +84,22 @@ class SpeechTranslationService:
             raise SpeechNotRecognizedError("No speech was recognised in the audio.")
 
         source = spoken or (result.detected_language or "").lower()
-        if not source:
-            raise SourceLanguageUndetectedError("Could not tell which language was spoken.")
-        if source not in LANGUAGES:
+        if source and source not in LANGUAGES:
             raise UnsupportedLanguageError(
                 f"The detected language {source!r} is not supported.", language=source, role="source", supported=sorted(LANGUAGES)
             )
 
-        # Speech already in the target language is returned as it is, never re-translated.
-        if source == target:
+        if not source:
+            # Some speech engines (Mistral's Voxtral) transcribe correctly but never say which language they heard, even
+            # when asked. The translator can tell from the transcript itself, in the same call that translates it. If it
+            # cannot either, that is reported as source_language_undetected, exactly as before.
+            translated = await self._translation.translate(
+                TranslateRequest(text=transcript, source=AUTO, target=target, context=options.context, tone=options.tone)
+            )
+            source = translated.source_language
+            translation = translated.translation
+        elif source == target:
+            # Speech already in the target language is returned as it is, never re-translated.
             translation = transcript
         else:
             translated = await self._translation.translate(

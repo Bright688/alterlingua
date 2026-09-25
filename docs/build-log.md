@@ -1457,3 +1457,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Verification:** 297 of 297 backend tests pass (new `test_cloudflare_providers.py`; the fallback-chain test updated for the new order). **Manually verified live:** the owner's real Cloudflare credentials returned HTTP 200 with valid JSON in the exact expected shape (`response_format: json_object` is accepted); the deployed server reports `provider=fallback(groq>cloudflare)`; and the Cloudflare leg run alone on the server, with Groq bypassed, translated "Tu viens demain ?" to English with the source auto-detected as French in 1.7s.
 
 **Notes:** Qwen3 returns a `reasoning` field alongside the answer, which costs some output tokens and latency on this leg (~1.7s here versus ~0.3–0.9s for Groq); acceptable for a fallback, and worth revisiting if Cloudflare ever becomes primary. The old Mistral key is still in the server's `.env`, used only by STT/TTS. Not checked: whether Mistral's STT/TTS are affected by the same account hold.
+
+
+---
+
+## 2026-09-25 — Shared WhatsApp voice notes failed with "Unclear voice recording"
+
+**Symptom (owner, screenshots):** Share a WhatsApp voice note (`PTT-…opus`) to AlterLingua; the app shows "Unclear voice recording — I couldn't understand that."
+
+**Diagnosis:** the server log showed the same pattern on every attempt: Mistral's transcription returned `200 OK`, then `POST /v1/audio/translate` returned `422` within a fraction of a second. The log did not say which 422. Candidate causes were an empty transcript, an unsupported detected language, or an undetected language. A probe on the live server (synthetic English speech only, printing shapes and lengths, no text) showed Mistral's Voxtral transcribes correctly (72 characters) but its `language` field is `None`, both with and without a language in the request. A shared voice note is sent with the spoken language on `auto`, so `SpeechTranslationService` found no detected language and raised `source_language_undetected`, which the app shows as "unclear recording". Every shared voice note failed this way; the keyboard microphone works because it names the language.
+
+**Fix (backend, `speech/service.py`):** when neither the request nor the speech engine names the language, the transcript is passed to the translation service with `source=auto`, whose provider detects the language while translating; speech already in the target language comes back unchanged; if the translator cannot tell either, the answer is still `source_language_undetected`. A provider-reported language that is not in the catalogue is still rejected as before.
+
+**Also:** `main.py` now logs a `request_rejected` line with the path, status and error *code* (never any text) for every controlled error, so two requests with the same status can be told apart. That gap is what made this slow to diagnose.
+
+**Verification:** 301 backend tests pass (the old test that pinned the failing behaviour was replaced by three: language detected from the transcript, target-language speech returned as it is, and still undetected when the translator cannot tell). Deployed to the production server; a live end-to-end call (synthetic English speech, `source=auto`, target `fr` and `en`) returned HTTP 200 with the language detected. IMPLEMENTED and verified against the live server with synthetic audio; NOT yet verified with the owner's real voice note.

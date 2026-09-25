@@ -109,7 +109,10 @@ def create_app(
         return response
 
     @app.exception_handler(AppError)
-    async def handle_app_error(_: Request, error: AppError) -> JSONResponse:
+    async def handle_app_error(request: Request, error: AppError) -> JSONResponse:
+        # The error's code names the kind of problem (never any text from the request), so a rejected request can be
+        # told apart from another with the same status.
+        logger.info("request_rejected %s", kv(path=request.url.path, status=error.status_code, code=error.code))
         return JSONResponse(status_code=error.status_code, content=error.to_body())
 
     @app.exception_handler(RequestValidationError)
