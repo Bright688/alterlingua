@@ -101,13 +101,25 @@ class CaptionMetrics(context: Context) {
     /** Height of the single smaller line used when there is only a sliver of room. */
     val compactLineHeightPx: Int = TextPaint().also { it.textSize = compactTextSizePx }.fontMetricsInt.let { (it.descent - it.ascent) + 2 * compactPaddingV }
 
+    private val measurePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).also { it.textSize = textSizePx }
+    private val measureCompactPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).also { it.textSize = compactTextSizePx }
+
+    /** How many lines [text] takes in a caption box [widthPx] wide, measured with the same paint the caption is drawn with. */
+    private fun measureLines(text: String, widthPx: Int, compact: Boolean): Int {
+        val paint = if (compact) measureCompactPaint else measurePaint
+        val textWidth = (widthPx - 2 * paddingH).coerceAtLeast(1)
+        return StaticLayout.Builder.obtain(text, 0, text.length, paint, textWidth).build().lineCount.coerceAtLeast(1)
+    }
+
     /** The numbers [CaptionPlacer] needs. */
     val sizes: CaptionSizes = CaptionSizes(
         lineHeightPx = lineHeightPx,
         compactLineHeightPx = compactLineHeightPx,
         marginPx = marginPx,
         minWidthPx = minWidthPx,
+        sideMinWidthPx = (96 * density).toInt(),
         sideGapPx = (16 * density).toInt(),
+        measureLines = ::measureLines,
     )
 
     fun paddingVFor(compact: Boolean): Int = if (compact) compactPaddingV else paddingV

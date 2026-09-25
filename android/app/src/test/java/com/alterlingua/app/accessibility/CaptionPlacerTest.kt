@@ -7,35 +7,49 @@ import org.junit.Test
 
 class CaptionPlacerTest {
 
-    /** The conversation area of a 1000 px wide screen: below the title bar, above the text box. */
+    /** A 1000 px wide screen: the conversation area is below the title bar and above the text box. */
     private val area = Bounds(0, 200, 1000, 1800)
-    private val sizes = CaptionSizes(lineHeightPx = 40, compactLineHeightPx = 24, marginPx = 16, minWidthPx = 200, sideGapPx = 40)
+
+    /** Texts starting with "LONG" need 5 lines, everything else one, so truncation can be tested without fonts. */
+    private val sizes = CaptionSizes(
+        lineHeightPx = 40, compactLineHeightPx = 24, marginPx = 16, minWidthPx = 200, sideMinWidthPx = 120, sideGapPx = 40,
+        measureLines = { text, _, _ -> if (text.startsWith("LONG")) 5 else 1 },
+    )
 
     private fun message(text: String, top: Int, bottom: Int, left: Int = 40, right: Int = 700) = ChatMessage(text, Bounds(left, top, right, bottom))
 
-    private fun place(vararg messages: ChatMessage, translate: Map<String, String>): List<Caption> =
-        CaptionPlacer.place(Conversation(messages.toList().sortedBy { it.bounds.top }, area), translate::get, sizes)
+    private fun place(vararg messages: ChatMessage, translate: Map<String, String>, inArea: Bounds = area, with: CaptionSizes = sizes): List<Caption> =
+        CaptionPlacer.place(Conversation(messages.toList().sortedBy { it.bounds.top }, inArea), translate::get, with)
 
     private fun everything(vararg texts: String) = texts.associateWith { "T:$it" }
 
-    private fun rect(c: Caption): Bounds =
-        Bounds(c.left, c.top, c.left + c.width, c.top + c.maxLines * (if (c.compact) sizes.compactLineHeightPx else sizes.lineHeightPx))
+    private fun rect(c: Caption, s: CaptionSizes = sizes): Bounds =
+        Bounds(c.left, c.top, c.left + c.width, c.top + c.maxLines * (if (c.compact) s.compactLineHeightPx else s.lineHeightPx))
 
     private fun overlaps(a: Bounds, b: Bounds) = a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top
+
+    private fun assertCoversNothing(captions: List<Caption>, messages: List<ChatMessage>, s: CaptionSizes = sizes, within: Bounds = area) {
+        for (c in captions) {
+            for (m in messages) assertFalse("a caption covers a message", overlaps(rect(c, s), m.bounds))
+            assertTrue("a caption leaves the conversation area", rect(c, s).bottom <= within.bottom && rect(c, s).top >= within.top)
+        }
+        val rects = captions.map { rect(it, s) }
+        for (i in rects.indices) for (j in i + 1 until rects.size) assertFalse("captions overlap each other", overlaps(rects[i], rects[j]))
+    }
 
     // ---- under the message -------------------------------------------------------------------------------------
 
     @Test
-    fun withRoomBelow_aCaptionStartsAtTheBottomLeftOfItsMessage() {
+    fun withRoomBelow_aCaptionStartsAtTheBottomLeftOfItsMessage_andUsesOnlyTheLinesItNeeds() {
         val caption = place(message("Salut", 400, 460), translate = mapOf("Salut" to "Hi")).single()
-        assertEquals(Caption("Hi", left = 40, top = 460, width = 660, maxLines = 3), caption)
+        assertEquals(Caption("Hi", left = 40, top = 460, width = 660, maxLines = 1), caption)
     }
 
     @Test
-    fun theCaptionIsLimitedToTheRoomBeforeTheNextMessage() {
-        val result = place(message("A", 400, 460), message("B", 580, 640), translate = mapOf("A" to "a"))
-        assertEquals(3, result.single().maxLines) // 120 px of room = three lines
-        val middle = place(message("A", 400, 460), message("B", 545, 605), translate = mapOf("A" to "a"))
+    fun aLongTranslation_isLimitedToTheRoomBeforeTheNextMessage() {
+        val roomy = place(message("A", 400, 460), message("B", 580, 640), translate = mapOf("A" to "LONG one"))
+        assertEquals(3, roomy.single().maxLines) // 120 px of room = three lines (five needed: cut with an ellipsis)
+        val middle = place(message("A", 400, 460), message("B", 545, 605), translate = mapOf("A" to "LONG one"))
         assertEquals(2, middle.single().maxLines) // 85 px of room = two lines
     }
 
@@ -63,15 +77,11 @@ class CaptionPlacerTest {
 
     @Test
     fun tightBubbles_neverGetACaptionThatCoversTheNextMessage() {
-        // Consecutive bubbles from the same sender: only ~20 px between one text and the next (less than a line).
         val a = message("Hola", 500, 540, left = 500, right = 700)
         val b = message("¿Quién eres?", 560, 600, left = 400, right = 700)
         val c = message("Bien je vous", 620, 660, left = 400, right = 700)
         val captions = place(a, b, c, translate = everything("Hola", "¿Quién eres?", "Bien je vous"))
-        val protectedRects = listOf(a, b, c).map { it.bounds }
-        for (caption in captions) {
-            for (m in protectedRects) assertFalse("a caption covers a message", overlaps(rect(caption), m))
-        }
+        assertCoversNothing(captions, listOf(a, b, c))
     }
 
     @Test
@@ -80,7 +90,7 @@ class CaptionPlacerTest {
         val a = message("Hola", 500, 540, left = 700, right = 940)
         val b = message("Next", 560, 600, left = 700, right = 940)
         val caption = place(a, b, translate = mapOf("Hola" to "Hello")).single()
-        assertTrue("beside, not under", caption.top == 500)
+        assertEquals("beside, level with the message", 500, caption.top)
         assertTrue("left of the bubble with a gap", caption.left + caption.width <= 700 - 40)
         assertEquals("Hello", caption.text)
     }
@@ -106,8 +116,18 @@ class CaptionPlacerTest {
     }
 
     @Test
+    fun aRowOnlyAsTallAsACompactLine_getsACompactCaptionBesideIt() {
+        // 30 px pitch between rows: too tight for a 40 px line beside the bubble, enough for a 24 px compact one.
+        val a = message("Hola", 500, 530, left = 700, right = 900)
+        val b = message("Adios", 530, 560, left = 400, right = 900)
+        val caption = place(a, b, translate = mapOf("Hola" to "Hello")).single()
+        assertTrue(caption.compact)
+        assertEquals(500, caption.top)
+        assertCoversNothing(listOf(caption), listOf(a, b))
+    }
+
+    @Test
     fun whenNothingFits_thereIsNoCaptionAtAll() {
-        // A wide message with only 10 px below: not even a compact line; no room at the sides either.
         val a = message("Wide message", 500, 540, left = 20, right = 980)
         val b = message("Next", 550, 590, left = 20, right = 980)
         assertTrue(place(a, b, translate = mapOf("Wide message" to "Big")).isEmpty())
@@ -115,35 +135,55 @@ class CaptionPlacerTest {
 
     @Test
     fun aCaptionNeverEntersTheTextBoxArea() {
-        // The last message sits right above the text box: the room ends at the area's bottom.
         val a = message("Last", 1740, 1780)
         val captions = place(a, translate = mapOf("Last" to "Dernier"))
-        for (caption in captions) assertTrue(rect(caption).bottom <= area.bottom)
-        assertEquals(1, captions.single().maxLines) // 20 px of room is less than a line: only compact or beside can be used
+        assertCoversNothing(captions, listOf(a))
     }
 
     @Test
     fun captionsDoNotOverlapEachOther() {
         val messages = (0 until 8).map { message("m$it", 300 + it * 70, 340 + it * 70, left = if (it % 2 == 0) 40 else 500, right = if (it % 2 == 0) 400 else 960) }
         val captions = place(*messages.toTypedArray(), translate = everything(*messages.map { it.text }.toTypedArray()))
-        val rects = captions.map(::rect)
-        for (i in rects.indices) for (j in i + 1 until rects.size) assertFalse("captions overlap", overlaps(rects[i], rects[j]))
-        for (caption in captions) for (m in messages) assertFalse("a caption covers a message", overlaps(rect(caption), m.bounds))
+        assertCoversNothing(captions, messages)
     }
 
     @Test
     fun aCaptionNeverCoversAQuoteOrNameThatIsPartOfTheScreen() {
-        // Anything the extractor kept is protected, whatever it is: here a sender name sitting just below.
         val a = message("Message", 500, 540)
         val name = message("Marie", 545, 585)
-        val captions = place(a, name, translate = mapOf("Message" to "M"))
-        for (caption in captions) assertFalse(overlaps(rect(caption), name.bounds))
+        assertCoversNothing(place(a, name, translate = mapOf("Message" to "M")), listOf(a, name))
     }
 
     @Test
-    fun aMessageOnAnEmptyConversation_orAnEmptyArea_givesNothing() {
+    fun anEmptyConversation_orAnEmptyArea_givesNothing() {
         assertTrue(CaptionPlacer.place(Conversation(emptyList(), area), { "x" }, sizes).isEmpty())
         assertTrue(CaptionPlacer.place(Conversation(listOf(message("A", 400, 460)), Bounds(0, 0, 0, 0)), { "x" }, sizes).isEmpty())
+    }
+
+    // ---- the owner's real screen: a run of consecutive bubbles (regression) --------------------------------------
+
+    /**
+     * From the owner's phone (720 px wide, 2.0 density: caption line 41 px, compact 28 px, bubbles ~50 px apart).
+     * Earlier versions reserved a caption's *maximum* height, so those phantom reservations blocked every later caption
+     * in a run of bubbles and only the first and last got one.
+     */
+    @Test
+    fun aRunOfConsecutiveBubbles_allGetACaption_andNothingIsCovered() {
+        val phone = CaptionSizes(
+            lineHeightPx = 41, compactLineHeightPx = 28, marginPx = 16, minWidthPx = 280, sideMinWidthPx = 192, sideGapPx = 32,
+            measureLines = { _, _, _ -> 1 },
+        )
+        val screen = Bounds(0, 160, 720, 1300)
+        val a = message("Comment ça va ?", 500, 540, left = 84, right = 300)
+        val hola = message("Hola", 600, 640, left = 390, right = 440)
+        val quien = message("¿Quién eres?", 650, 690, left = 282, right = 441)
+        val ben = message("Ben je goed?", 700, 740, left = 282, right = 441)
+        val hoop = message("Hoop dat het goed met je gaat", 750, 790, left = 170, right = 550)
+        val naar = message("Naar waar ga je?", 850, 890, left = 250, right = 441)
+        val all = listOf(a, hola, quien, ben, hoop, naar)
+        val captions = place(*all.toTypedArray(), translate = everything(*all.map { it.text }.toTypedArray()), inArea = screen, with = phone)
+        assertEquals("every message in the run has a caption", all.map { "T:" + it.text }.toSet(), captions.map { it.text }.toSet())
+        assertCoversNothing(captions, all, phone, screen)
     }
 
     @Test

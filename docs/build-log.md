@@ -1503,3 +1503,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Trade-off, stated to the owner:** in a dense chat some messages will get their caption beside the bubble, in a smaller style, or not at all.
 
 **Verification:** 835 unit tests pass (13 placer tests, including the owner's tight-bubble case). Installed on the phone; not yet seen by the owner.
+
+
+---
+
+## 2026-09-25 — Captions missing in a run of consecutive messages
+
+**Feedback (owner, screenshot):** with several messages in a row, only the first and last got a caption; the middle ones got none ("you have to do it well").
+
+**Cause:** after placing a caption, `CaptionPlacer` reserved the space for its *maximum* height (three lines) instead of the lines it really used. Those phantom reservations were treated as obstacles, so in a run of tightly stacked bubbles every caption after the first was blocked. A second limit: a caption beside a bubble had to be at least one full normal line high, but rows in a run are only ~50 px apart on the owner's phone (density 2.0, so a normal line is ~41 px and there was no room left after other obstacles).
+
+**Fix:** `CaptionOverlay` now measures how many lines each translation really needs with the same paint that draws it (`CaptionSizes.measureLines`), and the placer reserves only that. It also tries a compact style beside the bubble and lets a beside caption be narrower (96 dp). Candidate order: under, beside, compact beside, compact under; the first that shows the whole translation wins.
+
+**Test added:** a run of five consecutive bubbles modelled on the owner's screen (720 px wide, 2.0 density): every message gets a caption, nothing is covered, no captions overlap.
+
+**Verification:** 837 unit tests pass, 0 failures. Installed on the phone (service stayed bound). IMPLEMENTED, not MANUALLY VERIFIED: the owner has not yet seen this version.
