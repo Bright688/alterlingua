@@ -79,12 +79,6 @@ data class UserSettings(
     /** Whether incoming messages from a supported chat app (see IncomingSources) are translated into the user's own language (needs notification access). */
     val incomingTranslationEnabled: Boolean = true,
     /**
-     * Whether a translated incoming message also shows as a small floating bubble (needs "Display over other apps").
-     * Off by default: this is an extra, more visible layer on top of [incomingTranslationEnabled]'s notification, not
-     * a replacement for it, and the permission it needs is more sensitive than notification access.
-     */
-    val floatingTranslationEnabled: Boolean = false,
-    /**
      * Whether AlterLingua reads a supported chat app's own screen live, while it is open, so a translation can appear
      * without waiting for a notification (needs Android's separately-granted Accessibility permission for
      * AlterLinguaAccessibilityService). Off by default: this is the most sensitive of the incoming-translation

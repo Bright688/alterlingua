@@ -6,49 +6,153 @@ import com.alterlingua.app.AlterLinguaApplication
 import com.alterlingua.app.notifications.IncomingSources
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
- * Reads the text Android's accessibility tree exposes for a supported chat app's own screen while that app is in the
- * foreground, so a translation can appear live without waiting for a notification (CLAUDE.md section 39).
+ * Reads the messages a supported chat app shows on screen while it is in the foreground and draws each one's
+ * translation directly under it (CLAUDE.md section 39).
  *
  * Scope is minimised at the OS level, not just in code: `res/xml/accessibility_service_config.xml`'s
  * `android:packageNames` means Android itself never delivers an event from any app outside that list to this
- * service — the [IncomingSources.accepts] check below is a second, redundant guard, not the only one. This is not an
- * accessibility tool (it does not declare `isAccessibilityTool`); it is a translation feature that happens to use
- * this API, off by default, and inert until the user separately enables both the app's own setting and Android's
- * Accessibility permission for this service.
+ * service; the [IncomingSources.accepts] checks below are a second, redundant guard. This is not an accessibility tool
+ * (it does not declare `isAccessibilityTool`); it is a translation feature that happens to use this API, off by
+ * default, and inert until the user separately enables both the app's own setting and Android's Accessibility
+ * permission for this service.
  *
- * It only ever reads text. It never taps, scrolls, fills in or otherwise acts on anything in the app it is reading
- * (CLAUDE.md section 37), and nothing it reads is saved — only the translation result is shown, exactly as
- * [LiveChatTranslator] and [SeenMessages][com.alterlingua.app.notifications.SeenMessages] already behave for the
- * notification-based translator.
+ * It only ever reads text and positions, and draws a caption layer that cannot be touched. It never taps, scrolls,
+ * fills in or otherwise acts on anything in the app it is reading (CLAUDE.md section 37). Nothing it reads is saved:
+ * the last reading and [LiveChatTranslator]'s answers live in this process's memory only, and are dropped when the
+ * service stops.
+ *
+ * Flow: an event pokes [ReadScheduler] (a flood of events becomes a few readings; while the screen is scrolling the
+ * reading waits until it settles, and the captions are hidden meanwhile because their positions are out of date) ->
+ * the visible tree is read -> [ChatScreenExtractor] keeps the messages with their positions -> captions already known
+ * are drawn at once -> [LiveChatTranslator] translates the rest in the background, and each arrival is drawn as it lands.
  */
 class AlterLinguaAccessibilityService : AccessibilityService() {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val liveChatTranslator get() = (application as AlterLinguaApplication).liveChatTranslator
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val translator get() = (application as AlterLinguaApplication).liveChatTranslator
+    private val reads = ReadScheduler(scope) { readScreen() }
 
-    /** Caps how often a content-changed flood can turn into a tree walk and a translate call (see its own doc for why). */
-    private val throttle = ScreenReadThrottle()
+    private var overlay: CaptionOverlay? = null
+    private var messages: List<ChatMessage> = emptyList()
+    private var screen = Bounds(0, 0, 0, 0)
+    private var watch: Job? = null
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        overlay = CaptionOverlay(this)
+    }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         val e = event ?: return
-        if (e.eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && e.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
         val packageName = e.packageName?.toString() ?: return
         if (!IncomingSources.accepts(packageName)) return // belt and braces: the config's packageNames already restricts delivery to this point
-        if (!throttle.tryAcquire()) return
-        val root = rootInActiveWindow ?: return
-        val texts = ChatScreenExtractor.extract(AccessibilityTreeReader.read(root))
-        if (texts.isNotEmpty()) scope.launch { liveChatTranslator.handle(packageName, texts) }
+        when (e.eventType) {
+            AccessibilityEvent.TYPE_VIEW_SCROLLED, AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
+                clearCaptions() // the layout is moving or has changed: what was drawn is now in the wrong place
+                reads.pokeWhenSettled()
+            }
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> reads.pokeAtMostEvery()
+        }
     }
 
-    override fun onInterrupt() {}
+    /** Reads the screen in front, draws what is already translated, and starts translating what is not. */
+    private suspend fun readScreen() {
+        val root = rootInActiveWindow
+        if (root == null || !isSupported(root.packageName)) {
+            clearCaptions()
+            return
+        }
+        if (!translator.isEnabled()) {
+            clearCaptions()
+            return
+        }
+        val snapshot = AccessibilityTreeReader.read(root)
+        @Suppress("DEPRECATION")
+        root.recycle()
+        screen = snapshot.screen
+        messages = ChatScreenExtractor.extract(snapshot)
+        render()
+        val texts = messages.map { it.text }
+        if (texts.isNotEmpty()) {
+            scope.launch(Dispatchers.Default) { translator.prepare(texts) { scope.launch { render() } } }
+        }
+    }
+
+    /** Draws a caption under every message whose translation is known; removes the overlay when there is nothing to show. */
+    private fun render() {
+        val current = overlay ?: return
+        if (messages.isEmpty()) {
+            current.hide()
+            return
+        }
+        val captions = CaptionPlacer.place(
+            messages = messages,
+            translations = translator::captionFor,
+            screen = screen,
+            lineHeightPx = current.metrics.lineHeightPx,
+            marginPx = current.metrics.marginPx,
+            minWidthPx = current.metrics.minWidthPx,
+        )
+        current.show(captions)
+        if (captions.isNotEmpty()) watchForeground()
+    }
+
+    private fun clearCaptions() {
+        messages = emptyList()
+        overlay?.hide()
+    }
+
+    private fun isSupported(packageName: CharSequence?): Boolean = packageName != null && IncomingSources.accepts(packageName.toString())
+
+    /**
+     * While captions are showing, checks every so often that the chat app is still the one in front. Android sends this
+     * service no event when the user leaves for another app (it only hears from the chat apps), so without this the
+     * captions would stay drawn on top of whatever the user switched to.
+     */
+    private fun watchForeground() {
+        if (watch?.isActive == true) return
+        watch = scope.launch {
+            while (isActive && overlay?.isShowing == true) {
+                delay(800)
+                val root = rootInActiveWindow
+                val inFront = root != null && isSupported(root.packageName)
+                @Suppress("DEPRECATION")
+                root?.recycle()
+                if (!inFront || !translator.isEnabled()) {
+                    clearCaptions()
+                    return@launch
+                }
+            }
+        }
+    }
+
+    override fun onInterrupt() {
+        clearCaptions()
+    }
+
+    override fun onUnbind(intent: android.content.Intent?): Boolean {
+        shutDown()
+        return super.onUnbind(intent)
+    }
 
     override fun onDestroy() {
-        scope.cancel()
+        shutDown()
         super.onDestroy()
+    }
+
+    private fun shutDown() {
+        reads.cancel()
+        watch?.cancel()
+        clearCaptions()
+        translator.clear()
+        scope.cancel()
     }
 }

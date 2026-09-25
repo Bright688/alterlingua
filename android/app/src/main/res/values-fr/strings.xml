@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="accessibility_service_description">Lit le texte affiché à l’écran dans WhatsApp, Telegram, Messenger ou Signal quand l’une de ces applications est ouverte, afin qu’AlterLingua puisse afficher une traduction sans attendre de notification. AlterLingua est un outil de traduction, pas un outil d’accessibilité pour les personnes en situation de handicap. Désactivé par défaut ; activez-le dans les paramètres d’AlterLingua.</string>
+    <string name="accessibility_service_description">Lit le texte affiché à l’écran dans WhatsApp, Telegram, Messenger ou Signal quand l’une de ces applications est ouverte, afin qu’AlterLingua puisse afficher une traduction sous chaque message. AlterLingua est un outil de traduction, pas un outil d’accessibilité pour les personnes en situation de handicap. Désactivé par défaut ; activez-le dans les paramètres d’AlterLingua.</string>
     <string name="nav_home">Accueil</string>
     <string name="nav_learn">Apprendre</string>
     <string name="nav_words">Mots</string>
@@ -210,7 +210,6 @@
     <string name="onb_notification_settings">Paramètres de notification</string>
     <string name="onb_allow_notifications">Autoriser les notifications</string>
     <string name="onb_you_can_turn_this_off">Vous pouvez le désactiver à tout moment dans les paramètres Android ou dans les Paramètres d’AlterLingua.</string>
-    <string name="onb_floating_translation_subtitle">Ceci est optionnel et désactivé par défaut. Il affiche la même traduction que celle déjà reçue par notification, directement au-dessus de la conversation.</string>
     <string name="onb_live_chat_translation_subtitle">Ceci est optionnel et désactivé par défaut. AlterLingua peut déjà afficher des traductions à partir des notifications sans cela.</string>
     <string name="onb_live_chat_translation_note">Vous pouvez activer ou désactiver ceci à tout moment dans les Paramètres d’AlterLingua. La saisie fonctionne toujours sans cela.</string>
     <string name="onb_later_you_ll_be_able">Vous pouvez dire un message et le faire écrire dans la langue choisie.</string>
@@ -250,11 +249,9 @@
     <string name="set_translate_whatsapp_messages">Traduire les messages reçus</string>
     <string name="set_whatsapp_desc">Quand quelqu’un écrit dans une autre langue, AlterLingua affiche une traduction en %1$s dans sa propre notification.</string>
     <string name="set_it_only_reads_the_text">Il ne lit que le texte que vos applications de messagerie (WhatsApp, Telegram, Messenger, Signal) affichent dans leurs notifications, jamais la conversation elle-même, et ne conserve pas les messages. Il nécessite l’accès aux notifications (voir Configuration ci-dessous).</string>
-    <string name="set_floating_translation">Afficher une traduction flottante</string>
-    <string name="set_floating_translation_desc">Affiche aussi la même traduction sous forme de petite bulle au-dessus de la conversation ouverte. Utilise le même message que la notification ci-dessus, jamais l’écran de la conversation elle-même. Nécessite « Afficher par-dessus les autres applications ».</string>
     <string name="set_live_chat_translation">Lire les écrans de discussion en direct</string>
-    <string name="set_live_chat_translation_desc">Affiche une traduction dès qu’un nouveau message apparaît à l’écran dans une application de messagerie prise en charge, sans attendre de notification. Nécessite l’autorisation d’accessibilité d’Android.</string>
-    <string name="set_live_chat_consent_body">Quand cette option est activée, AlterLingua lit le texte affiché à l’écran dans WhatsApp, Telegram, Messenger ou Signal quand l’une de ces applications est ouverte — jamais les photos, les messages vocaux ou ce que vous tapez, et seulement pendant qu’une application prise en charge est celle que vous utilisez. Ce texte est envoyé au service de traduction d’AlterLingua puis vous est montré sous forme de traduction ; il n’est jamais conservé, et rien n’est partagé avec qui que ce soit d’autre. Cela nécessite l’autorisation d’accessibilité d’Android, que vous accordez séparément après avoir accepté ici. AlterLingua est un outil de traduction, pas un outil d’accessibilité pour les personnes en situation de handicap.</string>
+    <string name="set_live_chat_translation_desc">Affiche la traduction juste sous chaque message à l’écran dans une application de messagerie prise en charge, dessinée par-dessus la conversation tant qu’elle est ouverte. Peut masquer l’heure sous le message. Nécessite l’autorisation d’accessibilité d’Android.</string>
+    <string name="set_live_chat_consent_body">Quand cette option est activée, AlterLingua lit le texte affiché à l’écran dans WhatsApp, Telegram, Messenger ou Signal quand l’une de ces applications est ouverte — jamais les photos, les messages vocaux ou ce que vous tapez, et seulement pendant qu’une application prise en charge est celle que vous utilisez. Ce texte est envoyé au service de traduction d’AlterLingua puis vous est montré sous forme de traduction sous chaque message à l’écran ; il n’est jamais conservé, et rien n’est partagé avec qui que ce soit d’autre. Cela nécessite l’autorisation d’accessibilité d’Android, que vous accordez séparément après avoir accepté ici. AlterLingua est un outil de traduction, pas un outil d’accessibilité pour les personnes en situation de handicap.</string>
     <string name="set_turn_on">Activer</string>
     <string name="set_privacy">Confidentialité</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua ne conserve que les mots que vous apprenez, la fréquence à laquelle vous les rencontrez et leur statut d’apprentissage. Vos messages ne sont pas conservés.</string>

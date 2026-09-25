@@ -13,7 +13,7 @@
     <string name="notification_listener_name" translatable="false">AlterLingua</string>
     <!-- Shown in Android's own Accessibility settings list; optional, off by default (see UserSettings.liveChatTranslationEnabled) -->
     <string name="accessibility_service_name" translatable="false">AlterLingua</string>
-    <string name="accessibility_service_description">Reads on-screen text in WhatsApp, Telegram, Messenger or Signal while one of them is open, so AlterLingua can show a translation without waiting for a notification. AlterLingua is a translation tool, not an accessibility tool for people with disabilities. Off by default; turn it on in AlterLingua\'s own Settings.</string>
+    <string name="accessibility_service_description">Reads on-screen text in WhatsApp, Telegram, Messenger or Signal while one of them is open, so AlterLingua can show a translation under each message. AlterLingua is a translation tool, not an accessibility tool for people with disabilities. Off by default; turn it on in AlterLingua\'s own Settings.</string>
 
 
     <!-- Keyboard key descriptions (read out by screen readers) -->
@@ -235,7 +235,6 @@
     <string name="onb_notification_settings">Notification settings</string>
     <string name="onb_allow_notifications">Allow notifications</string>
     <string name="onb_you_can_turn_this_off">You can turn this off any time in Android settings or later in AlterLingua Settings.</string>
-    <string name="onb_floating_translation_subtitle">This is optional, and off by default. It shows the same translation you already get from notifications, right on top of the chat.</string>
     <string name="onb_live_chat_translation_subtitle">This is optional, and off by default. AlterLingua can already show translations from notifications without it.</string>
     <string name="onb_live_chat_translation_note">You can turn this on or off any time in AlterLingua Settings. Typing always works without it.</string>
     <string name="onb_later_you_ll_be_able">You can speak a message and have it written in your chosen language.</string>
@@ -277,11 +276,9 @@
     <string name="set_translate_whatsapp_messages">Translate incoming messages</string>
     <string name="set_whatsapp_desc">When someone writes in another language, AlterLingua shows a translation in %1$s as its own notification.</string>
     <string name="set_it_only_reads_the_text">It only reads the text your messaging apps (WhatsApp, Telegram, Messenger, Signal) show in their notifications, never the chat itself, and it does not save the messages. It needs notification access (see Setup below).</string>
-    <string name="set_floating_translation">Show a floating translation</string>
-    <string name="set_floating_translation_desc">Also show the same translation as a small bubble on top of the chat while you have it open. Uses the same message the notification above already reads, never the chat\'s own screen. Needs \"Display over other apps\".</string>
     <string name="set_live_chat_translation">Read chat screens live</string>
-    <string name="set_live_chat_translation_desc">Shows a translation the moment a new message appears on screen in a supported chat app, without waiting for a notification. Needs Android\'s Accessibility permission.</string>
-    <string name="set_live_chat_consent_body">When this is on, AlterLingua reads the text shown on screen in WhatsApp, Telegram, Messenger or Signal while one of them is open — not photos, not voice notes, not anything you type, and only while a supported app is the one you\'re using. That text is sent to AlterLingua\'s translation service and shown back to you as a translation; it is never saved, and nothing is shared with anyone else. This needs Android\'s Accessibility permission, which you grant separately after agreeing here. AlterLingua is a translation tool, not an accessibility tool for people with disabilities.</string>
+    <string name="set_live_chat_translation_desc">Shows the translation right under each message on screen in a supported chat app, drawn over the chat while it is open. It can cover the time under a message. Needs Android\'s Accessibility permission.</string>
+    <string name="set_live_chat_consent_body">When this is on, AlterLingua reads the text shown on screen in WhatsApp, Telegram, Messenger or Signal while one of them is open — not photos, not voice notes, not anything you type, and only while a supported app is the one you\'re using. That text is sent to AlterLingua\'s translation service and shown back to you as a translation drawn under each message on screen; it is never saved, and nothing is shared with anyone else. This needs Android\'s Accessibility permission, which you grant separately after agreeing here. AlterLingua is a translation tool, not an accessibility tool for people with disabilities.</string>
     <string name="set_turn_on">Turn on</string>
     <string name="set_privacy">Privacy</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua keeps only the words you learn, how often you meet them and their learning status. Your messages are not stored.</string>

@@ -106,9 +106,8 @@ class PrivacyAuditTest {
     @Test fun onlyTheNecessaryPermissionsAreRequested() {
         val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
         val permissions = Regex("""<uses-permission android:name="([^"]+)"""").findAll(main).map { it.groupValues[1].substringAfterLast('.') }.toSet()
-        // SYSTEM_ALERT_WINDOW is the optional floating translation bubble (off by default, needs its own separately
-        // granted "Display over other apps" permission); it draws a window on top of other apps but never reads one.
-        assertEquals(setOf("RECORD_AUDIO", "INTERNET", "ACCESS_NETWORK_STATE", "POST_NOTIFICATIONS", "SYSTEM_ALERT_WINDOW"), permissions)
+        // No SYSTEM_ALERT_WINDOW: the live chat captions are drawn as an accessibility overlay, which needs no such permission.
+        assertEquals(setOf("RECORD_AUDIO", "INTERNET", "ACCESS_NETWORK_STATE", "POST_NOTIFICATIONS"), permissions)
         assertTrue(main.contains("android:allowBackup=\"false\""))
         assertTrue("the microphone is optional for install", main.contains("android.hardware.microphone\" android:required=\"false\""))
     }

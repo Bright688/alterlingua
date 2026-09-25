@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="accessibility_service_description">在 WhatsApp、Telegram、Messenger 或 Signal 其中之一处于打开状态时，读取其屏幕上的文本，以便 AlterLingua 无需等待通知即可显示译文。AlterLingua 是一款翻译工具，并非面向残障人士的无障碍工具。默认关闭；请在 AlterLingua 自己的设置中开启。</string>
+    <string name="accessibility_service_description">在 WhatsApp、Telegram、Messenger 或 Signal 其中之一处于打开状态时，读取其屏幕上的文本，以便 AlterLingua 在每条消息下方显示译文。AlterLingua 是一款翻译工具，并非面向残障人士的无障碍工具。默认关闭；请在 AlterLingua 自己的设置中开启。</string>
     <string name="nav_home">首页</string>
     <string name="nav_learn">学习</string>
     <string name="nav_words">词汇</string>
@@ -210,7 +210,6 @@
     <string name="onb_notification_settings">通知设置</string>
     <string name="onb_allow_notifications">允许通知</string>
     <string name="onb_you_can_turn_this_off">您可以随时在 Android 设置或 AlterLingua 设置中关闭。</string>
-    <string name="onb_floating_translation_subtitle">此功能可选，默认关闭。它会把您已经通过通知收到的译文，直接显示在聊天上方。</string>
     <string name="onb_live_chat_translation_subtitle">此功能可选，默认关闭。即使不开启，AlterLingua 也已经可以通过通知显示译文。</string>
     <string name="onb_live_chat_translation_note">您可以随时在 AlterLingua 设置中开启或关闭此功能。不开启它，打字功能也始终可用。</string>
     <string name="onb_later_you_ll_be_able">您可以说出一条消息，并让它以您选择的语言写出。</string>
@@ -250,11 +249,9 @@
     <string name="set_translate_whatsapp_messages">翻译收到的消息</string>
     <string name="set_whatsapp_desc">当有人用其他语言写消息时，AlterLingua 会以独立通知显示%1$s译文。</string>
     <string name="set_it_only_reads_the_text">它只读取聊天应用（WhatsApp、Telegram、Messenger、Signal）在通知中显示的文本，从不读取聊天本身，也不保存消息。需要通知使用权（见下方“设置向导”）。</string>
-    <string name="set_floating_translation">显示悬浮翻译</string>
-    <string name="set_floating_translation_desc">打开聊天时，还会在聊天上方以小气泡显示同一条译文，使用的是上面通知已经读取的同一条消息，绝不读取聊天本身的屏幕内容。需要“显示在其他应用上层”权限。</string>
     <string name="set_live_chat_translation">实时读取聊天屏幕</string>
-    <string name="set_live_chat_translation_desc">在受支持的聊天应用屏幕上一出现新消息就立即显示译文，无需等待通知。需要 Android 的无障碍权限。</string>
-    <string name="set_live_chat_consent_body">开启后，AlterLingua 会在您打开 WhatsApp、Telegram、Messenger 或 Signal 其中之一时，读取其屏幕上显示的文本——绝不读取照片、语音留言或您正在输入的内容，且仅在您使用受支持的应用期间生效。该文本会被发送到 AlterLingua 的翻译服务并以译文形式显示给您；系统绝不会保存它，也不会与任何人共享。这需要 Android 的无障碍权限，您需要在此同意后另行授予。AlterLingua 是一款翻译工具，并非面向残障人士的无障碍工具。</string>
+    <string name="set_live_chat_translation_desc">在受支持的聊天应用中，直接在屏幕上每条消息的下方显示译文，打开聊天期间叠加绘制在其上方。可能会遮住消息下方的时间。需要 Android 的无障碍权限。</string>
+    <string name="set_live_chat_consent_body">开启后，AlterLingua 会在您打开 WhatsApp、Telegram、Messenger 或 Signal 其中之一时，读取其屏幕上显示的文本——绝不读取照片、语音留言或您正在输入的内容，且仅在您使用受支持的应用期间生效。该文本会被发送到 AlterLingua 的翻译服务并以译文形式显示在屏幕上每条消息的下方；系统绝不会保存它，也不会与任何人共享。这需要 Android 的无障碍权限，您需要在此同意后另行授予。AlterLingua 是一款翻译工具，并非面向残障人士的无障碍工具。</string>
     <string name="set_turn_on">开启</string>
     <string name="set_privacy">隐私</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua 只保留您学习的词汇、遇到它们的次数以及学习状态。您的消息不会被保存。</string>

@@ -56,13 +56,11 @@ class SetupActions(
     val onRequestMicrophone: () -> Unit,
     val onRequestPostNotifications: () -> Unit,
     val onOpenNotificationSettings: () -> Unit,
-    val onOpenOverlayPermission: () -> Unit,
     val onOpenAccessibilitySettings: () -> Unit,
-    val onEnableFloatingTranslation: () -> Unit,
     val onAgreeToLiveChatTranslation: () -> Unit,
 ) {
     companion object {
-        val None = SetupActions({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})
+        val None = SetupActions({}, {}, {}, {}, {}, {}, {}, {}, {})
     }
 }
 
@@ -126,12 +124,7 @@ fun rememberSetupUi(viewModel: SetupViewModel = viewModel(factory = AppViewModel
                     }
                 },
                 onOpenNotificationSettings = { context.openSettings(SystemSettings.appNotificationSettings(context), SystemSettings.appDetails(context)) },
-                onOpenOverlayPermission = { context.openSettings(SystemSettings.overlayPermission(context), SystemSettings.appDetails(context)) },
                 onOpenAccessibilitySettings = { context.openSettings(SystemSettings.accessibilitySettings()) },
-                onEnableFloatingTranslation = {
-                    viewModel.onFloatingTranslationEnabled()
-                    context.openSettings(SystemSettings.overlayPermission(context), SystemSettings.appDetails(context))
-                },
                 onAgreeToLiveChatTranslation = {
                     viewModel.onLiveChatTranslationAgreed()
                     context.openSettings(SystemSettings.accessibilitySettings())
@@ -165,10 +158,6 @@ internal fun notificationStatusLabel(status: SetupStatus): String =
 @Composable
 internal fun postNotificationsStatusLabel(status: SetupStatus): String =
     stringResource(if (status.postNotifications) R.string.setup_allowed else R.string.setup_not_allowed)
-
-@Composable
-internal fun overlayPermissionStatusLabel(status: SetupStatus): String =
-    stringResource(if (status.overlayPermission) R.string.setup_allowed else R.string.setup_not_allowed)
 
 @Composable
 internal fun accessibilityServiceStatusLabel(status: SetupStatus): String =
@@ -291,16 +280,6 @@ internal fun SetupSettingsRows(setup: SetupUi) {
             buttonText = stringResource(R.string.onb_notification_access),
             buttonTag = "settings_notifications_action",
             onClick = setup.actions.onOpenNotificationAccess,
-        )
-        SettingsSetupRow(
-            title = stringResource(R.string.set_floating_translation),
-            statusText = overlayPermissionStatusLabel(status),
-            done = status.overlayPermission,
-            statusTag = "settings_status_overlay",
-            description = stringResource(R.string.set_floating_translation_desc),
-            buttonText = stringResource(if (status.overlayPermission) R.string.setup_app_settings else R.string.set_turn_on),
-            buttonTag = "settings_overlay_action",
-            onClick = if (status.overlayPermission) setup.actions.onOpenOverlayPermission else setup.actions.onEnableFloatingTranslation,
         )
         SettingsSetupRow(
             title = stringResource(R.string.set_live_chat_translation),

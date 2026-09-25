@@ -19,15 +19,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * The onboarding screens, in order. Choosing the app language (step 1 of 13) comes before these, on its own screen, so the steps
+ * The onboarding screens, in order. Choosing the app language (step 1 of 12) comes before these, on its own screen, so the steps
  * here are numbered from 2: source language, target language, reason, current level, assistance mode, reminder, keyboard,
- * incoming translation, floating translation, live chat-screen translation, microphone, and the last screen.
+ * incoming translation, live chat-screen translation, microphone, and the last screen.
  * [OnboardingStep.KEYBOARD_STYLE] (how to type, for 中文 and 日本語) is only shown when the language chosen in the first step has
- * more than one typing style; otherwise it is skipped. [OnboardingStep.FLOATING_TRANSLATION] and
- * [OnboardingStep.LIVE_CHAT_TRANSLATION] are both optional and off by default (CLAUDE.md section 39): each one's own button is
- * the only thing that turns it on, and "Skip for now" always works regardless.
+ * more than one typing style; otherwise it is skipped. [OnboardingStep.LIVE_CHAT_TRANSLATION] is optional and off by default
+ * (CLAUDE.md section 39): its own button is the only thing that turns it on, and "Skip for now" always works regardless.
  */
-enum class OnboardingStep { SOURCE, KEYBOARD_STYLE, TARGET, PURPOSE, LEVEL, ASSISTANCE, REMINDER, KEYBOARD, NOTIFICATIONS, FLOATING_TRANSLATION, LIVE_CHAT_TRANSLATION, MICROPHONE, COMPLETE }
+enum class OnboardingStep { SOURCE, KEYBOARD_STYLE, TARGET, PURPOSE, LEVEL, ASSISTANCE, REMINDER, KEYBOARD, NOTIFICATIONS, LIVE_CHAT_TRANSLATION, MICROPHONE, COMPLETE }
 
 /**
  * [settings] is the draft the user is editing. [loaded] turns true once any earlier saved answers
@@ -123,7 +122,6 @@ class OnboardingViewModel(
                     microphonePermissionAsked = stored.microphonePermissionAsked,
                     incomingTranslationEnabled = stored.incomingTranslationEnabled,
                     learningFromMessagesEnabled = stored.learningFromMessagesEnabled,
-                    floatingTranslationEnabled = stored.floatingTranslationEnabled,
                     liveChatTranslationEnabled = stored.liveChatTranslationEnabled,
                     liveChatTranslationConsentGiven = stored.liveChatTranslationConsentGiven,
                 )
@@ -148,7 +146,6 @@ class OnboardingViewModel(
                     microphonePermissionAsked = stored.microphonePermissionAsked,
                     incomingTranslationEnabled = stored.incomingTranslationEnabled,
                     learningFromMessagesEnabled = stored.learningFromMessagesEnabled,
-                    floatingTranslationEnabled = stored.floatingTranslationEnabled,
                     liveChatTranslationEnabled = stored.liveChatTranslationEnabled,
                     liveChatTranslationConsentGiven = stored.liveChatTranslationConsentGiven,
                 )

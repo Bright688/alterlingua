@@ -32,9 +32,6 @@ interface SetupChecker {
     /** AlterLingua is allowed to post notifications. */
     fun postNotificationsAllowed(): Boolean
 
-    /** AlterLingua is allowed to draw over other apps (needed for the floating translation bubble). */
-    fun overlayPermissionGranted(): Boolean
-
     /** The user has switched on AlterLinguaAccessibilityService in Android's Accessibility settings. */
     fun accessibilityServiceEnabled(): Boolean
 }
@@ -68,8 +65,6 @@ class AndroidSetupChecker(context: Context) : SetupChecker {
 
     override fun microphoneGranted(): Boolean =
         ContextCompat.checkSelfPermission(appContext, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-
-    override fun overlayPermissionGranted(): Boolean = Settings.canDrawOverlays(appContext)
 
     override fun accessibilityServiceEnabled(): Boolean {
         val manager = appContext.getSystemService(AccessibilityManager::class.java) ?: return false

@@ -30,7 +30,6 @@ data class SettingsUiState(
     val dailyReminderOn: Boolean = true,
     val reminderTime: LocalTime = UserSettings.DEFAULT_REMINDER_TIME,
     val incomingTranslation: Boolean = true,
-    val floatingTranslationEnabled: Boolean = false,
     val liveChatTranslationEnabled: Boolean = false,
     val liveChatTranslationConsentGiven: Boolean = false,
     val learningFromMessages: Boolean = true,
@@ -64,7 +63,6 @@ class SettingsViewModel(
             dailyReminderOn = it.dailyReminderEnabled,
             reminderTime = it.reminderTime,
             incomingTranslation = it.incomingTranslationEnabled,
-            floatingTranslationEnabled = it.floatingTranslationEnabled,
             liveChatTranslationEnabled = it.liveChatTranslationEnabled,
             liveChatTranslationConsentGiven = it.liveChatTranslationConsentGiven,
             learningFromMessages = it.learningFromMessagesEnabled,
@@ -107,9 +105,6 @@ class SettingsViewModel(
     fun onDailyReminderChanged(enabled: Boolean) = save { it.copy(dailyReminderEnabled = enabled) }
 
     fun onIncomingTranslationChanged(enabled: Boolean) = save { it.copy(incomingTranslationEnabled = enabled) }
-
-    /** Turns the floating translation bubble on or off (needs "Display over other apps"; off by default). */
-    fun onFloatingTranslationChanged(enabled: Boolean) = save { it.copy(floatingTranslationEnabled = enabled) }
 
     /**
      * Turns live chat-screen translation on or off (needs Android's Accessibility permission, granted separately).

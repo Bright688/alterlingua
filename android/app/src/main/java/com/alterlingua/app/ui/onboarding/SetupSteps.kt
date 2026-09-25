@@ -21,7 +21,6 @@ import com.alterlingua.app.ui.setup.accessibilityServiceStatusLabel
 import com.alterlingua.app.ui.setup.keyboardStatusLabel
 import com.alterlingua.app.ui.setup.microphoneStatusLabel
 import com.alterlingua.app.ui.setup.notificationStatusLabel
-import com.alterlingua.app.ui.setup.overlayPermissionStatusLabel
 import com.alterlingua.app.ui.setup.postNotificationsStatusLabel
 
 // ---------------------------------------------------------------------------------------------
@@ -112,31 +111,6 @@ internal fun NotificationsStep(setup: SetupUi) {
             } else {
                 SetupPrimaryButton(stringResource(R.string.onb_allow_notifications), "setup_post_notifications_allow", onClick = setup.actions.onRequestPostNotifications)
                 SetupSecondaryButton(stringResource(R.string.onb_notification_settings), "setup_post_notifications_settings", setup.actions.onOpenNotificationSettings)
-            }
-        }
-        NoteRow(Icons.Filled.Info, stringResource(R.string.onb_you_can_turn_this_off))
-    }
-}
-
-@Composable
-internal fun FloatingTranslationStep(setup: SetupUi) {
-    val status = setup.status
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        StepTitle(
-            title = stringResource(R.string.set_floating_translation),
-            subtitle = stringResource(R.string.onb_floating_translation_subtitle),
-        )
-        SetupItemCard(
-            title = stringResource(R.string.set_floating_translation),
-            statusText = overlayPermissionStatusLabel(status),
-            done = status.overlayPermission,
-            statusTag = "setup_status_overlay",
-            description = stringResource(R.string.set_floating_translation_desc),
-        ) {
-            if (status.overlayPermission) {
-                SetupSecondaryButton(stringResource(R.string.setup_app_settings), "setup_overlay_settings", setup.actions.onOpenOverlayPermission)
-            } else {
-                SetupPrimaryButton(stringResource(R.string.set_turn_on), "setup_overlay_turn_on", onClick = setup.actions.onEnableFloatingTranslation)
             }
         }
         NoteRow(Icons.Filled.Info, stringResource(R.string.onb_you_can_turn_this_off))

@@ -1441,3 +1441,33 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Separately, still true and not yet fixed:** the Mistral fallback key is still expired. Groq alone is working normally again now that the flood is gone, but there is still no safety net if Groq has a genuine transient blip. A fresh Mistral key from the owner is needed to restore it; this is an account/credentials matter, not something fixable from code.
 
 **Lesson for any future accessibility-service or notification-service work in this codebase:** an event source outside this app's control (another app's UI, in this case) must never be trusted to fire at a reasonable rate. `IncomingTranslator`'s notification path was already safe by construction — a notification only re-posts when the source app actually has something new to say. A live screen read has no such natural ceiling and needs an explicit one, as `ScreenReadThrottle` now provides.
+
+
+---
+
+## 2026-09-24 — Remove the floating bubble; rebuild live chat translation as captions under each message
+
+**Goal (owner):** "the bubble is not needed so remove that totally", and, after trying the live chat feature: "it didnt read the chat screen well and place translation under each message in the chat screen".
+
+**Removed:** the floating bubble in full (`FloatingBubblePresenter`, `CompositeTranslationPresenter` and its test, the `floatingTranslationEnabled` setting and DataStore key, the Settings switch and Setup row, the onboarding step, the `overlayPermission` status/checker/intent, the `SYSTEM_ALERT_WINDOW` manifest permission, and all its strings in the 8 languages). `PrivacyAuditTest` again locks the manifest to four permissions.
+
+**Rebuilt (accessibility/):**
+- `AccessibilityTreeReader` now returns a `ScreenSnapshot`: visible nodes with their screen bounds. An empty text box is kept because where it sits marks the bottom of the conversation.
+- `ChatScreenExtractor` returns `ChatMessage(text, bounds)`: excludes the typing box and everything at or below it, the title-bar region (top 11%), clock times, and text with no letter. This replaces "every string on screen".
+- `CaptionPlacer` (pure) places each caption at its message's bottom-left, limited to the room before the next message.
+- `CaptionOverlay`: a single touch-through `TYPE_ACCESSIBILITY_OVERLAY` window drawing the captions.
+- `LiveChatTranslator` no longer presents anything; it caches answers per message and enforces four independent request limits (cache, 6 per reading, 30 per rolling minute, 30 s back-off after a failure).
+- `ReadScheduler` replaces `ScreenReadThrottle`.
+- The service hides captions on scroll and window change, redraws once the screen settles, and every 800 ms while captions show checks that the chat app is still in front (Android sends the service no event when the user leaves for another app, because it is scoped to the chat apps).
+
+**Decisions and constraints:**
+- *Overlay, not insertion.* An accessibility overlay cannot push another app's layout apart, so a caption covers the space under its message (the bubble's time stamp and the gap). It is limited to the room before the next message (1 to 3 lines, ellipsis after that) so it never hides the following message. This was explained to the owner before building and is stated in the consent text.
+- *No new permission.* Accessibility overlay windows need no "Display over other apps" permission.
+- *Why four limits.* The earlier incident (a per-event translate call flooding the provider) showed a single guard is not enough; each of the four stops a flood on its own.
+- *Privacy.* The cache holds message text in process memory only, is bounded (300), is cleared by "Delete all learning data" and when the service stops. Model classes redact text in `toString`.
+
+**Problems:** the first Gradle run was killed when the session ended (exit 144), so it proved nothing; re-run. Three onboarding tests hard-coded step counts 13/14 and needed 12/13 after the bubble step went.
+
+**Verification:** compiles; see docs/progress.md for test counts. IMPLEMENTED, not MANUALLY VERIFIED: nothing has been seen on a real chat, because Claude Code cannot open a real conversation on the owner's phone.
+
+**Manual test for the owner:** Settings -> "Read chat screens live" on (accept the consent), enable AlterLingua in Android Accessibility. Open a conversation in a supported app that contains messages in a language other than yours. Within a second or two a small caption should appear under each such message; scroll and captions hide, then return once it stops; switch to another app and they disappear. Report which app it was and where captions sit wrong, and whether the caption covers the time stamp.

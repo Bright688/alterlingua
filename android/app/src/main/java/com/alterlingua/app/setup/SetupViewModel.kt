@@ -46,11 +46,6 @@ class SetupViewModel(
         viewModelScope.launch { repository.update { it.copy(microphonePermissionAsked = true) } }
     }
 
-    /** Turns the floating translation bubble on (needs "Display over other apps", requested separately by the caller right after). */
-    fun onFloatingTranslationEnabled() {
-        viewModelScope.launch { repository.update { it.copy(floatingTranslationEnabled = true) } }
-    }
-
     /**
      * The user read the in-app disclosure for live chat-screen translation and agreed to turn it on (shown in full
      * on its own onboarding/Settings step before this is ever called — see CLAUDE.md section 39 and the Google Play
@@ -67,7 +62,6 @@ class SetupViewModel(
         notificationAccess = checker.notificationAccessGranted(),
         postNotifications = checker.postNotificationsAllowed(),
         microphone = microphoneStatus(checker.microphoneGranted(), askedBefore, rationale),
-        overlayPermission = checker.overlayPermissionGranted(),
         accessibilityServiceEnabled = checker.accessibilityServiceEnabled(),
     )
 }

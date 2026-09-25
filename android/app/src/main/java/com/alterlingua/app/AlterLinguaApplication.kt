@@ -31,8 +31,6 @@ import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.PipelineRecorder
 import com.alterlingua.app.learning.engine.RuleBasedAnalyzer
 import com.alterlingua.app.accessibility.LiveChatTranslator
-import com.alterlingua.app.notifications.CompositeTranslationPresenter
-import com.alterlingua.app.notifications.FloatingBubblePresenter
 import com.alterlingua.app.notifications.IncomingStatus
 import com.alterlingua.app.notifications.IncomingTranslator
 import com.alterlingua.app.notifications.SeenMessages
@@ -82,24 +80,14 @@ class AlterLinguaApplication : Application() {
 
     /** "Delete all learning data" in Settings. */
     val learningDataEraser: LearningDataEraser by lazy {
-        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear() })
+        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear() })
     }
 
     /** The chosen app language, kept up to date for code that cannot wait for a settings read (null: the phone's language). */
     @Volatile
     private var appLanguageNow: com.alterlingua.app.learning.Language? = null
 
-    /** Whether the floating translation bubble is turned on, kept up to date for the presenter's synchronous [FloatingBubblePresenter.canPost]. */
-    @Volatile
-    private var floatingTranslationEnabledNow: Boolean = false
-
-    /** Whether live chat-screen translation is turned on, kept up to date for the same reason as [floatingTranslationEnabledNow]. */
-    @Volatile
-    private var liveChatTranslationEnabledNow: Boolean = false
-
-    /** Which messages have already been offered for translation, shared between the notification-based and the
-     * live-screen-based translator, so "Delete all learning data" clearing it via [incomingTranslator]'s own
-     * [IncomingTranslator.clear] clears both at once. */
+    /** Which notification messages have already been offered for translation (cleared by "Delete all learning data"). */
     private val seenMessages: SeenMessages by lazy { SeenMessages() }
 
     override fun onCreate() {
@@ -107,8 +95,6 @@ class AlterLinguaApplication : Application() {
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
             userSettings.settings.collect {
                 appLanguageNow = it.appLanguage.takeIf { _ -> it.appLanguageChosen }
-                floatingTranslationEnabledNow = it.floatingTranslationEnabled
-                liveChatTranslationEnabledNow = it.liveChatTranslationEnabled
             }
         }
         // Audio left behind by a crash or a killed process is removed; recordings younger than an hour are left alone.
@@ -175,14 +161,7 @@ class AlterLinguaApplication : Application() {
             api = translationApi,
             nativeLanguage = { userSettings.settings.first().nativeLanguage },
             enabled = { userSettings.settings.first().incomingTranslationEnabled },
-            presenter = CompositeTranslationPresenter(
-                listOf(
-                    TranslatedNotificationPresenter(this, appLanguage = { appLanguageNow }),
-                    // Off by default; needs "Display over other apps". Fed by the same translated text as the
-                    // notification above, never by reading another app's screen (CLAUDE.md section 39).
-                    FloatingBubblePresenter(this, enabled = { floatingTranslationEnabledNow }, appLanguage = { appLanguageNow }),
-                ),
-            ),
+            presenter = TranslatedNotificationPresenter(this, appLanguage = { appLanguageNow }),
             seen = seenMessages,
             outcomes = incomingStatus,
             learning = learningRecorder,
@@ -191,17 +170,16 @@ class AlterLinguaApplication : Application() {
     }
 
     /**
-     * Translates text read live off a supported chat app's own screen while it is open (see AlterLinguaAccessibilityService).
-     * Off by default, and inert without Android's Accessibility permission. Shown only as a floating bubble, never a
-     * system notification, since the user is already looking at the chat this came from.
+     * Translates the messages read live off a supported chat app's own screen while it is open (see
+     * AlterLinguaAccessibilityService), which draws each translation directly under its message. Off by default, and
+     * inert without Android's Accessibility permission. Its answers are kept in memory only.
      */
     val liveChatTranslator: LiveChatTranslator by lazy {
         LiveChatTranslator(
             api = translationApi,
             nativeLanguage = { userSettings.settings.first().nativeLanguage },
             enabled = { userSettings.settings.first().liveChatTranslationEnabled },
-            presenter = FloatingBubblePresenter(this, enabled = { liveChatTranslationEnabledNow }, appLanguage = { appLanguageNow }),
-            seen = seenMessages,
+            networkContext = Dispatchers.IO,
             learning = learningRecorder,
         )
     }

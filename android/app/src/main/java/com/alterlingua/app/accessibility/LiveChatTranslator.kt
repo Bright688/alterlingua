@@ -4,82 +4,141 @@ import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.TranslationInteraction
-import com.alterlingua.app.notifications.IncomingSources
-import com.alterlingua.app.notifications.SeenMessages
-import com.alterlingua.app.notifications.TranslatedConversation
-import com.alterlingua.app.notifications.TranslatedLine
-import com.alterlingua.app.notifications.TranslationPresenter
 import com.alterlingua.app.translation.TranslationApi
 import com.alterlingua.app.translation.TranslationRequest
 import com.alterlingua.app.translation.TranslationResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Translates text found live on a supported chat app's own screen while it is open, and shows it through [presenter]
- * (in practice a floating bubble, never a system notification: the user is already looking at the chat, so a second
- * notification for it would be redundant).
+ * Translates the messages read live off a supported chat app's own screen, and remembers the answers so each message is
+ * translated once however often the screen is read again (scrolling back, a new message arriving, the app redrawing).
  *
- * Deliberately simpler than [com.alterlingua.app.notifications.IncomingTranslator]: a notification comes with a real
- * sender, conversation title and category the source app chose to provide; a screen reading has none of that, only
- * plain strings a heuristic picked out (see [ChatScreenExtractor]). [packageName] alone stands in for both the
- * conversation key (for de-duplication) and the shown title (via [IncomingSources.displayNameOf]).
+ * The screen is read many times a minute, so this is where request volume is kept in check (a real incident on
+ * 2026-09-24 saw a per-event translate call exhaust the provider's per-minute budget and break the keyboard's own
+ * Translate button). Four independent limits apply, each of which alone stops a flood:
+ *  - a cache: a message already answered is never asked again;
+ *  - [maxPerPass]: at most this many new messages are sent per screen reading (the rest wait for the next one);
+ *  - [maxPerMinute]: a rolling budget of network requests, shared by every reading;
+ *  - a back-off: a message whose translation failed is not retried for [retryAfterFailureMillis].
  *
- * Off by default ([com.alterlingua.app.learning.UserSettings.liveChatTranslationEnabled][com.alterlingua.app.learning.UserSettings])
- * and inert without Android's Accessibility permission, which only the caller (the accessibility service itself,
- * gated by Android at the OS level to the known chat apps) can ever supply events for.
+ * The cache holds message text, in this process's memory only. It is never saved and is cleared by [clear] (the
+ * "Delete all learning data" action calls it) and whenever the accessibility service stops.
+ *
+ * Off by default ([com.alterlingua.app.learning.UserSettings.liveChatTranslationEnabled]) and inert without Android's
+ * Accessibility permission, which only the service (limited by Android to the known chat apps) can ever call this from.
  */
 class LiveChatTranslator(
     private val api: TranslationApi,
     private val nativeLanguage: suspend () -> Language,
     private val enabled: suspend () -> Boolean,
-    private val presenter: TranslationPresenter,
-    private val seen: SeenMessages,
     private val timeoutMillis: Long = 25_000,
-    /** Told about each translated line, with the language it was written in. Never delays the translation. */
+    private val maxPerPass: Int = 6,
+    private val maxPerMinute: Int = 30,
+    private val maxParallel: Int = 3,
+    private val retryAfterFailureMillis: Long = 30_000,
+    private val maxCached: Int = 300,
+    private val clock: () -> Long = System::currentTimeMillis,
+    /** Where the network call runs (a real network thread in the app, the test's own thread in tests). */
+    private val networkContext: CoroutineContext = EmptyCoroutineContext,
+    /** Told about each translated message, with the language it was written in. Never delays the translation. */
     private val learning: LearningRecorder = LearningRecorder.None,
 ) {
-    private val lock = Mutex()
+    /** A finished lookup: [caption] is the translation to draw, or null when none is needed (already the user's language). */
+    private class Entry(val caption: String?)
 
-    /** [texts] is whatever [ChatScreenExtractor] kept from one screen reading of [packageName]'s current window. */
-    suspend fun handle(packageName: String, texts: List<String>) {
+    private val lock = Any()
+    private val cache = object : LinkedHashMap<String, Entry>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Entry>?) = size > maxCached
+    }
+    private val inFlight = HashSet<String>()
+    private val failedAt = HashMap<String, Long>()
+    private val requestTimes = ArrayDeque<Long>()
+
+    /** True when the user has this feature switched on in Settings. */
+    suspend fun isEnabled(): Boolean = enabled()
+
+    /** The translation to draw under [text], or null when it is unknown, still pending, or needs none. */
+    fun captionFor(text: String): String? = synchronized(lock) { cache[text]?.caption }
+
+    /**
+     * Makes sure [texts] are being translated: those already answered are skipped, and at most [maxPerPass] of the rest
+     * are sent (up to [maxParallel] at a time). [onTranslated] is called each time one arrives, so the caller can draw
+     * it straight away instead of waiting for the whole batch.
+     */
+    suspend fun prepare(texts: List<String>, onTranslated: () -> Unit) {
         if (texts.isEmpty() || !enabled()) return
-        val title = IncomingSources.displayNameOf(packageName) ?: return // not a known, scoped source
-        lock.withLock {
-            val native = nativeLanguage()
-            for (text in texts) {
-                if (!seen.firstTime(packageName, sender = "", text = text, timestamp = 0)) continue
-                val result = try {
-                    withTimeout(timeoutMillis) { api.translate(TranslationRequest(text = text, target = native.code)) }
-                } catch (_: TimeoutCancellationException) {
-                    // No outcome to report the way a notification has; forget it so the next screen reading (the app
-                    // keeps firing these as the chat updates) can try again rather than ignoring this text forever.
-                    seen.forget(packageName, sender = "", text = text, timestamp = 0)
-                    continue
-                } catch (cancelled: CancellationException) {
-                    seen.forget(packageName, sender = "", text = text, timestamp = 0)
-                    throw cancelled
-                }
-                if (result !is TranslationResult.Success) {
-                    seen.forget(packageName, sender = "", text = text, timestamp = 0) // a translation failure may pass too
-                    continue
-                }
-                val answer = result.translation
-                if (answer.sourceLanguage == native.code) continue // already in the user's language
-                presenter.show(
-                    TranslatedConversation(
-                        key = packageName,
-                        title = title,
-                        isGroup = false,
-                        lines = listOf(TranslatedLine(sender = "", text = answer.text, sourceLanguage = answer.sourceLanguage)),
-                        openIntent = null, // the user is already in this chat; there is nothing to open
-                    ),
-                )
-                learning.record(TranslationInteraction(InteractionKind.INCOMING_MESSAGE, text, answer.sourceLanguage))
-            }
+        val native = nativeLanguage()
+        val now = clock()
+        val wanted = synchronized(lock) {
+            texts.distinct()
+                .filter { it !in cache && it !in inFlight }
+                .filter { failedAt[it]?.let { at -> now - at >= retryAfterFailureMillis } ?: true }
+                .take(maxPerPass)
+                .filter { takeBudget(now) }
+                .onEach { inFlight += it }
         }
+        if (wanted.isEmpty()) return
+        val gate = Semaphore(maxParallel)
+        coroutineScope {
+            wanted.map { text ->
+                async {
+                    try {
+                        gate.withPermit { translateOne(text, native, onTranslated) }
+                    } finally {
+                        synchronized(lock) { inFlight -= text }
+                    }
+                }
+            }.forEach { it.await() }
+        }
+    }
+
+    private suspend fun translateOne(text: String, native: Language, onTranslated: () -> Unit) {
+        val result = try {
+            withContext(networkContext) { withTimeout(timeoutMillis) { api.translate(TranslationRequest(text = text, target = native.code)) } }
+        } catch (_: TimeoutCancellationException) {
+            synchronized(lock) { failedAt[text] = clock() }
+            return
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        }
+        if (result !is TranslationResult.Success) {
+            synchronized(lock) { failedAt[text] = clock() }
+            return
+        }
+        val answer = result.translation
+        // Already in the user's language, or unchanged (a name, a number): nothing worth showing under it.
+        val needsCaption = answer.sourceLanguage != native.code && answer.text.trim().isNotEmpty() &&
+            !answer.text.trim().equals(text.trim(), ignoreCase = true)
+        synchronized(lock) {
+            failedAt.remove(text)
+            cache[text] = Entry(if (needsCaption) answer.text.trim() else null)
+        }
+        if (needsCaption) learning.record(TranslationInteraction(InteractionKind.INCOMING_MESSAGE, text, answer.sourceLanguage))
+        onTranslated()
+    }
+
+    /** Takes one request from the rolling per-minute budget; false when it is used up. Call with [lock] held. */
+    private fun takeBudget(now: Long): Boolean {
+        while (requestTimes.isNotEmpty() && now - requestTimes.first() >= 60_000) requestTimes.removeFirst()
+        if (requestTimes.size >= maxPerMinute) return false
+        requestTimes.addLast(now)
+        return true
+    }
+
+    /** Forgets every message and answer (Settings > Delete all learning data; the service stopping). */
+    fun clear() = synchronized(lock) {
+        cache.clear()
+        failedAt.clear()
+        inFlight.clear()
+        requestTimes.clear()
     }
 }

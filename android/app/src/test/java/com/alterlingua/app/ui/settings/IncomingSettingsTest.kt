@@ -34,21 +34,6 @@ class IncomingSettingsTest {
     }
 
     @Test
-    fun floatingTranslationIsOffByDefault_andCanBeSwitchedOn_withoutTouchingIncomingTranslation() {
-        val repo = FakeUserSettingsRepository()
-        val vm = SettingsViewModel(repo)
-        assertFalse(vm.uiState.value.floatingTranslationEnabled)
-
-        vm.onFloatingTranslationChanged(true)
-        assertTrue(repo.current.floatingTranslationEnabled)
-        assertTrue(vm.uiState.value.floatingTranslationEnabled)
-        assertTrue(repo.current.incomingTranslationEnabled) // unrelated toggle, untouched
-
-        vm.onFloatingTranslationChanged(false)
-        assertFalse(repo.current.floatingTranslationEnabled)
-    }
-
-    @Test
     fun liveChatTranslationIsOffByDefault_turningItOnRecordsConsent_turningItOffKeepsConsentRecorded() {
         val repo = FakeUserSettingsRepository()
         val vm = SettingsViewModel(repo)

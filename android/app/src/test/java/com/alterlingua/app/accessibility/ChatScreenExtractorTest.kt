@@ -1,65 +1,92 @@
 package com.alterlingua.app.accessibility
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ChatScreenExtractorTest {
 
+    /** A 1000 x 2000 window: the top 11% (220 px) is the title bar; the composer starts at y = 1850. */
+    private val screen = Bounds(0, 0, 1000, 2000)
+
+    private fun node(text: String, top: Int, bottom: Int = top + 60, editable: Boolean = false, left: Int = 40, right: Int = 700) =
+        ScreenNode(text, editable, Bounds(left, top, right, bottom))
+
+    private fun extract(vararg nodes: ScreenNode) = ChatScreenExtractor.extract(ScreenSnapshot(screen, nodes.toList()))
+
+    private val composer = node("", top = 1850, bottom = 1950, editable = true)
+
     @Test
-    fun aPlainMessage_isKept() {
-        assertEquals(listOf("Tu viens demain ?"), ChatScreenExtractor.extract(listOf(ScreenNode("Tu viens demain ?", isEditable = false))))
+    fun messages_areKeptWithTheirPositions_topToBottom() {
+        val result = extract(node("Bonjour", 900), node("Tu viens demain ?", 400), composer)
+        assertEquals(listOf("Tu viens demain ?", "Bonjour"), result.map { it.text })
+        assertEquals(Bounds(40, 400, 700, 460), result.first().bounds)
     }
 
     @Test
-    fun theComposeBoxTheUserIsTypingIntoIsNeverRead() {
-        assertEquals(
-            emptyList<String>(),
-            ChatScreenExtractor.extract(listOf(ScreenNode("Are you coming tomorrow?", isEditable = true))),
-        )
+    fun theTextBoxTheUserTypesIn_isNeverAMessage() {
+        val result = extract(node("Are you coming tomorrow?", 1860, editable = true), node("Salut", 500))
+        assertEquals(listOf("Salut"), result.map { it.text })
     }
 
     @Test
-    fun blankOrEmojiOnlyTextIsSkipped() {
-        for (text in listOf("", "   ", "👍", "12:30", "!!!")) {
-            assertEquals(text, emptyList<String>(), ChatScreenExtractor.extract(listOf(ScreenNode(text, isEditable = false))))
-        }
+    fun anythingAtOrBelowTheTextBox_isNotAMessage() {
+        // A "Send" label or an attachment hint sitting beside/below the composer.
+        val result = extract(node("Type a message", 1860), node("Salut", 500), composer)
+        assertEquals(listOf("Salut"), result.map { it.text })
     }
 
     @Test
-    fun aVeryLongNodeIsSkipped() {
-        assertEquals(emptyList<String>(), ChatScreenExtractor.extract(listOf(ScreenNode("a".repeat(2_001), isEditable = false))))
+    fun theTitleBarRegion_isNotPartOfTheConversation() {
+        val result = extract(node("Marie", 80), node("last seen today at 9", 150), node("Salut", 500), composer)
+        assertEquals(listOf("Salut"), result.map { it.text })
     }
 
     @Test
-    fun duplicateTextOnTheSameScreenIsKeptOnce() {
-        val nodes = listOf(ScreenNode("Tu viens demain ?", isEditable = false), ScreenNode("Tu viens demain ?", isEditable = false))
-        assertEquals(listOf("Tu viens demain ?"), ChatScreenExtractor.extract(nodes))
+    fun clockTimes_areNotMessages() {
+        val result = extract(node("12:34", 500), node("9:05 PM", 600), node("21.07", 700), node("10:00 a.m.", 800), node("Salut", 900), composer)
+        assertEquals(listOf("Salut"), result.map { it.text })
     }
 
     @Test
-    fun messagesInAnyScriptAreKept() {
-        for (text in listOf("明日来ますか？", "你明天来吗？", "Kommst du morgen?", "¿Vienes mañana?", "Kom je morgen?")) {
-            assertEquals(text, listOf(text), ChatScreenExtractor.extract(listOf(ScreenNode(text, isEditable = false))))
-        }
+    fun textWithNoLetter_isNotWorthTranslating() {
+        val result = extract(node("✓✓", 500), node("12", 600), node("...", 700), node("👍", 800), node("Ok", 900), composer)
+        assertEquals(listOf("Ok"), result.map { it.text })
     }
 
     @Test
-    fun surroundingWhitespaceIsTrimmed() {
-        assertEquals(listOf("hello"), ChatScreenExtractor.extract(listOf(ScreenNode("  hello  \n", isEditable = false))))
+    fun emptyAndZeroSizedNodes_areIgnored() {
+        val result = extract(node("  ", 500), node("Ghost", 600, bottom = 600), node("Real", 700), composer)
+        assertEquals(listOf("Real"), result.map { it.text })
     }
 
     @Test
-    fun aMixOfEditableAndPlainNodes_keepsOnlyThePlainOnes() {
-        val nodes = listOf(
-            ScreenNode("Type a message", isEditable = true),
-            ScreenNode("Tu viens demain ?", isEditable = false),
-            ScreenNode("👍", isEditable = false),
-        )
-        assertEquals(listOf("Tu viens demain ?"), ChatScreenExtractor.extract(nodes))
+    fun theSameTextAtTheSamePlace_isKeptOnce_butTheSameWordInTwoMessagesIsKeptTwice() {
+        val result = extract(node("Ok", 500), node("Ok", 500), node("Ok", 800), composer)
+        assertEquals(2, result.size)
     }
 
     @Test
-    fun noNodesAtAll_givesNothing() {
-        assertEquals(emptyList<String>(), ChatScreenExtractor.extract(emptyList()))
+    fun aVeryLongText_isSkipped() {
+        val result = extract(node("a".repeat(2_001), 500), node("Salut", 700), composer)
+        assertEquals(listOf("Salut"), result.map { it.text })
+    }
+
+    @Test
+    fun withoutAVisibleTextBox_theBottomEdgeIsLeftAlone() {
+        val result = extract(node("Salut", 600), node("Nav", 1900))
+        assertEquals(listOf("Salut"), result.map { it.text })
+    }
+
+    @Test
+    fun anEmptyWindow_givesNothing() {
+        assertTrue(ChatScreenExtractor.extract(ScreenSnapshot(Bounds(0, 0, 0, 0), emptyList())).isEmpty())
+    }
+
+    @Test
+    fun messageTextIsNeverPrintedByToString() {
+        val message = extract(node("Secret words", 500), composer).single()
+        assertTrue(!message.toString().contains("Secret"))
+        assertTrue(!node("Secret words", 500).toString().contains("Secret"))
     }
 }

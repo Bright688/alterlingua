@@ -42,7 +42,6 @@ import com.alterlingua.app.ui.components.ScreenFrame
 import com.alterlingua.app.ui.setup.SetupSettingsRows
 import com.alterlingua.app.ui.setup.SetupUi
 import com.alterlingua.app.ui.setup.accessibilityServiceStatusLabel
-import com.alterlingua.app.ui.setup.overlayPermissionStatusLabel
 import com.alterlingua.app.ui.setup.rememberSetupUi
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
@@ -62,7 +61,6 @@ fun SettingsRoute(
         onAssistanceModeSelected = viewModel::onAssistanceModeSelected,
         onDailyReminderChanged = viewModel::onDailyReminderChanged,
         onIncomingTranslationChanged = viewModel::onIncomingTranslationChanged,
-        onFloatingTranslationChanged = viewModel::onFloatingTranslationChanged,
         onLiveChatTranslationChanged = viewModel::onLiveChatTranslationChanged,
         onLearningFromMessagesChanged = viewModel::onLearningFromMessagesChanged,
         onEraseLearningData = viewModel::onEraseLearningData,
@@ -84,7 +82,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     setup: SetupUi = SetupUi.None,
     onIncomingTranslationChanged: (Boolean) -> Unit = {},
-    onFloatingTranslationChanged: (Boolean) -> Unit = {},
     onLiveChatTranslationChanged: (Boolean) -> Unit = {},
     onLearningFromMessagesChanged: (Boolean) -> Unit = {},
     onEraseLearningData: () -> Unit = {},
@@ -354,47 +351,6 @@ fun SettingsScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.testTag("incoming_last_outcome"),
                 )
-            }
-            HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.set_floating_translation),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = stringResource(R.string.set_floating_translation_desc),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Switch(
-                    checked = state.floatingTranslationEnabled,
-                    onCheckedChange = onFloatingTranslationChanged,
-                    modifier = Modifier.testTag("floating_translation_switch"),
-                )
-            }
-            if (state.floatingTranslationEnabled && !setup.status.overlayPermission) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    com.alterlingua.app.ui.setup.SetupStatusChip(
-                        overlayPermissionStatusLabel(setup.status),
-                        done = false,
-                        modifier = Modifier.testTag("floating_translation_permission_status"),
-                    )
-                    androidx.compose.material3.OutlinedButton(
-                        onClick = setup.actions.onOpenOverlayPermission,
-                        modifier = Modifier.testTag("floating_translation_permission_action"),
-                    ) { Text(stringResource(R.string.setup_app_settings)) }
-                }
             }
             HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
             Row(

@@ -26,8 +26,6 @@ data class SetupStatus(
     /** AlterLingua may post its own notifications (needed to show translated messages). */
     val postNotifications: Boolean = false,
     val microphone: MicrophoneStatus = MicrophoneStatus.NOT_ASKED,
-    /** AlterLingua may draw over other apps (needed for the floating translation bubble; off by default and optional). */
-    val overlayPermission: Boolean = false,
     /** AlterLinguaAccessibilityService is switched on in Android's Accessibility settings (off by default and optional). */
     val accessibilityServiceEnabled: Boolean = false,
 ) {

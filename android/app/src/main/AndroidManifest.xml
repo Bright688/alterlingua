@@ -27,13 +27,6 @@
     -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!--
-        Optional floating translation bubble (off by default, see UserSettings.floatingTranslationEnabled): draws a
-        small window on top of other apps showing the same translated text the notification already shows. The user
-        must separately grant this in Android's "Display over other apps" settings; nothing here reads another app's
-        screen content (no AccessibilityService is declared or used anywhere in AlterLingua).
-    -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application

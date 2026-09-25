@@ -14,14 +14,12 @@ private class FakeChecker : SetupChecker {
     var notifications = false
     var microphone = false
     var postNotifications = false
-    var overlayPermission = false
     var accessibilityService = false
     override fun keyboardEnabled() = enabled
     override fun keyboardSelected() = selected
     override fun notificationAccessGranted() = notifications
     override fun microphoneGranted() = microphone
     override fun postNotificationsAllowed() = postNotifications
-    override fun overlayPermissionGranted() = overlayPermission
     override fun accessibilityServiceEnabled() = accessibilityService
 }
 
@@ -102,26 +100,6 @@ class SetupViewModelTest {
         checker.postNotifications = false // switched off in Android settings
         vm.refresh(showMicrophoneRationale = false)
         assertFalse(vm.status.value.postNotifications)
-    }
-
-    @Test
-    fun theOverlayPermissionIsReadFromAndroid() {
-        val vm = viewModel()
-        assertFalse(vm.status.value.overlayPermission)
-        checker.overlayPermission = true
-        vm.refresh(showMicrophoneRationale = false)
-        assertTrue(vm.status.value.overlayPermission)
-        checker.overlayPermission = false // switched off in Android settings
-        vm.refresh(showMicrophoneRationale = false)
-        assertFalse(vm.status.value.overlayPermission)
-    }
-
-    @Test
-    fun enablingFloatingTranslation_turnsItOn() {
-        val vm = viewModel()
-        assertFalse(repo.current.floatingTranslationEnabled)
-        vm.onFloatingTranslationEnabled()
-        assertTrue(repo.current.floatingTranslationEnabled)
     }
 
     @Test

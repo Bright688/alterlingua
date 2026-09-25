@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="accessibility_service_description">Liest den Bildschirmtext in WhatsApp, Telegram, Messenger oder Signal, während eine dieser Apps geöffnet ist, damit AlterLingua eine Übersetzung zeigen kann, ohne auf eine Benachrichtigung zu warten. AlterLingua ist ein Übersetzungswerkzeug, kein Bedienungshilfen-Werkzeug für Menschen mit Behinderung. Standardmäßig aus; in AlterLinguas eigenen Einstellungen einschalten.</string>
+    <string name="accessibility_service_description">Liest den Bildschirmtext in WhatsApp, Telegram, Messenger oder Signal, während eine dieser Apps geöffnet ist, damit AlterLingua unter jeder Nachricht eine Übersetzung zeigen kann. AlterLingua ist ein Übersetzungswerkzeug, kein Bedienungshilfen-Werkzeug für Menschen mit Behinderung. Standardmäßig aus; in AlterLinguas eigenen Einstellungen einschalten.</string>
     <string name="nav_home">Start</string>
     <string name="nav_learn">Lernen</string>
     <string name="nav_words">Wörter</string>
@@ -210,7 +210,6 @@
     <string name="onb_notification_settings">Benachrichtigungseinstellungen</string>
     <string name="onb_allow_notifications">Benachrichtigungen erlauben</string>
     <string name="onb_you_can_turn_this_off">Du kannst das jederzeit in den Android-Einstellungen oder in den AlterLingua-Einstellungen ausschalten.</string>
-    <string name="onb_floating_translation_subtitle">Das ist optional und standardmäßig aus. Es zeigt dieselbe Übersetzung, die du bereits per Benachrichtigung erhältst, direkt über dem Chat.</string>
     <string name="onb_live_chat_translation_subtitle">Das ist optional und standardmäßig aus. AlterLingua kann auch ohne dies bereits Übersetzungen aus Benachrichtigungen zeigen.</string>
     <string name="onb_live_chat_translation_note">Du kannst dies jederzeit in den AlterLingua-Einstellungen ein- oder ausschalten. Tippen funktioniert immer auch ohne dies.</string>
     <string name="onb_later_you_ll_be_able">Du kannst eine Nachricht sprechen und sie in der gewählten Sprache schreiben lassen.</string>
@@ -250,11 +249,9 @@
     <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>
     <string name="set_it_only_reads_the_text">Es liest nur den Text, den deine Chat-Apps (WhatsApp, Telegram, Messenger, Signal) in ihren Benachrichtigungen zeigen, nie den Chat selbst, und speichert die Nachrichten nicht. Es braucht Benachrichtigungszugriff (siehe Einrichtung unten).</string>
-    <string name="set_floating_translation">Schwebende Übersetzung anzeigen</string>
-    <string name="set_floating_translation_desc">Zeigt dieselbe Übersetzung zusätzlich als kleine Blase über dem geöffneten Chat. Nutzt dieselbe Nachricht, die die Benachrichtigung oben bereits liest, nie den Bildschirm des Chats selbst. Braucht \"Über anderen Apps anzeigen\".</string>
     <string name="set_live_chat_translation">Chat-Bildschirme live lesen</string>
-    <string name="set_live_chat_translation_desc">Zeigt eine Übersetzung, sobald eine neue Nachricht in einer unterstützten Chat-App auf dem Bildschirm erscheint, ohne auf eine Benachrichtigung zu warten. Braucht Androids Bedienungshilfen-Berechtigung.</string>
-    <string name="set_live_chat_consent_body">Wenn dies aktiviert ist, liest AlterLingua den auf dem Bildschirm angezeigten Text in WhatsApp, Telegram, Messenger oder Signal, während eine dieser Apps geöffnet ist — nie Fotos, Sprachnachrichten oder das, was du tippst, und nur solange eine unterstützte App diejenige ist, die du gerade benutzt. Dieser Text wird an AlterLinguas Übersetzungsdienst gesendet und dir als Übersetzung angezeigt; er wird nie gespeichert, und nichts wird mit jemand anderem geteilt. Dafür ist Androids Bedienungshilfen-Berechtigung nötig, die du separat erteilst, nachdem du hier zugestimmt hast. AlterLingua ist ein Übersetzungswerkzeug, kein Bedienungshilfen-Werkzeug für Menschen mit Behinderung.</string>
+    <string name="set_live_chat_translation_desc">Zeigt die Übersetzung direkt unter jeder Nachricht auf dem Bildschirm einer unterstützten Chat-App, über den geöffneten Chat gelegt. Kann die Uhrzeit unter der Nachricht verdecken. Braucht Androids Bedienungshilfen-Berechtigung.</string>
+    <string name="set_live_chat_consent_body">Wenn dies aktiviert ist, liest AlterLingua den auf dem Bildschirm angezeigten Text in WhatsApp, Telegram, Messenger oder Signal, während eine dieser Apps geöffnet ist — nie Fotos, Sprachnachrichten oder das, was du tippst, und nur solange eine unterstützte App diejenige ist, die du gerade benutzt. Dieser Text wird an AlterLinguas Übersetzungsdienst gesendet und dir als Übersetzung unter jeder Nachricht auf dem Bildschirm angezeigt; er wird nie gespeichert, und nichts wird mit jemand anderem geteilt. Dafür ist Androids Bedienungshilfen-Berechtigung nötig, die du separat erteilst, nachdem du hier zugestimmt hast. AlterLingua ist ein Übersetzungswerkzeug, kein Bedienungshilfen-Werkzeug für Menschen mit Behinderung.</string>
     <string name="set_turn_on">Einschalten</string>
     <string name="set_privacy">Datenschutz</string>
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua behält nur die Wörter, die du lernst, wie oft du ihnen begegnest und ihren Lernstatus. Deine Nachrichten werden nicht gespeichert.</string>
