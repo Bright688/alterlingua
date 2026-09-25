@@ -14,11 +14,13 @@ object AccessibilityTreeReader {
     private const val MAX_NODES = 500
 
     fun read(root: AccessibilityNodeInfo): ScreenSnapshot {
-        val rect = Rect()
-        root.getBoundsInScreen(rect)
+        // The window's own bounds are copied out first: the scratch rectangle below is reused (and overwritten) for every node.
+        val windowRect = Rect()
+        root.getBoundsInScreen(windowRect)
+        val screen = Bounds(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
         val out = mutableListOf<ScreenNode>()
-        walk(root, out, rect)
-        return ScreenSnapshot(Bounds(rect.left, rect.top, rect.right, rect.bottom), out)
+        walk(root, out, Rect())
+        return ScreenSnapshot(screen, out)
     }
 
     @Suppress("DEPRECATION") // AccessibilityNodeInfo.recycle() is a no-op from API 33 but still safe to call on 26+

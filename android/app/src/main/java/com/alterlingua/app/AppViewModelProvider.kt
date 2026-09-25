@@ -99,6 +99,6 @@ object AppViewModelProvider {
             )
         }
         initializer { WordsViewModel(application().userSettings, application().languageMap) }
-        initializer { SettingsViewModel(application().userSettings, application().incomingStatus.last, application().learningDataEraser::eraseAll) }
+        initializer { SettingsViewModel(application().userSettings, application().incomingStatus.last, liveChatReading = application().liveChatStatus.last, eraseLearningData = application().learningDataEraser::eraseAll) }
     }
 }

@@ -395,6 +395,23 @@ fun SettingsScreen(
                     ) { Text(stringResource(R.string.setup_app_settings)) }
                 }
             }
+            if (state.liveChatTranslationEnabled && setup.status.accessibilityServiceEnabled) {
+                // Numbers only, never text: shows whether a chat screen is actually being read and how far it got.
+                val reading = state.liveChatReading
+                Text(
+                    text = if (reading == null) {
+                        stringResource(R.string.set_live_chat_reading_none)
+                    } else {
+                        stringResource(
+                            R.string.set_live_chat_reading_stats,
+                            reading.reads, reading.skipped, reading.items, reading.textBoxes, reading.messages, reading.captions,
+                        )
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.testTag("live_chat_reading"),
+                )
+            }
         }
 
         if (state.keyboardStyleChoices.isNotEmpty()) {

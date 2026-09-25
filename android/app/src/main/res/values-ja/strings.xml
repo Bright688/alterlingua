@@ -251,6 +251,8 @@
     <string name="set_it_only_reads_the_text">チャットアプリ（WhatsApp、Telegram、Messenger、Signal）が通知に表示するテキストだけを読み取り、チャット自体は読みません。メッセージは保存されません。通知へのアクセスが必要です（下の「セットアップ」を参照）。</string>
     <string name="set_live_chat_translation">チャット画面をライブで読み取る</string>
     <string name="set_live_chat_translation_desc">対応するチャットアプリの画面で、各メッセージのすぐ下に翻訳を表示します。チャットを開いている間、その上に重ねて描画されます。メッセージ下の時刻が隠れることがあります。Android のユーザー補助権限が必要です。</string>
+    <string name="set_live_chat_reading_stats">画面の読み取り：%1$d 回、スキップ：%2$d 回。直近では %3$d 個の項目（入力欄 %4$d 個）、メッセージ %5$d 件、字幕 %6$d 件を検出しました。</string>
+    <string name="set_live_chat_reading_none">チャット画面はまだ読み取られていません。</string>
     <string name="set_live_chat_consent_body">これをオンにすると、AlterLingua は WhatsApp、Telegram、Messenger、Signal のいずれかを開いている間、その画面に表示されているテキストを読み取ります。写真や音声メッセージ、入力中の内容は読み取らず、対応アプリを使用している間だけ有効です。読み取ったテキストは AlterLingua の翻訳サービスに送信され、各メッセージの下に翻訳として表示されます。保存されることはなく、他の誰とも共有されません。これには Android のユーザー補助権限が必要で、ここで同意した後に別途付与します。AlterLingua は翻訳ツールであり、障害のある方向けのユーザー補助ツールではありません。</string>
     <string name="set_turn_on">オンにする</string>
     <string name="set_privacy">プライバシー</string>

@@ -38,6 +38,7 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val translator get() = (application as AlterLinguaApplication).liveChatTranslator
+    private val status get() = (application as AlterLinguaApplication).liveChatStatus
     private val reads = ReadScheduler(scope) { readScreen() }
 
     private var overlay: CaptionOverlay? = null
@@ -67,6 +68,7 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
     private suspend fun readScreen() {
         val root = rootInActiveWindow
         if (root == null || !isSupported(root.packageName)) {
+            status.skipped()
             clearCaptions()
             return
         }
@@ -79,19 +81,24 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
         root.recycle()
         screen = snapshot.screen
         messages = ChatScreenExtractor.extract(snapshot)
-        render()
+        val shown = render()
+        // Numbers only, for the status line in Settings: tells a wrong screen reading apart from a wrong drawing.
+        status.read(snapshot.nodes.size, snapshot.nodes.count { it.isEditable }, messages.size, shown)
         val texts = messages.map { it.text }
         if (texts.isNotEmpty()) {
-            scope.launch(Dispatchers.Default) { translator.prepare(texts) { scope.launch { render() } } }
+            scope.launch(Dispatchers.Default) { translator.prepare(texts) { scope.launch { status.captionsDrawn(render()) } } }
         }
     }
 
-    /** Draws a caption under every message whose translation is known; removes the overlay when there is nothing to show. */
-    private fun render() {
-        val current = overlay ?: return
+    /**
+     * Draws a caption under every message whose translation is known; removes the overlay when there is nothing to
+     * show. Returns how many captions are now drawn.
+     */
+    private fun render(): Int {
+        val current = overlay ?: return 0
         if (messages.isEmpty()) {
             current.hide()
-            return
+            return 0
         }
         val captions = CaptionPlacer.place(
             messages = messages,
@@ -103,6 +110,7 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
         )
         current.show(captions)
         if (captions.isNotEmpty()) watchForeground()
+        return captions.size
     }
 
     private fun clearCaptions() {

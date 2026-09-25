@@ -1471,3 +1471,20 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Verification:** compiles; see docs/progress.md for test counts. IMPLEMENTED, not MANUALLY VERIFIED: nothing has been seen on a real chat, because Claude Code cannot open a real conversation on the owner's phone.
 
 **Manual test for the owner:** Settings -> "Read chat screens live" on (accept the consent), enable AlterLingua in Android Accessibility. Open a conversation in a supported app that contains messages in a language other than yours. Within a second or two a small caption should appear under each such message; scroll and captions hide, then return once it stops; switch to another app and they disappear. Report which app it was and where captions sit wrong, and whether the caption covers the time stamp.
+
+
+---
+
+## 2026-09-25 — Live chat captions: why nothing appeared, and the fix
+
+**Symptom (owner, on the real phone):** service on, WhatsApp chat open, no captions; the server saw no translate requests.
+
+**Diagnosis:** the app is forbidden from writing to the system log (`PrivacyAuditTest.theAppNeverWritesToTheSystemLog`, kept), so a numbers-only status line was added under "Read chat screens live" in Settings (`LiveChatStatus`, in memory only: readings, skipped, and the last reading's items / text boxes / messages / captions; strings in 8 languages). It read: 45 readings, last found 15 items, 1 text box, **0 messages**. So the screen was being read and the text was there, but the message filter discarded everything.
+
+**Root cause:** `AccessibilityTreeReader.read` copied the window's bounds into a `Rect` and then passed the same `Rect` into the tree walk as scratch space, which overwrote it for every node. The "screen" size stored in the snapshot was therefore the last node visited, not the window. `ChatScreenExtractor` derives the title-bar limit (top 11%) and the composer limit from the screen size, so with a bogus tiny screen every message fell outside the conversation area. The unit tests missed it because they build `ScreenSnapshot`s by hand; the Android `Rect` is not available to them.
+
+**Fix:** the window bounds are copied into their own `Bounds` before the walk; the walk uses a separate scratch `Rect`.
+
+**Also learned:** the owner's test chat was entirely in the owner's own language (English), where no caption is correct by design. A real test needs messages in another language. Reinstalling with `adb install -r` alone keeps the accessibility service enabled and bound; a `force-stop` afterwards leaves it enabled but unbound until it is switched off and on again, and enabling it over adb is blocked by the tooling, so the owner has to do that step.
+
+**Verification:** 825 unit tests pass, 0 failures. IMPLEMENTED, not MANUALLY VERIFIED: captions have still not been seen under a foreign-language message on the phone.

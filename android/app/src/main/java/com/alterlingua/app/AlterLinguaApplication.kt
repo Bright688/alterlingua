@@ -30,6 +30,7 @@ import com.alterlingua.app.learning.engine.LearningPipeline
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.PipelineRecorder
 import com.alterlingua.app.learning.engine.RuleBasedAnalyzer
+import com.alterlingua.app.accessibility.LiveChatStatus
 import com.alterlingua.app.accessibility.LiveChatTranslator
 import com.alterlingua.app.notifications.IncomingStatus
 import com.alterlingua.app.notifications.IncomingTranslator
@@ -80,7 +81,7 @@ class AlterLinguaApplication : Application() {
 
     /** "Delete all learning data" in Settings. */
     val learningDataEraser: LearningDataEraser by lazy {
-        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear() })
+        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear(); liveChatStatus.clear() })
     }
 
     /** The chosen app language, kept up to date for code that cannot wait for a settings read (null: the phone's language). */
@@ -174,6 +175,8 @@ class AlterLinguaApplication : Application() {
      * AlterLinguaAccessibilityService), which draws each translation directly under its message. Off by default, and
      * inert without Android's Accessibility permission. Its answers are kept in memory only.
      */
+    val liveChatStatus: LiveChatStatus by lazy { LiveChatStatus() }
+
     val liveChatTranslator: LiveChatTranslator by lazy {
         LiveChatTranslator(
             api = translationApi,

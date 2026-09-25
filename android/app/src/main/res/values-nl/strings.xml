@@ -251,6 +251,8 @@
     <string name="set_it_only_reads_the_text">Het leest alleen de tekst die je chat-apps (WhatsApp, Telegram, Messenger, Signal) in hun meldingen tonen, nooit de chat zelf, en slaat de berichten niet op. Het heeft toegang tot meldingen nodig (zie Installatie hieronder).</string>
     <string name="set_live_chat_translation">Chatschermen live lezen</string>
     <string name="set_live_chat_translation_desc">Toont de vertaling direct onder elk bericht op het scherm in een ondersteunde chat-app, over de geopende chat getekend. Kan de tijd onder het bericht bedekken. Vereist Android\'s toegankelijkheidsmachtiging.</string>
+    <string name="set_live_chat_reading_stats">Schermlezingen: %1$d, overgeslagen: %2$d. De laatste vond %3$d items (%4$d tekstvakken), %5$d berichten en %6$d ondertitels.</string>
+    <string name="set_live_chat_reading_none">Er is nog geen chatscherm gelezen.</string>
     <string name="set_live_chat_consent_body">Als dit aan staat, leest AlterLingua de tekst die op het scherm wordt getoond in WhatsApp, Telegram, Messenger of Signal terwijl een van die apps open is — nooit foto\'s, spraakberichten of wat je typt, en alleen terwijl een ondersteunde app degene is die je gebruikt. Die tekst wordt naar AlterLingua\'s vertaaldienst gestuurd en aan jou getoond als vertaling onder elk bericht op het scherm; hij wordt nooit bewaard, en niets wordt met iemand anders gedeeld. Dit vereist Android\'s toegankelijkheidsmachtiging, die je apart verleent nadat je hier akkoord gaat. AlterLingua is een vertaalhulpmiddel, geen toegankelijkheidshulpmiddel voor mensen met een beperking.</string>
     <string name="set_turn_on">Inschakelen</string>
     <string name="set_privacy">Privacy</string>

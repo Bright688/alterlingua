@@ -2,6 +2,7 @@ package com.alterlingua.app.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alterlingua.app.accessibility.LiveChatReading
 import com.alterlingua.app.learning.AssistanceMode
 import com.alterlingua.app.learning.KeyboardStyle
 import com.alterlingua.app.learning.Language
@@ -41,6 +42,8 @@ data class SettingsUiState(
     val keyboardStyleChoices: List<KeyboardStyleChoice> = emptyList(),
     /** How the latest incoming message ended (no message text). */
     val lastIncoming: IncomingOutcome? = null,
+    /** What live chat-screen translation has been doing, as numbers only; null until it has read a screen. */
+    val liveChatReading: LiveChatReading? = null,
     /** The result of the last "Delete all learning data": null before, true when everything was removed. */
     val dataErased: Boolean? = null,
 )
@@ -49,13 +52,19 @@ data class SettingsUiState(
 class SettingsViewModel(
     private val repository: UserSettingsRepository,
     lastIncoming: Flow<IncomingOutcome?> = emptyFlow(),
+    liveChatReading: Flow<LiveChatReading?> = emptyFlow(),
     /** Removes everything learned from messages and practice; true when every part was removed. */
     private val eraseLearningData: suspend () -> Boolean = { true },
 ) : ViewModel() {
 
     private val erased = MutableStateFlow<Boolean?>(null)
 
-    val uiState: StateFlow<SettingsUiState> = combine(repository.settings, lastIncoming.onStart { emit(null) }, erased) { it, incoming, dataErased ->
+    val uiState: StateFlow<SettingsUiState> = combine(
+        repository.settings,
+        lastIncoming.onStart { emit(null) },
+        erased,
+        liveChatReading.onStart { emit(null) },
+    ) { it, incoming, dataErased, liveReading ->
         SettingsUiState(
             nativeLanguage = it.nativeLanguage,
             targetLanguage = it.targetLanguage,
@@ -76,6 +85,7 @@ class SettingsViewModel(
                 },
             ),
             lastIncoming = incoming,
+            liveChatReading = liveReading,
             dataErased = dataErased,
         )
     }

@@ -251,6 +251,8 @@
     <string name="set_it_only_reads_the_text">它只读取聊天应用（WhatsApp、Telegram、Messenger、Signal）在通知中显示的文本，从不读取聊天本身，也不保存消息。需要通知使用权（见下方“设置向导”）。</string>
     <string name="set_live_chat_translation">实时读取聊天屏幕</string>
     <string name="set_live_chat_translation_desc">在受支持的聊天应用中，直接在屏幕上每条消息的下方显示译文，打开聊天期间叠加绘制在其上方。可能会遮住消息下方的时间。需要 Android 的无障碍权限。</string>
+    <string name="set_live_chat_reading_stats">屏幕读取：%1$d 次，跳过：%2$d 次。最近一次发现 %3$d 个项目（%4$d 个输入框）、%5$d 条消息、%6$d 条字幕。</string>
+    <string name="set_live_chat_reading_none">尚未读取任何聊天屏幕。</string>
     <string name="set_live_chat_consent_body">开启后，AlterLingua 会在您打开 WhatsApp、Telegram、Messenger 或 Signal 其中之一时，读取其屏幕上显示的文本——绝不读取照片、语音留言或您正在输入的内容，且仅在您使用受支持的应用期间生效。该文本会被发送到 AlterLingua 的翻译服务并以译文形式显示在屏幕上每条消息的下方；系统绝不会保存它，也不会与任何人共享。这需要 Android 的无障碍权限，您需要在此同意后另行授予。AlterLingua 是一款翻译工具，并非面向残障人士的无障碍工具。</string>
     <string name="set_turn_on">开启</string>
     <string name="set_privacy">隐私</string>
