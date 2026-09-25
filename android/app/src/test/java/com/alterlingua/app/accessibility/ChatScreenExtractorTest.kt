@@ -12,7 +12,7 @@ class ChatScreenExtractorTest {
     private fun node(text: String, top: Int, bottom: Int = top + 60, editable: Boolean = false, left: Int = 40, right: Int = 700) =
         ScreenNode(text, editable, Bounds(left, top, right, bottom))
 
-    private fun extract(vararg nodes: ScreenNode) = ChatScreenExtractor.extract(ScreenSnapshot(screen, nodes.toList()))
+    private fun extract(vararg nodes: ScreenNode) = ChatScreenExtractor.extract(ScreenSnapshot(screen, nodes.toList())).messages
 
     private val composer = node("", top = 1850, bottom = 1950, editable = true)
 
@@ -79,8 +79,20 @@ class ChatScreenExtractorTest {
     }
 
     @Test
+    fun theConversationArea_runsFromBelowTheTitleBarToTheTopOfTheTextBox() {
+        val area = ChatScreenExtractor.extract(ScreenSnapshot(screen, listOf(node("Salut", 500), composer))).area
+        assertEquals(Bounds(0, 220, 1000, 1850), area)
+    }
+
+    @Test
+    fun withoutATextBox_theAreaEndsAboveTheBottomEdge() {
+        val area = ChatScreenExtractor.extract(ScreenSnapshot(screen, listOf(node("Salut", 500)))).area
+        assertEquals(Bounds(0, 220, 1000, 1840), area)
+    }
+
+    @Test
     fun anEmptyWindow_givesNothing() {
-        assertTrue(ChatScreenExtractor.extract(ScreenSnapshot(Bounds(0, 0, 0, 0), emptyList())).isEmpty())
+        assertTrue(ChatScreenExtractor.extract(ScreenSnapshot(Bounds(0, 0, 0, 0), emptyList())).messages.isEmpty())
     }
 
     @Test

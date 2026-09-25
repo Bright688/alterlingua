@@ -92,9 +92,25 @@ class CaptionMetrics(context: Context) {
     val marginPx: Int = (8 * density).toInt()
     val minWidthPx: Int = (140 * density).toInt()
     val cornerPx: Float = 8 * density
+    val compactTextSizePx: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10f, context.resources.displayMetrics)
+    private val compactPaddingV: Int = (1 * density).toInt()
 
     /** Height of one line of caption including its top and bottom padding. */
     val lineHeightPx: Int = TextPaint().also { it.textSize = textSizePx }.fontMetricsInt.let { (it.descent - it.ascent) + 2 * paddingV }
+
+    /** Height of the single smaller line used when there is only a sliver of room. */
+    val compactLineHeightPx: Int = TextPaint().also { it.textSize = compactTextSizePx }.fontMetricsInt.let { (it.descent - it.ascent) + 2 * compactPaddingV }
+
+    /** The numbers [CaptionPlacer] needs. */
+    val sizes: CaptionSizes = CaptionSizes(
+        lineHeightPx = lineHeightPx,
+        compactLineHeightPx = compactLineHeightPx,
+        marginPx = marginPx,
+        minWidthPx = minWidthPx,
+        sideGapPx = (16 * density).toInt(),
+    )
+
+    fun paddingVFor(compact: Boolean): Int = if (compact) compactPaddingV else paddingV
 }
 
 private class CaptionView(context: Context, private val metrics: CaptionMetrics) : View(context) {
@@ -111,6 +127,7 @@ private class CaptionView(context: Context, private val metrics: CaptionMetrics)
         textSize = metrics.textSizePx
         color = if (night) 0xFFE8F1FA.toInt() else 0xFF0B2A4A.toInt()
     }
+    private val compactPaint = TextPaint(textPaint).apply { textSize = metrics.compactTextSizePx }
     private val origin = IntArray(2)
 
     override fun onDraw(canvas: Canvas) {
@@ -118,19 +135,21 @@ private class CaptionView(context: Context, private val metrics: CaptionMetrics)
         // so every caption is moved by wherever this view really is on the screen.
         getLocationOnScreen(origin)
         for (caption in captions) {
+            val paint = if (caption.compact) compactPaint else textPaint
+            val padV = metrics.paddingVFor(caption.compact)
             val textWidth = (caption.width - 2 * metrics.paddingH).coerceAtLeast(1)
-            val layout = StaticLayout.Builder.obtain(caption.text, 0, caption.text.length, textPaint, textWidth)
+            val layout = StaticLayout.Builder.obtain(caption.text, 0, caption.text.length, paint, textWidth)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setMaxLines(caption.maxLines)
                 .setEllipsize(TextUtils.TruncateAt.END)
                 .build()
             val left = (caption.left - origin[0]).toFloat()
             val top = (caption.top - origin[1]).toFloat()
-            val box = RectF(left, top, left + caption.width, top + layout.height + 2 * metrics.paddingV)
+            val box = RectF(left, top, left + caption.width, top + layout.height + 2 * padV)
             canvas.drawRoundRect(box, metrics.cornerPx, metrics.cornerPx, background)
             canvas.drawRoundRect(box, metrics.cornerPx, metrics.cornerPx, border)
             canvas.save()
-            canvas.translate(left + metrics.paddingH, top + metrics.paddingV)
+            canvas.translate(left + metrics.paddingH, top + padV)
             layout.draw(canvas)
             canvas.restore()
         }

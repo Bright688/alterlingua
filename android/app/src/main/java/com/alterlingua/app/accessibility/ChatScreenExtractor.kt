@@ -26,6 +26,14 @@ data class ChatMessage(val text: String, val bounds: Bounds) {
 }
 
 /**
+ * The messages on screen, top to bottom, and the [area] they live in: the window between the title bar and the text
+ * box the user types in. Captions must stay inside it.
+ */
+data class Conversation(val messages: List<ChatMessage>, val area: Bounds) {
+    override fun toString() = "Conversation(redacted)"
+}
+
+/**
  * Picks out the messages worth translating from everything a chat app's screen exposes, each with its position so a
  * translation can be drawn right under it.
  *
@@ -48,13 +56,13 @@ object ChatScreenExtractor {
 
     private val clockTime = Regex("""^\d{1,2}[:.]\d{2}(\s?([aApP]\.?[mM]\.?))?$""")
 
-    fun extract(snapshot: ScreenSnapshot): List<ChatMessage> {
+    fun extract(snapshot: ScreenSnapshot): Conversation {
         val screen = snapshot.screen
-        if (screen.height <= 0) return emptyList()
+        if (screen.height <= 0) return Conversation(emptyList(), Bounds(0, 0, 0, 0))
         val composerTop = snapshot.nodes.filter { it.isEditable }.minOfOrNull { it.bounds.top }
         val minTop = screen.top + (screen.height * TOP_FRACTION).toInt()
         val maxBottom = composerTop ?: (screen.bottom - (screen.height * BOTTOM_FRACTION).toInt())
-        return snapshot.nodes
+        val messages = snapshot.nodes
             .asSequence()
             .filterNot { it.isEditable }
             .map { it.copy(text = it.text.trim()) }
@@ -66,5 +74,6 @@ object ChatScreenExtractor {
             .distinct()
             .sortedBy { it.bounds.top }
             .toList()
+        return Conversation(messages, Bounds(screen.left, minTop, screen.right, maxBottom))
     }
 }

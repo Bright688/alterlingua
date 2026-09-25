@@ -42,8 +42,7 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
     private val reads = ReadScheduler(scope) { readScreen() }
 
     private var overlay: CaptionOverlay? = null
-    private var messages: List<ChatMessage> = emptyList()
-    private var screen = Bounds(0, 0, 0, 0)
+    private var conversation = Conversation(emptyList(), Bounds(0, 0, 0, 0))
     private var watch: Job? = null
 
     override fun onServiceConnected() {
@@ -79,42 +78,34 @@ class AlterLinguaAccessibilityService : AccessibilityService() {
         val snapshot = AccessibilityTreeReader.read(root)
         @Suppress("DEPRECATION")
         root.recycle()
-        screen = snapshot.screen
-        messages = ChatScreenExtractor.extract(snapshot)
+        conversation = ChatScreenExtractor.extract(snapshot)
         val shown = render()
         // Numbers only, for the status line in Settings: tells a wrong screen reading apart from a wrong drawing.
-        status.read(snapshot.nodes.size, snapshot.nodes.count { it.isEditable }, messages.size, shown)
-        val texts = messages.map { it.text }
+        status.read(snapshot.nodes.size, snapshot.nodes.count { it.isEditable }, conversation.messages.size, shown)
+        val texts = conversation.messages.map { it.text }
         if (texts.isNotEmpty()) {
             scope.launch(Dispatchers.Default) { translator.prepare(texts) { scope.launch { status.captionsDrawn(render()) } } }
         }
     }
 
     /**
-     * Draws a caption under every message whose translation is known; removes the overlay when there is nothing to
-     * show. Returns how many captions are now drawn.
+     * Draws a caption for every message whose translation is known, where it covers nothing (see [CaptionPlacer]);
+     * removes the overlay when there is nothing to show. Returns how many captions are now drawn.
      */
     private fun render(): Int {
         val current = overlay ?: return 0
-        if (messages.isEmpty()) {
+        if (conversation.messages.isEmpty()) {
             current.hide()
             return 0
         }
-        val captions = CaptionPlacer.place(
-            messages = messages,
-            translations = translator::captionFor,
-            screen = screen,
-            lineHeightPx = current.metrics.lineHeightPx,
-            marginPx = current.metrics.marginPx,
-            minWidthPx = current.metrics.minWidthPx,
-        )
+        val captions = CaptionPlacer.place(conversation, translator::captionFor, current.metrics.sizes)
         current.show(captions)
         if (captions.isNotEmpty()) watchForeground()
         return captions.size
     }
 
     private fun clearCaptions() {
-        messages = emptyList()
+        conversation = Conversation(emptyList(), conversation.area)
         overlay?.hide()
     }
 

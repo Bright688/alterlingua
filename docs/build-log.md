@@ -1488,3 +1488,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Also learned:** the owner's test chat was entirely in the owner's own language (English), where no caption is correct by design. A real test needs messages in another language. Reinstalling with `adb install -r` alone keeps the accessibility service enabled and bound; a `force-stop` afterwards leaves it enabled but unbound until it is switched off and on again, and enabling it over adb is blocked by the tooling, so the owner has to do that step.
 
 **Verification:** 825 unit tests pass, 0 failures. IMPLEMENTED, not MANUALLY VERIFIED: captions have still not been seen under a foreign-language message on the phone.
+
+
+---
+
+## 2026-09-25 — Captions must never cover the original message
+
+**Feedback (owner, with a screenshot of the first working version):** captions appeared, but some covered the start of the next message ("¿Quién eres?", "Bien je vous…") and one ran into the message box. "It shouldn't block me from seeing the original message."
+
+**Cause:** `CaptionPlacer` forced at least one caption line under every message, but consecutive bubbles from one sender leave less than a line between their texts, and it measured room to the screen bottom rather than the message box.
+
+**Change:** `ChatScreenExtractor` now returns a `Conversation` (messages plus the area between the title bar and the text box). `CaptionPlacer` treats every other message-like text (names, quotes, other messages) and every caption already placed as something it must not cover, and tries in order: under the message; beside it in the empty space next to the bubble (side with more room); a compact one-line caption under it; otherwise no caption. A missing caption is preferred to a covered message. Only the bubble's own time stamp may be covered.
+
+**Trade-off, stated to the owner:** in a dense chat some messages will get their caption beside the bubble, in a smaller style, or not at all.
+
+**Verification:** 835 unit tests pass (13 placer tests, including the owner's tight-bubble case). Installed on the phone; not yet seen by the owner.
