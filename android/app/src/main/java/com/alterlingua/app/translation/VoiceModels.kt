@@ -51,4 +51,12 @@ sealed interface VoiceResult {
 interface VoiceApi {
     /** Sends [audio] (of [contentType]) spoken in [source] and asks for it translated into [target]. */
     suspend fun translate(audio: File, contentType: String, source: String, target: String): VoiceResult
+
+    /**
+     * The same, plus [hints]: the languages the speaker is likely to be using, most likely first. The service uses them only
+     * when automatic detection ([source] = "auto") fails on an unclear recording, to try again in those languages instead of
+     * giving up. An implementation that has no use for them may ignore them.
+     */
+    suspend fun translate(audio: File, contentType: String, source: String, target: String, hints: List<String>): VoiceResult =
+        translate(audio, contentType, source, target)
 }

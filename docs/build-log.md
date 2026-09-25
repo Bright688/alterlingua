@@ -1544,3 +1544,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Change (`CaptionOverlay`):** vertical padding 0.5 dp to 1 dp; text sizes 10 / 8.5 / 7.5 / 7 sp to 10.5 / 9 / 8 / 7.5 sp; allowed reach into the next message's text box 4 dp to 6 dp (12 px). WhatsApp's message text boxes are 55 px tall around a ~38 px line, so about 8 px of each box is empty padding plus a few blank pixels above the letters; 12 px stays within that. In a tight run (12 px gaps) the room is now 24 px, enough for the 8 sp size.
 
 **Verification:** 834 unit tests, 0 failures. Installed on the phone; not yet seen by the owner. If letters of the next message look clipped at the top, the allowance is too generous and should go back down.
+
+
+---
+
+## 2026-09-25 — Shared French voice note refused as "language not supported yet"
+
+**Symptom (owner):** sharing a French WhatsApp voice note to AlterLingua shows "language not supported yet".
+
+**Diagnosis:** the server log (which now records the error kind) showed `request_rejected status=422 code=unsupported_language`, returned in 357 ms, i.e. after a very fast transcription rather than before it. A shared voice note is sent with the spoken language on `auto`, and the speech engine's language guess for a short or unclear recording is unreliable (Whisper large-v3 is known for this): it named a language outside AlterLingua's eight, and the server refused that as unsupported although the words would have been perfectly recognisable in French. This is a hypothesis fitted to the log; the exact language the engine named was not logged at the time.
+
+**Fix (backend, `cloudflare-provider` branch, deployed):** the request takes an optional `hints` field (the languages the speaker is likely to use). When automatic detection names a language we cannot use, or hears nothing, the recording is transcribed again forced to each hint and the attempt the engine is most sure of (mean log-probability) wins. An attempt below -1.0 (Whisper's own "this failed" cut-off) is discarded, so speech in a language that really is unsupported is still refused instead of turned into a nonsense translation. A supported detected language is never second-guessed. The rejection log line now also carries the language code and role (`language=yo role=source`), validated to be a short code so nothing else can reach the log.
+
+**Fix (Android):** `VoiceApi.translate` gained an overload with `hints` (default delegates to the old one, so the keyboard flow and the test fakes are unchanged); `HttpVoiceApi` sends them as a `hints` form field only when given; the shared-voice-note flow sends the learning language first, then the user's own (French then English in the owner's case).
+
+**Verification:** 837 Android unit tests and 377 backend tests pass (new: hints on the wire, hints order per user, second opinion wins / loses on confidence / skips failures / never second-guesses a supported language, an unsupported language still refused, log line carries the code but no content). Backend deployed to the server and app installed on the phone. IMPLEMENTED, not MANUALLY VERIFIED: the owner's real French voice note has not been re-tried, and the retry path itself has only been exercised with scripted engines, not against a real misdetected recording.

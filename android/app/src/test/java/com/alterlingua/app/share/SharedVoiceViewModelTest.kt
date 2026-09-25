@@ -60,9 +60,13 @@ class SharedVoiceViewModelTest {
     private class FakeApi : VoiceApi {
         val calls = mutableListOf<Call>()
         val results = ArrayDeque<VoiceResult>()
-        data class Call(val type: String, val source: String, val target: String, val existed: Boolean, val size: Long)
+        data class Call(val type: String, val source: String, val target: String, val existed: Boolean, val size: Long, val hints: List<String> = emptyList())
         override suspend fun translate(audio: File, contentType: String, source: String, target: String): VoiceResult {
             calls += Call(contentType, source, target, audio.exists(), audio.length())
+            return results.removeFirst()
+        }
+        override suspend fun translate(audio: File, contentType: String, source: String, target: String, hints: List<String>): VoiceResult {
+            calls += Call(contentType, source, target, audio.exists(), audio.length(), hints)
             return results.removeFirst()
         }
     }
@@ -145,6 +149,20 @@ class SharedVoiceViewModelTest {
         assertEquals("en", call.target)
         assertTrue("the copy existed while it was uploaded", call.existed)
         assertEquals(oggBytes.size.toLong(), call.size)
+    }
+
+    @Test fun theLikelyLanguagesAreSentAsHints_theLearningLanguageFirst_soAnUnclearNoteCanBeRetried() {
+        // An unclear recording can be mistaken for a language that is not supported; the backend then tries these instead
+        // of giving up. A voice note the user shares is most likely in the language they are learning.
+        api.results += ok()
+        viewModel(settings(native = Languages.English, learning = Languages.French)).start(address)
+        assertEquals(listOf("fr", "en"), api.calls.single().hints)
+    }
+
+    @Test fun theHintsFollowTheUsersLanguages_notAlwaysFrenchAndEnglish() {
+        api.results += ok(target = "es")
+        viewModel(settings(native = Languages.Spanish, learning = Languages.Japanese)).start(address)
+        assertEquals(listOf("ja", "es"), api.calls.single().hints)
     }
 
     @Test fun theTargetIsEachUsersOwnLanguage_notAlwaysEnglish() {

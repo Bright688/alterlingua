@@ -33,22 +33,25 @@ class HttpVoiceApi(
     private val root: String? = baseUrl.trim().trimEnd('/').takeIf { it.isNotEmpty() }
     private val endpoint: String? = root?.let { "$it/v1/audio/translate" }
 
-    override suspend fun translate(audio: File, contentType: String, source: String, target: String): VoiceResult {
+    override suspend fun translate(audio: File, contentType: String, source: String, target: String): VoiceResult =
+        translate(audio, contentType, source, target, emptyList())
+
+    override suspend fun translate(audio: File, contentType: String, source: String, target: String, hints: List<String>): VoiceResult {
         val url = endpoint ?: return VoiceResult.Failure(VoiceFailure.NOT_CONFIGURED)
-        return post(url, audio, contentType, source, target, { VoiceResult.Failure(it) }) { status, body -> interpret(status, body, target) }
+        return post(url, audio, contentType, source, target, hints, { VoiceResult.Failure(it) }) { status, body -> interpret(status, body, target) }
     }
 
-    private suspend fun <R> post(url: String, audio: File, contentType: String, source: String, target: String, fail: (VoiceFailure) -> R, interpret: (Int, String) -> R): R =
+    private suspend fun <R> post(url: String, audio: File, contentType: String, source: String, target: String, hints: List<String>, fail: (VoiceFailure) -> R, interpret: (Int, String) -> R): R =
         suspendCancellableCoroutine { continuation ->
             val call = HttpCall()
             continuation.invokeOnCancellation { call.cancel() }
             thread(name = "alterlingua-voice", isDaemon = true) {
-                val result = exchange(url, audio, contentType, source, target, call, fail, interpret)
+                val result = exchange(url, audio, contentType, source, target, hints, call, fail, interpret)
                 if (continuation.isActive) continuation.resume(result)
             }
         }
 
-    private fun <R> exchange(url: String, audio: File, contentType: String, source: String, target: String, call: HttpCall, fail: (VoiceFailure) -> R, interpret: (Int, String) -> R): R {
+    private fun <R> exchange(url: String, audio: File, contentType: String, source: String, target: String, hints: List<String>, call: HttpCall, fail: (VoiceFailure) -> R, interpret: (Int, String) -> R): R {
         val connection = try {
             URL(url).openConnection() as HttpURLConnection
         } catch (_: IOException) {
@@ -60,7 +63,10 @@ class HttpVoiceApi(
         return try {
             val boundary = "alterlingua-" + UUID.randomUUID().toString().replace("-", "")
             val head = buildString {
-                for ((name, value) in listOf("target" to target, "source" to source, "context" to "messaging", "tone" to "natural")) {
+                val fields = mutableListOf("target" to target, "source" to source, "context" to "messaging", "tone" to "natural")
+                // Language codes only (never any content): the languages the speaker is likely to use, for a second try.
+                if (hints.isNotEmpty()) fields += "hints" to hints.joinToString(",")
+                for ((name, value) in fields) {
                     append("--$boundary\r\nContent-Disposition: form-data; name=\"$name\"\r\n\r\n$value\r\n")
                 }
                 append("--$boundary\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"voice.m4a\"\r\nContent-Type: $contentType\r\n\r\n")

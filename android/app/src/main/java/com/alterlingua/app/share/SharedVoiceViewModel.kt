@@ -183,7 +183,11 @@ class SharedVoiceViewModel(
 
         state.value = SharedVoiceState.Working(SharedVoiceState.Step.TRANSLATING)
         val answer = try {
-            withTimeout(requestTimeoutMillis) { api.translate(audio.file, audio.contentType, source = "auto", target = native.code) }
+            // The spoken language is detected automatically. If that fails on an unclear recording, the service tries again in
+            // the languages the user works with: the one they are learning first (a voice note they share is most likely in
+            // it), then their own.
+            val hints = listOf(prefs.targetLanguage.code, native.code).distinct()
+            withTimeout(requestTimeoutMillis) { api.translate(audio.file, audio.contentType, source = "auto", target = native.code, hints = hints) }
         } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
             VoiceResult.Failure(VoiceFailure.TIMEOUT)
         }

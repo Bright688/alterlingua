@@ -104,6 +104,17 @@ class HttpVoiceApiTest {
     // ---- what is sent ----
 
     @Test
+    fun likelyLanguagesAreSentAsHints_onlyWhenGiven_asPlainCodes() {
+        val server = server { it.reply(200, json("fr", "Tu viens demain ?", "en", "Are you coming tomorrow?")) }
+        runBlocking { api(server).translate(recording(), "audio/ogg", "auto", "en", listOf("fr", "en")) }
+        assertEquals("fr,en", received!!.field("hints"))
+        assertEquals("auto", received!!.field("source"))
+
+        send(api(server), source = "auto", target = "en")
+        assertTrue("no hints field when none are given", received!!.parts.none { it.name == "hints" })
+    }
+
+    @Test
     fun sendsTheDocumentedMultipartRequest() {
         val server = server { it.reply(200, json("en", "Are you coming tomorrow?", "es", "¿Vienes mañana?")) }
         val result = send(api(server), source = "en", target = "es")
