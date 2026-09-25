@@ -1533,3 +1533,14 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Trade-off, stated to the owner:** in a tight run, captions are about 7 sp, small; and a long translation there is cut with an ellipsis.
 
 **Verification:** 834 unit tests, 0 failures (one unrelated coroutine test, `OnDemandHelpTest`, timed out once on a very slow build and passed on re-run). Installed on the phone; IMPLEMENTED, not yet MANUALLY VERIFIED by the owner.
+
+
+---
+
+## 2026-09-25 — Captions a little taller
+
+**Feedback (owner):** "increase height a little" (the run-of-messages captions were about 7 sp).
+
+**Change (`CaptionOverlay`):** vertical padding 0.5 dp to 1 dp; text sizes 10 / 8.5 / 7.5 / 7 sp to 10.5 / 9 / 8 / 7.5 sp; allowed reach into the next message's text box 4 dp to 6 dp (12 px). WhatsApp's message text boxes are 55 px tall around a ~38 px line, so about 8 px of each box is empty padding plus a few blank pixels above the letters; 12 px stays within that. In a tight run (12 px gaps) the room is now 24 px, enough for the 8 sp size.
+
+**Verification:** 834 unit tests, 0 failures. Installed on the phone; not yet seen by the owner. If letters of the next message look clipped at the top, the allowance is too generous and should go back down.

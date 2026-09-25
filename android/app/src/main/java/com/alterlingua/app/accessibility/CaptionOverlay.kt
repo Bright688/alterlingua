@@ -89,13 +89,13 @@ class CaptionMetrics(context: Context) {
     private val density = displayMetrics.density
     val paddingH: Int = (6 * density).toInt()
 
-    /** Tight vertical padding: in a run of messages from one sender there are only ~12 px between them. */
-    val paddingV: Int = (0.5f * density).toInt().coerceAtLeast(1)
+    /** Slim vertical padding: in a run of messages from one sender there are only ~12 px between them. */
+    val paddingV: Int = (1f * density).toInt().coerceAtLeast(1)
     val marginPx: Int = (8 * density).toInt()
     val cornerPx: Float = 6 * density
 
     /** The text sizes a caption may use, largest first; the largest that fits the room under its message is chosen. */
-    val textSizesPx: List<Float> = listOf(10f, 8.5f, 7.5f, 7f).map { TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, it, displayMetrics) }
+    val textSizesPx: List<Float> = listOf(10.5f, 9f, 8f, 7.5f).map { TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, it, displayMetrics) }
 
     private val measurePaints = HashMap<Float, TextPaint>()
 
@@ -117,7 +117,7 @@ class CaptionMetrics(context: Context) {
         lineHeightPx = ::lineHeightFor,
         marginPx = marginPx,
         minWidthPx = (200 * density).toInt(),
-        overlapAllowancePx = (4 * density).toInt(),
+        overlapAllowancePx = (6 * density).toInt(),
         measureLines = ::measureLines,
     )
 }
