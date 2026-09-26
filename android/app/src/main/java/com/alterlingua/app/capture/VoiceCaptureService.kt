@@ -184,8 +184,9 @@ class VoiceCaptureService : Service() {
         return try {
             WavFile.write(file, samples, VoiceNoteRecorder.OUTPUT_RATE)
             val address = CapturedAudioSource.addressOf(file)
-            announce(address)
-            translateNow(address)
+            // With automatic translation the result appears on the keyboard, so no notification is posted for every voice note
+            // (it would only interrupt). Only when it is off does a notification tell the user a note is waiting to be opened.
+            if (!translateNow(address)) announce(address)
             true
         } catch (_: IOException) {
             file.delete()
@@ -197,13 +198,16 @@ class VoiceCaptureService : Service() {
      * When the user has it switched on (Settings, on by default), sends the whole recording to be transcribed and translated
      * as soon as the voice note has ended, so the result is ready on the keyboard. It is one request for the whole note, never
      * pieces of it. With it off, the recording waits and is sent only when the user opens the notification.
+     *
+     * Returns true when the translation was started (the keyboard will show it), false when the recording is left waiting.
      */
-    private fun translateNow(address: String) {
+    private fun translateNow(address: String): Boolean {
         val app = application as AlterLinguaApplication
         val automatic = runBlocking { app.userSettings.settings.first().translateCapturedNotes }
-        if (!automatic) return
+        if (!automatic) return false
         // The note's processing starts on the main thread, like every screen's does.
         Handler(Looper.getMainLooper()).post { app.capturedNotes.open(address, announce = true) }
+        return true
     }
 
     /** Keeps the newest few recordings for at most an hour, so a long session cannot fill the phone. */
