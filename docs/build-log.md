@@ -1659,3 +1659,14 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Verification:** 880 Android unit tests pass, 0 failures (new: chosen apps toggling and saving in onboarding and Settings, the listening status following the session, request building, no listening to everything, known-app list). Lint and the release compile pass. Installed on the owner's phone. **IMPLEMENTED, not MANUALLY VERIFIED:** nothing here has been run on a phone, including the new onboarding step and Settings section, the multi-app session, and the restart notification.
 
 **Manual test for the owner:** open AlterLingua, go to Settings, find "Voice notes from chat apps", tick WhatsApp (and Telegram if installed), tap Start listening, allow what Android asks. Leave AlterLingua, open WhatsApp and play two voice notes one after another without touching anything else. A "Voice note captured" notification should appear after each; tap one to read its transcript and translation. Then lock the screen and unlock it: check whether "Listening stopped" appears, and whether tapping it goes straight to Android's approval. Report what happened, including how long it kept listening.
+
+
+---
+
+## 2026-09-26 — Removed the debug "AlterLingua capture test" screen
+
+**Why:** the owner saw two AlterLingua icons on the phone. The second was the debug-only "AlterLingua capture test" launcher entry added earlier to prove playback capture works. The real capture feature now exists in the app (keyboard button, onboarding, Settings), so the test is no longer needed.
+
+**Change:** deleted `src/debug/.../capturetest/` (activity, service, meter, explainer, state) and `src/testDebug/.../capturetest/` (20 tests), and removed the test's launcher activity, service, foreground-service permissions and chat-app `<queries>` from the debug manifest (the release manifest already declares what the real feature needs). The debug manifest keeps only the adb test-message receiver and the network config. What the test proved is kept in the two earlier build-log entries.
+
+**Verification:** 860 unit tests pass, 0 failures (880 minus the 20 removed). The rebuilt debug app was installed; Android now lists exactly one launcher entry for AlterLingua (`MainActivity`). No lint run for this change (only deletions and a manifest trim); the release manifest was not touched.

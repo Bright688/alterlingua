@@ -374,7 +374,7 @@ The owner explicitly asked to use `AccessibilityService` after an earlier decisi
 
 ### Debug-only test: capturing a voice note as it plays in a chat app (2026-09-26)
 
-A feasibility test (own launcher icon, debug builds only) for the question "could AlterLingua capture the sound of a voice note while it plays, for any chat app, without the Share step?". The voice-note Share feature is unchanged. See the 2026-09-26 build-log entry for what Android's documentation allows.
+**REMOVED 2026-09-26:** the test screen, its service, meter, explainer and their 20 tests were deleted once the real feature existed (it had put a second AlterLingua icon on debug installs). The rows below are the historical record of what it showed. A feasibility test (own launcher icon, debug builds only) for the question "could AlterLingua capture the sound of a voice note while it plays, for any chat app, without the Share step?". The voice-note Share feature is unchanged. See the 2026-09-26 build-log entry for what Android's documentation allows.
 
 | Item | Status |
 |---|---|
