@@ -381,7 +381,8 @@ A feasibility test (own launcher icon, debug builds only) for the question "coul
 | Test screen, foreground service, loudness meter and result explainer (`src/debug/.../capturetest/`); release manifest and Share feature untouched | IMPLEMENTED (debug only) |
 | Unit tests for the meter and the explainer (20) | IMPLEMENTED, passing |
 | The test screen opens on the owner's phone and lists the chat apps installed on it | MANUALLY VERIFIED (screenshot) |
-| **Whether WhatsApp, Telegram or Messenger voice notes can actually be captured** | NOT STARTED: needs the owner to run the test and report the result sentence for each app |
+| **WhatsApp** playback can be captured on the owner's phone (Android 15, Infinix) | OBSERVED 2026-09-26 on the test screen: "HEARD, 18 of 45 seconds had sound, loudest 0 dBFS; playback reported UNKNOWN (capturable); capture policy ALLOW_CAPTURE_BY_ALL". An earlier run with nothing playing correctly said "SILENT, no playback". Not yet confirmed that the sound was a voice note, and the captured audio has not been transcribed |
+| **Telegram and Messenger** voice notes | NOT STARTED: the owner still has to run the test for each |
 | A real "capture a voice note" feature in the release app | NOT STARTED: only worth considering if the test shows capture works; needs Google Play's mediaProjection and foreground-service policy checked first |
 
 ### Device test, two or more language configurations

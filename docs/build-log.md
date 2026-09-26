@@ -1592,3 +1592,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Verification:** 859 Android unit tests pass, 0 failures (20 new for the meter and the explainer; they live in `src/testDebug`, so the release build never sees them). The debug build installs on the owner's phone, the test screen opens, and lists the chat apps found on it. **Not verified: the capture itself, for any app.** That needs the owner to run the test on the phone; the results decide whether to go further.
 
 **Manual test for the owner:** open the "AlterLingua capture test" icon. Choose WhatsApp (then Telegram, then Messenger). Tap "Start test", approve Android's prompt, open that app right away and play a voice note from start to finish, return to the test screen and read the result. Close any floating video window first. Report the verdict sentence for each app.
+
+
+---
+
+## 2026-09-26 — First result of the capture test: WhatsApp playback can be captured
+
+**Run on the owner's phone (Android 15, Infinix X6728B), from the debug test screen:** with the chat app set to WhatsApp, the capture ran while audio played in WhatsApp and the screen reported: "Captured: sound from WhatsApp came through (18 of 45 seconds had sound, loudest 0 dBFS). Playback Android reported: UNKNOWN (capturable). Capture policy seen: ALLOW_CAPTURE_BY_ALL." An earlier run in which nothing was playing reported "SILENT ... Android reported no playback at all", which is the explainer working as intended, not a failure of the mechanism.
+
+**What this shows:** WhatsApp plays voice notes with a usage Android lets other apps capture (UNKNOWN) and has not opted out (policy ALLOW_CAPTURE_BY_ALL). Combined with the per-app UID filter, playback capture is technically possible for WhatsApp on this phone.
+
+**What it does not show:** that the sound was a voice note rather than another WhatsApp sound (the test measures loudness only), that the captured audio is clean enough to transcribe (a loudest sample of 0 dBFS may mean it clipped), or anything about Telegram, Messenger or Signal. Each app decides for itself, so each needs its own run.
+
+**Process note:** while I was checking the result, the phone was in use by the owner and briefly showed a private WhatsApp conversation. One screenshot of it was taken by accident and deleted at once; two blind taps were sent without first confirming which app was in front (they reached the test screen). From then on, screenshots were taken only after confirming AlterLingua's own screen was in front.
+
+**Not decided:** whether a real "capture a voice note" feature is worth building. It would still need Android's screen-capture prompt every time, plays in real time, and needs Google Play's mediaProjection and foreground-service policy checked; Share remains the primary path.
