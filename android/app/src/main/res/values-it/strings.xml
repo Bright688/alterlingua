@@ -495,4 +495,30 @@
     <string name="hw_downloading">Download del modello di scrittura per %1$s (una sola volta)…</string>
     <string name="hw_failed">Impossibile ottenere il modello di scrittura. Controlla la connessione.</string>
     <string name="hw_retry">Riprova</string>
+
+    <!-- Acquisire un messaggio vocale da qualsiasi app di messaggistica -->
+    <string name="toolbar_voice_note">Acquisisci un messaggio vocale</string>
+    <string name="capture_title">Acquisisci un messaggio vocale</string>
+    <string name="capture_intro">Riproduci un messaggio vocale in %1$s e AlterLingua lo trascriverà e lo tradurrà per te.</string>
+    <string name="capture_intro_any">Riproduci un messaggio vocale nella tua app di messaggistica e AlterLingua lo trascriverà e lo tradurrà per te.</string>
+    <string name="capture_step_1">1. Tocca Avvia e approva la domanda di Android sulla registrazione dello schermo. Android mostra un piccolo indicatore mentre AlterLingua ascolta.</string>
+    <string name="capture_step_2">2. Torna alla chat e riproduci il messaggio vocale.</string>
+    <string name="capture_step_3">3. Quando finisce, tocca la notifica «Messaggio vocale acquisito» per leggere la trascrizione e la traduzione.</string>
+    <string name="capture_privacy">AlterLingua registra solo l’audio riprodotto da quell’app di messaggistica, e solo fino alla fine del messaggio vocale. La registrazione viene inviata in modo sicuro per essere capita e tradotta, poi eliminata. Lo schermo non viene registrato e non viene inviato nulla a nessuno.</string>
+    <string name="capture_start">Avvia</string>
+    <string name="capture_problem_not_approved">La domanda di Android non è stata approvata, quindi non è stato avviato nulla.</string>
+    <string name="capture_problem_microphone">AlterLingua ha bisogno dell’autorizzazione del microfono, che Android richiede per registrare l’audio di un’altra app. Il microfono in sé non viene usato.</string>
+    <string name="capture_problem_notifications">AlterLingua deve poter mostrare notifiche per avvisarti quando il messaggio vocale è pronto.</string>
+    <string name="capture_problem_old_android">Per acquisire un messaggio vocale serve Android 10 o successivo.</string>
+    <string name="capture_channel_listening">In ascolto di un messaggio vocale</string>
+    <string name="capture_channel_result">Messaggio vocale acquisito</string>
+    <string name="capture_listening_title">In ascolto di un messaggio vocale</string>
+    <string name="capture_listening_text">Riproduci ora il messaggio vocale in %1$s. L’ascolto si ferma da solo quando il messaggio finisce.</string>
+    <string name="capture_listening_text_any">Riproduci ora il messaggio vocale. L’ascolto si ferma da solo quando il messaggio finisce.</string>
+    <string name="capture_stop">Ferma</string>
+    <string name="capture_public_text">Messaggio vocale</string>
+    <string name="capture_ready_title">Messaggio vocale acquisito</string>
+    <string name="capture_ready_text">Tocca per trascriverlo e tradurlo.</string>
+    <string name="capture_nothing_title">Nessun messaggio vocale sentito</string>
+    <string name="capture_nothing_text">Non è arrivato nulla. Riprova, poi riproduci il messaggio vocale dall’inizio.</string>
 </resources>

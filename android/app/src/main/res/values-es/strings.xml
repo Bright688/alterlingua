@@ -495,4 +495,30 @@
     <string name="hw_downloading">Descargando el modelo de escritura para %1$s (solo una vez)…</string>
     <string name="hw_failed">No se pudo obtener el modelo de escritura. Comprueba tu conexión.</string>
     <string name="hw_retry">Reintentar</string>
+
+    <!-- Capturar una nota de voz de cualquier aplicación de mensajería -->
+    <string name="toolbar_voice_note">Capturar una nota de voz</string>
+    <string name="capture_title">Capturar una nota de voz</string>
+    <string name="capture_intro">Reproduce una nota de voz en %1$s y AlterLingua la transcribirá y la traducirá por ti.</string>
+    <string name="capture_intro_any">Reproduce una nota de voz en tu aplicación de mensajería y AlterLingua la transcribirá y la traducirá por ti.</string>
+    <string name="capture_step_1">1. Toca Iniciar y aprueba la pregunta de captura de pantalla de Android. Android muestra un pequeño indicador mientras AlterLingua escucha.</string>
+    <string name="capture_step_2">2. Vuelve al chat y reproduce la nota de voz.</string>
+    <string name="capture_step_3">3. Cuando termine, toca la notificación «Nota de voz capturada» para leer la transcripción y la traducción.</string>
+    <string name="capture_privacy">AlterLingua solo graba el sonido que reproduce esa aplicación de mensajería, y solo hasta que termina la nota de voz. La grabación se envía de forma segura para entenderla y traducirla, y después se elimina. No se graba tu pantalla y no se envía nada a nadie.</string>
+    <string name="capture_start">Iniciar</string>
+    <string name="capture_problem_not_approved">No se aprobó la pregunta de Android, así que no se inició nada.</string>
+    <string name="capture_problem_microphone">AlterLingua necesita el permiso del micrófono, que Android exige para grabar el sonido de otra aplicación. El micrófono en sí no se usa.</string>
+    <string name="capture_problem_notifications">AlterLingua necesita poder mostrar notificaciones para avisarte cuando la nota de voz esté lista.</string>
+    <string name="capture_problem_old_android">Capturar una nota de voz requiere Android 10 o posterior.</string>
+    <string name="capture_channel_listening">Escuchando una nota de voz</string>
+    <string name="capture_channel_result">Nota de voz capturada</string>
+    <string name="capture_listening_title">Escuchando una nota de voz</string>
+    <string name="capture_listening_text">Reproduce ahora la nota de voz en %1$s. Se detiene sola cuando termina la nota.</string>
+    <string name="capture_listening_text_any">Reproduce ahora la nota de voz. Se detiene sola cuando termina la nota.</string>
+    <string name="capture_stop">Detener</string>
+    <string name="capture_public_text">Nota de voz</string>
+    <string name="capture_ready_title">Nota de voz capturada</string>
+    <string name="capture_ready_text">Toca para transcribirla y traducirla.</string>
+    <string name="capture_nothing_title">No se oyó ninguna nota de voz</string>
+    <string name="capture_nothing_text">No llegó nada. Inténtalo de nuevo y reproduce la nota de voz desde el principio.</string>
 </resources>

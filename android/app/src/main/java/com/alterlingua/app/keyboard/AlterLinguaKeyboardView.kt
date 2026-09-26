@@ -27,6 +27,7 @@ sealed interface ToolbarAction {
     data class SelectLanguage(val language: Language) : ToolbarAction
     data object Translate : ToolbarAction
     data object Microphone : ToolbarAction
+    data object VoiceNote : ToolbarAction
     data object OpenSettings : ToolbarAction
     data object Undo : ToolbarAction
     data object Retry : ToolbarAction
@@ -211,6 +212,10 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
             leadingIcon = ContextCompat.getDrawable(context, R.drawable.ic_tool_mic)
             contentDescription = context.getString(R.string.toolbar_microphone)
         }
+        val voiceNote = ToolbarButtonView(context, ToolbarButtonStyle.TONAL, colors) { onToolbarAction?.invoke(ToolbarAction.VoiceNote) }.apply {
+            leadingIcon = ContextCompat.getDrawable(context, R.drawable.ic_tool_voicenote)
+            contentDescription = context.getString(R.string.toolbar_voice_note)
+        }
         val settings = ToolbarButtonView(context, ToolbarButtonStyle.TONAL, colors) { onToolbarAction?.invoke(ToolbarAction.OpenSettings) }.apply {
             leadingIcon = ContextCompat.getDrawable(context, R.drawable.ic_tool_settings)
             contentDescription = context.getString(R.string.toolbar_settings)
@@ -221,7 +226,10 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
         toolbarRow.addView(languageButton, LayoutParams(LayoutParams.WRAP_CONTENT, height))
         toolbarRow.addView(translate, LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { leftMargin = gap })
         toolbarRow.addView(View(context), LayoutParams(0, 1, 1f))
-        toolbarRow.addView(microphone, LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { rightMargin = gap })
+        // Three icon buttons share the right side; the smaller gap keeps the toolbar inside a 360 dp screen in every language.
+        val iconGap = (4 * density).toInt()
+        toolbarRow.addView(microphone, LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { rightMargin = iconGap })
+        toolbarRow.addView(voiceNote, LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { rightMargin = iconGap })
         toolbarRow.addView(settings, LayoutParams(LayoutParams.WRAP_CONTENT, height))
 
         statusRow.orientation = HORIZONTAL

@@ -495,4 +495,30 @@
     <string name="hw_downloading">Handschriftmodell für %1$s wird geladen (einmalig)…</string>
     <string name="hw_failed">Das Handschriftmodell konnte nicht geladen werden. Prüfe deine Verbindung.</string>
     <string name="hw_retry">Erneut versuchen</string>
+
+    <!-- Sprachnachricht aus jeder Messenger-App erfassen -->
+    <string name="toolbar_voice_note">Sprachnachricht erfassen</string>
+    <string name="capture_title">Sprachnachricht erfassen</string>
+    <string name="capture_intro">Spiele eine Sprachnachricht in %1$s ab, und AlterLingua transkribiert und übersetzt sie für dich.</string>
+    <string name="capture_intro_any">Spiele eine Sprachnachricht in deiner Messenger-App ab, und AlterLingua transkribiert und übersetzt sie für dich.</string>
+    <string name="capture_step_1">1. Tippe auf Starten und bestätige die Bildschirmaufnahme-Frage von Android. Android zeigt einen kleinen Hinweis an, solange AlterLingua zuhört.</string>
+    <string name="capture_step_2">2. Kehre zum Chat zurück und spiele die Sprachnachricht ab.</string>
+    <string name="capture_step_3">3. Wenn sie zu Ende ist, tippe auf die Benachrichtigung „Sprachnachricht erfasst“, um Transkript und Übersetzung zu lesen.</string>
+    <string name="capture_privacy">AlterLingua nimmt nur den Ton auf, den diese Messenger-App abspielt, und nur bis die Sprachnachricht endet. Die Aufnahme wird sicher zum Verstehen und Übersetzen gesendet und danach gelöscht. Dein Bildschirm wird nicht aufgezeichnet, und nichts wird an andere gesendet.</string>
+    <string name="capture_start">Starten</string>
+    <string name="capture_problem_not_approved">Die Frage von Android wurde nicht bestätigt, daher wurde nichts gestartet.</string>
+    <string name="capture_problem_microphone">AlterLingua braucht die Mikrofonberechtigung, die Android verlangt, um den Ton einer anderen App aufzunehmen. Das Mikrofon selbst wird nicht verwendet.</string>
+    <string name="capture_problem_notifications">AlterLingua muss Benachrichtigungen anzeigen dürfen, um dir zu sagen, wann die Sprachnachricht bereit ist.</string>
+    <string name="capture_problem_old_android">Zum Erfassen einer Sprachnachricht ist Android 10 oder neuer nötig.</string>
+    <string name="capture_channel_listening">Hört eine Sprachnachricht</string>
+    <string name="capture_channel_result">Sprachnachricht erfasst</string>
+    <string name="capture_listening_title">Hört eine Sprachnachricht</string>
+    <string name="capture_listening_text">Spiele die Sprachnachricht jetzt in %1$s ab. Das Zuhören endet von selbst, wenn die Nachricht zu Ende ist.</string>
+    <string name="capture_listening_text_any">Spiele die Sprachnachricht jetzt ab. Das Zuhören endet von selbst, wenn die Nachricht zu Ende ist.</string>
+    <string name="capture_stop">Stopp</string>
+    <string name="capture_public_text">Sprachnachricht</string>
+    <string name="capture_ready_title">Sprachnachricht erfasst</string>
+    <string name="capture_ready_text">Tippen, um sie zu transkribieren und zu übersetzen.</string>
+    <string name="capture_nothing_title">Keine Sprachnachricht gehört</string>
+    <string name="capture_nothing_text">Es kam nichts an. Versuche es erneut und spiele die Sprachnachricht von Anfang an ab.</string>
 </resources>

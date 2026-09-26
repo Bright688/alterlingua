@@ -107,7 +107,8 @@ class PrivacyAuditTest {
         val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
         val permissions = Regex("""<uses-permission android:name="([^"]+)"""").findAll(main).map { it.groupValues[1].substringAfterLast('.') }.toSet()
         // No SYSTEM_ALERT_WINDOW: the live chat captions are drawn as an accessibility overlay, which needs no such permission.
-        assertEquals(setOf("RECORD_AUDIO", "INTERNET", "ACCESS_NETWORK_STATE", "POST_NOTIFICATIONS"), permissions)
+        // The two FOREGROUND_SERVICE permissions are for the user-started voice-note capture (a mediaProjection service).
+        assertEquals(setOf("RECORD_AUDIO", "INTERNET", "ACCESS_NETWORK_STATE", "POST_NOTIFICATIONS", "FOREGROUND_SERVICE", "FOREGROUND_SERVICE_MEDIA_PROJECTION"), permissions)
         assertTrue(main.contains("android:allowBackup=\"false\""))
         assertTrue("the microphone is optional for install", main.contains("android.hardware.microphone\" android:required=\"false\""))
     }

@@ -495,4 +495,30 @@
     <string name="hw_downloading">Téléchargement du modèle d’écriture pour %1$s (une seule fois)…</string>
     <string name="hw_failed">Impossible d’obtenir le modèle d’écriture. Vérifiez votre connexion.</string>
     <string name="hw_retry">Réessayer</string>
+
+    <!-- Capturer un message vocal depuis n’importe quelle application de messagerie -->
+    <string name="toolbar_voice_note">Capturer un message vocal</string>
+    <string name="capture_title">Capturer un message vocal</string>
+    <string name="capture_intro">Écoutez un message vocal dans %1$s et AlterLingua le transcrira et le traduira pour vous.</string>
+    <string name="capture_intro_any">Écoutez un message vocal dans votre application de messagerie et AlterLingua le transcrira et le traduira pour vous.</string>
+    <string name="capture_step_1">1. Appuyez sur Démarrer et acceptez la question de capture d’écran d’Android. Android affiche un petit indicateur pendant qu’AlterLingua écoute.</string>
+    <string name="capture_step_2">2. Revenez à la conversation et lancez le message vocal.</string>
+    <string name="capture_step_3">3. Quand il se termine, appuyez sur la notification « Message vocal capturé » pour lire la transcription et la traduction.</string>
+    <string name="capture_privacy">AlterLingua n’enregistre que le son que cette application de messagerie joue, et seulement jusqu’à la fin du message vocal. L’enregistrement est envoyé de façon sécurisée pour être compris et traduit, puis supprimé. Votre écran n’est pas enregistré et rien n’est envoyé à quiconque.</string>
+    <string name="capture_start">Démarrer</string>
+    <string name="capture_problem_not_approved">La question d’Android n’a pas été acceptée, rien n’a donc été démarré.</string>
+    <string name="capture_problem_microphone">AlterLingua a besoin de l’autorisation du microphone, qu’Android exige pour enregistrer le son d’une autre application. Le microphone lui-même n’est pas utilisé.</string>
+    <string name="capture_problem_notifications">AlterLingua doit pouvoir afficher des notifications pour vous prévenir quand le message vocal est prêt.</string>
+    <string name="capture_problem_old_android">La capture d’un message vocal nécessite Android 10 ou une version plus récente.</string>
+    <string name="capture_channel_listening">Écoute d’un message vocal</string>
+    <string name="capture_channel_result">Message vocal capturé</string>
+    <string name="capture_listening_title">Écoute d’un message vocal</string>
+    <string name="capture_listening_text">Lancez le message vocal dans %1$s maintenant. L’écoute s’arrête d’elle-même à la fin du message.</string>
+    <string name="capture_listening_text_any">Lancez le message vocal maintenant. L’écoute s’arrête d’elle-même à la fin du message.</string>
+    <string name="capture_stop">Arrêter</string>
+    <string name="capture_public_text">Message vocal</string>
+    <string name="capture_ready_title">Message vocal capturé</string>
+    <string name="capture_ready_text">Appuyez pour le transcrire et le traduire.</string>
+    <string name="capture_nothing_title">Aucun message vocal entendu</string>
+    <string name="capture_nothing_text">Rien n’a été capté. Réessayez, puis lancez le message vocal depuis le début.</string>
 </resources>

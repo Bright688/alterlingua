@@ -383,7 +383,26 @@ A feasibility test (own launcher icon, debug builds only) for the question "coul
 | The test screen opens on the owner's phone and lists the chat apps installed on it | MANUALLY VERIFIED (screenshot) |
 | **WhatsApp** playback can be captured on the owner's phone (Android 15, Infinix) | OBSERVED 2026-09-26 on the test screen: "HEARD, 18 of 45 seconds had sound, loudest 0 dBFS; playback reported UNKNOWN (capturable); capture policy ALLOW_CAPTURE_BY_ALL". An earlier run with nothing playing correctly said "SILENT, no playback". Not yet confirmed that the sound was a voice note, and the captured audio has not been transcribed |
 | **Telegram and Messenger** voice notes | NOT STARTED: the owner still has to run the test for each |
-| A real "capture a voice note" feature in the release app | NOT STARTED: only worth considering if the test shows capture works; needs Google Play's mediaProjection and foreground-service policy checked first |
+| A real "capture a voice note" feature in the release app | IMPLEMENTED 2026-09-26 (next section); NOT MANUALLY VERIFIED |
+
+### Capture a voice note from any chat app (2026-09-26)
+
+Keyboard toolbar button, then a screen that explains and asks, then a foreground service that records one voice note the chat app plays, then a notification that opens the same Voice Translation screen as a shared voice note. The Share feature and its files (`share/`, its manifest entry) were not modified.
+
+| Item | Status |
+|---|---|
+| Keyboard voice-note button (`ToolbarEvent.VoiceNote`); the keyboard reads only the typed-into app's name and Android user id and passes them on | IMPLEMENTED |
+| `VoiceCaptureActivity` (explanation, then notifications / microphone / Android's screen-capture approval only after Start) | IMPLEMENTED |
+| `VoiceCaptureService` (foreground service type mediaProjection, playback capture limited to that app's UID and to media / game / unknown sound, stops by itself when the voice note ends or on Stop or after 90 s of nothing) | IMPLEMENTED |
+| `VoiceNoteRecorder` (16 kHz mono, waits for sound, ends on a 2.5 s pause after at least 1 s of sound, ignores short blips, 4 min limit) and WAV writer | IMPLEMENTED, unit-tested |
+| `VoiceCaptureResultActivity` reuses the shared-voice view model and screen through a private address scheme; the recording is deleted when read; `captured_audio` cache folder is swept and erased with the other audio folders | IMPLEMENTED, unit-tested |
+| Strings in all 8 languages; permissions FOREGROUND_SERVICE and FOREGROUND_SERVICE_MEDIA_PROJECTION added to the audited allow-list | IMPLEMENTED |
+| 872 unit tests pass (13 new); lint and release compile pass; debug build installed on the phone | VERIFIED (automated) |
+| Toolbar fits a 360 dp screen with the extra button in every language (buttons made slightly narrower for it) | NOT VERIFIED on a screen: sized by calculation only |
+| The whole flow on the phone with a real voice note in WhatsApp | NOT MANUALLY VERIFIED |
+| Telegram, Messenger, Signal | NOT MANUALLY VERIFIED: each app decides whether its playback can be captured |
+| Transcription quality of captured audio (it may be clipped or quiet) | NOT MANUALLY VERIFIED |
+| Google Play: foreground-service type declaration and mediaProjection policy review (Play Console, Policy, App content), and a decision on whether the feature ships | BLOCKED on the owner (CLAUDE.md section 39) |
 
 ### Device test, two or more language configurations
 

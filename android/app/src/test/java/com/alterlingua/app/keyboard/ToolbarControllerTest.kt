@@ -126,6 +126,16 @@ class ToolbarControllerTest {
     }
 
     @Test
+    fun theVoiceNoteButtonAsksToCaptureOne_andChangesNothingElse() {
+        toolbar.onSettingsChanged(settings(target = Languages.Italian))
+        val before = toolbar.state
+        toolbar.onVoiceNote()
+        assertEquals(listOf<ToolbarEvent>(ToolbarEvent.VoiceNote), events)
+        assertEquals(before, toolbar.state)
+        assertTrue(saved.isEmpty())
+    }
+
+    @Test
     fun settingsAsksToOpenTheApp() {
         toolbar.onSettings()
         assertEquals(listOf<ToolbarEvent>(ToolbarEvent.OpenSettings), events)

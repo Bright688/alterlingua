@@ -27,6 +27,15 @@
     -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!--
+        Capture a voice note (keyboard button, Android 10+): while the user has started it and approved Android's own
+        screen-capture prompt, AlterLingua records the sound one chat app plays for one voice note. Android requires a
+        foreground service of type mediaProjection for that, and shows a status-bar indicator while it runs. It stops by
+        itself when the voice note ends.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application
@@ -85,6 +94,26 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/spoken_audio_paths" />
         </provider>
+
+        <!--
+            Capture a voice note from any chat app: opened only by AlterLingua's own keyboard button. The screen explains
+            and asks; the service records one voice note; the result screen (opened from the "captured" notification)
+            transcribes and translates it. Sharing a voice note to AlterLingua (ShareVoiceActivity) is separate and unchanged.
+        -->
+        <activity
+            android:name=".capture.VoiceCaptureActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity="" />
+        <activity
+            android:name=".capture.VoiceCaptureResultActivity"
+            android:exported="false"
+            android:label="@string/vn_voice_note"
+            android:taskAffinity="" />
+        <service
+            android:name=".capture.VoiceCaptureService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
 
         <!--
             A keyboard cannot show Android's permission question itself, so it opens this invisible screen, which asks

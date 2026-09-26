@@ -495,4 +495,30 @@
     <string name="hw_downloading">%1$sの手書きモデルをダウンロード中（初回のみ）…</string>
     <string name="hw_failed">手書きモデルを取得できませんでした。接続を確認してください。</string>
     <string name="hw_retry">再試行</string>
+
+    <!-- あらゆるチャットアプリのボイスメッセージをキャプチャ -->
+    <string name="toolbar_voice_note">ボイスメッセージをキャプチャ</string>
+    <string name="capture_title">ボイスメッセージをキャプチャ</string>
+    <string name="capture_intro">%1$s でボイスメッセージを再生すると、AlterLingua が文字起こしして翻訳します。</string>
+    <string name="capture_intro_any">お使いのチャットアプリでボイスメッセージを再生すると、AlterLingua が文字起こしして翻訳します。</string>
+    <string name="capture_step_1">1. 「開始」をタップし、Android の画面キャプチャの確認を承認します。AlterLingua が聞き取っている間、Android に小さなインジケーターが表示されます。</string>
+    <string name="capture_step_2">2. チャットに戻って、ボイスメッセージを再生します。</string>
+    <string name="capture_step_3">3. 再生が終わったら、「ボイスメッセージをキャプチャしました」の通知をタップして、文字起こしと翻訳を読みます。</string>
+    <string name="capture_privacy">AlterLingua は、そのチャットアプリが再生する音だけを、ボイスメッセージが終わるまで録音します。録音は理解と翻訳のために安全に送信され、その後削除されます。画面は録画されず、他の人には何も送信されません。</string>
+    <string name="capture_start">開始</string>
+    <string name="capture_problem_not_approved">Android の確認が承認されなかったため、何も開始されませんでした。</string>
+    <string name="capture_problem_microphone">AlterLingua にはマイクの権限が必要です。これは他のアプリの音を録音するために Android が求めるもので、マイク自体は使用しません。</string>
+    <string name="capture_problem_notifications">ボイスメッセージの準備ができたことをお知らせするため、AlterLingua に通知の表示を許可する必要があります。</string>
+    <string name="capture_problem_old_android">ボイスメッセージのキャプチャには Android 10 以降が必要です。</string>
+    <string name="capture_channel_listening">ボイスメッセージを聞き取り中</string>
+    <string name="capture_channel_result">ボイスメッセージをキャプチャしました</string>
+    <string name="capture_listening_title">ボイスメッセージを聞き取り中</string>
+    <string name="capture_listening_text">今すぐ %1$s でボイスメッセージを再生してください。メッセージが終わると自動で止まります。</string>
+    <string name="capture_listening_text_any">今すぐボイスメッセージを再生してください。メッセージが終わると自動で止まります。</string>
+    <string name="capture_stop">停止</string>
+    <string name="capture_public_text">ボイスメッセージ</string>
+    <string name="capture_ready_title">ボイスメッセージをキャプチャしました</string>
+    <string name="capture_ready_text">タップして文字起こしと翻訳を行います。</string>
+    <string name="capture_nothing_title">ボイスメッセージが聞こえませんでした</string>
+    <string name="capture_nothing_text">何も届きませんでした。もう一度試して、ボイスメッセージを最初から再生してください。</string>
 </resources>

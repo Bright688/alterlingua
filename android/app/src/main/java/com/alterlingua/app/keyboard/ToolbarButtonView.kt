@@ -98,7 +98,7 @@ class ToolbarButtonView(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val iconOnly = label == null && !showDot && trailingIcon == null
-        val desired = if (iconOnly) (36 * density) else contentWidth() + 2 * padding
+        val desired = if (iconOnly) (32 * density) else contentWidth() + 2 * padding
         val width = resolveSize(desired.toInt(), widthMeasureSpec)
         setMeasuredDimension(width, resolveSize((34 * density).toInt(), heightMeasureSpec))
     }

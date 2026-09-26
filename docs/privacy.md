@@ -88,6 +88,16 @@ contacts, location, phone, accessibility or overlay permission. Notification acc
 test asserts this exact list. Exported components: the launcher screen, the audio Share target, and the keyboard and notification-listener
 services (each protected by the system-only bind permission). The FileProvider and the voice-message screen are not exported.
 
+**Capture a voice note (added September 2026).** Two more permissions, `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_MEDIA_PROJECTION`,
+exist only for the keyboard's "Capture a voice note" button. It is started by the user each time, requires Android's own screen-capture
+approval each time (which shows a status-bar indicator), records only sound Android lets other apps capture (media, game, unknown; never
+calls) and only from the one chat app the keyboard was typing into (matched by Android user id), and stops by itself when the voice note
+ends. The screen is not recorded. The recording is a private temporary file in the cache (`captured_audio`, swept after an hour and
+erased with the other audio folders), deleted as soon as the result screen reads it, and sent to the backend exactly like a shared voice
+note. Notifications say only whether a voice note was captured, never any words, and have a hidden-content public version. The
+activities and the service are not exported. The keyboard reads only the name and user id of the app being typed into (an input method can
+always see that app) and never anything from its chat.
+
 ## 8. Audit findings
 
 Severity means the harm if it were exploited on a shipped product. **No CRITICAL finding.**

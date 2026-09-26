@@ -13,6 +13,8 @@ import android.view.inputmethod.InputMethodManager
 import kotlinx.coroutines.flow.first
 import com.alterlingua.app.AlterLinguaApplication
 import com.alterlingua.app.R
+import com.alterlingua.app.capture.VoiceCaptureActivity
+import com.alterlingua.app.capture.VoiceCaptureService
 import com.alterlingua.app.navigation.AppLinks
 import com.alterlingua.app.storage.setTargetLanguage
 import kotlinx.coroutines.CoroutineScope
@@ -330,6 +332,7 @@ class AlterLinguaKeyboardService : InputMethodService() {
             ToolbarAction.Translate -> toolbar.onTranslate()
             ToolbarAction.Microphone -> toolbar.onMicrophone()
             is ToolbarAction.Voice -> onVoiceAction(action.action)
+            ToolbarAction.VoiceNote -> toolbar.onVoiceNote()
             ToolbarAction.OpenSettings -> toolbar.onSettings()
         }
     }
@@ -345,11 +348,43 @@ class AlterLinguaKeyboardService : InputMethodService() {
                 toolbar.closeLanguages()
                 voice.start()
             }
+            ToolbarEvent.VoiceNote -> {
+                translation.cancel()
+                toolbar.closeLanguages()
+                startVoiceNoteCapture()
+            }
             ToolbarEvent.OpenSettings -> {
                 startActivity(AppLinks.settingsIntent(this))
                 requestHideSelf(0)
             }
         }
+    }
+
+    /**
+     * Opens the "capture a voice note" screen for the chat app being typed into. An input method can always see the app
+     * it is connected to, so its name and Android's user id for it are read here (the capture is then limited to that
+     * app's sound), and only those two values are passed on. Nothing else about the app or its chat is read.
+     */
+    private fun startVoiceNoteCapture() {
+        val chatApp = currentInputEditorInfo?.packageName?.takeIf { it != packageName }
+        var uid = -1
+        var label = ""
+        if (chatApp != null) {
+            try {
+                val info = packageManager.getApplicationInfo(chatApp, 0)
+                uid = info.uid
+                label = packageManager.getApplicationLabel(info).toString()
+            } catch (_: PackageManager.NameNotFoundException) {
+                // Leave the capture unlimited rather than failing; the screen says which app it will listen to.
+            }
+        }
+        startActivity(
+            Intent(this, VoiceCaptureActivity::class.java)
+                .putExtra(VoiceCaptureService.EXTRA_UID, uid)
+                .putExtra(VoiceCaptureService.EXTRA_LABEL, label)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+        requestHideSelf(0)
     }
 
     private fun onVoiceAction(action: VoiceAction) {

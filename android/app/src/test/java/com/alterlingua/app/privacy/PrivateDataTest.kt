@@ -49,7 +49,7 @@ class PrivateDataTest {
     }
 
     @Test fun everyFolderThatHoldsAudioIsCovered() {
-        assertEquals(setOf("voice", "pronunciation", "shared_audio", "spoken_audio"), TemporaryAudioFolders.NAMES.toSet())
+        assertEquals(setOf("voice", "pronunciation", "shared_audio", "spoken_audio", "captured_audio"), TemporaryAudioFolders.NAMES.toSet())
     }
 
     @Test fun deleteAllRemovesEverythingInThoseFolders() {

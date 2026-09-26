@@ -495,4 +495,30 @@
     <string name="hw_downloading">Handschriftmodel voor %1$s wordt gedownload (eenmalig)…</string>
     <string name="hw_failed">Het handschriftmodel kon niet worden opgehaald. Controleer je verbinding.</string>
     <string name="hw_retry">Opnieuw proberen</string>
+
+    <!-- Een spraakbericht van elke berichtenapp vastleggen -->
+    <string name="toolbar_voice_note">Spraakbericht vastleggen</string>
+    <string name="capture_title">Spraakbericht vastleggen</string>
+    <string name="capture_intro">Speel een spraakbericht af in %1$s en AlterLingua transcribeert en vertaalt het voor je.</string>
+    <string name="capture_intro_any">Speel een spraakbericht af in je berichtenapp en AlterLingua transcribeert en vertaalt het voor je.</string>
+    <string name="capture_step_1">1. Tik op Starten en keur de schermopnamevraag van Android goed. Android toont een kleine indicator zolang AlterLingua luistert.</string>
+    <string name="capture_step_2">2. Ga terug naar de chat en speel het spraakbericht af.</string>
+    <string name="capture_step_3">3. Als het klaar is, tik je op de melding ‘Spraakbericht vastgelegd’ om het transcript en de vertaling te lezen.</string>
+    <string name="capture_privacy">AlterLingua neemt alleen het geluid op dat die berichtenapp afspeelt, en alleen tot het spraakbericht eindigt. De opname wordt veilig verstuurd om te worden begrepen en vertaald, en daarna verwijderd. Je scherm wordt niet opgenomen en er wordt niets naar anderen verstuurd.</string>
+    <string name="capture_start">Starten</string>
+    <string name="capture_problem_not_approved">De vraag van Android is niet goedgekeurd, dus er is niets gestart.</string>
+    <string name="capture_problem_microphone">AlterLingua heeft de microfoontoestemming nodig, die Android vereist om het geluid van een andere app op te nemen. De microfoon zelf wordt niet gebruikt.</string>
+    <string name="capture_problem_notifications">AlterLingua moet meldingen mogen tonen om je te laten weten wanneer het spraakbericht klaar is.</string>
+    <string name="capture_problem_old_android">Voor het vastleggen van een spraakbericht is Android 10 of nieuwer nodig.</string>
+    <string name="capture_channel_listening">Luistert naar een spraakbericht</string>
+    <string name="capture_channel_result">Spraakbericht vastgelegd</string>
+    <string name="capture_listening_title">Luistert naar een spraakbericht</string>
+    <string name="capture_listening_text">Speel het spraakbericht nu af in %1$s. Het luisteren stopt vanzelf als het bericht eindigt.</string>
+    <string name="capture_listening_text_any">Speel het spraakbericht nu af. Het luisteren stopt vanzelf als het bericht eindigt.</string>
+    <string name="capture_stop">Stoppen</string>
+    <string name="capture_public_text">Spraakbericht</string>
+    <string name="capture_ready_title">Spraakbericht vastgelegd</string>
+    <string name="capture_ready_text">Tik om het te transcriberen en te vertalen.</string>
+    <string name="capture_nothing_title">Geen spraakbericht gehoord</string>
+    <string name="capture_nothing_text">Er kwam niets door. Probeer het opnieuw en speel het spraakbericht vanaf het begin af.</string>
 </resources>

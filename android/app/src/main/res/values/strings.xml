@@ -528,4 +528,30 @@
     <string name="hw_downloading">Downloading the handwriting model for %1$s (once)…</string>
     <string name="hw_failed">Couldn\'t get the handwriting model. Check your connection.</string>
     <string name="hw_retry">Try again</string>
+
+    <!-- Capture a voice note from any chat app (keyboard button) -->
+    <string name="toolbar_voice_note">Capture a voice note</string>
+    <string name="capture_title">Capture a voice note</string>
+    <string name="capture_intro">Play a voice note in %1$s and AlterLingua will transcribe it and translate it for you.</string>
+    <string name="capture_intro_any">Play a voice note in your chat app and AlterLingua will transcribe it and translate it for you.</string>
+    <string name="capture_step_1">1. Tap Start and approve Android’s screen-capture question. Android shows a small indicator while AlterLingua listens.</string>
+    <string name="capture_step_2">2. Go back to the chat and play the voice note.</string>
+    <string name="capture_step_3">3. When it ends, tap the “Voice note captured” notification to read the transcript and the translation.</string>
+    <string name="capture_privacy">AlterLingua records only the sound that chat app plays, only until the voice note ends. The recording is sent securely to be understood and translated, then deleted. Your screen is not recorded, and nothing is sent to anyone.</string>
+    <string name="capture_start">Start</string>
+    <string name="capture_problem_not_approved">Android’s question wasn’t approved, so nothing was started.</string>
+    <string name="capture_problem_microphone">AlterLingua needs the microphone permission, which Android requires to record sound another app plays. The microphone itself isn’t used.</string>
+    <string name="capture_problem_notifications">AlterLingua needs to be allowed to show notifications, so it can tell you when the voice note is ready.</string>
+    <string name="capture_problem_old_android">Capturing a voice note needs Android 10 or newer.</string>
+    <string name="capture_channel_listening">Listening for a voice note</string>
+    <string name="capture_channel_result">Voice note captured</string>
+    <string name="capture_listening_title">Listening for a voice note</string>
+    <string name="capture_listening_text">Play the voice note in %1$s now. It stops by itself when the note ends.</string>
+    <string name="capture_listening_text_any">Play the voice note now. It stops by itself when the note ends.</string>
+    <string name="capture_stop">Stop</string>
+    <string name="capture_public_text">Voice note</string>
+    <string name="capture_ready_title">Voice note captured</string>
+    <string name="capture_ready_text">Tap to transcribe and translate it.</string>
+    <string name="capture_nothing_title">No voice note heard</string>
+    <string name="capture_nothing_text">Nothing came through. Try again, then play the voice note from the start.</string>
 </resources>

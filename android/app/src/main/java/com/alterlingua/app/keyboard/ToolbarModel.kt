@@ -39,6 +39,9 @@ sealed interface ToolbarEvent {
 
     /** The user tapped the microphone. */
     data object Voice : ToolbarEvent
+    /** "Capture a voice note": record a voice note that a chat app plays, to transcribe and translate it. */
+    data object VoiceNote : ToolbarEvent
+
     data object OpenSettings : ToolbarEvent
 }
 
@@ -77,6 +80,8 @@ class ToolbarController(
     fun onTranslate() = onEvent(ToolbarEvent.Translate)
 
     fun onMicrophone() = onEvent(ToolbarEvent.Voice)
+
+    fun onVoiceNote() = onEvent(ToolbarEvent.VoiceNote)
 
     fun onSettings() = onEvent(ToolbarEvent.OpenSettings)
 

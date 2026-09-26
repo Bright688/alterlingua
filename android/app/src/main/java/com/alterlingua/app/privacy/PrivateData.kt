@@ -28,7 +28,7 @@ class TemporaryAudioFolders(private val cacheDir: File, private val clock: () ->
         const val STALE_MILLIS = 60L * 60 * 1000
 
         /** Keep in step with where the app writes audio (see AppViewModelProvider). */
-        val NAMES = listOf("voice", "pronunciation", "shared_audio", "spoken_audio")
+        val NAMES = listOf("voice", "pronunciation", "shared_audio", "spoken_audio", "captured_audio")
     }
 }
 

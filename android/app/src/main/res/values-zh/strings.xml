@@ -495,4 +495,30 @@
     <string name="hw_downloading">正在下载%1$s手写模型（仅一次）…</string>
     <string name="hw_failed">无法获取手写模型，请检查网络连接。</string>
     <string name="hw_retry">重试</string>
+
+    <!-- 从任何聊天应用捕获语音消息 -->
+    <string name="toolbar_voice_note">捕获语音消息</string>
+    <string name="capture_title">捕获语音消息</string>
+    <string name="capture_intro">在 %1$s 中播放语音消息，AlterLingua 会为你转写并翻译。</string>
+    <string name="capture_intro_any">在你的聊天应用中播放语音消息，AlterLingua 会为你转写并翻译。</string>
+    <string name="capture_step_1">1. 点按“开始”，并同意 Android 的屏幕录制提示。AlterLingua 收听期间，Android 会显示一个小图标。</string>
+    <string name="capture_step_2">2. 返回聊天并播放语音消息。</string>
+    <string name="capture_step_3">3. 播放结束后，点按“已捕获语音消息”通知，查看转写内容和翻译。</string>
+    <string name="capture_privacy">AlterLingua 只录制该聊天应用播放的声音，并且只录到语音消息结束为止。录音会被安全地发送以进行识别和翻译，然后删除。不会录制你的屏幕，也不会向任何人发送任何内容。</string>
+    <string name="capture_start">开始</string>
+    <string name="capture_problem_not_approved">Android 的提示未获同意，因此未启动。</string>
+    <string name="capture_problem_microphone">AlterLingua 需要麦克风权限，这是 Android 录制其他应用声音所要求的。不会使用麦克风本身。</string>
+    <string name="capture_problem_notifications">AlterLingua 需要获准显示通知，才能在语音消息准备好时告诉你。</string>
+    <string name="capture_problem_old_android">捕获语音消息需要 Android 10 或更高版本。</string>
+    <string name="capture_channel_listening">正在收听语音消息</string>
+    <string name="capture_channel_result">已捕获语音消息</string>
+    <string name="capture_listening_title">正在收听语音消息</string>
+    <string name="capture_listening_text">现在请在 %1$s 中播放语音消息。消息结束时会自动停止。</string>
+    <string name="capture_listening_text_any">现在请播放语音消息。消息结束时会自动停止。</string>
+    <string name="capture_stop">停止</string>
+    <string name="capture_public_text">语音消息</string>
+    <string name="capture_ready_title">已捕获语音消息</string>
+    <string name="capture_ready_text">点按以转写并翻译。</string>
+    <string name="capture_nothing_title">没有听到语音消息</string>
+    <string name="capture_nothing_text">没有收到任何声音。请重试，然后从头播放语音消息。</string>
 </resources>
