@@ -501,7 +501,7 @@
     <string name="capture_title">Spraakbericht vastleggen</string>
     <string name="capture_intro">Speel een spraakbericht af in %1$s en AlterLingua transcribeert en vertaalt het voor je.</string>
     <string name="capture_intro_any">Speel een spraakbericht af in je berichtenapp en AlterLingua transcribeert en vertaalt het voor je.</string>
-    <string name="capture_step_1">1. Tik op Starten en keur de schermopnamevraag van Android goed. Android toont een kleine indicator zolang AlterLingua luistert.</string>
+    <string name="capture_step_1">1. Tik op Starten en keur de schermopnamevraag van Android goed. Android toont een kleine indicator zolang AlterLingua luistert. Welke optie Android ook biedt: AlterLingua hoort alleen het geluid van de gekozen apps en neemt nooit je scherm op.</string>
     <string name="capture_step_2">2. Ga terug naar de chat en speel het spraakbericht af.</string>
     <string name="capture_step_3">3. Als het klaar is, tik je op de melding ‘Spraakbericht vastgelegd’ om het transcript en de vertaling te lezen.</string>
     <string name="capture_privacy">AlterLingua neemt alleen het geluid op dat die berichtenapp afspeelt, en alleen tot het spraakbericht eindigt. De opname wordt veilig verstuurd om te worden begrepen en vertaald, en daarna verwijderd. Je scherm wordt niet opgenomen en er wordt niets naar anderen verstuurd.</string>

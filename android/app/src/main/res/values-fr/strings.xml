@@ -501,7 +501,7 @@
     <string name="capture_title">Capturer un message vocal</string>
     <string name="capture_intro">Écoutez un message vocal dans %1$s et AlterLingua le transcrira et le traduira pour vous.</string>
     <string name="capture_intro_any">Écoutez un message vocal dans votre application de messagerie et AlterLingua le transcrira et le traduira pour vous.</string>
-    <string name="capture_step_1">1. Appuyez sur Démarrer et acceptez la question de capture d’écran d’Android. Android affiche un petit indicateur pendant qu’AlterLingua écoute.</string>
+    <string name="capture_step_1">1. Appuyez sur Démarrer et acceptez la question de capture d’écran d’Android. Android affiche un petit indicateur pendant qu’AlterLingua écoute. Quelle que soit l’option proposée par Android, AlterLingua n’entend que le son des applications choisies et n’enregistre jamais votre écran.</string>
     <string name="capture_step_2">2. Revenez à la conversation et lancez le message vocal.</string>
     <string name="capture_step_3">3. Quand il se termine, appuyez sur la notification « Message vocal capturé » pour lire la transcription et la traduction.</string>
     <string name="capture_privacy">AlterLingua n’enregistre que le son que cette application de messagerie joue, et seulement jusqu’à la fin du message vocal. L’enregistrement est envoyé de façon sécurisée pour être compris et traduit, puis supprimé. Votre écran n’est pas enregistré et rien n’est envoyé à quiconque.</string>

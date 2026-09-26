@@ -1670,3 +1670,18 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Change:** deleted `src/debug/.../capturetest/` (activity, service, meter, explainer, state) and `src/testDebug/.../capturetest/` (20 tests), and removed the test's launcher activity, service, foreground-service permissions and chat-app `<queries>` from the debug manifest (the release manifest already declares what the real feature needs). The debug manifest keeps only the adb test-message receiver and the network config. What the test proved is kept in the two earlier build-log entries.
 
 **Verification:** 860 unit tests pass, 0 failures (880 minus the 20 removed). The rebuilt debug app was installed; Android now lists exactly one launcher entry for AlterLingua (`MainActivity`). No lint run for this change (only deletions and a manifest trim); the release manifest was not touched.
+
+
+---
+
+## 2026-09-26 — Android's "single app or entire screen" question cannot be pre-answered or narrowed
+
+**Owner's report (three screenshots):** Android's consent dialog "Start recording or casting with AlterLingua?" asks each time to choose "A single app" or "Entire screen". The owner wants the chosen app selected automatically with no chooser, and does not want "Entire screen" offered at all ("a breach").
+
+**What Android allows (official docs, checked 2026-09-26):** the dialog is Android's own system screen. An app can pass `MediaProjectionConfig.createConfigForUserChoice()` (what we get now: the same dialog as the plain call) or `createConfigForDefaultDisplay()` (restricts the user to the **whole display**, which is the opposite of what the owner wants). There is no way to hide "Entire screen", preselect an app, or skip the dialog; the only related API, `getInitiallySelectedSource`, is a getter added in API level 37, newer than the owner's phone (Android 15). Pressing the buttons for the user would need an accessibility service acting on another app's screen, which CLAUDE.md section 37 rules out. So this cannot be changed in AlterLingua.
+
+**What is true and now said on screen:** AlterLingua never captures the screen. No code path creates a virtual display, image reader or video recorder; the projection is only used to build an audio playback-capture that is limited to the chosen chat apps' user ids and to media/game/unknown sound. So the "Entire screen" choice cannot expose the screen to AlterLingua, and the warning text in Android's dialog is generic. The explanation screen shown before Android's dialog now says so in all 8 languages (step 1 text).
+
+**Not known:** whether choosing "A single app" (which makes Android ask which app) changes how long a listening session survives or whether audio capture still works; that needs a test on the phone. The owner may prefer to rely on Share for voice notes to avoid this dialog altogether.
+
+**Verification:** strings only; see the build result below.

@@ -501,7 +501,7 @@
     <string name="capture_title">Capturar una nota de voz</string>
     <string name="capture_intro">Reproduce una nota de voz en %1$s y AlterLingua la transcribirá y la traducirá por ti.</string>
     <string name="capture_intro_any">Reproduce una nota de voz en tu aplicación de mensajería y AlterLingua la transcribirá y la traducirá por ti.</string>
-    <string name="capture_step_1">1. Toca Iniciar y aprueba la pregunta de captura de pantalla de Android. Android muestra un pequeño indicador mientras AlterLingua escucha.</string>
+    <string name="capture_step_1">1. Toca Iniciar y aprueba la pregunta de captura de pantalla de Android. Android muestra un pequeño indicador mientras AlterLingua escucha. Sea cual sea la opción que ofrezca Android, AlterLingua solo oye el sonido de las aplicaciones elegidas y nunca graba tu pantalla.</string>
     <string name="capture_step_2">2. Vuelve al chat y reproduce la nota de voz.</string>
     <string name="capture_step_3">3. Cuando termine, toca la notificación «Nota de voz capturada» para leer la transcripción y la traducción.</string>
     <string name="capture_privacy">AlterLingua solo graba el sonido que reproduce esa aplicación de mensajería, y solo hasta que termina la nota de voz. La grabación se envía de forma segura para entenderla y traducirla, y después se elimina. No se graba tu pantalla y no se envía nada a nadie.</string>

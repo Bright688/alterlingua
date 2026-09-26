@@ -501,7 +501,7 @@
     <string name="capture_title">Sprachnachricht erfassen</string>
     <string name="capture_intro">Spiele eine Sprachnachricht in %1$s ab, und AlterLingua transkribiert und übersetzt sie für dich.</string>
     <string name="capture_intro_any">Spiele eine Sprachnachricht in deiner Messenger-App ab, und AlterLingua transkribiert und übersetzt sie für dich.</string>
-    <string name="capture_step_1">1. Tippe auf Starten und bestätige die Bildschirmaufnahme-Frage von Android. Android zeigt einen kleinen Hinweis an, solange AlterLingua zuhört.</string>
+    <string name="capture_step_1">1. Tippe auf Starten und bestätige die Bildschirmaufnahme-Frage von Android. Android zeigt einen kleinen Hinweis an, solange AlterLingua zuhört. Welche Option Android auch anbietet: AlterLingua hört nur den Ton der gewählten Apps und zeichnet nie deinen Bildschirm auf.</string>
     <string name="capture_step_2">2. Kehre zum Chat zurück und spiele die Sprachnachricht ab.</string>
     <string name="capture_step_3">3. Wenn sie zu Ende ist, tippe auf die Benachrichtigung „Sprachnachricht erfasst“, um Transkript und Übersetzung zu lesen.</string>
     <string name="capture_privacy">AlterLingua nimmt nur den Ton auf, den diese Messenger-App abspielt, und nur bis die Sprachnachricht endet. Die Aufnahme wird sicher zum Verstehen und Übersetzen gesendet und danach gelöscht. Dein Bildschirm wird nicht aufgezeichnet, und nichts wird an andere gesendet.</string>

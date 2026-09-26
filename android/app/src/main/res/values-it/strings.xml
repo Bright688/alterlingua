@@ -501,7 +501,7 @@
     <string name="capture_title">Acquisisci un messaggio vocale</string>
     <string name="capture_intro">Riproduci un messaggio vocale in %1$s e AlterLingua lo trascriverà e lo tradurrà per te.</string>
     <string name="capture_intro_any">Riproduci un messaggio vocale nella tua app di messaggistica e AlterLingua lo trascriverà e lo tradurrà per te.</string>
-    <string name="capture_step_1">1. Tocca Avvia e approva la domanda di Android sulla registrazione dello schermo. Android mostra un piccolo indicatore mentre AlterLingua ascolta.</string>
+    <string name="capture_step_1">1. Tocca Avvia e approva la domanda di Android sulla registrazione dello schermo. Android mostra un piccolo indicatore mentre AlterLingua ascolta. Qualunque opzione offra Android, AlterLingua sente solo l’audio delle app scelte e non registra mai lo schermo.</string>
     <string name="capture_step_2">2. Torna alla chat e riproduci il messaggio vocale.</string>
     <string name="capture_step_3">3. Quando finisce, tocca la notifica «Messaggio vocale acquisito» per leggere la trascrizione e la traduzione.</string>
     <string name="capture_privacy">AlterLingua registra solo l’audio riprodotto da quell’app di messaggistica, e solo fino alla fine del messaggio vocale. La registrazione viene inviata in modo sicuro per essere capita e tradotta, poi eliminata. Lo schermo non viene registrato e non viene inviato nulla a nessuno.</string>

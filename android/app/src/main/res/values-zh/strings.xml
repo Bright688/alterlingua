@@ -501,7 +501,7 @@
     <string name="capture_title">捕获语音消息</string>
     <string name="capture_intro">在 %1$s 中播放语音消息，AlterLingua 会为你转写并翻译。</string>
     <string name="capture_intro_any">在你的聊天应用中播放语音消息，AlterLingua 会为你转写并翻译。</string>
-    <string name="capture_step_1">1. 点按“开始”，并同意 Android 的屏幕录制提示。AlterLingua 收听期间，Android 会显示一个小图标。</string>
+    <string name="capture_step_1">1. 点按“开始”，并同意 Android 的屏幕录制提示。AlterLingua 收听期间，Android 会显示一个小图标。无论 Android 提供哪个选项，AlterLingua 都只会听到所选应用的声音，绝不会录制你的屏幕。</string>
     <string name="capture_step_2">2. 返回聊天并播放语音消息。</string>
     <string name="capture_step_3">3. 播放结束后，点按“已捕获语音消息”通知，查看转写内容和翻译。</string>
     <string name="capture_privacy">AlterLingua 只录制该聊天应用播放的声音，并且只录到语音消息结束为止。录音会被安全地发送以进行识别和翻译，然后删除。不会录制你的屏幕，也不会向任何人发送任何内容。</string>
