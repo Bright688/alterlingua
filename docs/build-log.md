@@ -1570,3 +1570,25 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Change:** the server's voice answer may carry `clarity` (`clear` / `unclear`). `HttpVoiceApi` reads it (`VoiceTranslation.unclear`, false when absent, so older servers and engines that do not report confidence behave as before); `SharedVoiceViewModel` carries it into `VoiceNoteResult.unclear`; the result screen shows a notice card above the transcript ("This recording was unclear, so some words may be wrong…") in all 8 languages.
 
 **Verification:** 839 Android unit tests pass (new: unclear is parsed from the answer and defaults to false; it reaches the result screen model). The build has NOT been installed on the phone yet because it was not connected to adb at the time. The notice has not been seen on screen.
+
+
+---
+
+## 2026-09-26 — Debug-only test: can AlterLingua capture a voice note as it plays in a chat app?
+
+**Goal (owner):** the owner asked whether voice notes from any chat app (not only WhatsApp) could be captured for transcription without the Share step, and asked to see what Android's playback-capture feature really allows. After the options were compared, the owner asked for a test to be built, **without touching the existing Share feature** (share a voice note to AlterLingua to transcribe and translate). Nothing in `share/`, the release manifest, or the server was changed.
+
+**What Android's documentation says** (checked in the official docs via the developer-knowledge search on 2026-09-26, not from memory): `AudioPlaybackCapture` (Android 10+) lets an app record other apps' playback, but it needs `RECORD_AUDIO` plus the user's approval of the system's screen-capture prompt **before every session** on Android 14+ (the token is single-use), a foreground service of type `mediaProjection` (own manifest permission), and the session shows in Quick Settings and the status bar. Only playback whose usage is media, game or unknown can be captured (calls and "voice communication" cannot); the playing app can opt out entirely (apps built for Android 10+ allow capture by default); and capture can be limited to chosen apps by UID (`addMatchingUid`), which is what would make it work for any chat app without recording everything else. The session ends if the screen locks, another projection starts, or the user stops it.
+
+**What was built (debug builds only, own launcher icon "AlterLingua capture test"):** `src/debug/.../capturetest/`: `CaptureTestActivity` (choose one of the installed chat apps or "any app", start, approve Android's prompt, play a voice note in that app), `CaptureTestService` (foreground service, listens up to 45 s through `AudioPlaybackCaptureConfiguration` limited to that app's UID and to the three capturable usages), `CaptureMeter` (loudness per second in dBFS; a capture Android has silenced still delivers samples, all zero, so "heard something" is judged by level: sound above -55 dBFS for at least two seconds), `CaptureExplainer` (turns the outcome into a sentence: captured / no playback seen / playback of a type that cannot be captured / the app opted out / capturable but silent anyway). While it runs it also asks Android which kinds of playback are active (usage and capture policy only, never which app or what was said), so a silent result explains itself. The debug manifest adds the two foreground-service permissions and package visibility for ten chat apps; the release manifest is unchanged.
+
+**Privacy of the test:** it records nothing to disk, sends nothing over the network, logs nothing (the project's audit test that forbids logging also scans debug sources), and shows only numbers and labels.
+
+**Decisions and open points:**
+- Debug-only on purpose: it adds a screen-capture permission footprint that a release build should not carry until we know the feature is worth it.
+- Google Play's policy for `mediaProjection` and the foreground-service declaration has **not** been checked and must be before anything like this reaches release (CLAUDE.md section 39 applies by analogy).
+- Even if capture works for an app, it needs Android's sweeping prompt every time, plays in real time, and is a fallback for apps without a Share action, not a replacement for Share.
+
+**Verification:** 859 Android unit tests pass, 0 failures (20 new for the meter and the explainer; they live in `src/testDebug`, so the release build never sees them). The debug build installs on the owner's phone, the test screen opens, and lists the chat apps found on it. **Not verified: the capture itself, for any app.** That needs the owner to run the test on the phone; the results decide whether to go further.
+
+**Manual test for the owner:** open the "AlterLingua capture test" icon. Choose WhatsApp (then Telegram, then Messenger). Tap "Start test", approve Android's prompt, open that app right away and play a voice note from start to finish, return to the test screen and read the result. Close any floating video window first. Report the verdict sentence for each app.

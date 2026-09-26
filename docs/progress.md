@@ -372,6 +372,18 @@ The owner explicitly asked to use `AccessibilityService` after an earlier decisi
 | **Captions appearing under real messages in a real chat** | PARTLY VERIFIED by the owner on the phone (2026-09-25): after fixing a reader bug (window bounds overwritten during the tree walk), captions appeared under French and Spanish messages in a WhatsApp chat. The first placement covered the start of following messages; the placement above was built in response and has not yet been seen on the phone |
 | Numbers-only status line under "Read chat screens live" in Settings (readings, skipped, items, text boxes, messages, captions), because the app is forbidden from logging | IMPLEMENTED, MANUALLY VERIFIED (read off the phone: 45 readings, 15 items, 1 text box) |
 
+### Debug-only test: capturing a voice note as it plays in a chat app (2026-09-26)
+
+A feasibility test (own launcher icon, debug builds only) for the question "could AlterLingua capture the sound of a voice note while it plays, for any chat app, without the Share step?". The voice-note Share feature is unchanged. See the 2026-09-26 build-log entry for what Android's documentation allows.
+
+| Item | Status |
+|---|---|
+| Test screen, foreground service, loudness meter and result explainer (`src/debug/.../capturetest/`); release manifest and Share feature untouched | IMPLEMENTED (debug only) |
+| Unit tests for the meter and the explainer (20) | IMPLEMENTED, passing |
+| The test screen opens on the owner's phone and lists the chat apps installed on it | MANUALLY VERIFIED (screenshot) |
+| **Whether WhatsApp, Telegram or Messenger voice notes can actually be captured** | NOT STARTED: needs the owner to run the test and report the result sentence for each app |
+| A real "capture a voice note" feature in the release app | NOT STARTED: only worth considering if the test shows capture works; needs Google Play's mediaProjection and foreground-service policy checked first |
+
 ### Device test, two or more language configurations
 
 The backend's development translator only knows a few sample sentences, and detects their language. Use these exact texts:

@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+        DEBUG BUILDS ONLY: the voice-note capture test (see capturetest/). Foreground-service permissions for the
+        mediaProjection service type, and visibility of the chat apps it can be pointed at. The release build declares
+        none of this.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <queries>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+        <package android:name="org.telegram.messenger" />
+        <package android:name="com.facebook.orca" />
+        <package android:name="org.thoughtcrime.securesms" />
+        <package android:name="com.instagram.android" />
+        <package android:name="com.viber.voip" />
+        <package android:name="com.google.android.apps.messaging" />
+        <package android:name="jp.naver.line.android" />
+        <package android:name="com.discord" />
+    </queries>
+
     <application android:networkSecurityConfig="@xml/network_security_config">
         <!--
             DEBUG BUILDS ONLY. Lets `adb` post a WhatsApp-shaped test message so incoming translation can be tried
@@ -14,5 +35,26 @@
                 <action android:name="com.alterlingua.app.DEBUG_TEST_MESSAGE" />
             </intent-filter>
         </receiver>
+
+        <!--
+            DEBUG BUILDS ONLY. Its own launcher icon, so the test can be opened without touching the real app. It does not
+            touch the voice-note Share feature (share/ShareVoiceActivity), which is unchanged.
+        -->
+        <activity
+            android:name=".capturetest.CaptureTestActivity"
+            android:exported="true"
+            android:label="AlterLingua capture test"
+            android:taskAffinity="com.alterlingua.app.capturetest"
+            tools:ignore="ExportedActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".capturetest.CaptureTestService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 </manifest>
