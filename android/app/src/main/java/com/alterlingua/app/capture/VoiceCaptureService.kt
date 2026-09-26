@@ -23,6 +23,7 @@ import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.IntentCompat
+import com.alterlingua.app.AlterLinguaApplication
 import com.alterlingua.app.R
 import java.io.File
 import java.io.IOException
@@ -33,8 +34,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Records voice notes that chat apps play, so they can be transcribed and translated (Android 10+).
@@ -180,12 +183,27 @@ class VoiceCaptureService : Service() {
         val file = File(directory, "note-${UUID.randomUUID().toString().replace("-", "").take(16)}.wav")
         return try {
             WavFile.write(file, samples, VoiceNoteRecorder.OUTPUT_RATE)
-            announce(CapturedAudioSource.addressOf(file))
+            val address = CapturedAudioSource.addressOf(file)
+            announce(address)
+            translateNow(address)
             true
         } catch (_: IOException) {
             file.delete()
             false
         }
+    }
+
+    /**
+     * When the user has it switched on (Settings, on by default), sends the whole recording to be transcribed and translated
+     * as soon as the voice note has ended, so the result is ready on the keyboard. It is one request for the whole note, never
+     * pieces of it. With it off, the recording waits and is sent only when the user opens the notification.
+     */
+    private fun translateNow(address: String) {
+        val app = application as AlterLinguaApplication
+        val automatic = runBlocking { app.userSettings.settings.first().translateCapturedNotes }
+        if (!automatic) return
+        // The note's processing starts on the main thread, like every screen's does.
+        Handler(Looper.getMainLooper()).post { app.capturedNotes.open(address, announce = true) }
     }
 
     /** Keeps the newest few recordings for at most an hour, so a long session cannot fill the phone. */

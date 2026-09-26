@@ -518,16 +518,16 @@
     <string name="capture_stop">Ferma</string>
     <string name="capture_public_text">Messaggio vocale</string>
     <string name="capture_ready_title">Messaggio vocale acquisito</string>
-    <string name="capture_ready_text">Tocca per trascriverlo e tradurlo.</string>
+    <string name="capture_ready_text">Tocca per leggere trascrizione e traduzione.</string>
     <string name="capture_nothing_title">Nessun messaggio vocale sentito</string>
     <string name="capture_nothing_text">Non è arrivato nulla. Riprova, poi riproduci il messaggio vocale dall’inizio.</string>
 
     <!-- Ascolto dei messaggi vocali delle app scelte -->
     <string name="capture_session_title">In ascolto dei messaggi vocali</string>
-    <string name="capture_session_text">I messaggi vocali di %1$s vengono acquisiti automaticamente. Non viene inviato nulla finché non ne apri uno.</string>
+    <string name="capture_session_text">I messaggi vocali di %1$s vengono acquisiti automaticamente.</string>
     <string name="capture_session_intro">AlterLingua ascolterà i messaggi vocali in %1$s e acquisirà ciascuno automaticamente, così puoi riprodurli senza tocchi in più.</string>
     <string name="capture_session_step_2">2. Riproduci i messaggi vocali in quelle app come al solito. Ognuno viene acquisito automaticamente.</string>
-    <string name="capture_session_step_3">3. Tocca una notifica «Messaggio vocale acquisito» per leggere trascrizione e traduzione. Android può interrompere l’ascolto, per esempio quando lo schermo si blocca; una notifica lo riattiva con un solo tocco.</string>
+    <string name="capture_session_step_3">3. Quando un messaggio vocale finisce, trascrizione e traduzione compaiono sulla tastiera AlterLingua se è aperta; puoi anche toccare la notifica «Messaggio vocale acquisito». Android può interrompere l’ascolto, per esempio quando lo schermo si blocca; una notifica lo riattiva con un solo tocco.</string>
     <string name="capture_stopped_title">Ascolto dei messaggi vocali interrotto</string>
     <string name="capture_stopped_text">Tocca per riattivarlo.</string>
     <string name="capture_already_listening">AlterLingua è già in ascolto dei messaggi vocali.</string>
@@ -536,7 +536,13 @@
     <string name="vc_start_listening">Avvia l’ascolto</string>
     <string name="vc_stop_listening">Interrompi l’ascolto</string>
     <string name="vc_onb_note">Android chiede la tua approvazione a ogni avvio dell’ascolto e può interromperlo, per esempio quando lo schermo si blocca. AlterLingua ti avvisa e un tocco lo riavvia.</string>
-    <string name="vc_privacy_note">Viene registrato solo l’audio delle app scelte, un messaggio vocale alla volta. Una registrazione viene inviata per la trascrizione solo quando la apri, poi viene eliminata. Puoi cambiare le app nelle impostazioni.</string>
+    <string name="vc_privacy_note">Viene registrato solo l’audio delle app scelte, un messaggio vocale alla volta. Quando un messaggio vocale finisce, l’intera registrazione viene inviata per essere trascritta e tradotta, poi eliminata. Puoi disattivarlo nelle impostazioni: allora viene inviata solo quando la apri. Lì puoi anche cambiare le app.</string>
+    <string name="vc_auto_title">Traduci i messaggi vocali alla fine</string>
+    <string name="vc_auto_desc">L’intera registrazione viene inviata in una volta quando un messaggio vocale finisce, e la traduzione appare sulla tastiera. Disattivato: un messaggio viene inviato solo quando lo apri.</string>
+    <string name="kbn_title">Messaggio vocale</string>
+    <string name="kbn_working">Traduzione del messaggio vocale…</string>
+    <string name="kbn_unclear">Registrazione poco chiara: alcune parole potrebbero essere sbagliate.</string>
+    <string name="kbn_open">Apri</string>
     <string name="vc_no_apps">Su questo telefono non sono state trovate app di messaggistica supportate.</string>
     <string name="vc_settings_title">Messaggi vocali delle app di messaggistica</string>
     <string name="vc_settings_desc">AlterLingua può acquisire i messaggi vocali riprodotti in queste app, così puoi leggerli e tradurli senza condividerli uno per uno.</string>

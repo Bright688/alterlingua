@@ -37,6 +37,9 @@ sealed interface ToolbarAction {
 
     /** A button on the voice panel. */
     data class Voice(val action: VoiceAction) : ToolbarAction
+
+    /** A button on the captured-voice-note panel. */
+    data class CapturedNote(val action: CapturedNoteAction) : ToolbarAction
 }
 
 /**
@@ -154,6 +157,8 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
 
     private val voicePanel = VoicePanel(context, colors) { onToolbarAction?.invoke(ToolbarAction.Voice(it)) }
     private var voiceState: VoiceUiState = VoiceUiState.Idle
+    private val capturedNotePanel = CapturedNotePanel(context, colors) { onToolbarAction?.invoke(ToolbarAction.CapturedNote(it)) }
+    private var capturedNoteState: CapturedNoteUi = CapturedNoteUi.Hidden
     private var toolbarFrame: FrameLayout? = null
     private var translationState: TranslationUiState = TranslationUiState.Idle
     private var noticeShown = false
@@ -188,6 +193,8 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
         languagePanel.visibility = GONE
         content.addView(voicePanel.body, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, contentHeight))
         voicePanel.body.visibility = GONE
+        content.addView(capturedNotePanel.body, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, contentHeight))
+        capturedNotePanel.body.visibility = GONE
         content.addView(handwritingPanel.body, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, contentHeight))
         handwritingPanel.body.visibility = GONE
         addView(content, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
@@ -248,6 +255,8 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
         frame.addView(statusRow, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         frame.addView(voicePanel.header, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         voicePanel.header.visibility = GONE
+        frame.addView(capturedNotePanel.header, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        capturedNotePanel.header.visibility = GONE
         frame.addView(noticeView, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         return frame
     }
@@ -265,10 +274,30 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
     private fun updateToolbarArea() {
         val voiceActive = voiceState != VoiceUiState.Idle
         val statusActive = translationState != TranslationUiState.Idle
+        val capturedActive = capturedNoteShowing()
         noticeView.visibility = if (noticeShown) VISIBLE else GONE
         voicePanel.header.visibility = if (!noticeShown && voiceActive) VISIBLE else GONE
+        capturedNotePanel.header.visibility = if (!noticeShown && capturedActive) VISIBLE else GONE
         statusRow.visibility = if (!noticeShown && !voiceActive && statusActive) VISIBLE else GONE
-        toolbarRow.visibility = if (!noticeShown && !voiceActive && !statusActive) VISIBLE else GONE
+        toolbarRow.visibility = if (!noticeShown && !voiceActive && !statusActive && !capturedActive) VISIBLE else GONE
+    }
+
+    /**
+     * A captured voice note is shown only when nothing else owns the strip and the keys: not while the user is dictating or
+     * translating, choosing a language, or handwriting. It comes back on its own when they are done, until it is closed.
+     */
+    private fun capturedNoteShowing() = capturedNoteState != CapturedNoteUi.Hidden &&
+        voiceState == VoiceUiState.Idle &&
+        translationState == TranslationUiState.Idle &&
+        toolbarState.panel != ToolbarPanel.LANGUAGES &&
+        !handwritingOpen
+
+    /** Shows the captured voice note (transcribing, the result, or a problem), or hides it. */
+    fun renderCapturedNote(state: CapturedNoteUi) {
+        capturedNoteState = state
+        capturedNotePanel.render(state)
+        updateToolbarArea()
+        updateContentArea()
     }
 
     /** Shows the voice panel state: recording, waiting, the result to review, or an error. */
@@ -290,10 +319,12 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
     private fun updateContentArea() {
         val voiceBody = voiceState != VoiceUiState.Idle && voicePanel.coversKeys
         val showList = toolbarState.panel == ToolbarPanel.LANGUAGES && voiceState == VoiceUiState.Idle
+        val noteBody = capturedNoteShowing()
         languagePanel.visibility = if (showList) VISIBLE else GONE
         voicePanel.body.visibility = if (voiceBody) VISIBLE else GONE
+        capturedNotePanel.body.visibility = if (noteBody) VISIBLE else GONE
         handwritingPanel.body.visibility = if (handwritingOpen && !voiceBody && !showList) VISIBLE else GONE
-        keysColumn.visibility = if (showList || voiceBody || handwritingOpen) INVISIBLE else VISIBLE
+        keysColumn.visibility = if (showList || voiceBody || handwritingOpen || noteBody) INVISIBLE else VISIBLE
         if (handwritingOpen) candidateBar.visibility = GONE
     }
 
@@ -302,6 +333,7 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
         handwritingOpen = open
         handwritingLanguageName = languageName
         applyContentHeight()
+        updateToolbarArea()
         updateContentArea()
         if (open) handwritingPanel.render(handwritingState, languageName)
     }
@@ -372,6 +404,7 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
             }
         }
         updateToolbarArea()
+        updateContentArea() // a captured voice note gives way to the translation status, and comes back after it
     }
 
     /** Shows the toolbar [state]: the language chip, and the language list when it is open. */
@@ -389,6 +422,7 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
             languagePanel.setLanguages(state.selectable, target)
         }
         shownLanguages = if (showList) target to true else null
+        updateToolbarArea()
         updateContentArea()
     }
 

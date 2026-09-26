@@ -396,12 +396,27 @@ The owner asked for "approve once, then capture every voice note automatically, 
 | Settings section "Voice notes from chat apps": change the apps, see Listening / Not listening, Start or Stop | IMPLEMENTED, not seen on the phone |
 | `VoiceCaptureService` listening session: several apps at once (by user id), every voice note one after another, newest 5 kept for at most an hour, a "Voice note captured" notification for each, a Stop action | IMPLEMENTED, not run on a phone |
 | When Android ends a session (for example the screen locks), a "Listening stopped: tap to turn it back on" notification; one tap opens the screen and goes straight to Android's approval | IMPLEMENTED, not run on a phone |
-| Recordings are uploaded only when the user opens one | IMPLEMENTED (unchanged flow) |
+| Recordings are uploaded only when the user opens one | SUPERSEDED the same day: now uploaded when the note ends unless the user switches "Translate voice notes when they end" off (next section) |
 | `<queries>` for nine known chat apps in the release manifest (no all-apps permission) | IMPLEMENTED |
 | 880 unit tests pass (8 new); lint and release compile pass; installed on the phone | VERIFIED (automated) |
 | **Approve once, forever, with no prompt later** | **NOT POSSIBLE on Android 14+**: consent is required for every session and the token is single-use; caching it is forbidden. Not implemented, on purpose |
 | How often a session actually survives on this phone (screen lock, battery optimisation, background limits) | NOT MANUALLY VERIFIED; decides how often the one-tap restart appears |
 | Battery cost of a long session; Google Play policy for a long-running mediaProjection service | NOT VERIFIED / BLOCKED on the owner's Play Console review |
+
+### Whole voice note translated when it ends, shown on the keyboard (2026-09-26)
+
+The owner chose "do it all at once and show it on the keyboard, not piece by piece". When a captured voice note ends, the whole recording is sent in one request, and the transcript and translation appear on the AlterLingua keyboard.
+
+| Item | Status |
+|---|---|
+| `CapturedNotes` (one processing per note, shared by the keyboard, the notification and the result screen; in memory only; newest 5 kept; closed on demand or when data is erased) reusing `SharedVoiceViewModel` unchanged | IMPLEMENTED, unit-tested |
+| Keyboard panel (`CapturedNotePanel`): translating, result with original and translation, unclear notice, Listen, Open, Retry, Close; gives way to typing, dictation, translation and handwriting; a note nobody looked at for 10 minutes is put away | IMPLEMENTED, not seen on the phone |
+| Setting "Translate voice notes when they end" (default on; off means a note is sent only when opened) | IMPLEMENTED |
+| The notification opens the same note (no second upload) | IMPLEMENTED |
+| **Default changed:** audio is now uploaded when a note ends, without opening it (owner's choice); privacy text updated in 8 languages and `docs/privacy.md` | DECISION RECORDED |
+| 872 unit tests pass (12 new); lint and release compile pass | VERIFIED (automated) |
+| The panel on a real keyboard in WhatsApp: layout, timing, Listen, Open | NOT MANUALLY VERIFIED |
+| Cost: every sound of about a second or more from a chosen app (video, shared audio) is also transcribed while the default is on | KNOWN, not measured |
 
 ### Capture a voice note from any chat app (2026-09-26)
 

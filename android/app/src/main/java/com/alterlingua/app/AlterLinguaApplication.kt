@@ -81,7 +81,7 @@ class AlterLinguaApplication : Application() {
 
     /** "Delete all learning data" in Settings. */
     val learningDataEraser: LearningDataEraser by lazy {
-        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear(); liveChatStatus.clear() })
+        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear(); liveChatStatus.clear(); capturedNotes.clearAll() })
     }
 
     /** The chosen app language, kept up to date for code that cannot wait for a settings read (null: the phone's language). */
@@ -185,6 +185,11 @@ class AlterLinguaApplication : Application() {
             networkContext = Dispatchers.IO,
             learning = learningRecorder,
         )
+    }
+
+    /** Voice notes captured from chat apps and their translations, in memory only (see CapturedNotes). */
+    val capturedNotes: com.alterlingua.app.capture.CapturedNotes by lazy {
+        com.alterlingua.app.capture.CapturedNotes(create = { store -> com.alterlingua.app.capture.newCapturedNoteViewModel(this, store) })
     }
 
     /** The voice translation service used by the keyboard's microphone. */

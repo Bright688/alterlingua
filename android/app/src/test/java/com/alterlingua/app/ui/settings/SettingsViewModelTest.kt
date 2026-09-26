@@ -58,6 +58,18 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun capturedNotesAreTranslatedWhenTheyEnd_untilTheUserTurnsItOff_andBackOn() {
+        val repo = FakeUserSettingsRepository()
+        val vm = SettingsViewModel(repo)
+        assertTrue("on by default", vm.uiState.value.translateCapturedNotes)
+        vm.onTranslateCapturedNotesChanged(false)
+        assertFalse(repo.current.translateCapturedNotes)
+        assertFalse(vm.uiState.value.translateCapturedNotes)
+        vm.onTranslateCapturedNotesChanged(true)
+        assertTrue(repo.current.translateCapturedNotes)
+    }
+
+    @Test
     fun theListeningStatus_followsTheSession() {
         val listening = kotlinx.coroutines.flow.MutableStateFlow(false)
         val vm = SettingsViewModel(FakeUserSettingsRepository(), voiceCaptureListening = listening)

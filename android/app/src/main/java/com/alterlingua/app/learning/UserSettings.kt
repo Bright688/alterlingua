@@ -95,6 +95,11 @@ data class UserSettings(
      * user approves Android's screen-capture prompt, which Android requires for every session.
      */
     val voiceCaptureApps: Set<String> = emptySet(),
+    /**
+     * When a captured voice note ends, send the whole recording to be transcribed and translated at once, and show the
+     * result on the keyboard. When off, a captured note waits and is sent only when the user opens it.
+     */
+    val translateCapturedNotes: Boolean = true,
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */
     val keyboardStyles: Map<String, KeyboardStyle> = emptyMap(),
 ) {

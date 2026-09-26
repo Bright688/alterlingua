@@ -518,16 +518,16 @@
     <string name="capture_stop">停止</string>
     <string name="capture_public_text">语音消息</string>
     <string name="capture_ready_title">已捕获语音消息</string>
-    <string name="capture_ready_text">点按以转写并翻译。</string>
+    <string name="capture_ready_text">点按以查看转写内容和翻译。</string>
     <string name="capture_nothing_title">没有听到语音消息</string>
     <string name="capture_nothing_text">没有收到任何声音。请重试，然后从头播放语音消息。</string>
 
     <!-- 监听所选聊天应用的语音消息 -->
     <string name="capture_session_title">正在监听语音消息</string>
-    <string name="capture_session_text">来自 %1$s 的语音消息会被自动捕获。在你打开之前不会发送任何内容。</string>
+    <string name="capture_session_text">来自 %1$s 的语音消息会被自动捕获。</string>
     <string name="capture_session_intro">AlterLingua 会监听 %1$s 中的语音消息并自动捕获每一条，你无需额外点按即可播放。</string>
     <string name="capture_session_step_2">2. 像平常一样在这些应用中播放语音消息，每一条都会被自动捕获。</string>
-    <string name="capture_session_step_3">3. 点按“已捕获语音消息”通知，查看转写内容和翻译。Android 可能会结束监听，例如锁屏时；届时通知可让你一键重新开启。</string>
+    <string name="capture_session_step_3">3. 语音消息结束时，如果 AlterLingua 键盘已打开，转写内容和翻译会显示在键盘上；你也可以点按“已捕获语音消息”通知。Android 可能会结束监听，例如锁屏时；届时通知可让你一键重新开启。</string>
     <string name="capture_stopped_title">语音消息监听已停止</string>
     <string name="capture_stopped_text">点按以重新开启。</string>
     <string name="capture_already_listening">AlterLingua 正在监听语音消息。</string>
@@ -536,7 +536,13 @@
     <string name="vc_start_listening">开始监听</string>
     <string name="vc_stop_listening">停止监听</string>
     <string name="vc_onb_note">每次开始监听时，Android 都会请求你的同意，并可能结束监听，例如锁屏时。发生这种情况时 AlterLingua 会通知你，一键即可重新开始。</string>
-    <string name="vc_privacy_note">只会录制所选应用的声音，每次一条语音消息。只有当你打开录音时才会发送转写，之后即删除。你可以在设置中更改应用。</string>
+    <string name="vc_privacy_note">只会录制所选应用的声音，每次一条语音消息。语音消息结束时，整段录音会一次性发送以进行转写和翻译，之后即删除。你可以在设置中关闭此功能，这样只有当你打开录音时才会发送；应用也可以在设置中更改。</string>
+    <string name="vc_auto_title">语音消息结束时自动翻译</string>
+    <string name="vc_auto_desc">语音消息结束时会一次性发送整段录音，翻译显示在键盘上。关闭后：只有当你打开语音消息时才会发送。</string>
+    <string name="kbn_title">语音消息</string>
+    <string name="kbn_working">正在翻译语音消息…</string>
+    <string name="kbn_unclear">录音不清晰：部分词语可能有误。</string>
+    <string name="kbn_open">打开</string>
     <string name="vc_no_apps">在这部手机上没有找到支持的聊天应用。</string>
     <string name="vc_settings_title">聊天应用的语音消息</string>
     <string name="vc_settings_desc">AlterLingua 可以捕获这些应用中播放的语音消息，让你无需逐条分享即可阅读和翻译。</string>

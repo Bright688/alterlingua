@@ -518,16 +518,16 @@
     <string name="capture_stop">Stoppen</string>
     <string name="capture_public_text">Spraakbericht</string>
     <string name="capture_ready_title">Spraakbericht vastgelegd</string>
-    <string name="capture_ready_text">Tik om het te transcriberen en te vertalen.</string>
+    <string name="capture_ready_text">Tik om het transcript en de vertaling te lezen.</string>
     <string name="capture_nothing_title">Geen spraakbericht gehoord</string>
     <string name="capture_nothing_text">Er kwam niets door. Probeer het opnieuw en speel het spraakbericht vanaf het begin af.</string>
 
     <!-- Luisteren naar spraakberichten van de gekozen apps -->
     <string name="capture_session_title">Luistert naar spraakberichten</string>
-    <string name="capture_session_text">Spraakberichten uit %1$s worden automatisch vastgelegd. Er wordt niets verstuurd totdat je er een opent.</string>
+    <string name="capture_session_text">Spraakberichten uit %1$s worden automatisch vastgelegd.</string>
     <string name="capture_session_intro">AlterLingua luistert naar spraakberichten in %1$s en legt elk automatisch vast, zodat je ze zonder extra tikken kunt afspelen.</string>
     <string name="capture_session_step_2">2. Speel spraakberichten in die apps af zoals altijd. Elk wordt automatisch vastgelegd.</string>
-    <string name="capture_session_step_3">3. Tik op een melding ‘Spraakbericht vastgelegd’ om het transcript en de vertaling te lezen. Android kan het luisteren beëindigen, bijvoorbeeld als het scherm vergrendelt; een melding zet het met één tik weer aan.</string>
+    <string name="capture_session_step_3">3. Als een spraakbericht eindigt, verschijnen het transcript en de vertaling op het AlterLingua-toetsenbord als dat open is; je kunt ook op de melding ‘Spraakbericht vastgelegd’ tikken. Android kan het luisteren beëindigen, bijvoorbeeld als het scherm vergrendelt; een melding zet het met één tik weer aan.</string>
     <string name="capture_stopped_title">Luisteren naar spraakberichten gestopt</string>
     <string name="capture_stopped_text">Tik om het weer aan te zetten.</string>
     <string name="capture_already_listening">AlterLingua luistert nu naar spraakberichten.</string>
@@ -536,7 +536,13 @@
     <string name="vc_start_listening">Begin met luisteren</string>
     <string name="vc_stop_listening">Stop met luisteren</string>
     <string name="vc_onb_note">Android vraagt elke keer dat het luisteren begint om je goedkeuring en kan het beëindigen, bijvoorbeeld als het scherm vergrendelt. AlterLingua laat het weten en met één tik begint het opnieuw.</string>
-    <string name="vc_privacy_note">Alleen het geluid van de gekozen apps wordt opgenomen, één spraakbericht tegelijk. Een opname wordt alleen voor transcriptie verstuurd als je hem opent, en daarna verwijderd. Je kunt de apps wijzigen in Instellingen.</string>
+    <string name="vc_privacy_note">Alleen het geluid van de gekozen apps wordt opgenomen, één spraakbericht tegelijk. Als een spraakbericht eindigt, wordt de hele opname verstuurd om te worden getranscribeerd en vertaald, en daarna verwijderd. Je kunt dat uitzetten in Instellingen; dan wordt hij alleen verstuurd als je hem opent. Daar kun je ook de apps wijzigen.</string>
+    <string name="vc_auto_title">Spraakberichten vertalen als ze eindigen</string>
+    <string name="vc_auto_desc">De hele opname wordt in één keer verstuurd als een spraakbericht eindigt, en de vertaling verschijnt op het toetsenbord. Uit: een bericht wordt alleen verstuurd als je het opent.</string>
+    <string name="kbn_title">Spraakbericht</string>
+    <string name="kbn_working">Spraakbericht wordt vertaald…</string>
+    <string name="kbn_unclear">Onduidelijke opname: sommige woorden kunnen onjuist zijn.</string>
+    <string name="kbn_open">Openen</string>
     <string name="vc_no_apps">Er zijn geen ondersteunde berichtenapps gevonden op deze telefoon.</string>
     <string name="vc_settings_title">Spraakberichten uit berichtenapps</string>
     <string name="vc_settings_desc">AlterLingua kan spraakberichten vastleggen die in deze apps worden afgespeeld, zodat je ze kunt lezen en vertalen zonder ze steeds te delen.</string>

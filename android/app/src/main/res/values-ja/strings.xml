@@ -518,16 +518,16 @@
     <string name="capture_stop">停止</string>
     <string name="capture_public_text">ボイスメッセージ</string>
     <string name="capture_ready_title">ボイスメッセージをキャプチャしました</string>
-    <string name="capture_ready_text">タップして文字起こしと翻訳を行います。</string>
+    <string name="capture_ready_text">タップして文字起こしと翻訳を読みます。</string>
     <string name="capture_nothing_title">ボイスメッセージが聞こえませんでした</string>
     <string name="capture_nothing_text">何も届きませんでした。もう一度試して、ボイスメッセージを最初から再生してください。</string>
 
     <!-- 選んだチャットアプリのボイスメッセージを聞き取る -->
     <string name="capture_session_title">ボイスメッセージを聞き取り中</string>
-    <string name="capture_session_text">%1$s のボイスメッセージは自動でキャプチャされます。開くまで何も送信されません。</string>
+    <string name="capture_session_text">%1$s のボイスメッセージは自動でキャプチャされます。</string>
     <string name="capture_session_intro">AlterLingua は %1$s のボイスメッセージを聞き取り、ひとつずつ自動でキャプチャします。余計な操作なしで再生できます。</string>
     <string name="capture_session_step_2">2. それらのアプリでいつも通りボイスメッセージを再生します。ひとつずつ自動でキャプチャされます。</string>
-    <string name="capture_session_step_3">3. 「ボイスメッセージをキャプチャしました」の通知をタップして、文字起こしと翻訳を読みます。画面がロックされたときなど、Android が聞き取りを終了することがあります。その場合は通知からワンタップで再開できます。</string>
+    <string name="capture_session_step_3">3. ボイスメッセージが終わると、AlterLingua キーボードが開いていれば文字起こしと翻訳がキーボードに表示されます。「ボイスメッセージをキャプチャしました」の通知をタップしても読めます。画面がロックされたときなど、Android が聞き取りを終了することがあります。その場合は通知からワンタップで再開できます。</string>
     <string name="capture_stopped_title">ボイスメッセージの聞き取りが停止しました</string>
     <string name="capture_stopped_text">タップして再開します。</string>
     <string name="capture_already_listening">AlterLingua は今、ボイスメッセージを聞き取っています。</string>
@@ -536,7 +536,13 @@
     <string name="vc_start_listening">聞き取りを開始</string>
     <string name="vc_stop_listening">聞き取りを停止</string>
     <string name="vc_onb_note">聞き取りを始めるたびに Android が承認を求め、画面がロックされたときなどに終了することがあります。その際は AlterLingua がお知らせし、ワンタップで再開できます。</string>
-    <string name="vc_privacy_note">録音されるのは選んだアプリの音だけで、ボイスメッセージ1件ずつです。録音は、開いたときにだけ文字起こしのために送信され、その後削除されます。アプリは設定でいつでも変更できます。</string>
+    <string name="vc_privacy_note">録音されるのは選んだアプリの音だけで、ボイスメッセージ1件ずつです。ボイスメッセージが終わると、録音全体が文字起こしと翻訳のために送信され、その後削除されます。設定でこれをオフにすると、開いたときにだけ送信されます。アプリも設定で変更できます。</string>
+    <string name="vc_auto_title">ボイスメッセージの終了時に翻訳</string>
+    <string name="vc_auto_desc">ボイスメッセージが終わると録音全体を一度に送信し、翻訳をキーボードに表示します。オフの場合：開いたときにだけ送信されます。</string>
+    <string name="kbn_title">ボイスメッセージ</string>
+    <string name="kbn_working">ボイスメッセージを翻訳中…</string>
+    <string name="kbn_unclear">録音が不明瞭です。間違っている単語があるかもしれません。</string>
+    <string name="kbn_open">開く</string>
     <string name="vc_no_apps">この端末には対応するチャットアプリが見つかりませんでした。</string>
     <string name="vc_settings_title">チャットアプリのボイスメッセージ</string>
     <string name="vc_settings_desc">AlterLingua はこれらのアプリで再生されたボイスメッセージをキャプチャできるので、ひとつずつ共有しなくても読んだり翻訳したりできます。</string>

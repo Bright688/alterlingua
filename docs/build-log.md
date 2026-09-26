@@ -1685,3 +1685,25 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Not known:** whether choosing "A single app" (which makes Android ask which app) changes how long a listening session survives or whether audio capture still works; that needs a test on the phone. The owner may prefer to rely on Share for voice notes to avoid this dialog altogether.
 
 **Verification:** strings only; see the build result below.
+
+
+---
+
+## 2026-09-26 — Whole voice note translated when it ends, shown on the keyboard
+
+**Goal (owner):** after the piece-by-piece option was explained, "do all at once and show on keyboard rather than piece by piece": when a captured voice note ends, process the whole note and show the translation on the keyboard.
+
+**What was built:**
+- `capture/CapturedNotes.kt`: one `CapturedNote` per recording, each holding the existing `SharedVoiceViewModel` (unchanged; still nothing under `share/` edited) created in its own `ViewModelStore`, so clearing the store stops the work, deletes the audio copy and releases the speech engine. Everything that shows a note (keyboard panel, notification result screen) shares the same instance, so a note is uploaded once. Newest five kept; in memory only; erased with the user's data (hooked into the existing "forget messages" step).
+- `capture/CapturedNoteViewModels.kt`: builds that view model for the app (same dependencies as the share flow). `VoiceCaptureResultActivity` now opens the shared note instead of building its own.
+- `VoiceCaptureService`: after writing a recording, if the setting is on, starts the note on the main thread (`translateNow`). One request for the whole note.
+- `keyboard/CapturedNotePanel.kt` and `AlterLinguaKeyboardView.renderCapturedNote`: a strip and a body over the keys with translating / result / failure states, Listen, Open (the full screen), Retry, Close. It never types into the chat. It yields to dictation, translation status, the language list and handwriting, and returns after them until closed. The keyboard service watches `CapturedNotes.latest`, puts away a note older than ten minutes when the keyboard opens.
+- Setting `translateCapturedNotes` (default on) with a switch in Settings; 6 new and 4 reworded strings in 8 languages (the old text said nothing is sent until the note is opened).
+
+**Decision that reverses an earlier one (owner's choice, flagged):** earlier the listening session uploaded nothing until the user opened a note. To show a translation on the keyboard the note must be sent when it ends, so the default is now to send it, with a Settings switch to go back to "sent only when opened". `docs/privacy.md` and the on-screen texts were updated to say so plainly. Trade-off: anything a chosen app plays for a second or more (a video with speech, for example) is also transcribed, which uses the free voice and translation quotas.
+
+**Problems:** none in the build. One design point: the panel must not fight other keyboard modes, so it is hidden whenever dictation, translation status, the language list or handwriting owns the strip or the keys.
+
+**Verification:** 872 unit tests pass (12 new: one request per note, same note on reopening, old note does not replace the keyboard's, closing releases everything, only the newest five kept, dismissing keeps the note, clearing forgets all, the keyboard states, failure with retry, unclear notice, text never printed, the setting). Lint and the release compile pass. **Not installed and not seen on the phone yet; IMPLEMENTED, not MANUALLY VERIFIED.**
+
+**Manual test for the owner:** update the app, start listening (Settings, Voice notes from chat apps), open WhatsApp with the AlterLingua keyboard showing, play a voice note to the end. A "Translating voice note" strip should appear a moment after it ends and turn into the original and the translation. Try Listen, Open and the close button; then switch "Translate voice notes when they end" off, play another, and check that it waits for you to open the notification.

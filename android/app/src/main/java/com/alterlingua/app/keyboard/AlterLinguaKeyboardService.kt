@@ -14,8 +14,13 @@ import kotlinx.coroutines.flow.first
 import com.alterlingua.app.AlterLinguaApplication
 import com.alterlingua.app.R
 import com.alterlingua.app.capture.CaptureRequest
+import com.alterlingua.app.capture.CapturedNote
 import com.alterlingua.app.capture.ChatApp
 import com.alterlingua.app.capture.VoiceCaptureLauncher
+import com.alterlingua.app.capture.VoiceCaptureResultActivity
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import com.alterlingua.app.navigation.AppLinks
 import com.alterlingua.app.storage.setTargetLanguage
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +41,10 @@ import kotlinx.coroutines.launch
 class AlterLinguaKeyboardService : InputMethodService() {
 
     private var keyboardView: AlterLinguaKeyboardView? = null
+
+    /** The captured voice note the keyboard is showing (or would show), and what it looks like now. */
+    private var shownNote: CapturedNote? = null
+    private var capturedUi: CapturedNoteUi = CapturedNoteUi.Hidden
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     // Typing goes to the app's field, or to the voice panel's editing text while a translation is being edited.
@@ -99,6 +108,7 @@ class AlterLinguaKeyboardService : InputMethodService() {
         }
         toolbar.onStateChanged = { keyboardView?.renderToolbar(it) }
         translation.onStateChanged = { keyboardView?.renderTranslation(it) }
+        watchCapturedNotes()
         scope.launch {
             settings.settings.collect {
                 toolbar.onSettingsChanged(it)
@@ -276,8 +286,48 @@ class AlterLinguaKeyboardService : InputMethodService() {
             view.renderToolbar(toolbar.state)
             view.renderTranslation(translation.state)
             view.renderVoice(voice.state)
+            view.renderCapturedNote(capturedUi)
             keyboardView = view
         }
+
+    /**
+     * Shows the newest captured voice note (see the capture package) on the keyboard while it is being translated and after,
+     * until the user closes it. It is in memory only; a note older than ten minutes is not brought back when the keyboard opens.
+     */
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    private fun watchCapturedNotes() {
+        val notes = (application as AlterLinguaApplication).capturedNotes
+        scope.launch {
+            notes.latest
+                .flatMapLatest { note ->
+                    if (note == null) {
+                        flowOf(null to CapturedNoteUi.Hidden)
+                    } else {
+                        combine(note.viewModel.uiState, notes.dismissed) { state, dismissed ->
+                            note to if (dismissed == note.address) CapturedNoteUi.Hidden else capturedNoteUi(state)
+                        }
+                    }
+                }
+                .collect { (note, ui) ->
+                    shownNote = note
+                    capturedUi = ui
+                    keyboardView?.renderCapturedNote(ui)
+                }
+        }
+    }
+
+    /** Called when the keyboard opens: a captured note nobody looked at for ten minutes is put away. */
+    private fun putAwayStaleNote() {
+        val note = shownNote ?: return
+        if (System.currentTimeMillis() - note.createdAt > STALE_NOTE_MILLIS) {
+            (application as AlterLinguaApplication).capturedNotes.dismissOnKeyboard(note.address)
+        }
+    }
+
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        putAwayStaleNote()
+    }
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
@@ -335,6 +385,26 @@ class AlterLinguaKeyboardService : InputMethodService() {
             is ToolbarAction.Voice -> onVoiceAction(action.action)
             ToolbarAction.VoiceNote -> toolbar.onVoiceNote()
             ToolbarAction.OpenSettings -> toolbar.onSettings()
+            is ToolbarAction.CapturedNote -> onCapturedNoteAction(action.action)
+        }
+    }
+
+    /** A button on the captured-voice-note panel. Nothing here types into the chat or sends anything. */
+    private fun onCapturedNoteAction(action: CapturedNoteAction) {
+        val note = shownNote ?: return
+        val notes = (application as AlterLinguaApplication).capturedNotes
+        when (action) {
+            CapturedNoteAction.LISTEN -> note.viewModel.listen()
+            CapturedNoteAction.RETRY -> note.viewModel.retry()
+            CapturedNoteAction.DISMISS -> notes.dismissOnKeyboard(note.address)
+            CapturedNoteAction.OPEN -> {
+                startActivity(
+                    Intent(this, VoiceCaptureResultActivity::class.java)
+                        .putExtra(VoiceCaptureResultActivity.EXTRA_ADDRESS, note.address)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                )
+                requestHideSelf(0)
+            }
         }
     }
 
@@ -405,3 +475,6 @@ class AlterLinguaKeyboardService : InputMethodService() {
         if (!switched) getSystemService(InputMethodManager::class.java)?.showInputMethodPicker()
     }
 }
+
+/** A captured voice note that has been on the keyboard this long without being looked at is put away when the keyboard opens. */
+private const val STALE_NOTE_MILLIS = 10L * 60 * 1000
