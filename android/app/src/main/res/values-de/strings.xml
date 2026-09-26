@@ -511,14 +511,18 @@
     <string name="capture_problem_notifications">AlterLingua muss Benachrichtigungen anzeigen dürfen, um dir zu sagen, wann die Sprachnachricht bereit ist.</string>
     <string name="capture_problem_old_android">Zum Erfassen einer Sprachnachricht ist Android 10 oder neuer nötig.</string>
     <string name="capture_channel_listening">Hört eine Sprachnachricht</string>
-    <string name="capture_channel_result">Sprachnachricht erfasst</string>
+    <string name="capture_channel_status">Hinweise zum Zuhören</string>
+    <string name="capture_ready_title">Sprachnachricht erfasst</string>
+    <string name="capture_ready_text">Tippen, um Transkript und Übersetzung zu lesen.</string>
+    <string name="capture_public_text">Sprachnachricht</string>
+    <string name="vc_notify_title">Benachrichtigen, wenn eine Sprachnachricht erfasst wurde</string>
+    <string name="vc_notify_desc">Eine dezente Benachrichtigung pro Sprachnachricht, ohne Einblendung. Aus: keine Benachrichtigung, die Nachricht erscheint aber weiterhin auf der Tastatur.</string>
+    <string name="kbn_waiting">Sprachnachricht erfasst. Übersetze sie, wenn du bereit bist.</string>
+    <string name="kbn_translate">Übersetzen</string>
     <string name="capture_listening_title">Hört eine Sprachnachricht</string>
     <string name="capture_listening_text">Spiele die Sprachnachricht jetzt in %1$s ab. Das Zuhören endet von selbst, wenn die Nachricht zu Ende ist.</string>
     <string name="capture_listening_text_any">Spiele die Sprachnachricht jetzt ab. Das Zuhören endet von selbst, wenn die Nachricht zu Ende ist.</string>
     <string name="capture_stop">Stopp</string>
-    <string name="capture_public_text">Sprachnachricht</string>
-    <string name="capture_ready_title">Sprachnachricht erfasst</string>
-    <string name="capture_ready_text">Tippen, um Transkript und Übersetzung zu lesen.</string>
     <string name="capture_nothing_title">Keine Sprachnachricht gehört</string>
     <string name="capture_nothing_text">Es kam nichts an. Versuche es erneut und spiele die Sprachnachricht von Anfang an ab.</string>
 

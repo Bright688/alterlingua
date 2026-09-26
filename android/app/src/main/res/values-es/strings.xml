@@ -511,14 +511,18 @@
     <string name="capture_problem_notifications">AlterLingua necesita poder mostrar notificaciones para avisarte cuando la nota de voz esté lista.</string>
     <string name="capture_problem_old_android">Capturar una nota de voz requiere Android 10 o posterior.</string>
     <string name="capture_channel_listening">Escuchando una nota de voz</string>
-    <string name="capture_channel_result">Nota de voz capturada</string>
+    <string name="capture_channel_status">Novedades de la escucha</string>
+    <string name="capture_ready_title">Nota de voz capturada</string>
+    <string name="capture_ready_text">Toca para leer la transcripción y la traducción.</string>
+    <string name="capture_public_text">Nota de voz</string>
+    <string name="vc_notify_title">Avisarme cuando se capture una nota de voz</string>
+    <string name="vc_notify_desc">Una notificación discreta por cada nota de voz, sin ventana emergente. Desactivado: sin notificación, pero la nota sigue apareciendo en el teclado.</string>
+    <string name="kbn_waiting">Nota de voz capturada. Tradúcela cuando quieras.</string>
+    <string name="kbn_translate">Traducir</string>
     <string name="capture_listening_title">Escuchando una nota de voz</string>
     <string name="capture_listening_text">Reproduce ahora la nota de voz en %1$s. Se detiene sola cuando termina la nota.</string>
     <string name="capture_listening_text_any">Reproduce ahora la nota de voz. Se detiene sola cuando termina la nota.</string>
     <string name="capture_stop">Detener</string>
-    <string name="capture_public_text">Nota de voz</string>
-    <string name="capture_ready_title">Nota de voz capturada</string>
-    <string name="capture_ready_text">Toca para leer la transcripción y la traducción.</string>
     <string name="capture_nothing_title">No se oyó ninguna nota de voz</string>
     <string name="capture_nothing_text">No llegó nada. Inténtalo de nuevo y reproduce la nota de voz desde el principio.</string>
 

@@ -511,14 +511,18 @@
     <string name="capture_problem_notifications">AlterLingua doit pouvoir afficher des notifications pour vous prévenir quand le message vocal est prêt.</string>
     <string name="capture_problem_old_android">La capture d’un message vocal nécessite Android 10 ou une version plus récente.</string>
     <string name="capture_channel_listening">Écoute d’un message vocal</string>
-    <string name="capture_channel_result">Message vocal capturé</string>
+    <string name="capture_channel_status">Mises à jour de l’écoute</string>
+    <string name="capture_ready_title">Message vocal capturé</string>
+    <string name="capture_ready_text">Appuyez pour lire la transcription et la traduction.</string>
+    <string name="capture_public_text">Message vocal</string>
+    <string name="vc_notify_title">Me prévenir quand un message vocal est capturé</string>
+    <string name="vc_notify_desc">Une notification discrète pour chaque message vocal, sans fenêtre qui s’affiche. Désactivé : pas de notification, mais le message apparaît toujours sur le clavier.</string>
+    <string name="kbn_waiting">Message vocal capturé. Traduisez-le quand vous voulez.</string>
+    <string name="kbn_translate">Traduire</string>
     <string name="capture_listening_title">Écoute d’un message vocal</string>
     <string name="capture_listening_text">Lancez le message vocal dans %1$s maintenant. L’écoute s’arrête d’elle-même à la fin du message.</string>
     <string name="capture_listening_text_any">Lancez le message vocal maintenant. L’écoute s’arrête d’elle-même à la fin du message.</string>
     <string name="capture_stop">Arrêter</string>
-    <string name="capture_public_text">Message vocal</string>
-    <string name="capture_ready_title">Message vocal capturé</string>
-    <string name="capture_ready_text">Appuyez pour lire la transcription et la traduction.</string>
     <string name="capture_nothing_title">Aucun message vocal entendu</string>
     <string name="capture_nothing_text">Rien n’a été capté. Réessayez, puis lancez le message vocal depuis le début.</string>
 

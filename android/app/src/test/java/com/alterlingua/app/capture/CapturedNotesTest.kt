@@ -87,7 +87,10 @@ class CapturedNotesTest {
         io = Dispatchers.Unconfined,
     )
 
+    private val discarded = mutableListOf<String>()
+
     private fun notes(maxKept: Int = 5, now: () -> Long = { 1_000L }) = CapturedNotes(
+        discard = { discarded += it },
         create = { store: ViewModelStore ->
             val factory = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -174,6 +177,51 @@ class CapturedNotesTest {
         notes.clearAll()
         assertNull(notes.latest.value)
         assertTrue(speakers.all { it.shutdown })
+    }
+
+    // ---- automatic translation off: the note waits for the user ----
+
+    @Test fun withAutomaticTranslationOff_theNoteWaits_andNothingIsSent() {
+        val notes = notes()
+        val note = notes.open(address, announce = true, startNow = false)
+        assertEquals("nothing was sent", 0, api.calls)
+        assertFalse(note.started.value)
+        assertSame(note, notes.latest.value)
+        assertEquals(CapturedNoteUi.Waiting, capturedNoteUi(note.viewModel.uiState.value, note.started.value))
+    }
+
+    @Test fun askingForAWaitingNoteToBeTranslated_sendsItOnce_andShowsTheResult() {
+        api.results += result()
+        val notes = notes()
+        val note = notes.open(address, announce = true, startNow = false)
+        notes.translate(address)
+        notes.translate(address) // a second tap does not send it again
+        assertEquals(1, api.calls)
+        assertTrue(note.started.value)
+        assertTrue(capturedNoteUi(note.viewModel.uiState.value, note.started.value) is CapturedNoteUi.Result)
+    }
+
+    @Test fun openingAWaitingNoteFromTheFullScreen_translatesIt() {
+        api.results += result()
+        val notes = notes()
+        notes.open(address, announce = true, startNow = false)
+        notes.open(address, announce = false) // Open on the keyboard panel
+        assertEquals(1, api.calls)
+    }
+
+    @Test fun closingANoteThatWasNeverTranslated_deletesItsRecording() {
+        val notes = notes()
+        notes.open(address, announce = true, startNow = false)
+        notes.close(address)
+        assertEquals(listOf(address), discarded)
+    }
+
+    @Test fun closingATranslatedNote_hasNothingLeftToDelete() {
+        api.results += result()
+        val notes = notes()
+        notes.open(address, announce = true)
+        notes.close(address)
+        assertTrue(discarded.isEmpty())
     }
 
     // ---- what the keyboard shows ----

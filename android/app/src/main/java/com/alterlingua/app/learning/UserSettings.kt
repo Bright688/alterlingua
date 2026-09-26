@@ -100,6 +100,12 @@ data class UserSettings(
      * result on the keyboard. When off, a captured note waits and is sent only when the user opens it.
      */
     val translateCapturedNotes: Boolean = true,
+    /**
+     * Whether AlterLingua posts a quiet notification ("Voice note captured") for each captured voice note. Turning it off
+     * mutes only that notification: the note still appears on the keyboard, and Android's required "listening" notification
+     * for a running session stays.
+     */
+    val notifyOnCapturedNotes: Boolean = true,
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */
     val keyboardStyles: Map<String, KeyboardStyle> = emptyMap(),
 ) {

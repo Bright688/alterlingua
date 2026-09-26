@@ -70,6 +70,7 @@ fun SettingsRoute(
         onKeyboardStyleSelected = viewModel::onKeyboardStyleSelected,
         onVoiceCaptureAppToggled = viewModel::onVoiceCaptureAppToggled,
         onTranslateCapturedNotesChanged = viewModel::onTranslateCapturedNotesChanged,
+        onNotifyOnCapturedNotesChanged = viewModel::onNotifyOnCapturedNotesChanged,
         modifier = modifier,
     )
 }
@@ -93,6 +94,7 @@ fun SettingsScreen(
     onKeyboardStyleSelected: (Language, com.alterlingua.app.learning.KeyboardStyle) -> Unit = { _, _ -> },
     onVoiceCaptureAppToggled: (String) -> Unit = {},
     onTranslateCapturedNotesChanged: (Boolean) -> Unit = {},
+    onNotifyOnCapturedNotesChanged: (Boolean) -> Unit = {},
 ) {
     var confirmErase by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     if (confirmErase) {
@@ -418,7 +420,7 @@ fun SettingsScreen(
             }
         }
 
-        VoiceNotesSection(state, onVoiceCaptureAppToggled, onTranslateCapturedNotesChanged)
+        VoiceNotesSection(state, onVoiceCaptureAppToggled, onTranslateCapturedNotesChanged, onNotifyOnCapturedNotesChanged)
 
         if (state.keyboardStyleChoices.isNotEmpty()) {
             SectionLabel(stringResource(R.string.set_keyboard_style))
@@ -475,7 +477,12 @@ fun SettingsScreen(
  * Choosing apps changes nothing until "Start listening", because Android asks for approval each time listening starts.
  */
 @Composable
-private fun VoiceNotesSection(state: SettingsUiState, onToggle: (String) -> Unit, onTranslateCapturedNotesChanged: (Boolean) -> Unit) {
+private fun VoiceNotesSection(
+    state: SettingsUiState,
+    onToggle: (String) -> Unit,
+    onTranslateCapturedNotesChanged: (Boolean) -> Unit,
+    onNotifyOnCapturedNotesChanged: (Boolean) -> Unit,
+) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val installed = remember { com.alterlingua.app.capture.PackageManagerChatApps(context.packageManager).installed() }
     val request = com.alterlingua.app.capture.CaptureRequest.forChosen(state.voiceCaptureApps, installed)
@@ -509,6 +516,30 @@ private fun VoiceNotesSection(state: SettingsUiState, onToggle: (String) -> Unit
                 checked = state.translateCapturedNotes,
                 onCheckedChange = onTranslateCapturedNotesChanged,
                 modifier = Modifier.testTag("translate_captured_notes_switch"),
+            )
+        }
+        HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.vc_notify_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(R.string.vc_notify_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(
+                checked = state.notifyOnCapturedNotes,
+                onCheckedChange = onNotifyOnCapturedNotesChanged,
+                modifier = Modifier.testTag("notify_on_captured_notes_switch"),
             )
         }
         HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)

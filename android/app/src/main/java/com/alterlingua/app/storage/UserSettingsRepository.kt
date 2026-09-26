@@ -59,6 +59,7 @@ internal object SettingsKeys {
     val LearningFromMessagesEnabled = booleanPreferencesKey("learning_from_messages_enabled")
     val VoiceCaptureApps = stringSetPreferencesKey("voice_capture_apps")
     val TranslateCapturedNotes = booleanPreferencesKey("translate_captured_notes")
+    val NotifyOnCapturedNotes = booleanPreferencesKey("notify_on_captured_notes")
 }
 
 private val Context.userSettingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
@@ -120,6 +121,7 @@ internal fun Preferences.toUserSettings(): UserSettings {
         learningFromMessagesEnabled = this[SettingsKeys.LearningFromMessagesEnabled] ?: defaults.learningFromMessagesEnabled,
         voiceCaptureApps = this[SettingsKeys.VoiceCaptureApps] ?: defaults.voiceCaptureApps,
         translateCapturedNotes = this[SettingsKeys.TranslateCapturedNotes] ?: defaults.translateCapturedNotes,
+        notifyOnCapturedNotes = this[SettingsKeys.NotifyOnCapturedNotes] ?: defaults.notifyOnCapturedNotes,
         keyboardStyles = Languages.supported.mapNotNull { language ->
             this[SettingsKeys.keyboardStyleFor(language.code)]
                 ?.let { name -> runCatching { enumValueOf<KeyboardStyle>(name) }.getOrNull() }
@@ -152,6 +154,7 @@ private fun androidx.datastore.preferences.core.MutablePreferences.write(setting
     this[SettingsKeys.LearningFromMessagesEnabled] = settings.learningFromMessagesEnabled
     this[SettingsKeys.VoiceCaptureApps] = settings.voiceCaptureApps
     this[SettingsKeys.TranslateCapturedNotes] = settings.translateCapturedNotes
+    this[SettingsKeys.NotifyOnCapturedNotes] = settings.notifyOnCapturedNotes
 }
 
 private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =

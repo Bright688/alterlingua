@@ -303,8 +303,8 @@ class AlterLinguaKeyboardService : InputMethodService() {
                     if (note == null) {
                         flowOf(null to CapturedNoteUi.Hidden)
                     } else {
-                        combine(note.viewModel.uiState, notes.dismissed) { state, dismissed ->
-                            note to if (dismissed == note.address) CapturedNoteUi.Hidden else capturedNoteUi(state)
+                        combine(note.viewModel.uiState, note.started, notes.dismissed) { state, started, dismissed ->
+                            note to if (dismissed == note.address) CapturedNoteUi.Hidden else capturedNoteUi(state, started)
                         }
                     }
                 }
@@ -394,6 +394,7 @@ class AlterLinguaKeyboardService : InputMethodService() {
         val note = shownNote ?: return
         val notes = (application as AlterLinguaApplication).capturedNotes
         when (action) {
+            CapturedNoteAction.TRANSLATE -> notes.translate(note.address)
             CapturedNoteAction.LISTEN -> note.viewModel.listen()
             CapturedNoteAction.RETRY -> note.viewModel.retry()
             CapturedNoteAction.DISMISS -> notes.dismissOnKeyboard(note.address)

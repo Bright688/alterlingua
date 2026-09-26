@@ -1709,3 +1709,20 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Follow-up the same day, owner's feedback (screenshot of the lock screen):** the "Voice note captured" notification appeared for every voice note and was disturbing, since the keyboard already shows the result. It is now posted only when "Translate voice notes when they end" is **off** (then it is the only way to open a waiting note). Android's own "Listening for voice notes" notification stays, because Android requires one for a foreground service; it is the quiet, low-priority kind. Trade-off, stated to the owner: with automatic translation on and the keyboard closed, nothing tells the user a translation is ready; it is there when the keyboard next opens (for ten minutes). A one-line service change, not unit-testable (notification posting); unit tests still pass (872). Not yet seen on the phone.
 
 **Manual test for the owner:** update the app, start listening (Settings, Voice notes from chat apps), open WhatsApp with the AlterLingua keyboard showing, play a voice note to the end. A "Translating voice note" strip should appear a moment after it ends and turn into the original and the translation. Try Listen, Open and the close button; then switch "Translate voice notes when they end" off, play another, and check that it waits for you to open the notification.
+
+
+---
+
+## 2026-09-26 — "Voice note captured" notification: back, but the user decides (Settings switch)
+
+**What happened:** the owner found the notification disturbing (it appeared as a pop-up banner for every voice note). A first fix showed it only when automatic translation was off; the owner then asked for it to be removed entirely; while that was being built the owner changed their mind: "place back the notification but add to the setting for users to decide whether to mute it".
+
+**Final behaviour:**
+- New setting `notifyOnCapturedNotes` (default **on**) with a switch "Notify me when a voice note is captured" in Settings, Voice notes from chat apps. Off mutes only this notification; the note still appears on the keyboard.
+- The notification is now **quiet**: it uses a low-importance channel ("Listening updates"), so no pop-up banner and no sound; it sits in the notification shade. The old loud channel is deleted on the next run. The "listening stopped" and "no voice note heard" messages use the same quiet channel.
+- Android's own "Listening for voice notes" notification cannot be removed while a session runs.
+- Kept from the interim work: when automatic translation is off, a captured note waits on the keyboard with a **Translate** button (nothing is sent until it is tapped), and closing a note that was never translated deletes its recording. (`CapturedNotes.open(startNow)`, `translate()`, `discard`.)
+
+**Decision to review:** the switch defaults to on, as literally asked, although the owner's complaint suggests many people would prefer it off. The default is one line in `UserSettings`; the owner can say if they want it flipped.
+
+**Verification:** 878 unit tests pass (6 new across the interim and final work: waiting notes send nothing, translate once, opening translates, closing a waiting note deletes its recording, the notification setting default and toggle). Lint and release compile pass. Notification behaviour itself is not unit-testable and has **not** been seen on the phone; not yet installed.

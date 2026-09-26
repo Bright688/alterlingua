@@ -189,7 +189,12 @@ class AlterLinguaApplication : Application() {
 
     /** Voice notes captured from chat apps and their translations, in memory only (see CapturedNotes). */
     val capturedNotes: com.alterlingua.app.capture.CapturedNotes by lazy {
-        com.alterlingua.app.capture.CapturedNotes(create = { store -> com.alterlingua.app.capture.newCapturedNoteViewModel(this, store) })
+        com.alterlingua.app.capture.CapturedNotes(
+            create = { store -> com.alterlingua.app.capture.newCapturedNoteViewModel(this, store) },
+            discard = { address ->
+                com.alterlingua.app.capture.CapturedAudioSource(java.io.File(cacheDir, com.alterlingua.app.capture.VoiceCaptureService.DIRECTORY)).discard(address)
+            },
+        )
     }
 
     /** The voice translation service used by the keyboard's microphone. */

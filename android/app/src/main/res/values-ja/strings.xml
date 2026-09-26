@@ -511,14 +511,18 @@
     <string name="capture_problem_notifications">ボイスメッセージの準備ができたことをお知らせするため、AlterLingua に通知の表示を許可する必要があります。</string>
     <string name="capture_problem_old_android">ボイスメッセージのキャプチャには Android 10 以降が必要です。</string>
     <string name="capture_channel_listening">ボイスメッセージを聞き取り中</string>
-    <string name="capture_channel_result">ボイスメッセージをキャプチャしました</string>
+    <string name="capture_channel_status">聞き取りの状況</string>
+    <string name="capture_ready_title">ボイスメッセージをキャプチャしました</string>
+    <string name="capture_ready_text">タップして文字起こしと翻訳を読みます。</string>
+    <string name="capture_public_text">ボイスメッセージ</string>
+    <string name="vc_notify_title">ボイスメッセージをキャプチャしたら通知する</string>
+    <string name="vc_notify_desc">ボイスメッセージごとに、ポップアップなしの控えめな通知を出します。オフ：通知は出ませんが、メッセージはキーボードに表示されます。</string>
+    <string name="kbn_waiting">ボイスメッセージをキャプチャしました。準備ができたら翻訳します。</string>
+    <string name="kbn_translate">翻訳</string>
     <string name="capture_listening_title">ボイスメッセージを聞き取り中</string>
     <string name="capture_listening_text">今すぐ %1$s でボイスメッセージを再生してください。メッセージが終わると自動で止まります。</string>
     <string name="capture_listening_text_any">今すぐボイスメッセージを再生してください。メッセージが終わると自動で止まります。</string>
     <string name="capture_stop">停止</string>
-    <string name="capture_public_text">ボイスメッセージ</string>
-    <string name="capture_ready_title">ボイスメッセージをキャプチャしました</string>
-    <string name="capture_ready_text">タップして文字起こしと翻訳を読みます。</string>
     <string name="capture_nothing_title">ボイスメッセージが聞こえませんでした</string>
     <string name="capture_nothing_text">何も届きませんでした。もう一度試して、ボイスメッセージを最初から再生してください。</string>
 

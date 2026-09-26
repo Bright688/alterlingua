@@ -153,7 +153,7 @@ class VoiceCaptureService : Service() {
                     if (samples != null) {
                         saveAndAnnounce(samples)
                     } else if (!keepListening) {
-                        announce(null) // nothing heard
+                        announceNothingHeard()
                     }
                     if (!keepListening) finished = true
                 }
@@ -184,9 +184,8 @@ class VoiceCaptureService : Service() {
         return try {
             WavFile.write(file, samples, VoiceNoteRecorder.OUTPUT_RATE)
             val address = CapturedAudioSource.addressOf(file)
-            // With automatic translation the result appears on the keyboard, so no notification is posted for every voice note
-            // (it would only interrupt). Only when it is off does a notification tell the user a note is waiting to be opened.
-            if (!translateNow(address)) announce(address)
+            // The note appears on the keyboard (translated, or waiting for the user to ask), and optionally as a quiet notification.
+            keepNote(address)
             true
         } catch (_: IOException) {
             file.delete()
@@ -195,19 +194,48 @@ class VoiceCaptureService : Service() {
     }
 
     /**
-     * When the user has it switched on (Settings, on by default), sends the whole recording to be transcribed and translated
-     * as soon as the voice note has ended, so the result is ready on the keyboard. It is one request for the whole note, never
-     * pieces of it. With it off, the recording waits and is sent only when the user opens the notification.
-     *
-     * Returns true when the translation was started (the keyboard will show it), false when the recording is left waiting.
+     * Hands the finished recording to the app's captured notes, which the keyboard shows. When the user has automatic
+     * translation on (Settings, on by default) the whole recording is sent at once to be transcribed and translated, so the
+     * result is ready on the keyboard: one request for the whole note, never pieces of it. With it off, the note waits on the
+     * keyboard with a Translate button and nothing is sent until the user taps it.
      */
-    private fun translateNow(address: String): Boolean {
+    private fun keepNote(address: String) {
         val app = application as AlterLinguaApplication
-        val automatic = runBlocking { app.userSettings.settings.first().translateCapturedNotes }
-        if (!automatic) return false
+        val settings = runBlocking { app.userSettings.settings.first() }
         // The note's processing starts on the main thread, like every screen's does.
-        Handler(Looper.getMainLooper()).post { app.capturedNotes.open(address, announce = true) }
-        return true
+        Handler(Looper.getMainLooper()).post { app.capturedNotes.open(address, announce = true, startNow = settings.translateCapturedNotes) }
+        // The user decides in Settings whether each captured voice note also gets a (quiet) notification.
+        if (settings.notifyOnCapturedNotes) announceCaptured(address)
+    }
+
+    /** A quiet notification that says only that a voice note was captured; tapping it opens the note. Never any words of it. */
+    private fun announceCaptured(address: String) {
+        val id = RESULT_ID + (noteCounter++ % MAX_KEPT)
+        val open = PendingIntent.getActivity(
+            this,
+            id, // one per recording, so each keeps its own address
+            Intent(this, VoiceCaptureResultActivity::class.java)
+                .putExtra(VoiceCaptureResultActivity.EXTRA_ADDRESS, address)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        val notification = NotificationCompat.Builder(this, STATUS_CHANNEL)
+            .setSmallIcon(R.drawable.ic_tool_voicenote)
+            .setContentTitle(getString(R.string.capture_ready_title))
+            .setContentText(getString(R.string.capture_ready_text))
+            .setContentIntent(open)
+            .setAutoCancel(true)
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setPublicVersion(
+                NotificationCompat.Builder(this, STATUS_CHANNEL)
+                    .setSmallIcon(R.drawable.ic_tool_voicenote)
+                    .setContentTitle(getString(R.string.notif_public_title))
+                    .setContentText(getString(R.string.capture_public_text))
+                    .build(),
+            )
+            .build()
+        runCatching { getSystemService(NotificationManager::class.java).notify(id, notification) }
     }
 
     /** Keeps the newest few recordings for at most an hour, so a long session cannot fill the phone. */
@@ -217,16 +245,26 @@ class VoiceCaptureService : Service() {
         files.forEachIndexed { index, file -> if (index >= MAX_KEPT - 1 || file.lastModified() < cutoff) file.delete() }
     }
 
-    private fun announce(address: String?) {
-        val id = if (address == null) NOTHING_ID else RESULT_ID + (noteCounter++ % MAX_KEPT)
+    /** A single capture (keyboard button) that heard no voice note says so, quietly. */
+    private fun announceNothingHeard() {
         val manager = getSystemService(NotificationManager::class.java)
-        runCatching { manager.notify(id, resultNotification(address, id)) }
+        val notification = NotificationCompat.Builder(this, STATUS_CHANNEL)
+            .setSmallIcon(R.drawable.ic_tool_voicenote)
+            .setContentTitle(getString(R.string.capture_nothing_title))
+            .setContentText(getString(R.string.capture_nothing_text))
+            .setAutoCancel(true)
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .build()
+        runCatching { manager.notify(NOTHING_ID, notification) }
     }
 
     private fun createChannels() {
         val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(NotificationChannel(LISTENING_CHANNEL, getString(R.string.capture_channel_listening), NotificationManager.IMPORTANCE_LOW))
-        manager.createNotificationChannel(NotificationChannel(RESULT_CHANNEL, getString(R.string.capture_channel_result), NotificationManager.IMPORTANCE_HIGH))
+        // The two rare status messages (listening stopped, nothing heard) are silent: they never pop up over what the user is doing.
+        manager.createNotificationChannel(NotificationChannel(STATUS_CHANNEL, getString(R.string.capture_channel_status), NotificationManager.IMPORTANCE_LOW))
+        manager.deleteNotificationChannel(LEGACY_RESULT_CHANNEL) // the old loud "voice note captured" channel
     }
 
     private fun listeningNotification(labels: List<String>, keepListening: Boolean): Notification {
@@ -254,39 +292,6 @@ class VoiceCaptureService : Service() {
             .build()
     }
 
-    /** A notification that says only whether a voice note was captured. Never any words of it. */
-    private fun resultNotification(address: String?, id: Int): Notification {
-        val builder = NotificationCompat.Builder(this, RESULT_CHANNEL)
-            .setSmallIcon(R.drawable.ic_tool_voicenote)
-            .setAutoCancel(true)
-            .setCategory(NotificationCompat.CATEGORY_STATUS)
-            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-            .setPublicVersion(
-                NotificationCompat.Builder(this, RESULT_CHANNEL)
-                    .setSmallIcon(R.drawable.ic_tool_voicenote)
-                    .setContentTitle(getString(R.string.notif_public_title))
-                    .setContentText(getString(R.string.capture_public_text))
-                    .build(),
-            )
-        if (address != null) {
-            val open = PendingIntent.getActivity(
-                this,
-                id, // one per recording, so each keeps its own address
-                Intent(this, VoiceCaptureResultActivity::class.java)
-                    .putExtra(VoiceCaptureResultActivity.EXTRA_ADDRESS, address)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
-            builder.setContentTitle(getString(R.string.capture_ready_title))
-                .setContentText(getString(R.string.capture_ready_text))
-                .setContentIntent(open)
-        } else {
-            builder.setContentTitle(getString(R.string.capture_nothing_title))
-                .setContentText(getString(R.string.capture_nothing_text))
-        }
-        return builder.build()
-    }
-
     /** "Listening stopped": tapping it opens the capture screen ready to start again (one approval from Android). */
     private fun stoppedNotification(uids: IntArray, labels: List<String>): Notification {
         val restart = PendingIntent.getActivity(
@@ -300,7 +305,7 @@ class VoiceCaptureService : Service() {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
-        return NotificationCompat.Builder(this, RESULT_CHANNEL)
+        return NotificationCompat.Builder(this, STATUS_CHANNEL)
             .setSmallIcon(R.drawable.ic_tool_voicenote)
             .setContentTitle(getString(R.string.capture_stopped_title))
             .setContentText(getString(R.string.capture_stopped_text))
@@ -340,6 +345,7 @@ class VoiceCaptureService : Service() {
         private const val NOTHING_ID = 5102
         private const val STOPPED_ID = 5103
         private const val LISTENING_CHANNEL = "voice_capture_listening"
-        private const val RESULT_CHANNEL = "voice_capture_result"
+        private const val STATUS_CHANNEL = "voice_capture_status"
+        private const val LEGACY_RESULT_CHANNEL = "voice_capture_result"
     }
 }

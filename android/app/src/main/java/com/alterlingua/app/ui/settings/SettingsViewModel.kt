@@ -50,6 +50,8 @@ data class SettingsUiState(
     val voiceCaptureApps: Set<String> = emptySet(),
     /** Whether a captured voice note is transcribed and translated as soon as it ends. */
     val translateCapturedNotes: Boolean = true,
+    /** Whether a quiet "Voice note captured" notification is posted for each captured note. */
+    val notifyOnCapturedNotes: Boolean = true,
     /** True while a listening session for voice notes is running right now. */
     val voiceCaptureListening: Boolean = false,
 )
@@ -98,6 +100,7 @@ class SettingsViewModel(
             dataErased = dataErased,
             voiceCaptureApps = it.voiceCaptureApps,
             translateCapturedNotes = it.translateCapturedNotes,
+            notifyOnCapturedNotes = it.notifyOnCapturedNotes,
             voiceCaptureListening = listening,
         )
     }
@@ -141,6 +144,9 @@ class SettingsViewModel(
 
     /** Turns automatic translation of captured voice notes on or off (off: a note is sent only when the user opens it). */
     fun onTranslateCapturedNotesChanged(enabled: Boolean) = save { it.copy(translateCapturedNotes = enabled) }
+
+    /** Mutes or unmutes the "Voice note captured" notification (the note itself still appears on the keyboard). */
+    fun onNotifyOnCapturedNotesChanged(enabled: Boolean) = save { it.copy(notifyOnCapturedNotes = enabled) }
 
     /** Adds or removes a chat app from those whose voice notes may be captured. Takes effect the next time listening starts. */
     fun onVoiceCaptureAppToggled(packageName: String) = save {

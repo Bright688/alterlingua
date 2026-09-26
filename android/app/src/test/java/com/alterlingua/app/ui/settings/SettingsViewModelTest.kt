@@ -70,6 +70,20 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun theCapturedNoteNotification_isOnByDefault_andTheUserCanMuteIt_andUnmuteIt() {
+        val repo = FakeUserSettingsRepository()
+        val vm = SettingsViewModel(repo)
+        assertTrue(vm.uiState.value.notifyOnCapturedNotes)
+        vm.onNotifyOnCapturedNotesChanged(false)
+        assertFalse(repo.current.notifyOnCapturedNotes)
+        assertFalse(vm.uiState.value.notifyOnCapturedNotes)
+        // Muting the notification changes nothing else about voice notes.
+        assertTrue(repo.current.translateCapturedNotes)
+        vm.onNotifyOnCapturedNotesChanged(true)
+        assertTrue(repo.current.notifyOnCapturedNotes)
+    }
+
+    @Test
     fun theListeningStatus_followsTheSession() {
         val listening = kotlinx.coroutines.flow.MutableStateFlow(false)
         val vm = SettingsViewModel(FakeUserSettingsRepository(), voiceCaptureListening = listening)
