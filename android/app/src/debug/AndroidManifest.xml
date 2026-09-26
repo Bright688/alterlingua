@@ -15,5 +15,18 @@
                 <action android:name="com.alterlingua.app.DEBUG_TEST_MESSAGE" />
             </intent-filter>
         </receiver>
+
+        <!--
+            DEBUG BUILDS ONLY. Lets `adb` fire the "Voice note captured" notification (through the Settings switch) without
+            playing a voice note. Release builds contain no such receiver.
+        -->
+        <receiver
+            android:name=".capture.DebugCapturedNoteReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.alterlingua.app.DEBUG_CAPTURED_NOTE" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
