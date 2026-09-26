@@ -68,6 +68,7 @@ fun SettingsRoute(
         onDetectSourceChanged = viewModel::onDetectSourceChanged,
         onAutoTranslateChanged = viewModel::onAutoTranslateChanged,
         onKeyboardStyleSelected = viewModel::onKeyboardStyleSelected,
+        onVoiceCaptureAppToggled = viewModel::onVoiceCaptureAppToggled,
         modifier = modifier,
     )
 }
@@ -89,6 +90,7 @@ fun SettingsScreen(
     onDetectSourceChanged: (Boolean) -> Unit = {},
     onAutoTranslateChanged: (Boolean) -> Unit = {},
     onKeyboardStyleSelected: (Language, com.alterlingua.app.learning.KeyboardStyle) -> Unit = { _, _ -> },
+    onVoiceCaptureAppToggled: (String) -> Unit = {},
 ) {
     var confirmErase by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     if (confirmErase) {
@@ -414,6 +416,8 @@ fun SettingsScreen(
             }
         }
 
+        VoiceNotesSection(state, onVoiceCaptureAppToggled)
+
         if (state.keyboardStyleChoices.isNotEmpty()) {
             SectionLabel(stringResource(R.string.set_keyboard_style))
             AlterLinguaCard {
@@ -461,6 +465,55 @@ fun SettingsScreen(
         AlterLinguaCard {
             SetupSettingsRows(setup)
         }
+    }
+}
+
+/**
+ * Voice notes from other chat apps: which apps AlterLingua may capture voice notes from, and whether it is listening now.
+ * Choosing apps changes nothing until "Start listening", because Android asks for approval each time listening starts.
+ */
+@Composable
+private fun VoiceNotesSection(state: SettingsUiState, onToggle: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val installed = remember { com.alterlingua.app.capture.PackageManagerChatApps(context.packageManager).installed() }
+    val request = com.alterlingua.app.capture.CaptureRequest.forChosen(state.voiceCaptureApps, installed)
+    SectionLabel(stringResource(R.string.vc_settings_title))
+    AlterLinguaCard {
+        Text(
+            text = stringResource(R.string.vc_settings_desc),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        com.alterlingua.app.ui.components.ChatAppChoices(installed = installed, chosen = state.voiceCaptureApps, onToggle = onToggle)
+        HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
+        Text(
+            text = stringResource(if (state.voiceCaptureListening) R.string.vc_status_listening else R.string.vc_status_not_listening),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.testTag("voice_capture_status"),
+        )
+        if (state.voiceCaptureListening) {
+            androidx.compose.material3.OutlinedButton(
+                onClick = {
+                    context.startService(
+                        android.content.Intent(context, com.alterlingua.app.capture.VoiceCaptureService::class.java)
+                            .setAction(com.alterlingua.app.capture.VoiceCaptureService.ACTION_STOP),
+                    )
+                },
+                modifier = Modifier.fillMaxWidth().testTag("voice_capture_stop_listening"),
+            ) { Text(stringResource(R.string.vc_stop_listening)) }
+        } else {
+            androidx.compose.material3.Button(
+                onClick = { context.startActivity(com.alterlingua.app.capture.VoiceCaptureLauncher.intent(context, request, startAtOnce = true)) },
+                enabled = request.apps.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth().testTag("voice_capture_start_listening"),
+            ) { Text(stringResource(R.string.vc_start_listening)) }
+        }
+        Text(
+            text = stringResource(R.string.vc_settings_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

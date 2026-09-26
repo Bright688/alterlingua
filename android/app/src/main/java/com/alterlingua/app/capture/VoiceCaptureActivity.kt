@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,37 +36,56 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alterlingua.app.R
 import com.alterlingua.app.localization.LocalizedActivity
 import com.alterlingua.app.ui.components.AlterLinguaCard
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
 
 /**
- * "Capture a voice note": opened by the keyboard's voice-note button. It explains what will happen, and only when the user
- * taps Start asks for what Android requires: notifications (to say when the voice note is ready), the microphone permission
- * (which Android requires to read captured sound, though the microphone itself is not used) and Android's own screen-capture
- * approval, which shows a status-bar indicator while the capture lasts. It then starts [VoiceCaptureService] and closes, so
- * the chat app is in front again and the user can play the voice note.
+ * "Capture a voice note" and "Listen for voice notes": opened by the keyboard's voice-note button (one voice note), and by
+ * onboarding, Settings and the "listening stopped" notification (a listening session). It explains what will happen, and
+ * only when the user taps Start (or, from the "listening stopped" notification, at once, because that tap is the user's
+ * request) asks for what Android requires: notifications (to say when a voice note is ready), the microphone permission
+ * (which Android requires to read captured sound, though the microphone itself is not used) and Android's own
+ * screen-capture approval, which Android requires for every session and which shows a status-bar indicator while it lasts.
+ * It then starts [VoiceCaptureService] and closes, so the chat app is in front again.
  */
 class VoiceCaptureActivity : LocalizedActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val uid = intent.getIntExtra(VoiceCaptureService.EXTRA_UID, -1)
-        val label = intent.getStringExtra(VoiceCaptureService.EXTRA_LABEL).orEmpty()
+        val uids = intent.getIntArrayExtra(VoiceCaptureService.EXTRA_UIDS) ?: IntArray(0)
+        val labels = intent.getStringArrayExtra(VoiceCaptureService.EXTRA_LABELS)?.toList().orEmpty()
+        val keepListening = intent.getBooleanExtra(VoiceCaptureService.EXTRA_KEEP_LISTENING, false)
+        val startAtOnce = intent.getBooleanExtra(EXTRA_START_AT_ONCE, false)
         setContent {
             AlterLinguaTheme {
-                CaptureScreen(label = label, supported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q, uid = uid, onClose = { finish() })
+                CaptureScreen(
+                    uids = uids,
+                    labels = labels,
+                    keepListening = keepListening,
+                    startAtOnce = startAtOnce && savedInstanceState == null,
+                    supported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,
+                    onClose = { finish() },
+                )
             }
         }
+    }
+
+    companion object {
+        /** Start asking for permissions as soon as the screen opens (used by the "listening stopped" notification). */
+        const val EXTRA_START_AT_ONCE = "start_at_once"
     }
 }
 
 @Composable
-private fun CaptureScreen(label: String, supported: Boolean, uid: Int, onClose: () -> Unit) {
+private fun CaptureScreen(uids: IntArray, labels: List<String>, keepListening: Boolean, startAtOnce: Boolean, supported: Boolean, onClose: () -> Unit) {
     val context = LocalContext.current
     var problem by remember { mutableStateOf<Int?>(null) }
+    val listening by VoiceCaptureState.listening.collectAsStateWithLifecycle()
+    val names = labels.joinToString(", ")
 
     val projection = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val data = result.data
@@ -73,8 +93,9 @@ private fun CaptureScreen(label: String, supported: Boolean, uid: Int, onClose: 
             val start = Intent(context, VoiceCaptureService::class.java)
                 .putExtra(VoiceCaptureService.EXTRA_RESULT_CODE, result.resultCode)
                 .putExtra(VoiceCaptureService.EXTRA_DATA, data)
-                .putExtra(VoiceCaptureService.EXTRA_UID, uid)
-                .putExtra(VoiceCaptureService.EXTRA_LABEL, label)
+                .putExtra(VoiceCaptureService.EXTRA_UIDS, uids)
+                .putExtra(VoiceCaptureService.EXTRA_LABELS, labels.toTypedArray())
+                .putExtra(VoiceCaptureService.EXTRA_KEEP_LISTENING, keepListening)
             ContextCompat.startForegroundService(context, start)
             onClose()
         } else {
@@ -102,23 +123,42 @@ private fun CaptureScreen(label: String, supported: Boolean, uid: Int, onClose: 
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         if (needsNotifications) notifications.launch(Manifest.permission.POST_NOTIFICATIONS) else askForMicrophone()
     }
+    LaunchedEffect(startAtOnce, supported, listening) {
+        if (startAtOnce && supported && !listening) start()
+    }
 
     Surface(modifier = Modifier.fillMaxSize().testTag("screen_voice_capture"), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier.systemBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(stringResource(R.string.capture_title), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
             Text(
-                if (label.isBlank()) stringResource(R.string.capture_intro_any) else stringResource(R.string.capture_intro, label),
+                stringResource(if (keepListening) R.string.capture_session_title else R.string.capture_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                when {
+                    keepListening -> stringResource(R.string.capture_session_intro, names)
+                    names.isBlank() -> stringResource(R.string.capture_intro_any)
+                    else -> stringResource(R.string.capture_intro, names)
+                },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             AlterLinguaCard {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(stringResource(R.string.capture_step_1), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-                    Text(stringResource(R.string.capture_step_2), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-                    Text(stringResource(R.string.capture_step_3), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        stringResource(if (keepListening) R.string.capture_session_step_2 else R.string.capture_step_2),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        stringResource(if (keepListening) R.string.capture_session_step_3 else R.string.capture_step_3),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             }
             Text(
@@ -130,11 +170,23 @@ private fun CaptureScreen(label: String, supported: Boolean, uid: Int, onClose: 
             if (!supported) {
                 Text(stringResource(R.string.capture_problem_old_android), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
             }
+            if (listening) {
+                Text(stringResource(R.string.capture_already_listening), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("voice_capture_already"))
+            }
             problem?.let {
                 Text(stringResource(it), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("voice_capture_problem"))
             }
-            if (supported) {
+            if (supported && !listening) {
                 Button(onClick = ::start, modifier = Modifier.fillMaxWidth().testTag("voice_capture_start")) { Text(stringResource(R.string.capture_start)) }
+            }
+            if (listening) {
+                Button(
+                    onClick = {
+                        context.startService(Intent(context, VoiceCaptureService::class.java).setAction(VoiceCaptureService.ACTION_STOP))
+                        onClose()
+                    },
+                    modifier = Modifier.fillMaxWidth().testTag("voice_capture_stop"),
+                ) { Text(stringResource(R.string.capture_stop)) }
             }
             OutlinedButton(onClick = onClose, modifier = Modifier.fillMaxWidth().testTag("voice_capture_cancel")) { Text(stringResource(R.string.voice_cancel)) }
         }

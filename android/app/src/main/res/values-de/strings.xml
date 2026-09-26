@@ -521,4 +521,26 @@
     <string name="capture_ready_text">Tippen, um sie zu transkribieren und zu übersetzen.</string>
     <string name="capture_nothing_title">Keine Sprachnachricht gehört</string>
     <string name="capture_nothing_text">Es kam nichts an. Versuche es erneut und spiele die Sprachnachricht von Anfang an ab.</string>
+
+    <!-- Sprachnachrichten der gewählten Apps mithören -->
+    <string name="capture_session_title">Hört Sprachnachrichten</string>
+    <string name="capture_session_text">Sprachnachrichten aus %1$s werden automatisch erfasst. Nichts wird gesendet, bis du eine öffnest.</string>
+    <string name="capture_session_intro">AlterLingua hört auf Sprachnachrichten in %1$s und erfasst jede automatisch, damit du sie ohne zusätzliche Tipps abspielen kannst.</string>
+    <string name="capture_session_step_2">2. Spiele Sprachnachrichten in diesen Apps wie gewohnt ab. Jede wird automatisch erfasst.</string>
+    <string name="capture_session_step_3">3. Tippe auf eine Benachrichtigung „Sprachnachricht erfasst“, um Transkript und Übersetzung zu lesen. Android kann das Zuhören beenden, zum Beispiel wenn der Bildschirm gesperrt wird; eine Benachrichtigung schaltet es dann mit einem Tipp wieder ein.</string>
+    <string name="capture_stopped_title">Zuhören für Sprachnachrichten beendet</string>
+    <string name="capture_stopped_text">Tippe, um es wieder einzuschalten.</string>
+    <string name="capture_already_listening">AlterLingua hört gerade auf Sprachnachrichten.</string>
+    <string name="vc_onb_title">Sprachnachrichten aus anderen Apps</string>
+    <string name="vc_onb_subtitle">Wähle die Messenger-Apps, deren Sprachnachrichten AlterLingua erfassen, transkribieren und für dich übersetzen darf.</string>
+    <string name="vc_start_listening">Zuhören starten</string>
+    <string name="vc_stop_listening">Zuhören beenden</string>
+    <string name="vc_onb_note">Android fragt bei jedem Start des Zuhörens nach deiner Zustimmung und kann es beenden, zum Beispiel beim Sperren des Bildschirms. AlterLingua sagt dir dann Bescheid, und ein Tipp startet es wieder.</string>
+    <string name="vc_privacy_note">Nur der Ton der gewählten Apps wird aufgenommen, jeweils eine Sprachnachricht. Eine Aufnahme wird nur gesendet, wenn du sie öffnest, und danach gelöscht. Die Apps kannst du in den Einstellungen ändern.</string>
+    <string name="vc_no_apps">Auf diesem Telefon wurden keine unterstützten Messenger-Apps gefunden.</string>
+    <string name="vc_settings_title">Sprachnachrichten aus Messenger-Apps</string>
+    <string name="vc_settings_desc">AlterLingua kann Sprachnachrichten erfassen, die in diesen Apps abgespielt werden, damit du sie lesen und übersetzen kannst, ohne jede einzeln zu teilen.</string>
+    <string name="vc_status_listening">Hört auf Sprachnachrichten</string>
+    <string name="vc_status_not_listening">Hört nicht zu</string>
+    <string name="vc_settings_note">Android verlangt bei jedem Start des Zuhörens deine Zustimmung. Änderungen an den Apps gelten beim nächsten Start.</string>
 </resources>

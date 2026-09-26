@@ -32,9 +32,21 @@ class OnboardingViewModelTest {
         val state = vm.uiState.value
         assertEquals(OnboardingStep.SOURCE, state.step)
         assertTrue(state.loaded)
-        // Choosing the app language is step 1 (its own screen before these), so the first step here is 2 of 12.
+        // Choosing the app language is step 1 (its own screen before these), so the first step here is 2 of 13.
         assertEquals(2, state.stepNumber)
-        assertEquals(12, state.stepCount)
+        assertEquals(13, state.stepCount)
+    }
+
+    @Test
+    fun chosenVoiceCaptureApps_toggleOnAndOff_andAreSavedWhenContinuing() {
+        val repository = FakeUserSettingsRepository(UserSettings())
+        val vm = OnboardingViewModel(repository, SavedStateHandle())
+        vm.onVoiceCaptureAppToggled("com.whatsapp")
+        vm.onVoiceCaptureAppToggled("org.telegram.messenger")
+        vm.onVoiceCaptureAppToggled("com.whatsapp")
+        assertEquals(setOf("org.telegram.messenger"), vm.uiState.value.settings.voiceCaptureApps)
+        vm.next()
+        assertEquals(setOf("org.telegram.messenger"), repository.current.voiceCaptureApps)
     }
 
     @Test
@@ -49,7 +61,7 @@ class OnboardingViewModelTest {
     fun next_walksEveryStep_andStopsOnTheLast() {
         val vm = viewModel()
         val seen = mutableListOf(vm.uiState.value.step)
-        repeat(12) {
+        repeat(13) {
             vm.next()
             if (vm.uiState.value.step != seen.last()) seen += vm.uiState.value.step
         }
@@ -67,6 +79,7 @@ class OnboardingViewModelTest {
                 OnboardingStep.NOTIFICATIONS,
                 OnboardingStep.LIVE_CHAT_TRANSLATION,
                 OnboardingStep.MICROPHONE,
+                OnboardingStep.VOICE_NOTES,
                 OnboardingStep.COMPLETE,
             ),
             order.subList(order.indexOf(OnboardingStep.REMINDER), order.size),
@@ -225,7 +238,7 @@ class OnboardingViewModelTest {
     @Test
     fun theStepsFollowTheBriefsOrder() {
         assertEquals(
-            listOf("SOURCE", "KEYBOARD_STYLE", "TARGET", "PURPOSE", "LEVEL", "ASSISTANCE", "REMINDER", "KEYBOARD", "NOTIFICATIONS", "LIVE_CHAT_TRANSLATION", "MICROPHONE", "COMPLETE"),
+            listOf("SOURCE", "KEYBOARD_STYLE", "TARGET", "PURPOSE", "LEVEL", "ASSISTANCE", "REMINDER", "KEYBOARD", "NOTIFICATIONS", "LIVE_CHAT_TRANSLATION", "MICROPHONE", "VOICE_NOTES", "COMPLETE"),
             OnboardingStep.entries.map { it.name },
         )
     }
@@ -265,7 +278,7 @@ class OnboardingViewModelTest {
         for (language in listOf(Languages.Chinese, Languages.Japanese)) {
             val vm = viewModel()
             vm.onNativeLanguageSelected(language)
-            assertEquals(13, vm.uiState.value.stepCount)
+            assertEquals(14, vm.uiState.value.stepCount)
             vm.next()
             assertEquals(OnboardingStep.KEYBOARD_STYLE, vm.uiState.value.step)
             assertEquals(3, vm.uiState.value.stepNumber)
@@ -280,7 +293,7 @@ class OnboardingViewModelTest {
     fun aLanguageWithOneWayOfTyping_skipsTheStyleStepBothWays() {
         val vm = viewModel()
         vm.onNativeLanguageSelected(Languages.German)
-        assertEquals(12, vm.uiState.value.stepCount)
+        assertEquals(13, vm.uiState.value.stepCount)
         vm.next()
         assertEquals(OnboardingStep.TARGET, vm.uiState.value.step)
         assertTrue(vm.back())

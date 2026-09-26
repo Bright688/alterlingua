@@ -13,8 +13,9 @@ import android.view.inputmethod.InputMethodManager
 import kotlinx.coroutines.flow.first
 import com.alterlingua.app.AlterLinguaApplication
 import com.alterlingua.app.R
-import com.alterlingua.app.capture.VoiceCaptureActivity
-import com.alterlingua.app.capture.VoiceCaptureService
+import com.alterlingua.app.capture.CaptureRequest
+import com.alterlingua.app.capture.ChatApp
+import com.alterlingua.app.capture.VoiceCaptureLauncher
 import com.alterlingua.app.navigation.AppLinks
 import com.alterlingua.app.storage.setTargetLanguage
 import kotlinx.coroutines.CoroutineScope
@@ -367,23 +368,16 @@ class AlterLinguaKeyboardService : InputMethodService() {
      */
     private fun startVoiceNoteCapture() {
         val chatApp = currentInputEditorInfo?.packageName?.takeIf { it != packageName }
-        var uid = -1
-        var label = ""
+        var app: ChatApp? = null
         if (chatApp != null) {
             try {
                 val info = packageManager.getApplicationInfo(chatApp, 0)
-                uid = info.uid
-                label = packageManager.getApplicationLabel(info).toString()
+                app = ChatApp(chatApp, packageManager.getApplicationLabel(info).toString(), info.uid)
             } catch (_: PackageManager.NameNotFoundException) {
                 // Leave the capture unlimited rather than failing; the screen says which app it will listen to.
             }
         }
-        startActivity(
-            Intent(this, VoiceCaptureActivity::class.java)
-                .putExtra(VoiceCaptureService.EXTRA_UID, uid)
-                .putExtra(VoiceCaptureService.EXTRA_LABEL, label)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
+        startActivity(VoiceCaptureLauncher.intent(this, CaptureRequest(listOfNotNull(app), keepListening = false)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         requestHideSelf(0)
     }
 

@@ -554,4 +554,26 @@
     <string name="capture_ready_text">Tap to transcribe and translate it.</string>
     <string name="capture_nothing_title">No voice note heard</string>
     <string name="capture_nothing_text">Nothing came through. Try again, then play the voice note from the start.</string>
+
+    <!-- Listening for voice notes from the chosen chat apps (onboarding, Settings) -->
+    <string name="capture_session_title">Listening for voice notes</string>
+    <string name="capture_session_text">Voice notes from %1$s are captured automatically. Nothing is sent until you open one.</string>
+    <string name="capture_session_intro">AlterLingua will listen for voice notes in %1$s and capture each one automatically, so you can play them without any extra taps.</string>
+    <string name="capture_session_step_2">2. Play voice notes in those apps as usual. Each one is captured automatically.</string>
+    <string name="capture_session_step_3">3. Tap a “Voice note captured” notification to read its transcript and translation. Android can end listening, for example when the screen locks; a notification then lets you turn it back on with one tap.</string>
+    <string name="capture_stopped_title">Voice-note listening stopped</string>
+    <string name="capture_stopped_text">Tap to turn it back on.</string>
+    <string name="capture_already_listening">AlterLingua is listening for voice notes right now.</string>
+    <string name="vc_onb_title">Voice notes from other apps</string>
+    <string name="vc_onb_subtitle">Choose the chat apps whose voice notes AlterLingua may capture, transcribe and translate for you.</string>
+    <string name="vc_start_listening">Start listening</string>
+    <string name="vc_stop_listening">Stop listening</string>
+    <string name="vc_onb_note">Android asks for your approval every time listening starts, and can end listening, for example when the screen locks. AlterLingua tells you when that happens, and one tap starts it again.</string>
+    <string name="vc_privacy_note">Only the chosen apps’ sound is recorded, one voice note at a time. A recording is sent for transcription only when you open it, then deleted. You can change the apps in Settings.</string>
+    <string name="vc_no_apps">No supported chat apps were found on this phone.</string>
+    <string name="vc_settings_title">Voice notes from chat apps</string>
+    <string name="vc_settings_desc">AlterLingua can capture voice notes played in these apps, so you can read and translate them without sharing each one.</string>
+    <string name="vc_status_listening">Listening for voice notes</string>
+    <string name="vc_status_not_listening">Not listening</string>
+    <string name="vc_settings_note">Android requires your approval each time listening starts. Changes to the apps apply the next time listening starts.</string>
 </resources>

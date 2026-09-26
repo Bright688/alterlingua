@@ -46,6 +46,10 @@ data class SettingsUiState(
     val liveChatReading: LiveChatReading? = null,
     /** The result of the last "Delete all learning data": null before, true when everything was removed. */
     val dataErased: Boolean? = null,
+    /** The chat apps whose voice notes may be captured while listening (Android package names). */
+    val voiceCaptureApps: Set<String> = emptySet(),
+    /** True while a listening session for voice notes is running right now. */
+    val voiceCaptureListening: Boolean = false,
 )
 
 /** Shows the saved settings and saves changes made here, including switching languages (CLAUDE.md section 6.20). */
@@ -53,6 +57,8 @@ class SettingsViewModel(
     private val repository: UserSettingsRepository,
     lastIncoming: Flow<IncomingOutcome?> = emptyFlow(),
     liveChatReading: Flow<LiveChatReading?> = emptyFlow(),
+    /** Whether a voice-note listening session is running (see VoiceCaptureState). */
+    voiceCaptureListening: Flow<Boolean> = emptyFlow(),
     /** Removes everything learned from messages and practice; true when every part was removed. */
     private val eraseLearningData: suspend () -> Boolean = { true },
 ) : ViewModel() {
@@ -64,7 +70,8 @@ class SettingsViewModel(
         lastIncoming.onStart { emit(null) },
         erased,
         liveChatReading.onStart { emit(null) },
-    ) { it, incoming, dataErased, liveReading ->
+        voiceCaptureListening.onStart { emit(false) },
+    ) { it, incoming, dataErased, liveReading, listening ->
         SettingsUiState(
             nativeLanguage = it.nativeLanguage,
             targetLanguage = it.targetLanguage,
@@ -87,6 +94,8 @@ class SettingsViewModel(
             lastIncoming = incoming,
             liveChatReading = liveReading,
             dataErased = dataErased,
+            voiceCaptureApps = it.voiceCaptureApps,
+            voiceCaptureListening = listening,
         )
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState())
@@ -126,6 +135,11 @@ class SettingsViewModel(
     }
 
     fun onLearningFromMessagesChanged(enabled: Boolean) = save { it.copy(learningFromMessagesEnabled = enabled) }
+
+    /** Adds or removes a chat app from those whose voice notes may be captured. Takes effect the next time listening starts. */
+    fun onVoiceCaptureAppToggled(packageName: String) = save {
+        it.copy(voiceCaptureApps = if (packageName in it.voiceCaptureApps) it.voiceCaptureApps - packageName else it.voiceCaptureApps + packageName)
+    }
 
     /** Confirmed "Delete all learning data": removes the words, progress and lesson. The settings stay. */
     fun onEraseLearningData() {

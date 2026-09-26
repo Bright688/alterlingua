@@ -19,14 +19,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * The onboarding screens, in order. Choosing the app language (step 1 of 12) comes before these, on its own screen, so the steps
+ * The onboarding screens, in order. Choosing the app language (step 1 of 13) comes before these, on its own screen, so the steps
  * here are numbered from 2: source language, target language, reason, current level, assistance mode, reminder, keyboard,
- * incoming translation, live chat-screen translation, microphone, and the last screen.
+ * incoming translation, live chat-screen translation, microphone, voice notes from other chat apps, and the last screen.
  * [OnboardingStep.KEYBOARD_STYLE] (how to type, for 中文 and 日本語) is only shown when the language chosen in the first step has
  * more than one typing style; otherwise it is skipped. [OnboardingStep.LIVE_CHAT_TRANSLATION] is optional and off by default
  * (CLAUDE.md section 39): its own button is the only thing that turns it on, and "Skip for now" always works regardless.
  */
-enum class OnboardingStep { SOURCE, KEYBOARD_STYLE, TARGET, PURPOSE, LEVEL, ASSISTANCE, REMINDER, KEYBOARD, NOTIFICATIONS, LIVE_CHAT_TRANSLATION, MICROPHONE, COMPLETE }
+enum class OnboardingStep { SOURCE, KEYBOARD_STYLE, TARGET, PURPOSE, LEVEL, ASSISTANCE, REMINDER, KEYBOARD, NOTIFICATIONS, LIVE_CHAT_TRANSLATION, MICROPHONE, VOICE_NOTES, COMPLETE }
 
 /**
  * [settings] is the draft the user is editing. [loaded] turns true once any earlier saved answers
@@ -95,6 +95,10 @@ class OnboardingViewModel(
     fun onReminderEnabledChanged(enabled: Boolean) = edit { it.copy(dailyReminderEnabled = enabled) }
 
     fun onReminderTimeChanged(time: LocalTime) = edit { it.copy(reminderTime = time) }
+
+    /** Adds or removes a chat app from those whose voice notes may be captured. Nothing starts until the user starts listening. */
+    fun onVoiceCaptureAppToggled(packageName: String) =
+        edit { it.copy(voiceCaptureApps = if (packageName in it.voiceCaptureApps) it.voiceCaptureApps - packageName else it.voiceCaptureApps + packageName) }
 
     /** Saves the answers so far and moves to the next screen. Does nothing on the last screen. */
     fun next() {

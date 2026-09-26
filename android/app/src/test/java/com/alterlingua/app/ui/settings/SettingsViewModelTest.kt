@@ -46,6 +46,27 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun voiceCaptureApps_startEmpty_toggleOnAndOff_andAreSaved() {
+        val repo = FakeUserSettingsRepository()
+        val vm = SettingsViewModel(repo)
+        assertTrue(vm.uiState.value.voiceCaptureApps.isEmpty())
+        vm.onVoiceCaptureAppToggled("com.whatsapp")
+        vm.onVoiceCaptureAppToggled("org.telegram.messenger")
+        assertEquals(setOf("com.whatsapp", "org.telegram.messenger"), repo.current.voiceCaptureApps)
+        vm.onVoiceCaptureAppToggled("com.whatsapp")
+        assertEquals(setOf("org.telegram.messenger"), vm.uiState.value.voiceCaptureApps)
+    }
+
+    @Test
+    fun theListeningStatus_followsTheSession() {
+        val listening = kotlinx.coroutines.flow.MutableStateFlow(false)
+        val vm = SettingsViewModel(FakeUserSettingsRepository(), voiceCaptureListening = listening)
+        assertFalse(vm.uiState.value.voiceCaptureListening)
+        listening.value = true
+        assertTrue(vm.uiState.value.voiceCaptureListening)
+    }
+
+    @Test
     fun reminderCanBeTurnedOff_andIsSaved() {
         val repo = FakeUserSettingsRepository()
         val vm = SettingsViewModel(repo)

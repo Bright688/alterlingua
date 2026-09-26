@@ -61,6 +61,7 @@ class OnboardingActions(
     val onAssistanceModeSelected: (AssistanceMode) -> Unit,
     val onReminderEnabledChanged: (Boolean) -> Unit,
     val onReminderTimeChanged: (LocalTime) -> Unit,
+    val onVoiceCaptureAppToggled: (String) -> Unit,
 )
 
 @Composable
@@ -87,6 +88,7 @@ fun OnboardingRoute(
             onAssistanceModeSelected = viewModel::onAssistanceModeSelected,
             onReminderEnabledChanged = viewModel::onReminderEnabledChanged,
             onReminderTimeChanged = viewModel::onReminderTimeChanged,
+            onVoiceCaptureAppToggled = viewModel::onVoiceCaptureAppToggled,
         ),
     )
 }
@@ -172,6 +174,7 @@ private fun StepContent(
         OnboardingStep.NOTIFICATIONS -> NotificationsStep(setup)
         OnboardingStep.LIVE_CHAT_TRANSLATION -> LiveChatTranslationStep(setup)
         OnboardingStep.MICROPHONE -> MicrophoneStep(setup)
+        OnboardingStep.VOICE_NOTES -> VoiceNotesStep(settings.voiceCaptureApps, actions.onVoiceCaptureAppToggled)
         OnboardingStep.COMPLETE -> CompleteStep(settings, setup.status)
     }
 }
@@ -189,6 +192,7 @@ private fun OnboardingStep.titleRes(): Int = when (this) {
     OnboardingStep.NOTIFICATIONS -> R.string.onb_step_incoming
     OnboardingStep.LIVE_CHAT_TRANSLATION -> R.string.set_live_chat_translation
     OnboardingStep.MICROPHONE -> R.string.onb_step_microphone
+    OnboardingStep.VOICE_NOTES -> R.string.vc_onb_title
     OnboardingStep.COMPLETE -> R.string.onb_step_complete
 }
 
@@ -200,6 +204,7 @@ private fun OnboardingStep.buttonRes(reminderOn: Boolean, setup: SetupUi): Int =
     OnboardingStep.NOTIFICATIONS -> if (setup.status.notificationAccess) R.string.action_continue else R.string.onb_skip_for_now
     OnboardingStep.LIVE_CHAT_TRANSLATION -> if (setup.status.accessibilityServiceEnabled) R.string.action_continue else R.string.onb_skip_for_now
     OnboardingStep.MICROPHONE -> if (setup.status.microphone == MicrophoneStatus.GRANTED) R.string.action_continue else R.string.onb_continue_without_mic
+    OnboardingStep.VOICE_NOTES -> R.string.action_continue
     OnboardingStep.COMPLETE -> R.string.onb_start_using
 }
 
@@ -266,4 +271,4 @@ private fun OnboardingLanguagesPreview() {
     }
 }
 
-private fun previewActions() = OnboardingActions({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})
+private fun previewActions() = OnboardingActions({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})

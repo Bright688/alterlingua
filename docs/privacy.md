@@ -98,6 +98,13 @@ note. Notifications say only whether a voice note was captured, never any words,
 activities and the service are not exported. The keyboard reads only the name and user id of the app being typed into (an input method can
 always see that app) and never anything from its chat.
 
+**Listening sessions.** In onboarding or Settings the user can choose chat apps and start a listening session, which captures each voice
+note those apps play, one after another, until the user stops it or Android ends it (Android requires a fresh approval for every session
+and cannot be asked to remember it). Only the chosen apps are matched, by Android user id, and a session with no chosen app is refused.
+Capturing is automatic; uploading is not: a recording is sent for transcription only when the user opens its notification, and at most the
+newest five are kept, for at most an hour, in the private cache. The list of chat apps is limited to nine package names declared in the
+manifest (`<queries>`), so the app does not need the permission to see every installed app.
+
 ## 8. Audit findings
 
 Severity means the harm if it were exploited on a shipped product. **No CRITICAL finding.**

@@ -521,4 +521,26 @@
     <string name="capture_ready_text">Toca para transcribirla y traducirla.</string>
     <string name="capture_nothing_title">No se oyó ninguna nota de voz</string>
     <string name="capture_nothing_text">No llegó nada. Inténtalo de nuevo y reproduce la nota de voz desde el principio.</string>
+
+    <!-- Escucha de notas de voz de las aplicaciones elegidas -->
+    <string name="capture_session_title">Escuchando notas de voz</string>
+    <string name="capture_session_text">Las notas de voz de %1$s se capturan automáticamente. No se envía nada hasta que abras una.</string>
+    <string name="capture_session_intro">AlterLingua escuchará las notas de voz en %1$s y capturará cada una automáticamente, para que las reproduzcas sin toques adicionales.</string>
+    <string name="capture_session_step_2">2. Reproduce las notas de voz en esas aplicaciones como siempre. Cada una se captura automáticamente.</string>
+    <string name="capture_session_step_3">3. Toca una notificación «Nota de voz capturada» para leer su transcripción y su traducción. Android puede terminar la escucha, por ejemplo al bloquearse la pantalla; una notificación te permite reactivarla con un solo toque.</string>
+    <string name="capture_stopped_title">La escucha de notas de voz se detuvo</string>
+    <string name="capture_stopped_text">Toca para reactivarla.</string>
+    <string name="capture_already_listening">AlterLingua está escuchando notas de voz ahora mismo.</string>
+    <string name="vc_onb_title">Notas de voz de otras aplicaciones</string>
+    <string name="vc_onb_subtitle">Elige las aplicaciones de mensajería cuyas notas de voz AlterLingua puede capturar, transcribir y traducir por ti.</string>
+    <string name="vc_start_listening">Empezar a escuchar</string>
+    <string name="vc_stop_listening">Dejar de escuchar</string>
+    <string name="vc_onb_note">Android pide tu aprobación cada vez que empieza la escucha y puede terminarla, por ejemplo al bloquearse la pantalla. AlterLingua te avisa cuando ocurre, y un toque la reinicia.</string>
+    <string name="vc_privacy_note">Solo se graba el sonido de las aplicaciones elegidas, una nota de voz cada vez. Una grabación se envía para transcribirla solo cuando la abres, y luego se elimina. Puedes cambiar las aplicaciones en Ajustes.</string>
+    <string name="vc_no_apps">No se encontraron aplicaciones de mensajería compatibles en este teléfono.</string>
+    <string name="vc_settings_title">Notas de voz de aplicaciones de mensajería</string>
+    <string name="vc_settings_desc">AlterLingua puede capturar las notas de voz reproducidas en estas aplicaciones, para que las leas y traduzcas sin compartir cada una.</string>
+    <string name="vc_status_listening">Escuchando notas de voz</string>
+    <string name="vc_status_not_listening">Sin escuchar</string>
+    <string name="vc_settings_note">Android exige tu aprobación cada vez que empieza la escucha. Los cambios de aplicaciones se aplican la próxima vez que empiece.</string>
 </resources>

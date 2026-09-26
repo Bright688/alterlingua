@@ -1632,3 +1632,30 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Open, needs the owner:** Google Play requires declaring the foreground-service type (Play Console, Policy, App content) for a release that targets Android 14+, and mediaProjection use is reviewed; that must be settled before shipping this (CLAUDE.md section 39). The feature also needs Android's approval prompt every single time, by design.
 
 **Manual test for the owner:** update the app (installed already), open a chat in WhatsApp with the AlterLingua keyboard, and check the toolbar still shows every button. Tap the voice-note button, tap Start, allow notifications, the microphone and Android's prompt. Return to the chat and play a real voice note to the end. A "Voice note captured" notification should appear a few seconds after it ends; tap it and check the transcript and translation. Try Telegram and Messenger the same way, and tap Stop in the notification half-way through once. Report anything that fails, including the exact wording of any message.
+
+
+---
+
+## 2026-09-26 — Listening session: capture every voice note from chosen apps, chosen in onboarding and Settings
+
+**Goal (owner):** "capture any of the voice notes automatically once I have approved it once, to avoid approving every time; permission asked as part of onboarding for all the apps they need it for; changeable in Settings."
+
+**Conflict with Android, explained before building (CLAUDE.md section 37):** the request as worded, one approval that lasts forever, is not something Android allows. Checked in the official docs on 2026-09-26: for apps targeting Android 14 and up, the user must consent before **each** media-projection session; the consent result may be used **once**; caching it and passing it to `getMediaProjection` again is an error; and the system ends a session when the user stops it from the status-bar indicator, when the screen is locked, when another projection starts, or when the app process is killed. Saving the approval to skip the prompt would be a bypass of Android's security, so it was not attempted.
+
+**What was built instead (the closest permitted thing):** one approval starts a *listening session*. While it runs, every voice note that the chosen apps play is captured automatically, with no tap per note. The approval is needed again only after the session ends, and then it is one tap on a notification plus Android's approval.
+- Setting `UserSettings.voiceCaptureApps` (set of package names, DataStore string set).
+- Onboarding: new step `VOICE_NOTES` after the microphone step (13 steps counting the app-language screen). It lists the installed known chat apps (WhatsApp, WhatsApp Business, Telegram, Messenger, Signal, Instagram, Viber, Line, Discord), lets the user tick them and press Start listening; Continue always works.
+- Settings: "Voice notes from chat apps" section: the same checkboxes, a Listening / Not listening line, Start listening / Stop listening.
+- `VoiceCaptureService` now takes several user ids and a `keepListening` flag; in that mode it records note after note (the recorder never gives up waiting), keeps the newest five recordings for at most an hour, posts one "Voice note captured" notification per recording (own request code each), and when Android ends the session by itself posts "Listening stopped: tap to turn it back on", which opens `VoiceCaptureActivity` straight into the permission and approval flow. The keyboard button still records a single voice note from the app being typed into.
+- `<queries>` for the nine packages in the release manifest, so the app list works without the permission to see all apps.
+- New `capture/ChatApps.kt` (`ChatApp`, `KnownChatApps`, `CaptureRequest`, `VoiceCaptureLauncher`, `VoiceCaptureState`), `ui/components/ChatAppChoices.kt`.
+
+**Privacy decisions:** automatic capture does **not** mean automatic upload. A recording stays a private cache file and is sent for transcription only when the user opens its notification (so nothing leaves the phone unasked, and the server is not charged for every video or sound a chat app plays). The listening notification says which apps are covered; Android's own indicator is shown while it runs; the user can stop it from either. A listening session with no valid chosen app is refused (never "listen to everything").
+
+**Known limits, stated plainly:** a session will often end when the screen locks, so the one-tap restart will appear regularly; how often depends on the phone and is unmeasured. Any sound a chosen app plays that lasts a second or more (for example a video) is also captured and gets a notification. A long-running mediaProjection foreground service is more likely to be questioned in Google Play review than the one-shot capture, and uses some battery.
+
+**Tests changed on purpose:** onboarding step counts (12 to 13, and 13 to 14 for Chinese/Japanese), the step order and list.
+
+**Verification:** 880 Android unit tests pass, 0 failures (new: chosen apps toggling and saving in onboarding and Settings, the listening status following the session, request building, no listening to everything, known-app list). Lint and the release compile pass. Installed on the owner's phone. **IMPLEMENTED, not MANUALLY VERIFIED:** nothing here has been run on a phone, including the new onboarding step and Settings section, the multi-app session, and the restart notification.
+
+**Manual test for the owner:** open AlterLingua, go to Settings, find "Voice notes from chat apps", tick WhatsApp (and Telegram if installed), tap Start listening, allow what Android asks. Leave AlterLingua, open WhatsApp and play two voice notes one after another without touching anything else. A "Voice note captured" notification should appear after each; tap one to read its transcript and translation. Then lock the screen and unlock it: check whether "Listening stopped" appears, and whether tapping it goes straight to Android's approval. Report what happened, including how long it kept listening.

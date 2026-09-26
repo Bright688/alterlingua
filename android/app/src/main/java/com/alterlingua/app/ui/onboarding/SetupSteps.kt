@@ -181,3 +181,33 @@ internal fun MicrophoneStep(setup: SetupUi) {
         NoteRow(Icons.Filled.Lock, stringResource(R.string.onb_typing_always_works_without_the))
     }
 }
+
+/**
+ * Voice notes from other chat apps: the user picks which of the installed chat apps AlterLingua may listen to for voice notes,
+ * and can start listening right away. Picking apps starts nothing: Android asks for approval each time listening starts.
+ */
+@Composable
+internal fun VoiceNotesStep(chosen: Set<String>, onToggle: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val installed = androidx.compose.runtime.remember { com.alterlingua.app.capture.PackageManagerChatApps(context.packageManager).installed() }
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        StepTitle(
+            title = stringResource(R.string.vc_onb_title),
+            subtitle = stringResource(R.string.vc_onb_subtitle),
+        )
+        com.alterlingua.app.ui.components.AlterLinguaCard {
+            com.alterlingua.app.ui.components.ChatAppChoices(installed = installed, chosen = chosen, onToggle = onToggle)
+        }
+        SetupPrimaryButton(
+            text = stringResource(R.string.vc_start_listening),
+            tag = "setup_voice_notes_start",
+            enabled = installed.any { it.packageName in chosen },
+            onClick = {
+                val request = com.alterlingua.app.capture.CaptureRequest.forChosen(chosen, installed)
+                context.startActivity(com.alterlingua.app.capture.VoiceCaptureLauncher.intent(context, request, startAtOnce = true))
+            },
+        )
+        NoteRow(Icons.Filled.Info, stringResource(R.string.vc_onb_note))
+        NoteRow(Icons.Filled.Lock, stringResource(R.string.vc_privacy_note))
+    }
+}

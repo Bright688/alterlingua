@@ -521,4 +521,26 @@
     <string name="capture_ready_text">Appuyez pour le transcrire et le traduire.</string>
     <string name="capture_nothing_title">Aucun message vocal entendu</string>
     <string name="capture_nothing_text">Rien n’a été capté. Réessayez, puis lancez le message vocal depuis le début.</string>
+
+    <!-- Écoute des messages vocaux des applications choisies -->
+    <string name="capture_session_title">Écoute des messages vocaux</string>
+    <string name="capture_session_text">Les messages vocaux de %1$s sont capturés automatiquement. Rien n’est envoyé tant que vous n’en ouvrez pas un.</string>
+    <string name="capture_session_intro">AlterLingua écoutera les messages vocaux dans %1$s et capturera chacun automatiquement, pour que vous puissiez les lancer sans aucun geste de plus.</string>
+    <string name="capture_session_step_2">2. Lancez les messages vocaux dans ces applications comme d’habitude. Chacun est capturé automatiquement.</string>
+    <string name="capture_session_step_3">3. Appuyez sur une notification « Message vocal capturé » pour lire sa transcription et sa traduction. Android peut interrompre l’écoute, par exemple quand l’écran se verrouille ; une notification vous permet alors de la relancer d’un seul geste.</string>
+    <string name="capture_stopped_title">Écoute des messages vocaux arrêtée</string>
+    <string name="capture_stopped_text">Appuyez pour la relancer.</string>
+    <string name="capture_already_listening">AlterLingua écoute déjà les messages vocaux.</string>
+    <string name="vc_onb_title">Messages vocaux d’autres applications</string>
+    <string name="vc_onb_subtitle">Choisissez les applications de messagerie dont AlterLingua peut capturer, transcrire et traduire les messages vocaux.</string>
+    <string name="vc_start_listening">Démarrer l’écoute</string>
+    <string name="vc_stop_listening">Arrêter l’écoute</string>
+    <string name="vc_onb_note">Android demande votre accord à chaque démarrage de l’écoute et peut l’interrompre, par exemple quand l’écran se verrouille. AlterLingua vous prévient alors, et un seul geste la relance.</string>
+    <string name="vc_privacy_note">Seul le son des applications choisies est enregistré, un message vocal à la fois. Un enregistrement n’est envoyé pour transcription que si vous l’ouvrez, puis il est supprimé. Vous pouvez changer les applications dans les réglages.</string>
+    <string name="vc_no_apps">Aucune application de messagerie prise en charge n’a été trouvée sur ce téléphone.</string>
+    <string name="vc_settings_title">Messages vocaux des applications de messagerie</string>
+    <string name="vc_settings_desc">AlterLingua peut capturer les messages vocaux lus dans ces applications, pour que vous puissiez les lire et les traduire sans partager chacun.</string>
+    <string name="vc_status_listening">Écoute des messages vocaux</string>
+    <string name="vc_status_not_listening">Pas d’écoute</string>
+    <string name="vc_settings_note">Android exige votre accord à chaque démarrage de l’écoute. Les changements d’applications s’appliquent au prochain démarrage.</string>
 </resources>

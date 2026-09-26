@@ -385,6 +385,24 @@ A feasibility test (own launcher icon, debug builds only) for the question "coul
 | **Telegram and Messenger** voice notes | NOT STARTED: the owner still has to run the test for each |
 | A real "capture a voice note" feature in the release app | IMPLEMENTED 2026-09-26 (next section); NOT MANUALLY VERIFIED |
 
+### Listening session: capture every voice note from chosen chat apps (2026-09-26)
+
+The owner asked for "approve once, then capture every voice note automatically, chosen in onboarding and changeable in Settings". Android's documentation does not allow "approve once forever" (see the build-log entry), so this is the closest permitted version: one approval starts a listening session that captures every voice note from the chosen apps with no further taps, until Android or the user ends it.
+
+| Item | Status |
+|---|---|
+| Setting `voiceCaptureApps` (chosen chat apps), saved with DataStore | IMPLEMENTED |
+| Onboarding step 13 "Voice notes from other apps": tick the installed chat apps, Start listening (its own Continue always works) | IMPLEMENTED, not seen on the phone |
+| Settings section "Voice notes from chat apps": change the apps, see Listening / Not listening, Start or Stop | IMPLEMENTED, not seen on the phone |
+| `VoiceCaptureService` listening session: several apps at once (by user id), every voice note one after another, newest 5 kept for at most an hour, a "Voice note captured" notification for each, a Stop action | IMPLEMENTED, not run on a phone |
+| When Android ends a session (for example the screen locks), a "Listening stopped: tap to turn it back on" notification; one tap opens the screen and goes straight to Android's approval | IMPLEMENTED, not run on a phone |
+| Recordings are uploaded only when the user opens one | IMPLEMENTED (unchanged flow) |
+| `<queries>` for nine known chat apps in the release manifest (no all-apps permission) | IMPLEMENTED |
+| 880 unit tests pass (8 new); lint and release compile pass; installed on the phone | VERIFIED (automated) |
+| **Approve once, forever, with no prompt later** | **NOT POSSIBLE on Android 14+**: consent is required for every session and the token is single-use; caching it is forbidden. Not implemented, on purpose |
+| How often a session actually survives on this phone (screen lock, battery optimisation, background limits) | NOT MANUALLY VERIFIED; decides how often the one-tap restart appears |
+| Battery cost of a long session; Google Play policy for a long-running mediaProjection service | NOT VERIFIED / BLOCKED on the owner's Play Console review |
+
 ### Capture a voice note from any chat app (2026-09-26)
 
 Keyboard toolbar button, then a screen that explains and asks, then a foreground service that records one voice note the chat app plays, then a notification that opens the same Voice Translation screen as a shared voice note. The Share feature and its files (`share/`, its manifest entry) were not modified.

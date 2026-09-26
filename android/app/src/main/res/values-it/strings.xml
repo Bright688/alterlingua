@@ -521,4 +521,26 @@
     <string name="capture_ready_text">Tocca per trascriverlo e tradurlo.</string>
     <string name="capture_nothing_title">Nessun messaggio vocale sentito</string>
     <string name="capture_nothing_text">Non è arrivato nulla. Riprova, poi riproduci il messaggio vocale dall’inizio.</string>
+
+    <!-- Ascolto dei messaggi vocali delle app scelte -->
+    <string name="capture_session_title">In ascolto dei messaggi vocali</string>
+    <string name="capture_session_text">I messaggi vocali di %1$s vengono acquisiti automaticamente. Non viene inviato nulla finché non ne apri uno.</string>
+    <string name="capture_session_intro">AlterLingua ascolterà i messaggi vocali in %1$s e acquisirà ciascuno automaticamente, così puoi riprodurli senza tocchi in più.</string>
+    <string name="capture_session_step_2">2. Riproduci i messaggi vocali in quelle app come al solito. Ognuno viene acquisito automaticamente.</string>
+    <string name="capture_session_step_3">3. Tocca una notifica «Messaggio vocale acquisito» per leggere trascrizione e traduzione. Android può interrompere l’ascolto, per esempio quando lo schermo si blocca; una notifica lo riattiva con un solo tocco.</string>
+    <string name="capture_stopped_title">Ascolto dei messaggi vocali interrotto</string>
+    <string name="capture_stopped_text">Tocca per riattivarlo.</string>
+    <string name="capture_already_listening">AlterLingua è già in ascolto dei messaggi vocali.</string>
+    <string name="vc_onb_title">Messaggi vocali di altre app</string>
+    <string name="vc_onb_subtitle">Scegli le app di messaggistica di cui AlterLingua può acquisire, trascrivere e tradurre i messaggi vocali.</string>
+    <string name="vc_start_listening">Avvia l’ascolto</string>
+    <string name="vc_stop_listening">Interrompi l’ascolto</string>
+    <string name="vc_onb_note">Android chiede la tua approvazione a ogni avvio dell’ascolto e può interromperlo, per esempio quando lo schermo si blocca. AlterLingua ti avvisa e un tocco lo riavvia.</string>
+    <string name="vc_privacy_note">Viene registrato solo l’audio delle app scelte, un messaggio vocale alla volta. Una registrazione viene inviata per la trascrizione solo quando la apri, poi viene eliminata. Puoi cambiare le app nelle impostazioni.</string>
+    <string name="vc_no_apps">Su questo telefono non sono state trovate app di messaggistica supportate.</string>
+    <string name="vc_settings_title">Messaggi vocali delle app di messaggistica</string>
+    <string name="vc_settings_desc">AlterLingua può acquisire i messaggi vocali riprodotti in queste app, così puoi leggerli e tradurli senza condividerli uno per uno.</string>
+    <string name="vc_status_listening">In ascolto dei messaggi vocali</string>
+    <string name="vc_status_not_listening">Non in ascolto</string>
+    <string name="vc_settings_note">Android richiede la tua approvazione a ogni avvio dell’ascolto. Le modifiche alle app valgono dal prossimo avvio.</string>
 </resources>

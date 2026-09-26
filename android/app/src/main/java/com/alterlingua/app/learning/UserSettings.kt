@@ -89,6 +89,12 @@ data class UserSettings(
     val liveChatTranslationConsentGiven: Boolean = false,
     /** True once the system microphone question has been shown. Lets setup tell "never asked" from "blocked". */
     val microphonePermissionAsked: Boolean = false,
+    /**
+     * The chat apps (Android package names) whose voice notes AlterLingua may capture while a listening session is on.
+     * Empty means the feature is not set up. Choosing an app here does not start anything: listening starts only when the
+     * user approves Android's screen-capture prompt, which Android requires for every session.
+     */
+    val voiceCaptureApps: Set<String> = emptySet(),
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */
     val keyboardStyles: Map<String, KeyboardStyle> = emptyMap(),
 ) {
