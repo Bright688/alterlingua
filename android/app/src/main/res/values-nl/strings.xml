@@ -516,7 +516,7 @@
     <string name="capture_ready_text">Tik om het transcript en de vertaling te lezen.</string>
     <string name="capture_public_text">Spraakbericht</string>
     <string name="vc_notify_title">Waarschuw me als een spraakbericht is vastgelegd</string>
-    <string name="vc_notify_desc">Een rustige melding, zonder pop-up en zonder geluid, zodra een spraakbericht is vertaald. Uit: geen melding en geen geluid; de vertaling verschijnt nog steeds op het toetsenbord. Altijd aan zolang ‘Spraakberichten vertalen als ze eindigen’ uit staat, omdat je een bericht dan via de melding opent.</string>
+    <string name="vc_notify_desc">Een melding met geluid en pop-up zodra een spraakbericht is vertaald. Uit: geen melding, geen geluid en geen pop-up; de vertaling verschijnt nog steeds op het toetsenbord. Altijd aan zolang ‘Spraakberichten vertalen als ze eindigen’ uit staat, omdat je een bericht dan via de melding opent.</string>
     <string name="capture_listening_title">Luistert naar een spraakbericht</string>
     <string name="capture_listening_text">Speel het spraakbericht nu af in %1$s. Het luisteren stopt vanzelf als het bericht eindigt.</string>
     <string name="capture_listening_text_any">Speel het spraakbericht nu af. Het luisteren stopt vanzelf als het bericht eindigt.</string>

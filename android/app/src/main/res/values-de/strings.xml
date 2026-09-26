@@ -516,7 +516,7 @@
     <string name="capture_ready_text">Tippen, um Transkript und Übersetzung zu lesen.</string>
     <string name="capture_public_text">Sprachnachricht</string>
     <string name="vc_notify_title">Benachrichtigen, wenn eine Sprachnachricht erfasst wurde</string>
-    <string name="vc_notify_desc">Eine dezente Benachrichtigung ohne Einblendung und ohne Ton, sobald eine Sprachnachricht übersetzt ist. Aus: keine Benachrichtigung und kein Ton; die Übersetzung erscheint weiterhin auf der Tastatur. Immer an, solange „Sprachnachrichten am Ende übersetzen“ aus ist, weil man eine Nachricht dann über die Benachrichtigung öffnet.</string>
+    <string name="vc_notify_desc">Eine Benachrichtigung mit Ton und Einblendung, sobald eine Sprachnachricht übersetzt ist. Aus: keine Benachrichtigung, kein Ton und keine Einblendung; die Übersetzung erscheint weiterhin auf der Tastatur. Immer an, solange „Sprachnachrichten am Ende übersetzen“ aus ist, weil man eine Nachricht dann über die Benachrichtigung öffnet.</string>
     <string name="capture_listening_title">Hört eine Sprachnachricht</string>
     <string name="capture_listening_text">Spiele die Sprachnachricht jetzt in %1$s ab. Das Zuhören endet von selbst, wenn die Nachricht zu Ende ist.</string>
     <string name="capture_listening_text_any">Spiele die Sprachnachricht jetzt ab. Das Zuhören endet von selbst, wenn die Nachricht zu Ende ist.</string>

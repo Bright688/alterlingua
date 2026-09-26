@@ -516,7 +516,7 @@
     <string name="capture_ready_text">Tocca per leggere trascrizione e traduzione.</string>
     <string name="capture_public_text">Messaggio vocale</string>
     <string name="vc_notify_title">Avvisami quando viene acquisito un messaggio vocale</string>
-    <string name="vc_notify_desc">Una notifica discreta, senza finestra a comparsa e senza suono, quando un messaggio vocale è stato tradotto. Disattivato: nessuna notifica e nessun suono; la traduzione compare comunque sulla tastiera. Sempre attiva finché «Traduci i messaggi vocali alla fine» è disattivato, perché la notifica è il modo per aprire un messaggio.</string>
+    <string name="vc_notify_desc">Una notifica con suono e finestra a comparsa quando un messaggio vocale è stato tradotto. Disattivato: nessuna notifica, nessun suono e nessuna finestra; la traduzione compare comunque sulla tastiera. Sempre attiva finché «Traduci i messaggi vocali alla fine» è disattivato, perché la notifica è il modo per aprire un messaggio.</string>
     <string name="capture_listening_title">In ascolto di un messaggio vocale</string>
     <string name="capture_listening_text">Riproduci ora il messaggio vocale in %1$s. L’ascolto si ferma da solo quando il messaggio finisce.</string>
     <string name="capture_listening_text_any">Riproduci ora il messaggio vocale. L’ascolto si ferma da solo quando il messaggio finisce.</string>

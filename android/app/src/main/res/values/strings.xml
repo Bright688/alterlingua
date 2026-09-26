@@ -549,7 +549,7 @@
     <string name="capture_ready_text">Tap to read the transcript and translation.</string>
     <string name="capture_public_text">Voice note</string>
     <string name="vc_notify_title">Notify me when a voice note is captured</string>
-    <string name="vc_notify_desc">A quiet notification, with no pop-up and no sound, once a voice note has been translated. Off: no notification and no sound; the translation still appears on the keyboard. Always on while “Translate voice notes when they end” is off, because the notification is how you open a note.</string>
+    <string name="vc_notify_desc">A notification, with sound and a pop-up, once a voice note has been translated. Off: no notification, no sound and no pop-up; the translation still appears on the keyboard. Always on while “Translate voice notes when they end” is off, because the notification is how you open a note.</string>
     <string name="capture_listening_title">Listening for a voice note</string>
     <string name="capture_listening_text">Play the voice note in %1$s now. It stops by itself when the note ends.</string>
     <string name="capture_listening_text_any">Play the voice note now. It stops by itself when the note ends.</string>

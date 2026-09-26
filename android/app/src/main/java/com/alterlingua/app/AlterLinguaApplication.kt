@@ -194,7 +194,8 @@ class AlterLinguaApplication : Application() {
             scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + Dispatchers.Default),
             // When a voice note has been transcribed and translated, a quiet notification says so, unless the user muted it in Settings.
             onTranslated = { note ->
-                if (userSettings.settings.first().notifyOnCapturedNotes) com.alterlingua.app.capture.CapturedNoteNotifier(this).notifyReady(note.address)
+                com.alterlingua.app.capture.CapturedNoteAlerts(userSettings) { address -> com.alterlingua.app.capture.CapturedNoteNotifier(this).notifyReady(address) }
+                    .onTranslated(note.address)
             },
         )
     }
