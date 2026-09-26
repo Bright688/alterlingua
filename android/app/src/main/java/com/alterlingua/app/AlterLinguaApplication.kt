@@ -191,8 +191,10 @@ class AlterLinguaApplication : Application() {
     val capturedNotes: com.alterlingua.app.capture.CapturedNotes by lazy {
         com.alterlingua.app.capture.CapturedNotes(
             create = { store -> com.alterlingua.app.capture.newCapturedNoteViewModel(this, store) },
-            discard = { address ->
-                com.alterlingua.app.capture.CapturedAudioSource(java.io.File(cacheDir, com.alterlingua.app.capture.VoiceCaptureService.DIRECTORY)).discard(address)
+            scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + Dispatchers.Default),
+            // When a voice note has been transcribed and translated, a quiet notification says so, unless the user muted it in Settings.
+            onTranslated = { note ->
+                if (userSettings.settings.first().notifyOnCapturedNotes) com.alterlingua.app.capture.CapturedNoteNotifier(this).notifyReady(note.address)
             },
         )
     }

@@ -516,9 +516,7 @@
     <string name="capture_ready_text">Toca para leer la transcripción y la traducción.</string>
     <string name="capture_public_text">Nota de voz</string>
     <string name="vc_notify_title">Avisarme cuando se capture una nota de voz</string>
-    <string name="vc_notify_desc">Una notificación discreta por cada nota de voz, sin ventana emergente. Desactivado: sin notificación, pero la nota sigue apareciendo en el teclado.</string>
-    <string name="kbn_waiting">Nota de voz capturada. Tradúcela cuando quieras.</string>
-    <string name="kbn_translate">Traducir</string>
+    <string name="vc_notify_desc">Una notificación discreta, sin ventana emergente ni sonido, cuando una nota de voz ya está traducida. Desactivado: sin notificación ni sonido; la traducción sigue apareciendo en el teclado. Siempre activa mientras «Traducir las notas de voz al terminar» esté desactivado, porque la notificación es la forma de abrir una nota.</string>
     <string name="capture_listening_title">Escuchando una nota de voz</string>
     <string name="capture_listening_text">Reproduce ahora la nota de voz en %1$s. Se detiene sola cuando termina la nota.</string>
     <string name="capture_listening_text_any">Reproduce ahora la nota de voz. Se detiene sola cuando termina la nota.</string>

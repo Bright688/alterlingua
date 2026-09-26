@@ -537,7 +537,9 @@ private fun VoiceNotesSection(
                 )
             }
             Switch(
-                checked = state.notifyOnCapturedNotes,
+                // With automatic translation off the notification is how a note is opened, so it stays on.
+                checked = state.notifyOnCapturedNotes || !state.translateCapturedNotes,
+                enabled = state.translateCapturedNotes,
                 onCheckedChange = onNotifyOnCapturedNotesChanged,
                 modifier = Modifier.testTag("notify_on_captured_notes_switch"),
             )

@@ -416,7 +416,7 @@ The owner chose "do it all at once and show it on the keyboard, not piece by pie
 | **Default changed:** audio is now uploaded when a note ends, without opening it (owner's choice); privacy text updated in 8 languages and `docs/privacy.md` | DECISION RECORDED |
 | 872 unit tests pass (12 new); lint and release compile pass | VERIFIED (automated) |
 | The panel on a real keyboard in WhatsApp: layout, timing, Listen, Open | NOT MANUALLY VERIFIED |
-| Quiet "Voice note captured" notification (low importance, no pop-up) with a Settings switch to mute it (default on); "Translate" button on the keyboard for a waiting note when automatic translation is off | IMPLEMENTED, unit-tested for the settings and the waiting-note logic; notification not seen on the phone |
+| Silent "Voice note captured" notification (no pop-up, no sound), posted after the note has been transcribed and translated, with a Settings switch to mute it (default on; not mutable while automatic translation is off, because the notification is then the only way to open a note) | IMPLEMENTED, unit-tested for the settings and for "told once when translated"; notification not seen on the phone |
 | Cost: every sound of about a second or more from a chosen app (video, shared audio) is also transcribed while the default is on | KNOWN, not measured |
 
 ### Capture a voice note from any chat app (2026-09-26)

@@ -29,6 +29,7 @@ import com.alterlingua.app.translation.VoiceTranslation
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -87,10 +88,11 @@ class CapturedNotesTest {
         io = Dispatchers.Unconfined,
     )
 
-    private val discarded = mutableListOf<String>()
+    private val translated = mutableListOf<String>()
 
     private fun notes(maxKept: Int = 5, now: () -> Long = { 1_000L }) = CapturedNotes(
-        discard = { discarded += it },
+        scope = CoroutineScope(Dispatchers.Unconfined),
+        onTranslated = { translated += it.address },
         create = { store: ViewModelStore ->
             val factory = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -179,49 +181,29 @@ class CapturedNotesTest {
         assertTrue(speakers.all { it.shutdown })
     }
 
-    // ---- automatic translation off: the note waits for the user ----
+    // ---- the quiet notification: only once the note has been translated ----
 
-    @Test fun withAutomaticTranslationOff_theNoteWaits_andNothingIsSent() {
-        val notes = notes()
-        val note = notes.open(address, announce = true, startNow = false)
-        assertEquals("nothing was sent", 0, api.calls)
-        assertFalse(note.started.value)
-        assertSame(note, notes.latest.value)
-        assertEquals(CapturedNoteUi.Waiting, capturedNoteUi(note.viewModel.uiState.value, note.started.value))
-    }
-
-    @Test fun askingForAWaitingNoteToBeTranslated_sendsItOnce_andShowsTheResult() {
+    @Test fun theAppIsToldOnce_whenANoteHasBeenTranslated() {
         api.results += result()
-        val notes = notes()
-        val note = notes.open(address, announce = true, startNow = false)
-        notes.translate(address)
-        notes.translate(address) // a second tap does not send it again
-        assertEquals(1, api.calls)
-        assertTrue(note.started.value)
-        assertTrue(capturedNoteUi(note.viewModel.uiState.value, note.started.value) is CapturedNoteUi.Result)
+        notes().open(address, announce = true)
+        assertEquals(listOf(address), translated)
     }
 
-    @Test fun openingAWaitingNoteFromTheFullScreen_translatesIt() {
-        api.results += result()
+    @Test fun theAppIsNotToldWhenTheTranslationFailed_orTheNoteWasClosedFirst() {
+        api.results += VoiceResult.Failure(VoiceFailure.OFFLINE)
         val notes = notes()
-        notes.open(address, announce = true, startNow = false)
-        notes.open(address, announce = false) // Open on the keyboard panel
-        assertEquals(1, api.calls)
-    }
-
-    @Test fun closingANoteThatWasNeverTranslated_deletesItsRecording() {
-        val notes = notes()
-        notes.open(address, announce = true, startNow = false)
+        notes.open(address, announce = true)
+        assertTrue("no notification for a failure", translated.isEmpty())
         notes.close(address)
-        assertEquals(listOf(address), discarded)
+        assertTrue(translated.isEmpty())
     }
 
-    @Test fun closingATranslatedNote_hasNothingLeftToDelete() {
+    @Test fun openingANoteAgain_doesNotTellTheAppAgain() {
         api.results += result()
         val notes = notes()
         notes.open(address, announce = true)
-        notes.close(address)
-        assertTrue(discarded.isEmpty())
+        notes.open(address, announce = false)
+        assertEquals(1, translated.size)
     }
 
     // ---- what the keyboard shows ----

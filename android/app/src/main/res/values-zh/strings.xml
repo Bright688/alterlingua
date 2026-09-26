@@ -516,9 +516,7 @@
     <string name="capture_ready_text">点按以查看转写内容和翻译。</string>
     <string name="capture_public_text">语音消息</string>
     <string name="vc_notify_title">捕获语音消息时通知我</string>
-    <string name="vc_notify_desc">每条语音消息一个安静的通知，不会弹出横幅。关闭后：没有通知，但语音消息仍会显示在键盘上。</string>
-    <string name="kbn_waiting">已捕获语音消息。准备好后再翻译。</string>
-    <string name="kbn_translate">翻译</string>
+    <string name="vc_notify_desc">语音消息翻译完成后发出一个安静的通知，没有弹出横幅，也没有声音。关闭后：没有通知也没有声音，译文仍会显示在键盘上。当“语音消息结束时自动翻译”关闭时始终开启，因为此时要通过通知打开语音消息。</string>
     <string name="capture_listening_title">正在收听语音消息</string>
     <string name="capture_listening_text">现在请在 %1$s 中播放语音消息。消息结束时会自动停止。</string>
     <string name="capture_listening_text_any">现在请播放语音消息。消息结束时会自动停止。</string>

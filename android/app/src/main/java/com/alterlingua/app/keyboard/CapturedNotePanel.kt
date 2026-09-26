@@ -18,7 +18,7 @@ import com.alterlingua.app.share.SharedVoiceState
 import com.alterlingua.app.ui.UiText
 
 /** What the user asked for on the captured-voice-note panel. */
-enum class CapturedNoteAction { LISTEN, OPEN, RETRY, DISMISS, TRANSLATE }
+enum class CapturedNoteAction { LISTEN, OPEN, RETRY, DISMISS }
 
 /** What the keyboard shows about a captured voice note. Holds private text, so it is never printed. */
 sealed interface CapturedNoteUi {
@@ -26,9 +26,6 @@ sealed interface CapturedNoteUi {
 
     /** The recording has ended and is being transcribed and translated. */
     data object Working : CapturedNoteUi
-
-    /** The recording is kept on the phone until the user asks for it to be translated (automatic translation is off). */
-    data object Waiting : CapturedNoteUi
 
     data class Result(
         val originalLanguage: String,
@@ -48,14 +45,8 @@ sealed interface CapturedNoteUi {
 }
 
 /** Turns the state of a voice note's processing into what the keyboard shows. Pure, so it is tested without Android. */
-fun capturedNoteUi(state: SharedVoiceState?, started: Boolean = true): CapturedNoteUi = when {
-    state == null || state == SharedVoiceState.Closed -> CapturedNoteUi.Hidden
-    !started -> CapturedNoteUi.Waiting
-    else -> capturedNoteUiOf(state)
-}
-
-private fun capturedNoteUiOf(state: SharedVoiceState): CapturedNoteUi = when (state) {
-    SharedVoiceState.Closed -> CapturedNoteUi.Hidden
+fun capturedNoteUi(state: SharedVoiceState?): CapturedNoteUi = when (state) {
+    null, SharedVoiceState.Closed -> CapturedNoteUi.Hidden
     SharedVoiceState.Idle, is SharedVoiceState.Working -> CapturedNoteUi.Working
     is SharedVoiceState.Failed -> CapturedNoteUi.Failed(SharedVoiceMessages.forState(state).message, state.canRetry)
     is SharedVoiceState.Result -> with(state.value) {
@@ -100,7 +91,6 @@ class CapturedNotePanel(
         when (state) {
             CapturedNoteUi.Hidden -> Unit
             CapturedNoteUi.Working -> renderWorking()
-            CapturedNoteUi.Waiting -> renderWaiting()
             is CapturedNoteUi.Result -> renderResult(state)
             is CapturedNoteUi.Failed -> renderFailed(state)
         }
@@ -118,13 +108,6 @@ class CapturedNotePanel(
         )
         header.addView(closeButton(), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (34 * density).toInt()))
         body.addView(text(context.getString(R.string.voice_upload_note), 13f, bold = false, color = colors.functionText, gravity = Gravity.CENTER), fill())
-    }
-
-    private fun renderWaiting() {
-        header.addView(text(context.getString(R.string.kbn_title), 14f, bold = true, color = colors.text), LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        header.addView(closeButton(), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (34 * density).toInt()))
-        body.addView(text(context.getString(R.string.kbn_waiting), 14f, bold = false, color = colors.text, gravity = Gravity.CENTER), fill())
-        body.addView(row(button(context.getString(R.string.kbn_translate), ToolbarButtonStyle.PRIMARY, CapturedNoteAction.TRANSLATE)))
     }
 
     private fun renderResult(state: CapturedNoteUi.Result) {

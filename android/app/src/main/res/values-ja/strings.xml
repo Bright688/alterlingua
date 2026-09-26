@@ -516,9 +516,7 @@
     <string name="capture_ready_text">タップして文字起こしと翻訳を読みます。</string>
     <string name="capture_public_text">ボイスメッセージ</string>
     <string name="vc_notify_title">ボイスメッセージをキャプチャしたら通知する</string>
-    <string name="vc_notify_desc">ボイスメッセージごとに、ポップアップなしの控えめな通知を出します。オフ：通知は出ませんが、メッセージはキーボードに表示されます。</string>
-    <string name="kbn_waiting">ボイスメッセージをキャプチャしました。準備ができたら翻訳します。</string>
-    <string name="kbn_translate">翻訳</string>
+    <string name="vc_notify_desc">ボイスメッセージの翻訳が終わると、ポップアップも音もない控えめな通知を出します。オフ：通知も音も出ませんが、翻訳はキーボードに表示されます。「ボイスメッセージの終了時に翻訳」がオフの間は、通知でメッセージを開くため常にオンです。</string>
     <string name="capture_listening_title">ボイスメッセージを聞き取り中</string>
     <string name="capture_listening_text">今すぐ %1$s でボイスメッセージを再生してください。メッセージが終わると自動で止まります。</string>
     <string name="capture_listening_text_any">今すぐボイスメッセージを再生してください。メッセージが終わると自動で止まります。</string>

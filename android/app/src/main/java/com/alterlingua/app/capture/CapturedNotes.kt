@@ -1,10 +1,14 @@
 package com.alterlingua.app.capture
 
 import androidx.lifecycle.ViewModelStore
+import com.alterlingua.app.share.SharedVoiceState
 import com.alterlingua.app.share.SharedVoiceViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 /** One captured voice note being (or already) transcribed and translated. Held in memory only. */
 class CapturedNote internal constructor(
@@ -13,17 +17,7 @@ class CapturedNote internal constructor(
     /** The very same processing a shared voice note gets, so every screen shows one result. */
     val viewModel: SharedVoiceViewModel,
     internal val store: ViewModelStore,
-) {
-    private val startedNow = MutableStateFlow(false)
-
-    /** False while the recording waits for the user to ask for it to be translated (automatic translation is off). */
-    val started: StateFlow<Boolean> = startedNow.asStateFlow()
-
-    /** Sends the recording to be transcribed and translated, once. */
-    internal fun start() {
-        if (startedNow.compareAndSet(expect = false, update = true)) viewModel.start(address)
-    }
-}
+)
 
 /**
  * The captured voice notes of this app run, newest last. A note is created once per recording and shared by everything that
@@ -37,8 +31,10 @@ class CapturedNotes(
     private val create: (ViewModelStore) -> SharedVoiceViewModel,
     private val clock: () -> Long = System::currentTimeMillis,
     private val maxKept: Int = 5,
-    /** Deletes the recording behind an address; used when a note is closed before it was ever translated. */
-    private val discard: (String) -> Unit = {},
+    /** Where the wait for each note's translation runs (the app's own scope). Null: nobody is told when a note is done. */
+    private val scope: CoroutineScope? = null,
+    /** Called once when a note has been transcribed and translated (not when it failed or was closed). */
+    private val onTranslated: suspend (CapturedNote) -> Unit = {},
 ) {
     private val lock = Any()
     private val notes = LinkedHashMap<String, CapturedNote>()
@@ -52,16 +48,12 @@ class CapturedNotes(
     val dismissed: StateFlow<String?> = dismissedOnKeyboard.asStateFlow()
 
     /**
-     * The note for [address]: the one already made, or a new one. [announce] makes a new note the one the keyboard shows
-     * (true for a recording that has just been captured). [startNow] sends the recording to be translated at once; false
-     * leaves it waiting until [translate] is called (the user asked for automatic translation to be off).
+     * The note for [address]: the one already made, or a new one that starts transcribing at once. [announce] makes a new
+     * note the one the keyboard shows (true for a recording that has just been captured, false when the user opens an
+     * older one from a notification).
      */
-    fun open(address: String, announce: Boolean, startNow: Boolean = true): CapturedNote = synchronized(lock) {
-        val existing = notes[address]
-        if (existing != null) {
-            if (startNow) existing.start()
-            return existing
-        }
+    fun open(address: String, announce: Boolean): CapturedNote = synchronized(lock) {
+        notes[address]?.let { return it }
         val store = ViewModelStore()
         val note = CapturedNote(address, clock(), create(store), store)
         notes[address] = note
@@ -70,12 +62,13 @@ class CapturedNotes(
             dismissedOnKeyboard.value = null
             newest.value = note
         }
-        if (startNow) note.start()
+        note.viewModel.start(address)
+        scope?.launch {
+            val settled = note.viewModel.uiState.first { it is SharedVoiceState.Result || it is SharedVoiceState.Failed || it == SharedVoiceState.Closed }
+            if (settled is SharedVoiceState.Result) onTranslated(note)
+        }
         note
     }
-
-    /** The user asked for a waiting note to be translated now. */
-    fun translate(address: String) = synchronized(lock) { notes[address]?.start() ?: Unit }
 
     /** Ends a note: stops its work, deletes anything it kept, and forgets its text. */
     fun close(address: String) = synchronized(lock) { removeLocked(address) }
@@ -92,7 +85,6 @@ class CapturedNotes(
         val note = notes.remove(address) ?: return
         note.viewModel.cancel()
         note.store.clear()
-        if (!note.started.value) discard(address)
         if (newest.value?.address == address) newest.value = null
         if (dismissedOnKeyboard.value == address) dismissedOnKeyboard.value = null
     }

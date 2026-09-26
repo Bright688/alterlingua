@@ -64,11 +64,6 @@ class CapturedAudioSource(private val directory: File) : AudioSource {
         }
     }
 
-    /** Deletes the recording behind [address], if it is one of ours and still there (a note closed before it was translated). */
-    fun discard(address: String) {
-        fileFor(address)?.delete()
-    }
-
     private fun fileFor(address: String): File? {
         if (!address.startsWith(PREFIX)) return null
         val name = address.removePrefix(PREFIX)

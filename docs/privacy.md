@@ -104,8 +104,8 @@ and cannot be asked to remember it). Only the chosen apps are matched, by Androi
 By default (Settings, "Translate voice notes when they end", on) the whole recording is sent to the backend once, when the voice note
 ends, to be transcribed and translated; the result is shown on the AlterLingua keyboard and in the result screen, from memory only, and the
 audio is deleted as soon as the backend has answered. It is one request for the whole note, never pieces while it plays. With the switch off,
-a recording is sent only when the user taps Translate on the keyboard (or opens the note). An optional quiet notification (Settings switch, default
-on) says only that a voice note was captured, never any words of it, and has a hidden-content public version. Recordings that wait (switch off, or the send failed) are at most the newest
+a recording is sent only when the user opens the note from its notification. An optional silent notification (Settings switch, default
+on) says only that a voice note is ready, never any words of it, and has a hidden-content public version. Recordings that wait (switch off, or the send failed) are at most the newest
 five, for at most an hour, in the private cache. The transcript and translation are never saved or logged: they live in memory, are dropped
 when the user closes the note, after five newer notes, when the user erases their data, or when the app's process ends, and the keyboard
 puts away a note nobody looked at for ten minutes. The list of chat apps is limited to nine package names declared in the
