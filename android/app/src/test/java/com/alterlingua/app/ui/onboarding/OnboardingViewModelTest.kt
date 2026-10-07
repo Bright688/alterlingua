@@ -32,9 +32,10 @@ class OnboardingViewModelTest {
         val state = vm.uiState.value
         assertEquals(OnboardingStep.SOURCE, state.step)
         assertTrue(state.loaded)
-        // Choosing the app language is step 1 (its own screen before these), so the first step here is 2 of 13.
+        // Choosing the app language is step 1 (its own screen before these), so the first step here is 2 of 12.
+        // (VOICE_NOTES exists in the enum but is always excluded: see the note on OnboardingStep.)
         assertEquals(2, state.stepNumber)
-        assertEquals(13, state.stepCount)
+        assertEquals(12, state.stepCount)
     }
 
     @Test
@@ -61,11 +62,15 @@ class OnboardingViewModelTest {
     fun next_walksEveryStep_andStopsOnTheLast() {
         val vm = viewModel()
         val seen = mutableListOf(vm.uiState.value.step)
-        repeat(13) {
+        repeat(12) {
             vm.next()
             if (vm.uiState.value.step != seen.last()) seen += vm.uiState.value.step
         }
-        assertEquals("English has one way of typing, so the typing-style screen is skipped", OnboardingStep.entries - OnboardingStep.KEYBOARD_STYLE, seen)
+        assertEquals(
+            "English has one way of typing, so the typing-style screen is skipped; VOICE_NOTES is a disabled step, always skipped",
+            OnboardingStep.entries - OnboardingStep.KEYBOARD_STYLE - OnboardingStep.VOICE_NOTES,
+            seen,
+        )
         assertTrue(vm.uiState.value.isLastStep)
     }
 
@@ -278,7 +283,7 @@ class OnboardingViewModelTest {
         for (language in listOf(Languages.Chinese, Languages.Japanese)) {
             val vm = viewModel()
             vm.onNativeLanguageSelected(language)
-            assertEquals(14, vm.uiState.value.stepCount)
+            assertEquals(13, vm.uiState.value.stepCount)
             vm.next()
             assertEquals(OnboardingStep.KEYBOARD_STYLE, vm.uiState.value.step)
             assertEquals(3, vm.uiState.value.stepNumber)
@@ -293,7 +298,7 @@ class OnboardingViewModelTest {
     fun aLanguageWithOneWayOfTyping_skipsTheStyleStepBothWays() {
         val vm = viewModel()
         vm.onNativeLanguageSelected(Languages.German)
-        assertEquals(13, vm.uiState.value.stepCount)
+        assertEquals(12, vm.uiState.value.stepCount)
         vm.next()
         assertEquals(OnboardingStep.TARGET, vm.uiState.value.step)
         assertTrue(vm.back())

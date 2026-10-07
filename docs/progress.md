@@ -419,9 +419,13 @@ The owner chose "do it all at once and show it on the keyboard, not piece by pie
 | "Voice note captured" notification (normal: sound and pop-up), posted after the note has been transcribed and translated, with a Settings switch that turns it off entirely (no notification, sound or pop-up) (default on; not mutable while automatic translation is off, because the notification is then the only way to open a note) | IMPLEMENTED, unit-tested for the settings and for "told once when translated"; notification not seen on the phone |
 | Cost: every sound of about a second or more from a chosen app (video, shared audio) is also transcribed while the default is on | KNOWN, not measured |
 
-### Capture a voice note from any chat app (2026-09-26)
+### Capture a voice note from any chat app (2026-09-26) — DISABLED, see below
 
 Keyboard toolbar button, then a screen that explains and asks, then a foreground service that records one voice note the chat app plays, then a notification that opens the same Voice Translation screen as a shared voice note. The Share feature and its files (`share/`, its manifest entry) were not modified.
+
+### Voice-note capture / listening session: DISABLED by the project owner
+
+Every row above describing the capture-from-chat-apps feature (keyboard button, listening session, onboarding step, Settings section, notification) is a historical record of what was built, not of what ships. The project owner tried it and chose to go back to the existing Share-to-AlterLingua flow instead. The manifest permissions, `<queries>` and three components were removed; the keyboard button, onboarding step and Settings section are hidden; the Kotlin source and its unit tests are kept, unreachable, for a future developer. Full detail, reasoning and a how-to-revive checklist: `docs/disabled-voice-capture.md`. 879 unit tests pass, lint and release compile are clean after the change.
 
 | Item | Status |
 |---|---|

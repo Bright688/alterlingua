@@ -55,7 +55,14 @@ import kotlinx.coroutines.runBlocking
  *
  * Android does not let the approval be saved and reused, so when a session ends by itself the service posts a notification
  * that starts a new one with a single tap and a single approval.
+ *
+ * DISABLED: the feature this service belongs to was switched off by the project owner (see
+ * docs/disabled-voice-capture.md). Its manifest entry — including `android:foregroundServiceType="mediaProjection"`,
+ * which `startForeground()` below needs — was removed along with every entry point that could start it, so this class is
+ * never instantiated. The [android.annotation.SuppressLint] below only silences the lint check that would otherwise catch
+ * that mismatch; restore the manifest entry (see the manifest's own note) before relying on this code again.
  */
+@android.annotation.SuppressLint("ForegroundServiceType")
 class VoiceCaptureService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var job: Job? = null

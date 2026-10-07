@@ -28,29 +28,14 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
-        Capture a voice note (keyboard button, Android 10+): while the user has started it and approved Android's own
-        screen-capture prompt, AlterLingua records the sound one chat app plays for one voice note. Android requires a
-        foreground service of type mediaProjection for that, and shows a status-bar indicator while it runs. It stops by
-        itself when the voice note ends.
+        Capture-from-any-chat-app voice notes (keyboard button, a listening session, onboarding and Settings entry points)
+        was built, then disabled by the project owner: it is not removed, only switched off, so a future developer can
+        revive it or reuse parts of it. See docs/disabled-voice-capture.md for what it was, why it was turned off, and how
+        to bring it back. Its own permissions (FOREGROUND_SERVICE, FOREGROUND_SERVICE_MEDIA_PROJECTION), the <queries>
+        block of chat-app package names, and its three components (VoiceCaptureActivity, VoiceCaptureResultActivity,
+        VoiceCaptureService) are removed from this manifest so the shipped app requests none of it; their Kotlin source
+        under capture/ is left in place.
     -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
-
-    <!--
-        The chat apps offered for voice-note capture (Onboarding and Settings list the ones installed). Declaring these few
-        package names is how AlterLingua sees whether they are installed, without the permission to see every app.
-    -->
-    <queries>
-        <package android:name="com.whatsapp" />
-        <package android:name="com.whatsapp.w4b" />
-        <package android:name="org.telegram.messenger" />
-        <package android:name="com.facebook.orca" />
-        <package android:name="org.thoughtcrime.securesms" />
-        <package android:name="com.instagram.android" />
-        <package android:name="com.viber.voip" />
-        <package android:name="jp.naver.line.android" />
-        <package android:name="com.discord" />
-    </queries>
 
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
@@ -112,24 +97,9 @@
         </provider>
 
         <!--
-            Capture a voice note from any chat app: opened only by AlterLingua's own keyboard button. The screen explains
-            and asks; the service records one voice note; the result screen (opened from the "captured" notification)
-            transcribes and translates it. Sharing a voice note to AlterLingua (ShareVoiceActivity) is separate and unchanged.
+            The capture-from-any-chat-app feature's activities and service are disabled (see the note near the top of this
+            file and docs/disabled-voice-capture.md) and deliberately not declared here, so they cannot be started.
         -->
-        <activity
-            android:name=".capture.VoiceCaptureActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:taskAffinity="" />
-        <activity
-            android:name=".capture.VoiceCaptureResultActivity"
-            android:exported="false"
-            android:label="@string/vn_voice_note"
-            android:taskAffinity="" />
-        <service
-            android:name=".capture.VoiceCaptureService"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection" />
 
         <!--
             A keyboard cannot show Android's permission question itself, so it opens this invisible screen, which asks

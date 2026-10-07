@@ -420,7 +420,8 @@ fun SettingsScreen(
             }
         }
 
-        VoiceNotesSection(state, onVoiceCaptureAppToggled, onTranslateCapturedNotesChanged, onNotifyOnCapturedNotesChanged)
+        // VoiceNotesSection (capture-from-chat-apps settings) is disabled: see docs/disabled-voice-capture.md.
+        // The composable, the ViewModel functions and the underlying settings are left in place for a future developer.
 
         if (state.keyboardStyleChoices.isNotEmpty()) {
             SectionLabel(stringResource(R.string.set_keyboard_style))

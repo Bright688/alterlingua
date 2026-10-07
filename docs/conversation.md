@@ -254,14 +254,23 @@ without checking that the service/session was actually restarted after the reins
 
 ---
 
-## 10. Where things stand
+## 10. Where things stood before the feature was disabled
 
 - Branch: `remove-floating-bubble` (not merged into `main`).
 - The keyboard-triggered single capture, the multi-app listening session (onboarding + Settings), the
   "translate on end" default with its Settings switch, and the corrected "Voice note captured" notification
-  are all implemented and unit-tested; the Share-to-AlterLingua flow (`share/`) was never modified.
-- Still open before this can ship: Google Play's foreground-service-type declaration and its
-  `mediaProjection` policy review (owner's Play Console, not something this session can do); a real,
-  on-device end-to-end run of a captured note reaching the corrected notification (the debug trigger only
-  confirmed the notification path itself, not the full capture → upload → translate chain); and how well
-  Telegram, Messenger and other non-WhatsApp apps behave under capture, which each app decides for itself.
+  were all implemented and unit-tested; the Share-to-AlterLingua flow (`share/`) was never modified.
+- Still open at that point: Google Play's foreground-service-type declaration and its `mediaProjection`
+  policy review (owner's Play Console, not something this session can do); a real, on-device end-to-end run
+  of a captured note reaching the corrected notification (the debug trigger only confirmed the notification
+  path itself, not the full capture → upload → translate chain); and how well Telegram, Messenger and other
+  non-WhatsApp apps behave under capture, which each app decides for itself.
+
+## 11. Update (2026-10-07): the feature was disabled
+
+After everything above, the owner decided to disable the capture-from-any-chat-app feature entirely and go
+back to the existing Share-to-AlterLingua flow as the only way to get a voice note transcribed and
+translated, asking that the feature be documented rather than deleted, "in case the developer wants to use
+it or some part of it." See `docs/disabled-voice-capture.md` for exactly what was removed (manifest
+permissions/components, the keyboard button, the onboarding step, the Settings section) and what was kept
+in place for later reuse (the whole `capture/` Kotlin package and its tests, compiling but unreachable).

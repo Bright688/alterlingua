@@ -19,12 +19,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * The onboarding screens, in order. Choosing the app language (step 1 of 13) comes before these, on its own screen, so the steps
+ * The onboarding screens, in order. Choosing the app language (step 1 of 12) comes before these, on its own screen, so the steps
  * here are numbered from 2: source language, target language, reason, current level, assistance mode, reminder, keyboard,
- * incoming translation, live chat-screen translation, microphone, voice notes from other chat apps, and the last screen.
+ * incoming translation, live chat-screen translation, microphone, and the last screen.
  * [OnboardingStep.KEYBOARD_STYLE] (how to type, for 中文 and 日本語) is only shown when the language chosen in the first step has
  * more than one typing style; otherwise it is skipped. [OnboardingStep.LIVE_CHAT_TRANSLATION] is optional and off by default
  * (CLAUDE.md section 39): its own button is the only thing that turns it on, and "Skip for now" always works regardless.
+ * [OnboardingStep.VOICE_NOTES] exists but is always excluded from [OnboardingUiState.steps]: the capture-from-chat-apps
+ * feature it set up was disabled by the project owner (see docs/disabled-voice-capture.md) and must not be shown. The step,
+ * its screen and its ViewModel plumbing are left in place only so a future developer can revive them.
  */
 enum class OnboardingStep { SOURCE, KEYBOARD_STYLE, TARGET, PURPOSE, LEVEL, ASSISTANCE, REMINDER, KEYBOARD, NOTIFICATIONS, LIVE_CHAT_TRANSLATION, MICROPHONE, VOICE_NOTES, COMPLETE }
 
@@ -40,7 +43,8 @@ data class OnboardingUiState(
     /** The screens that apply to this user, in order (the typing-style screen only for languages with more than one style). */
     val steps: List<OnboardingStep>
         get() = OnboardingStep.entries.filter {
-            it != OnboardingStep.KEYBOARD_STYLE || KeyboardStyle.forLanguage(settings.nativeLanguage.code).isNotEmpty()
+            (it != OnboardingStep.KEYBOARD_STYLE || KeyboardStyle.forLanguage(settings.nativeLanguage.code).isNotEmpty()) &&
+                it != OnboardingStep.VOICE_NOTES // disabled feature: see the note on OnboardingStep
         }
 
     /** Step 1 is the app-language screen shown before onboarding, so these start at 2. */
