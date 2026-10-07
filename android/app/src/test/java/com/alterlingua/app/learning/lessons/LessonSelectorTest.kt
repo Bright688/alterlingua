@@ -251,6 +251,38 @@ class LessonSelectorTest {
         assertNotNull(result.ranked.last().explain())
     }
 
+    // ---- random lesson: shuffled, but the same quality gate ----
+
+    @Test
+    fun selectRandom_excludesExactlyWhatSelectWouldExclude() {
+        val mastered = item("sait", usefulness = 0.9, lessons = 4, correct = 5, exposures = 40)
+        val tooWeak = item("faible", usefulness = 0.01)
+        val good = (1..5).map { item("bon$it", usefulness = 0.5 + it / 20.0) }
+        val items = good + mastered + tooWeak
+        val randomResult = selector.selectRandom(items, now)
+        val plainResult = selector.select(items, now)
+        assertEquals(plainResult.ranked.map { it.item.normalized }.toSet(), randomResult.ranked.map { it.item.normalized }.toSet())
+        assertEquals(plainResult.excluded.map { it.first.normalized }.toSet(), randomResult.excluded.map { it.first.normalized }.toSet())
+        assertEquals(3, randomResult.chosen.size)
+        assertTrue(randomResult.chosen.none { it.item.normalized == "sait" || it.item.normalized == "faible" })
+    }
+
+    @Test
+    fun selectRandom_usesTheGivenShuffle_soItCanDifferFromSelect() {
+        val items = (1..6).map { item("mot$it", usefulness = 0.4 + it / 20.0) }
+        val reversedOrder = selector.selectRandom(items, now, shuffle = { it.reversed() })
+        val plain = selector.select(items, now)
+        assertTrue("a reversed order should not pick exactly the same top 3", reversedOrder.chosen != plain.chosen)
+    }
+
+    @Test
+    fun selectRandom_stillAvoidsOverlapsAndOneTypeFillingTheLesson() {
+        val words = (1..4).map { item("mot$it", type = UnitType.WORD, usefulness = 0.6) }
+        val phrase = item("la phrase utile", type = UnitType.PHRASE, usefulness = 0.9)
+        val result = selector.selectRandom(words + phrase, now, shuffle = { it })
+        assertTrue("a phrase should get a place, not just words of one type", result.chosen.any { it.item.type == UnitType.PHRASE })
+    }
+
     @Test
     fun theMasteryUsedIsTheEvaluatedOne_notTheStoredOne() {
         // A stored state of MASTERED must not matter: the evidence decides.

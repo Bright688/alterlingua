@@ -32,7 +32,7 @@ Please confirm which numbering to use going forward.
 | 12 | Learning event extraction | IMPLEMENTED | Foundation: a language-aware linguistic-analysis abstraction, candidate extraction (words, phrases, expressions) for all eight languages including 中文 and 日本語 with dictionary segmentation, a `LearningEvent` pipeline hooked into outgoing text, voice and incoming translations, and an in-memory exposure store. Only short units are kept, never messages. 343 unit tests pass. **No screen shows the units yet (Words UI is later), and nothing is saved to disk yet (Personal Language Map is next).** |
 | 13 | Personal Language Map | IMPLEMENTED | A Room database with one map per language, a `LanguageMapService`, and a simple explainable mastery calculation (UNKNOWN, LEARNING, FAMILIAR, MASTERED). The learning pipeline now saves units into it. 382 unit tests pass. **No screen shows it yet (Words UI is next) and nothing feeds it help requests, lessons or recognitions yet.** Not yet tried on the phone. |
 | 14 | Words UI | NOT STARTED | The Words tab exists with sample data (see 2b). |
-| 15 | Daily micro-lessons | IMPLEMENTED | An explainable lesson-selection engine picks about three high-value items a day from the Personal Language Map (not the most frequent ones). The Learn tab shows word and phrase cards with meaning, context, disabled Listen and Repeat placeholders, Next, and a completion screen. Finishing a card records a lesson-encounter mastery signal. 433 unit tests pass. **Not yet tried on the phone.** |
+| 15 | Daily micro-lessons | IMPLEMENTED | An explainable lesson-selection engine picks about three high-value items a day from the Personal Language Map (not the most frequent ones). The Learn tab shows word and phrase cards with meaning, context, disabled Listen and Repeat placeholders, Next, and a completion screen. Finishing a card records a lesson-encounter mastery signal. 433 unit tests pass. **Not yet tried on the phone.** Later addition (2026-10-07, see Milestone 20 addendum): a Pronunciation card (term, Play button, a rough phonetic guide) and a "Random lesson" option for extra practice beyond the one daily lesson. |
 | 16 | Full Support | IMPLEMENTED | Incoming messages get complete translation under Full Support and still feed the Personal Language Map. A central `AssistancePolicy` decides this; `IncomingTranslator` reads the user's mode for each notification. 441 unit tests pass. Adaptive and On-demand are not built. **Not yet tried on the phone.** |
 | 17 | Adaptive | IN PROGRESS | The deterministic decision engine is IMPLEMENTED and unit-tested (`AdaptiveEngine`, 466 unit tests pass): from the Personal Language Map of the current learning language it decides which words can stay in that language. **It is not yet connected to notifications, the keyboard or any screen, so choosing Adaptive mode still behaves like Full Support.** Not tried on a phone. |
 | 18 | On-demand | IMPLEMENTED (AlterLingua screens only) | On the Learn tab, "Read with help": pasted text stays in the language being learned, and a word's meaning appears only when the user taps that word. Asking is recorded as a mastery signal. 497 unit tests pass. **Not applied to WhatsApp notifications or the keyboard, and not tried on the phone.** |
@@ -775,6 +775,30 @@ The recording is one temporary file in the app's private cache, sent only to the
 6. Move to the next card: practice resets. Leave the tab while recording: recording stops.
 7. Check the recording is gone: `adb shell run-as com.alterlingua.app ls cache/pronunciation`.
 8. Optional: copy `databases/language_map.db` and check `pronunciationTries` and `pronunciationGood` for the word.
+
+## Milestone 20 addendum (2026-10-07): a Pronunciation card, Play button, and Random lesson
+
+**Status: IMPLEMENTED, not MANUALLY VERIFIED.** Unit-tested (902 of 902 pass, 23 new); lint, debug build, release compile and instrumented-test compile pass. Nothing has been tried on a phone.
+
+The owner asked for micro-lessons to also offer random lessons, and for lesson cards to have "pronunciation and play button", with a phonetic guide like "tü RAHN-truh" for "Tu rentres ?".
+
+### Pronunciation card and `PronunciationGuide`
+- A new **Pronunciation** card sits above Repeat in the practice panel: the term, a **Play** button (text-to-speech, reusing the practice flow's existing `Speaker`), and — where available — a rough phonetic respelling line.
+- `PronunciationGuide` (`learning/pronunciation/`) builds that respelling from small per-language spelling-to-sound rule tables (en, fr, es, de, it, nl), splits the result into syllables, and capitalizes the first syllable of the **last word of the phrase** as a simple stress hint. Tested exactly against the owner's own example: `guideFor("Tu rentres ?", Languages.French) == "tü RAHN-truh"` and `guideFor("Rentre.", Languages.French) == "RAHN-truh"`.
+- **中文 and 日本語 are deliberately not covered**: a trustworthy guide needs Pinyin or furigana/romaji data this app does not have, and a guessed one would be worse than none (CLAUDE.md 6.19, 6.15). `guideFor` returns null for them; Play still works, gated by the existing `Speaker.canSpeak`.
+- This is a readable approximation, not a phonetic transcription — no IPA, no real sound data, and the "stress the last word's first syllable" rule is a simplification that does not reflect every language's real stress rules. Documented plainly in the class's own doc comment, in the same spirit as the existing `PronunciationEvaluator`'s "this is not a pronunciation score" note.
+- The old "Listen" button (text-to-speech) moved into the new card; it keeps its `lesson_listen` test tag, so the existing instrumented tests (`PracticePanelTest`, `LearnScreenTest`) needed no change.
+
+### Random lesson
+- `LessonSelector.selectRandom(...)`: the same quality gate as the daily lesson (not mastered, not taught too recently, above the minimum score), but the qualifying pool is shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each time.
+- `LessonService.random(): LessonState`: builds a lesson the same way the daily one is built (same card/meaning logic, extracted into a shared `buildCards` helper), but **is never saved** — no interaction with `DailyLessonStore`, so it can never replace or resume into the one daily lesson.
+- `RandomLessonViewModel`: holds the random lesson in memory only; `next()` records the same lesson-encounter mastery signal a daily-lesson card would (genuine practice is genuine practice); `previous()` records nothing, matching the daily lesson's own behaviour.
+- UI: a "Random lesson" button at the bottom of the Learn tab starts one and swaps the screen to show it (reusing `LearnScreen` and `PracticeRoute` unchanged); "Back to today's lesson" returns to the daily lesson, untouched.
+
+### Not done / known limits
+- No dedicated review of *which* random items have come up before, beyond the daily lesson's own 20-hour "don't repeat" rule inherited from `select()`'s exclusion pass.
+- The phonetic guide's per-language rule tables are a reasonable common-case approximation, not exhaustive spelling coverage (documented in `PronunciationGuide`'s own file).
+- Device test still needed: Play button sound, the guide's readability for real lesson words, and that "Random lesson" / "Back to today's lesson" navigate correctly on a real device.
 
 ## Milestone 21 detail: Progress screen and Translation Dependence
 

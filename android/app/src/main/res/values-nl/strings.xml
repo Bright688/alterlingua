@@ -294,6 +294,8 @@
     <string name="home_learning_lang">Je leert %1$s</string>
     <string name="home_welcome">Welkom terug</string>
     <string name="lrn_no_lesson_today_yet">Nog geen les vandaag</string>
+    <string name="lrn_random_lesson">Willekeurige les</string>
+    <string name="lrn_back_to_today">Terug naar de les van vandaag</string>
     <string name="lrn_empty_body">De les van vandaag wordt gemaakt van woorden en zinnen in het %1$s die je tegenkomt in berichten die je vertaalt. Ze verschijnt hier zodra je die hebt.</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">Gebruik om te beginnen het AlterLingua-toetsenbord in WhatsApp.</string>
     <string name="lrn_item_of">Item %1$d van %2$d · Microles van vandaag</string>

@@ -21,6 +21,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,11 +59,46 @@ import com.alterlingua.app.ui.theme.extendedColors
 fun LearnRoute(
     modifier: Modifier = Modifier,
     viewModel: LearnViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    randomViewModel: RandomLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val randomState by randomViewModel.uiState.collectAsStateWithLifecycle()
     // New messages may have been translated while the tab was away: look again for today's lesson.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
-    LearnScreen(state = state, onPrevious = viewModel::previous, onNext = viewModel::next, modifier = modifier, footer = { ReaderRoute() }, practice = { card -> PracticeRoute(card) })
+    // Random lessons are extra practice beyond the one daily lesson (see RandomLessonViewModel): never saved, a fresh
+    // one is built each time the learner asks, so "random" is scoped to this one tab visit, not kept across it.
+    var showingRandom by rememberSaveable { mutableStateOf(false) }
+    if (showingRandom) {
+        LearnScreen(
+            state = randomState,
+            onPrevious = randomViewModel::previous,
+            onNext = randomViewModel::next,
+            modifier = modifier,
+            footer = {
+                OutlinedButton(onClick = { showingRandom = false }, modifier = Modifier.fillMaxWidth().testTag("lrn_back_to_today")) {
+                    Text(stringResource(R.string.lrn_back_to_today))
+                }
+            },
+            practice = { card -> PracticeRoute(card) },
+        )
+    } else {
+        LearnScreen(
+            state = state,
+            onPrevious = viewModel::previous,
+            onNext = viewModel::next,
+            modifier = modifier,
+            footer = {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    OutlinedButton(
+                        onClick = { randomViewModel.start(); showingRandom = true },
+                        modifier = Modifier.fillMaxWidth().testTag("lrn_random_lesson"),
+                    ) { Text(stringResource(R.string.lrn_random_lesson)) }
+                    ReaderRoute()
+                }
+            },
+            practice = { card -> PracticeRoute(card) },
+        )
+    }
 }
 
 @Composable

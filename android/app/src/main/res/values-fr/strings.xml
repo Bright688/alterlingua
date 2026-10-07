@@ -294,6 +294,8 @@
     <string name="home_learning_lang">Apprentissage : %1$s</string>
     <string name="home_welcome">Bon retour</string>
     <string name="lrn_no_lesson_today_yet">Pas encore de leçon aujourd’hui</string>
+    <string name="lrn_random_lesson">Leçon aléatoire</string>
+    <string name="lrn_back_to_today">Retour à la leçon du jour</string>
     <string name="lrn_empty_body">La leçon du jour est composée de mots et d’expressions en %1$s rencontrés dans les messages que vous traduisez. Elle apparaît ici dès que vous en avez.</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">Utilisez le clavier AlterLingua dans WhatsApp pour commencer.</string>
     <string name="lrn_item_of">Élément %1$d sur %2$d · Micro-leçon du jour</string>

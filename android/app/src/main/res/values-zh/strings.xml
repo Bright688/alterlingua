@@ -294,6 +294,8 @@
     <string name="home_learning_lang">正在学习%1$s</string>
     <string name="home_welcome">欢迎回来</string>
     <string name="lrn_no_lesson_today_yet">今天还没有课程</string>
+    <string name="lrn_random_lesson">随机课程</string>
+    <string name="lrn_back_to_today">返回今日课程</string>
     <string name="lrn_empty_body">今天的课程由您翻译的消息中遇到的%1$s词汇和短语生成。有了之后会显示在这里。</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">请先在 WhatsApp 中使用 AlterLingua 键盘。</string>
     <string name="lrn_item_of">第 %1$d 项，共 %2$d 项 · 今日微课</string>

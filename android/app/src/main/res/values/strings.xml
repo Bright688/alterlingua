@@ -323,6 +323,8 @@
     <string name="home_learning_lang">Learning %1$s</string>
     <string name="home_welcome">Welcome back</string>
     <string name="lrn_no_lesson_today_yet">No lesson today yet</string>
+    <string name="lrn_random_lesson">Random lesson</string>
+    <string name="lrn_back_to_today">Back to today\'s lesson</string>
     <string name="lrn_empty_body">Today\'s lesson is made from words and phrases in %1$s that you meet in messages you translate. It appears here once you have.</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">Use the AlterLingua keyboard in WhatsApp to start.</string>
     <string name="lrn_item_of">Item %1$d of %2$d · Today\'s micro-lesson</string>

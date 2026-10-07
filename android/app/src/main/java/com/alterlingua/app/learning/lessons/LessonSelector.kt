@@ -95,6 +95,17 @@ class LessonSelector(
         return SelectionResult(choose(ranked), ranked, excluded)
     }
 
+    /**
+     * Like [select], but for a "random lesson" the learner can ask for any time, as extra practice beyond the one
+     * daily lesson: everything that qualifies (the same quality gate — not mastered, not taught too recently, above the
+     * minimum score) is shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each
+     * time, from the same pool of genuinely useful items.
+     */
+    fun selectRandom(items: List<LanguageMapItem>, nowMillis: Long, shuffle: (List<LessonCandidate>) -> List<LessonCandidate> = { it.shuffled() }): SelectionResult {
+        val base = select(items, nowMillis)
+        return base.copy(chosen = choose(shuffle(base.ranked)))
+    }
+
     private fun score(item: LanguageMapItem, state: MasteryStatus, now: Long): LessonCandidate {
         val signals = mutableListOf<SelectionSignal>()
 

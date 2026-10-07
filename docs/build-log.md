@@ -1745,3 +1745,24 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Tests updated:** `PrivacyAuditTest.onlyTheNecessaryPermissionsAreRequested` (permission set back down to `RECORD_AUDIO`, `INTERNET`, `ACCESS_NETWORK_STATE`, `POST_NOTIFICATIONS`); `OnboardingViewModelTest` step-count assertions (13→12 baseline, 14→13 for Chinese/Japanese, 13→12 for German) and the `next_walksEveryStep` test's expected step set (now also excludes `VOICE_NOTES`).
 
 **Verification:** 879 unit tests pass, 0 failures. Lint (previously 1 error from the manifest/service mismatch, now fixed) and the release compile are clean. Not yet reinstalled on the phone; the owner should confirm the keyboard toolbar, onboarding and Settings all look as they did before this feature existed.
+
+
+---
+
+## 2026-10-07 — Micro-lessons: a Pronunciation card with a Play button, and Random lesson
+
+**Goal (owner):** "for the micro lessons also include this to have random lessons as well ... should have pronunciation and play button and also when we have for example this word Tu rentres ? we should also have like this tü RAHN-truh to help us pronunce it" (with a screenshot of a "Pronunciation" card: the word, a Play button, and a phonetic line below a divider).
+
+**What was built:**
+- `learning/pronunciation/PronunciationGuide.kt`: a rough, readable-in-English phonetic respelling, built from small per-language spelling-to-sound rule tables (en, fr, es, de, it, nl), syllable-split, with the first syllable of the phrase's last word capitalized as a simple stress hint. Checked exactly against the owner's own examples: `guideFor("Tu rentres ?", Languages.French)` returns `"tü RAHN-truh"`, and `guideFor("Rentre.", Languages.French)` returns `"RAHN-truh"` — both reproduced precisely, not approximately, by tracing the rule set (nasal vowels "en"→"ahn", bare "u"→"ü", silent final "e"/"es", and a helper vowel appended to a word-final consonant cluster an English reader could not otherwise sound out, e.g. "tr"→"truh"). 中文 and 日本語 deliberately get no guide (would need real Pinyin/romaji data this app does not have); Play (text-to-speech) still works for them.
+- `ui/learn/PracticePanel.kt`: a new "Pronunciation" card above the Repeat button, with the term, a Play/Stop button and the guide line. The pre-existing "Listen" button moved into this card (relabelled "Play") and kept its `lesson_listen` test tag, so `PracticePanelTest` and `LearnScreenTest` needed no changes.
+- `LessonSelector.selectRandom(...)`, `LessonService.random()`, `ui/learn/RandomLessonViewModel.kt`: a "Random lesson" button on the Learn tab builds a fresh, shuffled lesson from the same quality-gated pool the daily lesson uses (not mastered, not taught too recently, above the minimum score), displayed through the same `LearnScreen`/`PracticeRoute` UI. It is never saved (no `DailyLessonStore` interaction), so it can never replace or interfere with the one daily lesson; finishing a random-lesson card still records the same lesson-encounter mastery signal a daily card would. "Back to today's lesson" returns to the unchanged daily view.
+
+**Decisions:**
+- The phonetic guide is explicitly **not** a phonetic transcription (no IPA, no real sound data) and says so in its own doc comment, matching the project's established "be honest about what the provider can do" pattern (`PronunciationEvaluator`'s own comments). The "capitalize the first syllable of the last word" stress rule is a deliberate simplification applied uniformly across languages, not a claim of linguistic accuracy per language.
+- Random lesson reuses `select()`'s exact exclusion/quality logic (extracted via a new `selectRandom` that shuffles the already-filtered `ranked` list before the existing overlap-aware `choose()`), so "random" never means "lower quality", only a different draw from the same genuinely useful pool.
+- Kept the daily lesson's card-building logic in one place (`LessonService.buildCards`, extracted from `create()`) rather than duplicating it for the random path.
+
+**Verification:** 902 unit tests pass (23 new: 10 for the exact phonetic traces and the guide's general behaviour, 3 for `selectRandom`'s quality gate and shuffling, 4 for `LessonService.random()`, 6 for `RandomLessonViewModel`). Lint, the release compile and the instrumented-test compile all pass. **Not yet installed or tried on a phone:** the Play button's sound, the guide's on-screen readability, and the Random lesson / Back-to-today navigation are all unverified on a device.
+
+**Manual test for the owner:** open the Learn tab with a lesson available. Check the new Pronunciation card shows the term, tap **Play** (hear it spoken) and read the phonetic line underneath. Tap **Random lesson**: a fresh set of up to three cards should appear, separate from today's lesson; go through it, then tap **Back to today's lesson** and confirm today's lesson is exactly where it was left.

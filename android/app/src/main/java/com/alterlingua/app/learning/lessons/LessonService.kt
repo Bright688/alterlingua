@@ -86,28 +86,42 @@ class LessonService(
     }
 
     private suspend fun create(date: String, langs: LessonLanguages): DailyLesson? {
-        val now = clock()
-        val chosen = selector.select(map.items(langs.learning.code), now).chosen
+        val chosen = selector.select(map.items(langs.learning.code), clock()).chosen
         if (chosen.isEmpty()) return null
-        val cards = coroutineScope {
-            chosen.map { candidate ->
-                async {
-                    val item = candidate.item
-                    val meaning = item.meaning ?: withTimeoutOrNull(meaningTimeoutMillis) { meanings.meaningOf(item.displayForm, langs.learning, langs.native) }
-                    if (meaning != null && item.meaning == null) map.setMeaning(item.key, meaning, langs.native.code) // keep it: next time it is free
-                    LessonCard(
-                        key = item.key,
-                        term = item.displayForm,
-                        kind = if (item.type == com.alterlingua.app.learning.engine.UnitType.WORD) CardKind.WORD_CARD else CardKind.PHRASE_CARD,
-                        meaning = meaning,
-                        meaningLanguage = meaning?.let { langs.native.code },
-                        context = LessonContext(item.exposureCount, item.lastContext, item.lastSeen, item.helpRequests, reasonsFor(candidate)),
-                        masteryState = item.masteryState,
-                    )
-                }
-            }.awaitAll()
-        }
-        return DailyLesson(date, langs.learning.code, cards)
+        return DailyLesson(date, langs.learning.code, buildCards(chosen, langs))
+    }
+
+    /**
+     * A fresh "random lesson" for whatever the learner is currently learning: the same quality gate as the daily
+     * lesson (not mastered, not taught too recently, above the minimum score), but shuffled, so it can differ each
+     * time it is asked for. Unlike the daily lesson, it is never saved: [next] on it is tracked by the caller only
+     * for as long as the screen is open, though finishing a card is still recorded in the Personal Language Map,
+     * the same genuine practice signal a daily-lesson card gives.
+     */
+    suspend fun random(): LessonState {
+        val langs = languages()
+        val chosen = selector.selectRandom(map.items(langs.learning.code), clock()).chosen
+        if (chosen.isEmpty()) return LessonState.NoLesson
+        return LessonState.InProgress(DailyLesson("random", langs.learning.code, buildCards(chosen, langs)))
+    }
+
+    private suspend fun buildCards(chosen: List<LessonCandidate>, langs: LessonLanguages): List<LessonCard> = coroutineScope {
+        chosen.map { candidate ->
+            async {
+                val item = candidate.item
+                val meaning = item.meaning ?: withTimeoutOrNull(meaningTimeoutMillis) { meanings.meaningOf(item.displayForm, langs.learning, langs.native) }
+                if (meaning != null && item.meaning == null) map.setMeaning(item.key, meaning, langs.native.code) // keep it: next time it is free
+                LessonCard(
+                    key = item.key,
+                    term = item.displayForm,
+                    kind = if (item.type == com.alterlingua.app.learning.engine.UnitType.WORD) CardKind.WORD_CARD else CardKind.PHRASE_CARD,
+                    meaning = meaning,
+                    meaningLanguage = meaning?.let { langs.native.code },
+                    context = LessonContext(item.exposureCount, item.lastContext, item.lastSeen, item.helpRequests, reasonsFor(candidate)),
+                    masteryState = item.masteryState,
+                )
+            }
+        }.awaitAll()
     }
 
     /** Up to three short reasons, in the learner's words, from the strongest signals. */
