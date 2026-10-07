@@ -328,6 +328,8 @@
     <string name="lt_reason_due">Zeit zum Wiederholen</string>
     <string name="prac_listen_isn_t_available_this">Anhören ist nicht verfügbar: Dieses Telefon hat keine Stimme für diese Sprache.</string>
     <string name="prac_listen_then_tap_repeat_and">Hör zu, tippe dann auf Wiederholen und sprich es nach.</string>
+    <string name="prac_pronunciation">Aussprache</string>
+    <string name="prac_play">Abspielen</string>
     <string name="prac_to_practise_alterlingua_needs_the">Zum Üben braucht AlterLingua das Mikrofon. Die Aufnahme wird nur für diese Prüfung verwendet und sofort gelöscht.</string>
     <string name="prac_listening">Ich höre zu … sage „%1$s“</string>
     <string name="prac_checking">Prüfe …</string>

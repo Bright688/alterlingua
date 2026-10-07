@@ -328,6 +328,8 @@
     <string name="lt_reason_due">È ora di ripassarlo</string>
     <string name="prac_listen_isn_t_available_this">Ascolta non è disponibile: questo telefono non ha una voce per questa lingua.</string>
     <string name="prac_listen_then_tap_repeat_and">Ascolta, poi tocca Ripeti e dillo.</string>
+    <string name="prac_pronunciation">Pronuncia</string>
+    <string name="prac_play">Riproduci</string>
     <string name="prac_to_practise_alterlingua_needs_the">Per esercitarti, AlterLingua ha bisogno del microfono. La registrazione serve solo a questo controllo e viene eliminata subito.</string>
     <string name="prac_listening">In ascolto… dì «%1$s»</string>
     <string name="prac_checking">Controllo…</string>

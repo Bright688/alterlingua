@@ -357,6 +357,8 @@
     <string name="lt_reason_due">Time to review it</string>
     <string name="prac_listen_isn_t_available_this">Listen isn\'t available: this phone has no voice for this language.</string>
     <string name="prac_listen_then_tap_repeat_and">Listen, then tap Repeat and say it.</string>
+    <string name="prac_pronunciation">Pronunciation</string>
+    <string name="prac_play">Play</string>
     <string name="prac_to_practise_alterlingua_needs_the">To practise, AlterLingua needs the microphone. The recording is used only for this check and deleted right after.</string>
     <string name="prac_listening">Listening… say “%1$s”</string>
     <string name="prac_checking">Checking…</string>

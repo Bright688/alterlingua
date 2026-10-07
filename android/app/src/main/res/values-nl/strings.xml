@@ -328,6 +328,8 @@
     <string name="lt_reason_due">Tijd om het te herhalen</string>
     <string name="prac_listen_isn_t_available_this">Beluisteren is niet beschikbaar: deze telefoon heeft geen stem voor deze taal.</string>
     <string name="prac_listen_then_tap_repeat_and">Luister, tik dan op Herhalen en zeg het.</string>
+    <string name="prac_pronunciation">Uitspraak</string>
+    <string name="prac_play">Afspelen</string>
     <string name="prac_to_practise_alterlingua_needs_the">Om te oefenen heeft AlterLingua de microfoon nodig. De opname wordt alleen voor deze controle gebruikt en meteen verwijderd.</string>
     <string name="prac_listening">Luisteren… zeg „%1$s”</string>
     <string name="prac_checking">Controleren…</string>

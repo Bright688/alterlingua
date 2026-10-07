@@ -328,6 +328,8 @@
     <string name="lt_reason_due">復習の時間です</string>
     <string name="prac_listen_isn_t_available_this">再生できません：この端末にはこの言語の音声がありません。</string>
     <string name="prac_listen_then_tap_repeat_and">聞いてから「繰り返す」をタップして、言ってみましょう。</string>
+    <string name="prac_pronunciation">発音</string>
+    <string name="prac_play">再生</string>
     <string name="prac_to_practise_alterlingua_needs_the">練習にはマイクが必要です。録音はこの確認にだけ使われ、すぐに削除されます。</string>
     <string name="prac_listening">聞いています…「%1$s」と言ってください</string>
     <string name="prac_checking">確認中…</string>

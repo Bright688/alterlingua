@@ -328,6 +328,8 @@
     <string name="lt_reason_due">该复习了</string>
     <string name="prac_listen_isn_t_available_this">无法收听：此手机没有该语言的语音。</string>
     <string name="prac_listen_then_tap_repeat_and">先收听，再点按“跟读”并说出来。</string>
+    <string name="prac_pronunciation">发音</string>
+    <string name="prac_play">播放</string>
     <string name="prac_to_practise_alterlingua_needs_the">练习需要使用麦克风。录音仅用于这次检查，并会立即删除。</string>
     <string name="prac_listening">正在聆听…请说“%1$s”</string>
     <string name="prac_checking">正在检查…</string>
