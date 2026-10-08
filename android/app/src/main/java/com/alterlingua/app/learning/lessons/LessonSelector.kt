@@ -73,13 +73,25 @@ class LessonSelector(
     private val calculator: MasteryCalculator = MasteryCalculator(),
 ) {
     fun select(items: List<LanguageMapItem>, nowMillis: Long): SelectionResult {
+        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = true)
+        return SelectionResult(choose(ranked), ranked, excluded)
+    }
+
+    /**
+     * The scoring and exclusion [select] and [selectRandom] share. [respectRecencyLimit] is the one difference between
+     * them: true excludes an item taught within [SelectionConfig.minHoursBetweenLessons] (the one daily lesson never
+     * repeats itself within a day); false does not, because a random lesson is extra practice the learner asks for on
+     * demand, as many times as they like, and repetition is the point of practice, not a problem to exclude.
+     */
+    private fun rank(items: List<LanguageMapItem>, nowMillis: Long, respectRecencyLimit: Boolean): Pair<List<LessonCandidate>, List<Pair<LanguageMapItem, ExclusionReason>>> {
         val excluded = mutableListOf<Pair<LanguageMapItem, ExclusionReason>>()
         val ranked = mutableListOf<LessonCandidate>()
         for (item in items) {
             val state = calculator.evaluate(item.evidence, nowMillis).state // as of now, including time unseen
+            val taughtRecently = respectRecencyLimit && item.lastLessonAt > 0 && nowMillis - item.lastLessonAt < config.minHoursBetweenLessons * HOUR_MILLIS
             when {
                 state == MasteryStatus.MASTERED -> excluded += item to ExclusionReason.MASTERED
-                item.lastLessonAt > 0 && nowMillis - item.lastLessonAt < config.minHoursBetweenLessons * HOUR_MILLIS -> excluded += item to ExclusionReason.TAUGHT_RECENTLY
+                taughtRecently -> excluded += item to ExclusionReason.TAUGHT_RECENTLY
                 else -> {
                     val candidate = score(item, state, nowMillis)
                     if (candidate.score < config.minimumScore) excluded += item to ExclusionReason.BELOW_MINIMUM else ranked += candidate
@@ -92,18 +104,19 @@ class LessonSelector(
                 .thenByDescending { it.item.lastSeen }
                 .thenBy { it.item.normalized },
         )
-        return SelectionResult(choose(ranked), ranked, excluded)
+        return ranked to excluded
     }
 
     /**
-     * Like [select], but for a "random lesson" the learner can ask for any time, as extra practice beyond the one
-     * daily lesson: everything that qualifies (the same quality gate — not mastered, not taught too recently, above the
-     * minimum score) is shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each
-     * time, from the same pool of genuinely useful items.
+     * Like [select], but for a "random lesson" the learner can ask for any time, as extra practice beyond the one daily
+     * lesson, as many times a day as they like: everything that qualifies — not mastered, above the minimum score, but
+     * (unlike the daily lesson) **not excluded just for having been taught recently** — is shuffled before the no-overlap
+     * / not-all-one-type pick, so a different lesson can come up each time, and asking again right after finishing one
+     * does not run out of eligible items.
      */
     fun selectRandom(items: List<LanguageMapItem>, nowMillis: Long, shuffle: (List<LessonCandidate>) -> List<LessonCandidate> = { it.shuffled() }): SelectionResult {
-        val base = select(items, nowMillis)
-        return base.copy(chosen = choose(shuffle(base.ranked)))
+        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = false)
+        return SelectionResult(choose(shuffle(ranked)), ranked, excluded)
     }
 
     private fun score(item: LanguageMapItem, state: MasteryStatus, now: Long): LessonCandidate {

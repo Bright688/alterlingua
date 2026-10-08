@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -172,8 +173,9 @@ class LessonServiceTest {
         assertEquals("fr", lesson.language)
         assertEquals(0, lesson.position)
         val terms = lesson.cards.map { it.term }
-        assertTrue("avant midi" in terms && "au courant" in terms)
-        assertFalse("the same quality gate excludes the frequent, low-value word", "bonjour" in terms)
+        // Which 3 of the 4 qualifying items come up can vary (selectRandom shuffles the whole qualifying pool, not just
+        // the daily lesson's top 3 — see LessonSelectorTest); what must always hold is that every card actually qualifies.
+        assertTrue(terms.toString(), terms.all { it in setOf("devis", "avant midi", "au courant", "bonjour") })
         assertNull("a random lesson is never saved", store.load())
     }
 
@@ -190,6 +192,21 @@ class LessonServiceTest {
         assertTrue("20 draws from a pool of 6 qualifying items should not all land on the same 3", seen.size > 1)
         // The daily lesson (saved) is untouched by any number of random draws.
         assertEquals(daily, s.today().lesson())
+    }
+
+    @Test
+    fun finishingARandomLesson_doesNotStopTheNextOneBeingOffered_evenRightAway() = runTest {
+        // Six qualifying items (two lessons' worth), so "finishing one random lesson empties the pool" would show up here.
+        fillFrench()
+        met("fr", "réunion", usefulness = 0.95, times = 5)
+        met("fr", "acompte", usefulness = 0.9, times = 5)
+        met("fr", "je vous tiens au courant", UnitType.EXPRESSION, usefulness = 0.95)
+        val s = service()
+        val first = s.random().lesson()
+        for (card in first.cards) map.recordLessonEncounter(card.key, card.term, now) // "finished" every card in it
+        // Asking again straight away must not come back empty just because everything was just taught.
+        assertNotEquals(LessonState.NoLesson, s.random())
+        assertEquals(3, s.random().lesson().cards.size)
     }
 
     @Test

@@ -778,7 +778,7 @@ The recording is one temporary file in the app's private cache, sent only to the
 
 ## Milestone 20 addendum (2026-10-07): a Pronunciation card, Play button, and Random lesson
 
-**Status: IMPLEMENTED, not MANUALLY VERIFIED.** Unit-tested (902 of 902 pass, 23 new); lint, debug build, release compile and instrumented-test compile pass. Nothing has been tried on a phone.
+**Status: IMPLEMENTED.** Unit-tested (904 of 904 pass, 25 new); lint, debug build, release compile and instrumented-test compile pass. **PARTLY MANUALLY VERIFIED** on the owner's phone (2026-10-08): a direct inspection of the screen's own accessibility tree (not a visual screenshot) showed the Pronunciation card rendering correctly — "PRONUNCIATION", "Play", the term "De rien", and the phonetic guide "duh REE-ahn" — and, separately, the Random lesson flow reaching a completed state with different words and its "Back to today's lesson" button, both on real device data. **Caveat, stated plainly:** the phone's screen rotated mid-session, which made a scripted swipe gesture land on unintended elements; this most likely advanced the owner's real daily lesson and/or started a random lesson without the owner's own intent, as an unintended side effect of debugging, not a deliberate test. The owner should check their daily lesson's position next time they open the Learn tab, since it may show further along than they left it.
 
 The owner asked for micro-lessons to also offer random lessons, and for lesson cards to have "pronunciation and play button", with a phonetic guide like "tü RAHN-truh" for "Tu rentres ?".
 
@@ -790,13 +790,15 @@ The owner asked for micro-lessons to also offer random lessons, and for lesson c
 - The old "Listen" button (text-to-speech) moved into the new card; it keeps its `lesson_listen` test tag, so the existing instrumented tests (`PracticePanelTest`, `LearnScreenTest`) needed no change.
 
 ### Random lesson
-- `LessonSelector.selectRandom(...)`: the same quality gate as the daily lesson (not mastered, not taught too recently, above the minimum score), but the qualifying pool is shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each time.
+- `LessonSelector.selectRandom(...)`: the same quality gate as the daily lesson (not mastered, above the minimum score) — **but, unlike the daily lesson, not excluded just for having been taught recently** (see "corrected" below) — shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each time.
 - `LessonService.random(): LessonState`: builds a lesson the same way the daily one is built (same card/meaning logic, extracted into a shared `buildCards` helper), but **is never saved** — no interaction with `DailyLessonStore`, so it can never replace or resume into the one daily lesson.
 - `RandomLessonViewModel`: holds the random lesson in memory only; `next()` records the same lesson-encounter mastery signal a daily-lesson card would (genuine practice is genuine practice); `previous()` records nothing, matching the daily lesson's own behaviour.
 - UI: a "Random lesson" button at the bottom of the Learn tab starts one and swaps the screen to show it (reusing `LearnScreen` and `PracticeRoute` unchanged); "Back to today's lesson" returns to the daily lesson, untouched.
 
+**Corrected the same day (owner, after trying it): "random lessons suppose to have so many lessons given each days and not few."** The first version of `selectRandom` reused `select()`'s exclusion wholesale, including "taught within the last 20 hours" (`SelectionConfig.minHoursBetweenLessons`) — appropriate for the one daily lesson, but wrong for on-demand extra practice: finishing a random lesson marks its words as just-taught, so asking for another one straight away would quickly run out of eligible items and show "no lesson" far sooner than intended. `LessonSelector` was refactored (`rank(..., respectRecencyLimit)`, shared by `select` and `selectRandom`) so that only the daily lesson applies the 20-hour rule; a random lesson can reuse words taught minutes ago, since repetition is the point of on-demand practice. `MASTERED` and the minimum-score quality gate still apply to both.
+
 ### Not done / known limits
-- No dedicated review of *which* random items have come up before, beyond the daily lesson's own 20-hour "don't repeat" rule inherited from `select()`'s exclusion pass.
+- `selectRandom` shuffles the *entire* qualifying pool (not just the daily lesson's top 3), so which words come up can include a lower-ranked-but-still-qualifying item instead of a clearly better one, purely by chance — intentional for variety across many draws a day, but means no single random lesson is guaranteed to be "the best 3 available" the way the daily one is.
 - The phonetic guide's per-language rule tables are a reasonable common-case approximation, not exhaustive spelling coverage (documented in `PronunciationGuide`'s own file).
 - Device test still needed: Play button sound, the guide's readability for real lesson words, and that "Random lesson" / "Back to today's lesson" navigate correctly on a real device.
 

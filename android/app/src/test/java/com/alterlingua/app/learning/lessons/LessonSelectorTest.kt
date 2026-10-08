@@ -276,6 +276,23 @@ class LessonSelectorTest {
     }
 
     @Test
+    fun selectRandom_doesNotExcludeAnItemJustForBeingTaughtRecently_unlikeSelect() {
+        // So that asking for a random lesson again, right after finishing one, does not quickly run out of items:
+        // a daily lesson excludes what it taught recently (TAUGHT_RECENTLY); a random lesson does not.
+        val recentlyTaught = item("devis", usefulness = 0.6, taughtHoursAgo = 1)
+        val neverTaught = (1..2).map { item("mot$it", usefulness = 0.5 + it / 20.0) } // fill the lesson around it
+        val items = listOf(recentlyTaught) + neverTaught
+
+        val plain = selector.select(items, now)
+        assertTrue(plain.excluded.any { it.first.normalized == "devis" && it.second == ExclusionReason.TAUGHT_RECENTLY })
+        assertFalse("devis" in plain.chosen.map { it.item.normalized })
+
+        val random = selector.selectRandom(items, now, shuffle = { it })
+        assertTrue("a random lesson is not told to avoid what was taught recently", random.excluded.none { it.first.normalized == "devis" })
+        assertTrue("devis" in random.ranked.map { it.item.normalized })
+    }
+
+    @Test
     fun selectRandom_stillAvoidsOverlapsAndOneTypeFillingTheLesson() {
         val words = (1..4).map { item("mot$it", type = UnitType.WORD, usefulness = 0.6) }
         val phrase = item("la phrase utile", type = UnitType.PHRASE, usefulness = 0.9)

@@ -1766,3 +1766,22 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Verification:** 902 unit tests pass (23 new: 10 for the exact phonetic traces and the guide's general behaviour, 3 for `selectRandom`'s quality gate and shuffling, 4 for `LessonService.random()`, 6 for `RandomLessonViewModel`). Lint, the release compile and the instrumented-test compile all pass. **Not yet installed or tried on a phone:** the Play button's sound, the guide's on-screen readability, and the Random lesson / Back-to-today navigation are all unverified on a device.
 
 **Manual test for the owner:** open the Learn tab with a lesson available. Check the new Pronunciation card shows the term, tap **Play** (hear it spoken) and read the phonetic line underneath. Tap **Random lesson**: a fresh set of up to three cards should appear, separate from today's lesson; go through it, then tap **Back to today's lesson** and confirm today's lesson is exactly where it was left.
+
+
+---
+
+## 2026-10-08 — Random lesson ran out too quickly: fixed the recency rule it wrongly inherited
+
+**Owner's report, after trying the build on the phone:** "random lessons suppose to have so many lessons given each days and not few."
+
+**The bug:** `LessonSelector.selectRandom` was built by reusing `select()`'s exclusion wholesale, including "an item taught within the last 20 hours is not taught again" (`SelectionConfig.minHoursBetweenLessons`). That rule exists so the one *daily* lesson never repeats itself within a day — correct there. But a *random* lesson is extra practice the learner asks for on demand, as many times as they like; finishing one marks its words "just taught", so with the rule inherited unchanged, asking for another random lesson soon after would find fewer and fewer eligible words and hit "no lesson" far sooner than it should — exactly what the owner ran into.
+
+**The fix:** `LessonSelector`'s scoring/exclusion loop was extracted into a shared `rank(items, nowMillis, respectRecencyLimit)`; `select()` calls it with `respectRecencyLimit = true` (unchanged daily behaviour), `selectRandom()` with `false` (a random lesson can reuse words taught minutes ago). `MASTERED` exclusion and the minimum-score quality gate still apply to both — a random lesson is still genuinely useful practice, just no longer blocked by "too soon".
+
+**A test of my own that this fix broke, and why:** `aRandomLesson_hasTheSameShapeAsTheDailyOne_butIsNeverSaved` had asserted that two specific words always appear and a third (a frequent-but-low-value word) never does. That assumption was never actually guaranteed by the selector's real behaviour — `selectRandom` shuffles the *entire* qualifying pool, not just the daily lesson's top 3, so which 3 of 4 qualifying words come up can genuinely vary; the test fixture was just small enough that it hadn't been caught before. Fixed the test to check that every card comes from the known-qualifying set, not which specific ones.
+
+**New tests:** `selectRandom_doesNotExcludeAnItemJustForBeingTaughtRecently_unlikeSelect` (an item `select()` would exclude as TAUGHT_RECENTLY is eligible for `selectRandom()`), and `finishingARandomLesson_doesNotStopTheNextOneBeingOffered_evenRightAway` (finish every card of one random lesson, immediately ask for another, and it is not empty) — this second one is the direct regression test for the owner's exact complaint.
+
+**Verification:** 904 unit tests pass (25 new overall for the pronunciation/random-lesson work), run five times in a row to rule out flakiness from the real (non-seeded) shuffle now exercised by more tests. Lint, release compile and instrumented-test compile all pass.
+
+**Also this session — debugging note, disclosed to the owner:** while inspecting the build on the phone via `adb`/`uiautomator` (not screenshots), the phone's screen rotated between dumps, which made a scripted swipe gesture, aimed at scrolling, land on unintended on-screen elements instead. This most likely advanced the owner's real daily lesson and/or started a random lesson without their intent — an accidental side effect of debugging that could not be undone (there is no "unfinish a lesson card"). The owner was told plainly and asked to check their daily lesson's position. No further scripted taps or swipes were attempted after noticing this; the final confirmation that the fix works used only a single careful tap plus `uiautomator dump` (text, not an image) immediately after, with no further blind gestures.
