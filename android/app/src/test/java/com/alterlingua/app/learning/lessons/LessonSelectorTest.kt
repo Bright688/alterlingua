@@ -254,17 +254,23 @@ class LessonSelectorTest {
     // ---- random lesson: shuffled, but the same quality gate ----
 
     @Test
-    fun selectRandom_excludesExactlyWhatSelectWouldExclude() {
+    fun selectRandom_stillExcludesMastered_butNotTheDailyLessonsMinimumScore() {
+        // Random practice is deliberately more permissive than the one curated daily lesson: a wider "not yet mastered"
+        // pool means more genuinely different lessons across a day (the owner's own report: "suppose to be more like
+        // 50 per day"). Only MASTERED is excluded either way; "too weak for the one daily slot" no longer applies.
         val mastered = item("sait", usefulness = 0.9, lessons = 4, correct = 5, exposures = 40)
-        val tooWeak = item("faible", usefulness = 0.01)
+        val tooWeakForTheDailyLesson = item("faible", usefulness = 0.05, exposures = 1, seenHoursAgo = 24 * 60, taughtHoursAgo = 25)
         val good = (1..5).map { item("bon$it", usefulness = 0.5 + it / 20.0) }
-        val items = good + mastered + tooWeak
-        val randomResult = selector.selectRandom(items, now)
+        val items = good + mastered + tooWeakForTheDailyLesson
+
         val plainResult = selector.select(items, now)
-        assertEquals(plainResult.ranked.map { it.item.normalized }.toSet(), randomResult.ranked.map { it.item.normalized }.toSet())
-        assertEquals(plainResult.excluded.map { it.first.normalized }.toSet(), randomResult.excluded.map { it.first.normalized }.toSet())
+        assertTrue(plainResult.excluded.any { it.first.normalized == "faible" && it.second == ExclusionReason.BELOW_MINIMUM })
+
+        val randomResult = selector.selectRandom(items, now)
+        assertTrue(randomResult.excluded.any { it.first.normalized == "sait" && it.second == ExclusionReason.MASTERED })
+        assertTrue("random no longer applies the daily lesson's minimum score", "faible" in randomResult.ranked.map { it.item.normalized })
         assertEquals(3, randomResult.chosen.size)
-        assertTrue(randomResult.chosen.none { it.item.normalized == "sait" || it.item.normalized == "faible" })
+        assertTrue("mastered is still excluded from random practice", randomResult.chosen.none { it.item.normalized == "sait" })
     }
 
     @Test

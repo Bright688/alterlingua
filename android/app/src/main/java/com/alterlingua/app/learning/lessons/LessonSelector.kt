@@ -73,17 +73,21 @@ class LessonSelector(
     private val calculator: MasteryCalculator = MasteryCalculator(),
 ) {
     fun select(items: List<LanguageMapItem>, nowMillis: Long): SelectionResult {
-        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = true)
+        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = true, respectMinimumScore = true)
         return SelectionResult(choose(ranked), ranked, excluded)
     }
 
     /**
-     * The scoring and exclusion [select] and [selectRandom] share. [respectRecencyLimit] is the one difference between
-     * them: true excludes an item taught within [SelectionConfig.minHoursBetweenLessons] (the one daily lesson never
-     * repeats itself within a day); false does not, because a random lesson is extra practice the learner asks for on
-     * demand, as many times as they like, and repetition is the point of practice, not a problem to exclude.
+     * The scoring and exclusion [select] and [selectRandom] share. The one daily lesson is deliberately scarce — about
+     * three best items a day (CLAUDE.md section 15) — so it applies both gates: [respectRecencyLimit] (never repeats an
+     * item taught within [SelectionConfig.minHoursBetweenLessons]) and [respectMinimumScore] (only the clearly useful
+     * make the cut). A random lesson is optional extra practice the learner asks for, as many times a day as they like,
+     * so neither scarcity gate applies to it: repetition is the point of practice, and a wider pool of "not yet
+     * mastered" words means more genuinely different lessons across a day, not just the handful that would have been
+     * worth the one daily slot. [MasteryStatus.MASTERED] is excluded either way: re-practising what is already mastered
+     * is not useful extra practice.
      */
-    private fun rank(items: List<LanguageMapItem>, nowMillis: Long, respectRecencyLimit: Boolean): Pair<List<LessonCandidate>, List<Pair<LanguageMapItem, ExclusionReason>>> {
+    private fun rank(items: List<LanguageMapItem>, nowMillis: Long, respectRecencyLimit: Boolean, respectMinimumScore: Boolean): Pair<List<LessonCandidate>, List<Pair<LanguageMapItem, ExclusionReason>>> {
         val excluded = mutableListOf<Pair<LanguageMapItem, ExclusionReason>>()
         val ranked = mutableListOf<LessonCandidate>()
         for (item in items) {
@@ -94,7 +98,7 @@ class LessonSelector(
                 taughtRecently -> excluded += item to ExclusionReason.TAUGHT_RECENTLY
                 else -> {
                     val candidate = score(item, state, nowMillis)
-                    if (candidate.score < config.minimumScore) excluded += item to ExclusionReason.BELOW_MINIMUM else ranked += candidate
+                    if (respectMinimumScore && candidate.score < config.minimumScore) excluded += item to ExclusionReason.BELOW_MINIMUM else ranked += candidate
                 }
             }
         }
@@ -109,13 +113,14 @@ class LessonSelector(
 
     /**
      * Like [select], but for a "random lesson" the learner can ask for any time, as extra practice beyond the one daily
-     * lesson, as many times a day as they like: everything that qualifies — not mastered, above the minimum score, but
-     * (unlike the daily lesson) **not excluded just for having been taught recently** — is shuffled before the no-overlap
-     * / not-all-one-type pick, so a different lesson can come up each time, and asking again right after finishing one
-     * does not run out of eligible items.
+     * lesson, as many times a day as they like: everything not mastered qualifies — unlike the daily lesson, **neither
+     * excluded just for having been taught recently, nor held to the daily lesson's minimum-usefulness bar** — and is
+     * shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each time, the pool is as
+     * large as the learner's real "not yet mastered" vocabulary, and asking again right after finishing one does not run
+     * out of eligible items.
      */
     fun selectRandom(items: List<LanguageMapItem>, nowMillis: Long, shuffle: (List<LessonCandidate>) -> List<LessonCandidate> = { it.shuffled() }): SelectionResult {
-        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = false)
+        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = false, respectMinimumScore = false)
         return SelectionResult(choose(shuffle(ranked)), ranked, excluded)
     }
 
