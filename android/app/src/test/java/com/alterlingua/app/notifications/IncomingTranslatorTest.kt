@@ -1,10 +1,18 @@
 package com.alterlingua.app.notifications
 
+import com.alterlingua.app.learning.AssistanceMode
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
+import com.alterlingua.app.learning.assistance.AdaptiveEngine
+import com.alterlingua.app.learning.engine.AnalyzerRegistry
+import com.alterlingua.app.learning.engine.Icu4jWordBreaker
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
+import com.alterlingua.app.learning.engine.RuleBasedAnalyzer
 import com.alterlingua.app.learning.engine.TranslationInteraction
+import com.alterlingua.app.learning.engine.UnitKey
+import com.alterlingua.app.learning.engine.UnitType
+import com.alterlingua.app.learning.map.LanguageMapItem
 import com.alterlingua.app.translation.Translation
 import com.alterlingua.app.translation.TranslationApi
 import com.alterlingua.app.translation.TranslationFailure
@@ -67,21 +75,31 @@ class IncomingTranslatorTest {
         val native: Array<Language>,
         val enabled: BooleanArray,
         val seen: SeenMessages,
+        val mode: Array<AssistanceMode> = arrayOf(AssistanceMode.FULL_SUPPORT),
     )
 
     private val heard = mutableListOf<TranslationInteraction>()
 
-    private fun TestScope.setup(native: Language = Languages.English, api: FakeApi = FakeApi { answer(it) }): Setup {
+    private fun TestScope.setup(
+        native: Language = Languages.English,
+        api: FakeApi = FakeApi { answer(it) },
+        mode: AssistanceMode = AssistanceMode.FULL_SUPPORT,
+        adaptiveEngine: AdaptiveEngine? = null,
+        learningLanguage: Language = Languages.French,
+        languageMapLookup: suspend (UnitKey) -> LanguageMapItem? = { null },
+    ): Setup {
         val presenter = FakePresenter()
         val outcomes = mutableListOf<IncomingOutcome>()
         val current = arrayOf(native)
         val enabled = booleanArrayOf(true)
+        val modes = arrayOf(mode)
         val seen = SeenMessages()
         val translator = IncomingTranslator(
             api = api, nativeLanguage = { current[0] }, enabled = { enabled[0] }, presenter = presenter, seen = seen,
             outcomes = { outcomes += it }, isSource = whatsappOnly, timeoutMillis = 25_000, learning = LearningRecorder { heard += it },
+            assistanceMode = { modes[0] }, adaptiveEngine = adaptiveEngine, learningLanguage = { learningLanguage }, languageMapLookup = languageMapLookup,
         )
-        return Setup(translator, api, presenter, outcomes, current, enabled, seen)
+        return Setup(translator, api, presenter, outcomes, current, enabled, seen, modes)
     }
 
     private fun message(text: String = "Tu viens demain ?", sender: String = "Marie", key: String = "chat-marie", time: Long = 1_000) =
@@ -345,6 +363,54 @@ class IncomingTranslatorTest {
         backgroundScope.launch { s.translator.handle(message()) }
         runCurrent()
         assertEquals(1, s.api.requests.size)
+    }
+
+    // ---- Adaptive mode ----
+
+    private val adaptiveEngine = AdaptiveEngine(AnalyzerRegistry(listOf(RuleBasedAnalyzer(cjkBreaker = Icu4jWordBreaker))))
+
+    @Test
+    fun adaptiveMode_withNothingMastered_fallsBackToTheFullTranslation_justLikeFullSupport() = runTest {
+        val s = setup(native = Languages.English, mode = AssistanceMode.ADAPTIVE, adaptiveEngine = adaptiveEngine)
+        s.translator.handle(message("Tu viens demain ?"))
+        val line = s.presenter.shown.single().lines.single()
+        assertEquals("Are you coming tomorrow?", line.text)
+        assertFalse(line.adaptive)
+    }
+
+    @Test
+    fun adaptiveMode_withBothContentWordsMastered_keepsTheOriginalInstead() = runTest {
+        // "Tu" is a pronoun (a function word); "viens" and "demain" are the two content words to judge.
+        fun mastered(word: String) = LanguageMapItem("fr", word, UnitType.WORD, word, lessonEncounters = 4, correctRecognitions = 5, exposureCount = 12, lastSeen = System.currentTimeMillis())
+        val known = mapOf("viens" to mastered("viens"), "demain" to mastered("demain"))
+        val s = setup(
+            native = Languages.English, mode = AssistanceMode.ADAPTIVE, adaptiveEngine = adaptiveEngine,
+            languageMapLookup = { known[it.normalized] },
+        )
+        s.translator.handle(message("Tu viens demain ?"))
+        val line = s.presenter.shown.single().lines.single()
+        assertEquals("Tu viens demain ?", line.text)
+        assertTrue(line.adaptive)
+    }
+
+    @Test
+    fun adaptiveMode_stillFeedsTheLearningPipeline_withTheOriginalMessage() = runTest {
+        val s = setup(native = Languages.English, mode = AssistanceMode.ADAPTIVE, adaptiveEngine = adaptiveEngine)
+        s.translator.handle(message("Tu viens demain ?"))
+        assertEquals(listOf(TranslationInteraction(InteractionKind.INCOMING_MESSAGE, "Tu viens demain ?", "fr")), heard)
+    }
+
+    @Test
+    fun fullSupport_isNeverAdaptedEvenWithAnEngineConfigured() = runTest {
+        val mastered = LanguageMapItem("fr", "viens", UnitType.WORD, "viens", lessonEncounters = 4, correctRecognitions = 5, exposureCount = 12, lastSeen = System.currentTimeMillis())
+        val s = setup(
+            native = Languages.English, mode = AssistanceMode.FULL_SUPPORT, adaptiveEngine = adaptiveEngine,
+            languageMapLookup = { if (it.normalized == "viens") mastered else null },
+        )
+        s.translator.handle(message("Tu viens demain ?"))
+        val line = s.presenter.shown.single().lines.single()
+        assertEquals("Are you coming tomorrow?", line.text)
+        assertFalse(line.adaptive)
     }
 
     @Test

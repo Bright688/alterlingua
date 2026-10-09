@@ -88,6 +88,7 @@
     <string name="notif_channel_name">翻訳されたメッセージ</string>
     <string name="notif_channel_description">受信したメッセージの翻訳を、通知として控えめに表示します。</string>
     <string name="notif_translated_from">%1$sから翻訳</string>
+    <string name="notif_adaptive_from">%1$sからのアダプティブ補助</string>
     <string name="notif_public_text">翻訳されたメッセージ</string>
     <string name="share_voice_label">AlterLingua 翻訳</string>
     <string name="failure_voice_no_voice_for_target">この言語の音声はまだありません。</string>
@@ -305,6 +306,9 @@
     <string name="lrn_repeat">繰り返す</string>
     <string name="lrn_finish_lesson">レッスンを終える</string>
     <string name="lrn_next_item">次の項目</string>
+    <string name="lrn_recall_prompt">これはもう知っていましたか？</string>
+    <string name="lrn_recall_yes">はい</string>
+    <string name="lrn_recall_no">いいえ</string>
     <string name="lrn_done_for_today">今日は完了</string>
     <string name="lrn_complete_body">%1$d / %1$d 完了。明日、翻訳したメッセージから新しいマイクロレッスンが届きます。</string>
     <string name="lt_met_once">1 回出会いました</string>

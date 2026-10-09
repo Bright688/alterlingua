@@ -97,4 +97,16 @@ class WordsViewModelTest {
         vm.onQueryChange("报价")
         assertEquals(listOf("报价"), vm.uiState.value.visibleWords.map { it.term })
     }
+
+    @Test
+    fun wordsCarryARoughPronunciationGuide_exceptWhereTheLanguageHasNone() = runBlocking {
+        know("fr", "devis", "quotation")
+        val vm = viewModel()
+        val word = vm.awaitWords(1).words.single()
+        assertTrue(word.phonetic, word.phonetic.isNotBlank())
+
+        know("zh", "报价", "quotation")
+        val zh = viewModel(UserSettings(targetLanguage = Languages.Chinese)).awaitWords(1).words.single()
+        assertTrue(zh.phonetic.isEmpty())
+    }
 }

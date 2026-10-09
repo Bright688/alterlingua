@@ -88,6 +88,7 @@
     <string name="notif_channel_name">Vertaalde berichten</string>
     <string name="notif_channel_description">Vertalingen van binnenkomende berichten, rustig getoond als meldingen.</string>
     <string name="notif_translated_from">Vertaald uit: %1$s</string>
+    <string name="notif_adaptive_from">Adaptieve hulp uit: %1$s</string>
     <string name="notif_public_text">Vertaald bericht</string>
     <string name="share_voice_label">AlterLingua Vertalen</string>
     <string name="failure_voice_no_voice_for_target">Er is nog geen stem voor die taal.</string>
@@ -305,6 +306,9 @@
     <string name="lrn_repeat">Herhalen</string>
     <string name="lrn_finish_lesson">Les afronden</string>
     <string name="lrn_next_item">Volgend item</string>
+    <string name="lrn_recall_prompt">Wist je dit al?</string>
+    <string name="lrn_recall_yes">Ja</string>
+    <string name="lrn_recall_no">Nee</string>
     <string name="lrn_done_for_today">Klaar voor vandaag</string>
     <string name="lrn_complete_body">%1$d / %1$d voltooid. Morgen komen er nieuwe microlessen, gemaakt van de berichten die je vertaalt.</string>
     <string name="lt_met_once">Eén keer tegengekomen</string>

@@ -105,8 +105,8 @@ sealed interface Extraction {
     data class Skipped(val reason: SkipReason) : Extraction
 }
 
-/** A message after translation. */
-data class TranslatedLine(val sender: String, val text: String, val sourceLanguage: String) {
+/** A message after translation. [adaptive] is true when [text] is Adaptive's own-language-with-glosses answer rather than a full translation. */
+data class TranslatedLine(val sender: String, val text: String, val sourceLanguage: String, val adaptive: Boolean = false) {
     /** Never printed: this holds private text, so it cannot reach a log or a crash report. */
     override fun toString(): String = "TranslatedLine(redacted)"
 }

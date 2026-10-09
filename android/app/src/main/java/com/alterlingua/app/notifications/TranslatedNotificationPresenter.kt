@@ -47,7 +47,7 @@ class TranslatedNotificationPresenter(
             .setSmallIcon(R.drawable.ic_tool_translate)
             .setContentTitle(conversation.title)
             .setContentText(line(latest.sender, latest.text))
-            .setSubText(context.getString(R.string.notif_translated_from, from))
+            .setSubText(context.getString(if (latest.adaptive) R.string.notif_adaptive_from else R.string.notif_translated_from, from))
             .setStyle(NotificationCompat.BigTextStyle().bigText(conversation.lines.joinToString("\n") { line(it.sender, it.text) }))
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setAutoCancel(true)

@@ -107,6 +107,7 @@
     <string name="notif_channel_name">Translated messages</string>
     <string name="notif_channel_description">Translations of incoming messages, shown quietly as notifications.</string>
     <string name="notif_translated_from">Translated from %1$s</string>
+    <string name="notif_adaptive_from">Adaptive help from %1$s</string>
     <string name="notif_public_title" translatable="false">AlterLingua</string>
     <string name="notif_public_text">Translated message</string>
     <!-- Name shown in the Android Share sheet when sharing audio to AlterLingua. -->
@@ -334,6 +335,9 @@
     <string name="lrn_repeat">Repeat</string>
     <string name="lrn_finish_lesson">Finish lesson</string>
     <string name="lrn_next_item">Next item</string>
+    <string name="lrn_recall_prompt">Did you already know this?</string>
+    <string name="lrn_recall_yes">Yes</string>
+    <string name="lrn_recall_no">No</string>
     <string name="lrn_done_for_today">Done for today</string>
     <string name="lrn_complete_body">%1$d / %1$d complete. New micro-lessons arrive tomorrow, made from the messages you translate.</string>
     <string name="lt_met_once">Met once</string>

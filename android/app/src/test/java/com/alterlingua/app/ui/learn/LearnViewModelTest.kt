@@ -109,6 +109,16 @@ class LearnViewModelTest {
     }
 
     @Test
+    fun recordRecognition_passesThroughToTheLanguageMap() = runBlocking {
+        val language = UserSettings().targetLanguage.code
+        met(language, "devis", times = 3)
+        val vm = viewModel()
+        val card = (vm.uiState.value as LearnUiState.Card).lesson.current
+        vm.recordRecognition(card, true)
+        assertEquals(1, map.item(card.key)!!.evidence.correctRecognitions)
+    }
+
+    @Test
     fun emptyStateNamesTheLanguageBeingLearned() {
         val state = viewModel().uiState.value as LearnUiState.Empty
         assertEquals(UserSettings().targetLanguage, state.language)

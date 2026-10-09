@@ -366,6 +366,28 @@ class LessonServiceTest {
         assertTrue(service().today().lesson().cards.all { it.meaning!!.endsWith("in ja") && it.meaningLanguage == "ja" })
     }
 
+    // ---- the recall check (the recognition signal Adaptive mode needs) ----
+
+    @Test
+    fun recordRecognition_updatesTheMapsRecognitionCounts_onTheCardsOwnKey() = runTest {
+        fillFrench()
+        val card = service().today().lesson().cards.first()
+        service().recordRecognition(card, correct = true)
+        val item = map.item(card.key)!!
+        assertEquals(1, item.evidence.correctRecognitions)
+        assertEquals(0, item.evidence.incorrectRecognitions)
+    }
+
+    @Test
+    fun recordRecognition_countsAWrongAnswerSeparately() = runTest {
+        fillFrench()
+        val card = service().today().lesson().cards.first()
+        service().recordRecognition(card, correct = false)
+        val item = map.item(card.key)!!
+        assertEquals(0, item.evidence.correctRecognitions)
+        assertEquals(1, item.evidence.incorrectRecognitions)
+    }
+
     // ---- privacy ----
 
     @Test

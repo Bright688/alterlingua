@@ -167,7 +167,15 @@ class AlterLinguaApplication : Application() {
             outcomes = incomingStatus,
             learning = learningRecorder,
             assistanceMode = { userSettings.settings.first().assistanceMode },
+            adaptiveEngine = adaptiveEngine,
+            learningLanguage = { userSettings.settings.first().targetLanguage },
+            languageMapLookup = languageMap::item,
         )
+    }
+
+    /** Decides, for Adaptive mode, which words of a message already in the language being learned can stay that way. */
+    val adaptiveEngine: com.alterlingua.app.learning.assistance.AdaptiveEngine by lazy {
+        com.alterlingua.app.learning.assistance.AdaptiveEngine(analyzers)
     }
 
     /**

@@ -74,6 +74,7 @@ fun LearnRoute(
             onPrevious = randomViewModel::previous,
             onNext = randomViewModel::next,
             modifier = modifier,
+            onRecognition = randomViewModel::recordRecognition,
             footer = {
                 OutlinedButton(onClick = { showingRandom = false }, modifier = Modifier.fillMaxWidth().testTag("lrn_back_to_today")) {
                     Text(stringResource(R.string.lrn_back_to_today))
@@ -87,6 +88,7 @@ fun LearnRoute(
             onPrevious = viewModel::previous,
             onNext = viewModel::next,
             modifier = modifier,
+            onRecognition = viewModel::recordRecognition,
             footer = {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     OutlinedButton(
@@ -108,6 +110,10 @@ fun LearnScreen(
     onNext: () -> Unit,
     modifier: Modifier = Modifier,
     nowMillis: Long = System.currentTimeMillis(),
+    /** The learner said whether they already knew the card, before being shown whether they were right (see
+     * [com.alterlingua.app.learning.map.LanguageMapService.recordRecognition]): this is the recall signal Adaptive
+     * mode needs, separate from and stronger than pronunciation practice's imitation. */
+    onRecognition: (LessonCard, Boolean) -> Unit = { _, _ -> },
     /** Extra content under the lesson, e.g. the On-demand reader. */
     footer: @Composable () -> Unit = {},
     /** Listen, Repeat and feedback for a card. The default is the disabled placeholder. */
@@ -121,7 +127,7 @@ fun LearnScreen(
         when (state) {
             LearnUiState.Loading -> Unit
             is LearnUiState.Empty -> EmptyLesson(state)
-            is LearnUiState.Card -> LessonCardContent(state, onPrevious, onNext, nowMillis, practice)
+            is LearnUiState.Card -> LessonCardContent(state, onPrevious, onNext, nowMillis, onRecognition, practice)
             is LearnUiState.Complete -> LessonComplete(state.lesson)
         }
         footer()
@@ -158,7 +164,14 @@ private fun EmptyLesson(state: LearnUiState.Empty) {
 
 /** One card of the lesson (Stitch: Learn / Today's Lesson). */
 @Composable
-private fun LessonCardContent(state: LearnUiState.Card, onPrevious: () -> Unit, onNext: () -> Unit, nowMillis: Long, practice: @Composable (LessonCard) -> Unit) {
+private fun LessonCardContent(
+    state: LearnUiState.Card,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    nowMillis: Long,
+    onRecognition: (LessonCard, Boolean) -> Unit,
+    practice: @Composable (LessonCard) -> Unit,
+) {
     val card = state.lesson.current
     TagPill(stringResource(R.string.lrn_item_of, state.index + 1, state.total))
 
@@ -233,12 +246,43 @@ private fun LessonCardContent(state: LearnUiState.Card, onPrevious: () -> Unit, 
         }
     }
 
+    if (card.meaning != null) {
+        RecallCheck(card, onRecognition)
+    }
+
     practice(card)
 
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         OutlinedButton(onClick = onPrevious, enabled = state.canGoBack, modifier = Modifier.weight(1f).testTag("lesson_back")) { Text(stringResource(R.string.action_back)) }
         Button(onClick = onNext, modifier = Modifier.weight(1f).testTag("lesson_next")) {
             Text(stringResource(if (state.isLast) R.string.lrn_finish_lesson else R.string.lrn_next_item))
+        }
+    }
+}
+
+/**
+ * "Did you already know this?" (Stitch: Learn / recall check). The one honest way AlterLingua has today to ask the
+ * learner to recall a word rather than just repeat it after hearing it, so Adaptive mode has real recognition
+ * evidence to work from. A self-report, not a quiz; answering is optional and the question disappears once answered,
+ * once per card (going back and returning asks again, matching the daily lesson's own "going back records nothing").
+ */
+@Composable
+private fun RecallCheck(card: LessonCard, onRecognition: (LessonCard, Boolean) -> Unit) {
+    var answered by rememberSaveable(card.key) { mutableStateOf(false) }
+    if (answered) return
+    AlterLinguaCard {
+        Column(Modifier.fillMaxWidth().testTag("lesson_recall"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.lrn_recall_prompt), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedButton(
+                    onClick = { answered = true; onRecognition(card, true) },
+                    modifier = Modifier.weight(1f).testTag("lesson_recall_yes"),
+                ) { Text(stringResource(R.string.lrn_recall_yes)) }
+                OutlinedButton(
+                    onClick = { answered = true; onRecognition(card, false) },
+                    modifier = Modifier.weight(1f).testTag("lesson_recall_no"),
+                ) { Text(stringResource(R.string.lrn_recall_no)) }
+            }
         }
     }
 }

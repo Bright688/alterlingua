@@ -64,6 +64,14 @@ class LessonService(
         }
     }
 
+    /**
+     * The learner said whether they already knew the card's word or phrase, before being shown it was right. This is
+     * the "recognition" signal Adaptive mode needs (CLAUDE.md section 17): unlike a lesson encounter or pronunciation
+     * practice (which is imitation, repeating what was just heard), it is the learner's own recall, so it alone can
+     * move a word to FAMILIAR or MASTERED.
+     */
+    suspend fun recordRecognition(card: LessonCard, correct: Boolean) = map.recordRecognition(card.key, correct, card.term)
+
     /** Back to the previous card. Going back records nothing. */
     suspend fun previous(): LessonState = lock.withLock {
         val state = current(languages())

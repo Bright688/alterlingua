@@ -88,6 +88,7 @@
     <string name="notif_channel_name">Übersetzte Nachrichten</string>
     <string name="notif_channel_description">Übersetzungen eingehender Nachrichten, dezent als Benachrichtigungen angezeigt.</string>
     <string name="notif_translated_from">Übersetzt aus: %1$s</string>
+    <string name="notif_adaptive_from">Adaptive Hilfe aus: %1$s</string>
     <string name="notif_public_text">Übersetzte Nachricht</string>
     <string name="share_voice_label">AlterLingua Übersetzen</string>
     <string name="failure_voice_no_voice_for_target">Für diese Sprache gibt es noch keine Stimme.</string>
@@ -305,6 +306,9 @@
     <string name="lrn_repeat">Wiederholen</string>
     <string name="lrn_finish_lesson">Lektion beenden</string>
     <string name="lrn_next_item">Nächster Eintrag</string>
+    <string name="lrn_recall_prompt">Wusstest du das schon?</string>
+    <string name="lrn_recall_yes">Ja</string>
+    <string name="lrn_recall_no">Nein</string>
     <string name="lrn_done_for_today">Für heute geschafft</string>
     <string name="lrn_complete_body">%1$d / %1$d abgeschlossen. Morgen kommen neue Mikro-Lektionen aus den Nachrichten, die du übersetzt.</string>
     <string name="lt_met_once">Einmal begegnet</string>

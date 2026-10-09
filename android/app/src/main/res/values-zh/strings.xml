@@ -88,6 +88,7 @@
     <string name="notif_channel_name">已翻译的消息</string>
     <string name="notif_channel_description">收到消息的翻译，以安静的通知形式显示。</string>
     <string name="notif_translated_from">译自%1$s</string>
+    <string name="notif_adaptive_from">来自%1$s的自适应帮助</string>
     <string name="notif_public_text">已翻译的消息</string>
     <string name="share_voice_label">AlterLingua 翻译</string>
     <string name="failure_voice_no_voice_for_target">该语言暂时没有可用的语音。</string>
@@ -305,6 +306,9 @@
     <string name="lrn_repeat">跟读</string>
     <string name="lrn_finish_lesson">完成课程</string>
     <string name="lrn_next_item">下一项</string>
+    <string name="lrn_recall_prompt">你已经知道这个了吗？</string>
+    <string name="lrn_recall_yes">是</string>
+    <string name="lrn_recall_no">不是</string>
     <string name="lrn_done_for_today">今日完成</string>
     <string name="lrn_complete_body">已完成 %1$d/%1$d。明天会根据您翻译的消息生成新的微课。</string>
     <string name="lt_met_once">遇到 1 次</string>

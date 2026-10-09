@@ -1,8 +1,10 @@
 package com.alterlingua.app.ui.learn
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -54,6 +56,19 @@ class LearnScreenTest {
         composeTestRule.setContent { AlterLinguaTheme { LearnScreen(LearnUiState.Card(lesson(1)), onPrevious = {}, onNext = {}) } }
         composeTestRule.onNodeWithTag("lesson_phrase_card").assertIsDisplayed()
         composeTestRule.onNodeWithTag("lesson_meaning_missing").assertIsDisplayed()
+        composeTestRule.onAllNodesWithTag("lesson_recall").assertCountEquals(0) // nothing to recall without a meaning
+    }
+
+    @Test
+    fun wordCard_asksWhetherYouAlreadyKnewIt_andRecordsTheAnswerOnce() {
+        val answers = mutableListOf<Pair<LessonCard, Boolean>>()
+        composeTestRule.setContent {
+            AlterLinguaTheme { LearnScreen(LearnUiState.Card(lesson()), onPrevious = {}, onNext = {}, onRecognition = { card, correct -> answers += card to correct }) }
+        }
+        composeTestRule.onNodeWithTag("lesson_recall").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("lesson_recall_yes").performClick()
+        assertEquals(listOf(true), answers.map { it.second })
+        composeTestRule.onAllNodesWithTag("lesson_recall").assertCountEquals(0) // asked once per card
     }
 
     @Test

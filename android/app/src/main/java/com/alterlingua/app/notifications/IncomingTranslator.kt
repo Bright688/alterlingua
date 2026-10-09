@@ -2,10 +2,18 @@ package com.alterlingua.app.notifications
 
 import com.alterlingua.app.learning.AssistanceMode
 import com.alterlingua.app.learning.Language
+import com.alterlingua.app.learning.Languages
+import com.alterlingua.app.learning.WritingSystem
+import com.alterlingua.app.learning.assistance.AdaptiveEngine
+import com.alterlingua.app.learning.assistance.AdaptiveLevel
+import com.alterlingua.app.learning.assistance.AdaptivePresentation
 import com.alterlingua.app.learning.assistance.AssistancePolicy
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
+import com.alterlingua.app.learning.engine.Script
 import com.alterlingua.app.learning.engine.TranslationInteraction
+import com.alterlingua.app.learning.engine.UnitKey
+import com.alterlingua.app.learning.map.LanguageMapItem
 import com.alterlingua.app.translation.TranslationApi
 import com.alterlingua.app.translation.TranslationFailure
 import com.alterlingua.app.translation.TranslationRequest
@@ -57,6 +65,12 @@ class IncomingTranslator(
     private val learning: LearningRecorder = LearningRecorder.None,
     /** The user's assistance mode, read fresh for each notification. */
     private val assistanceMode: suspend () -> AssistanceMode = { AssistanceMode.FULL_SUPPORT },
+    /** Adaptive's decision maker. Null (the default) keeps Adaptive behaving like Full Support, e.g. in tests that do not set one up. */
+    private val adaptiveEngine: AdaptiveEngine? = null,
+    /** The language currently being learned, read fresh only when Adaptive mode needs it. */
+    private val learningLanguage: suspend () -> Language = { Languages.English },
+    /** The Personal Language Map, for Adaptive's per-word lookups. */
+    private val languageMapLookup: suspend (UnitKey) -> LanguageMapItem? = { null },
 ) {
     private class Conversation(var title: String, var isGroup: Boolean, var openIntent: Any?) {
         val lines = ArrayDeque<TranslatedLine>()
@@ -81,7 +95,10 @@ class IncomingTranslator(
 
         lock.withLock {
             val native = nativeLanguage()
-            val assistance = AssistancePolicy.incoming(assistanceMode())
+            val mode = assistanceMode()
+            val assistance = AssistancePolicy.incoming(mode)
+            // Read only when Adaptive might use it: Full Support and On-demand never need it.
+            val activeLearning = if (mode == AssistanceMode.ADAPTIVE && adaptiveEngine != null) learningLanguage() else null
             var newest: TranslatedLine? = null
             for (message in extraction.messages) {
                 if (!seen.firstTime(extraction.conversationKey, message.sender, message.text, message.timestamp)) continue
@@ -105,7 +122,10 @@ class IncomingTranslator(
                         if (answer.sourceLanguage == native.code) {
                             record(IncomingOutcomeKind.ALREADY_IN_YOUR_LANGUAGE, answer.sourceLanguage)
                         } else {
-                            val line = TranslatedLine(message.sender, answer.text, answer.sourceLanguage)
+                            val adapted = if (activeLearning != null && answer.sourceLanguage == activeLearning.code) {
+                                adapt(message.text, activeLearning, native, answer.text, adaptiveEngine!!)
+                            } else null
+                            val line = TranslatedLine(message.sender, adapted ?: answer.text, answer.sourceLanguage, adaptive = adapted != null)
                             conversations.getOrPut(extraction.conversationKey) { Conversation(extraction.title, extraction.isGroup, extraction.openIntent) }
                                 .also {
                                     it.title = extraction.title
@@ -144,6 +164,18 @@ class IncomingTranslator(
             conversations.clear()
             seen.clear()
         }
+    }
+
+    /**
+     * Adaptive's answer for a message already confirmed to be written in the language being learned: the original
+     * text, kept whole or glossed, in place of the full translation. Null (the full translation is used as-is)
+     * whenever the engine is not sure enough (CLAUDE.md "the safe answer whenever the engine is not sure").
+     */
+    private suspend fun adapt(original: String, learningLang: Language, native: Language, fullTranslation: String, engine: AdaptiveEngine): String? {
+        val decision = engine.decide(original, textLanguage = learningLang, learning = learningLang, native = native, nowMillis = clock(), lookup = languageMapLookup)
+        if (decision.level == AdaptiveLevel.FULL_TRANSLATION) return null
+        val script = if (learningLang.writingSystem == WritingSystem.LATIN) Script.LATIN else Script.CJK
+        return AdaptivePresentation.plainText(decision, script)
     }
 
     private fun kindFor(failure: TranslationFailure) = when (failure) {

@@ -88,6 +88,7 @@
     <string name="notif_channel_name">Messaggi tradotti</string>
     <string name="notif_channel_description">Traduzioni dei messaggi ricevuti, mostrate in modo discreto come notifiche.</string>
     <string name="notif_translated_from">Tradotto da: %1$s</string>
+    <string name="notif_adaptive_from">Aiuto adattivo da: %1$s</string>
     <string name="notif_public_text">Messaggio tradotto</string>
     <string name="share_voice_label">AlterLingua Traduci</string>
     <string name="failure_voice_no_voice_for_target">Non c’è ancora una voce per questa lingua.</string>
@@ -305,6 +306,9 @@
     <string name="lrn_repeat">Ripeti</string>
     <string name="lrn_finish_lesson">Termina lezione</string>
     <string name="lrn_next_item">Elemento successivo</string>
+    <string name="lrn_recall_prompt">Lo sapevi già?</string>
+    <string name="lrn_recall_yes">Sì</string>
+    <string name="lrn_recall_no">No</string>
     <string name="lrn_done_for_today">Fatto per oggi</string>
     <string name="lrn_complete_body">%1$d / %1$d completati. Domani arriveranno nuove micro-lezioni create dai messaggi che traduci.</string>
     <string name="lt_met_once">Incontrato una volta</string>

@@ -6,6 +6,7 @@ import com.alterlingua.app.learning.LanguageMapSummary
 import com.alterlingua.app.learning.MasteryStatus
 import com.alterlingua.app.learning.map.LanguageMapService
 import com.alterlingua.app.learning.WordEntry
+import com.alterlingua.app.learning.pronunciation.PronunciationGuide
 import com.alterlingua.app.storage.UserSettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,10 +45,12 @@ private data class WordsFilters(val query: String = "", val filter: MasteryStatu
 class WordsViewModel(repository: UserSettingsRepository, map: LanguageMapService) : ViewModel() {
     private val filters = MutableStateFlow(WordsFilters())
 
-    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    private val entries = repository.settings.map { it.targetLanguage.code }.distinctUntilChanged().flatMapLatest { map.observe(it) }
+    private val language = repository.settings.map { it.targetLanguage }.distinctUntilChanged()
 
-    val uiState: StateFlow<WordsUiState> = combine(entries, filters) { items, current ->
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    private val entries = language.flatMapLatest { map.observe(it.code) }
+
+    val uiState: StateFlow<WordsUiState> = combine(language, entries, filters) { lang, items, current ->
         WordsUiState(
             summary = LanguageMapSummary(
                 newCount = items.count { it.masteryState == MasteryStatus.UNKNOWN },
@@ -55,7 +58,15 @@ class WordsViewModel(repository: UserSettingsRepository, map: LanguageMapService
                 familiarCount = items.count { it.masteryState == MasteryStatus.FAMILIAR },
                 masteredCount = items.count { it.masteryState == MasteryStatus.MASTERED },
             ),
-            words = items.map { WordEntry(it.displayForm, "", it.meaning.orEmpty(), it.masteryState, it.exposureCount) },
+            words = items.map { item ->
+                WordEntry(
+                    term = item.displayForm,
+                    phonetic = PronunciationGuide.guideFor(item.displayForm, lang).orEmpty(),
+                    meaning = item.meaning.orEmpty(),
+                    status = item.masteryState,
+                    encounters = item.exposureCount,
+                )
+            },
             query = current.query,
             filter = current.filter,
         )

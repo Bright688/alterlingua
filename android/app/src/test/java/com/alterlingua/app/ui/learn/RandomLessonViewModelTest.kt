@@ -109,6 +109,18 @@ class RandomLessonViewModelTest {
     }
 
     @Test
+    fun recordRecognition_passesThroughToTheLanguageMap() = runBlocking {
+        met("fr", "devis", UnitType.WORD, usefulness = 0.8)
+        met("fr", "avant midi", UnitType.PHRASE, usefulness = 0.8)
+        met("fr", "au courant", UnitType.EXPRESSION, usefulness = 0.9)
+        val vm = viewModel()
+        vm.start()
+        val card = (vm.uiState.value as LearnUiState.Card).lesson.current
+        vm.recordRecognition(card, true)
+        assertEquals(1, map.item(card.key)!!.evidence.correctRecognitions)
+    }
+
+    @Test
     fun aRandomLesson_isNeverSaved_andDoesNotTouchTheDailyLesson() = runBlocking {
         met("fr", "devis", UnitType.WORD, usefulness = 0.8)
         met("fr", "avant midi", UnitType.PHRASE, usefulness = 0.8)

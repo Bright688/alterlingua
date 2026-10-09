@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.UserSettings
 import com.alterlingua.app.learning.lessons.DailyLesson
+import com.alterlingua.app.learning.lessons.LessonCard
 import com.alterlingua.app.learning.lessons.LessonService
 import com.alterlingua.app.learning.lessons.LessonState
 import com.alterlingua.app.learning.map.LanguageMapService
@@ -54,6 +55,11 @@ class RandomLessonViewModel(
             val finished = lesson.position >= lesson.cards.lastIndex
             show(lesson.copy(position = if (finished) lesson.position else lesson.position + 1, encountered = encountered, completed = finished))
         }
+    }
+
+    /** The learner said whether they already knew this card, before being shown whether they were right. */
+    fun recordRecognition(card: LessonCard, correct: Boolean) {
+        viewModelScope.launch { lessons.recordRecognition(card, correct) }
     }
 
     /** Back to the previous card. Going back records nothing (matches the daily lesson). */
