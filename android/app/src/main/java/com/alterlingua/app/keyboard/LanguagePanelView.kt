@@ -6,19 +6,27 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import com.alterlingua.app.R
 import com.alterlingua.app.learning.Language
 
-/** The "Translate to" list shown in place of the keys. Each language shows its own name first (CLAUDE.md 6.2). */
+/**
+ * The "Translate to" list shown in place of the keys. Each language shows its own name first (CLAUDE.md 6.2), with a
+ * search field (CLAUDE.md 6.8) to narrow a list of up to eight languages down by native or English name or code.
+ */
 @SuppressLint("ViewConstructor") // only ever created in code by the keyboard view
 class LanguagePanelView(
     context: Context,
@@ -29,6 +37,36 @@ class LanguagePanelView(
 
     private val density = resources.displayMetrics.density
     private val grid = LinearLayout(context).apply { orientation = VERTICAL }
+    private val emptyState = TextView(context).apply {
+        text = context.getString(R.string.toolbar_no_languages_found)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        setTextColor(colors.functionText)
+        gravity = Gravity.CENTER
+        visibility = GONE
+    }
+
+    private var allLanguages: List<Language> = emptyList()
+    private var selectedLanguage: Language? = null
+
+    private val searchField = EditText(context).apply {
+        hint = context.getString(R.string.toolbar_search_languages)
+        setSingleLine(true)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+        setTextColor(colors.text)
+        setHintTextColor(colors.functionText)
+        setPadding((10 * density).toInt(), 0, (10 * density).toInt(), 0)
+        // GradientDrawable has its own getColors()/setColors(IntArray) pair, which Kotlin would otherwise treat as a
+        // synthetic `colors` property shadowing the outer KeyboardColors inside `apply {}` — `also { d -> ... }` with
+        // an explicit receiver name avoids that entirely.
+        background = GradientDrawable().also { d ->
+            d.shape = GradientDrawable.RECTANGLE
+            d.cornerRadius = 10 * density
+            d.setColor(colors.letterKey)
+            d.setStroke((1 * density).toInt(), colors.outline)
+        }
+        imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+        doAfterTextChanged { applyFilter() }
+    }
 
     init {
         orientation = VERTICAL
@@ -54,11 +92,51 @@ class LanguagePanelView(
             LayoutParams(LayoutParams.WRAP_CONTENT, (34 * density).toInt()),
         )
         addView(header, LayoutParams(LayoutParams.MATCH_PARENT, (HEADER_HEIGHT_DP * density).toInt()))
-        addView(grid, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        addView(
+            searchField,
+            LayoutParams(LayoutParams.MATCH_PARENT, (SEARCH_HEIGHT_DP * density).toInt()).apply {
+                val margin = (4 * density).toInt()
+                leftMargin = margin; rightMargin = margin; bottomMargin = margin
+            },
+        )
+        // Scrollable, not a fixed height: the search field shares the panel's existing height budget with the list,
+        // so on a shorter keyboard (or with every language still matching) the list scrolls rather than clipping.
+        val listArea = LinearLayout(context).apply { orientation = VERTICAL }
+        listArea.addView(grid, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        listArea.addView(
+            emptyState,
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = (12 * density).toInt() },
+        )
+        val scroll = ScrollView(context).apply {
+            isVerticalScrollBarEnabled = false
+            addView(listArea, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        }
+        addView(scroll, LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f))
     }
 
-    /** Shows [languages] in two columns, with [selected] marked. */
+    /** Shows [languages] in two columns, with [selected] marked. The search field is cleared, so every fresh open starts unfiltered. */
     fun setLanguages(languages: List<Language>, selected: Language?) {
+        allLanguages = languages
+        selectedLanguage = selected
+        searchField.setText("")
+        applyFilter()
+    }
+
+    private fun applyFilter() {
+        val query = searchField.text?.toString()?.trim().orEmpty()
+        val matches = if (query.isEmpty()) {
+            allLanguages
+        } else {
+            allLanguages.filter {
+                it.nativeName.contains(query, ignoreCase = true) || it.englishName.contains(query, ignoreCase = true) || it.code.contains(query, ignoreCase = true)
+            }
+        }
+        renderGrid(matches)
+        grid.visibility = if (matches.isEmpty()) GONE else VISIBLE
+        emptyState.visibility = if (matches.isEmpty()) VISIBLE else GONE
+    }
+
+    private fun renderGrid(languages: List<Language>) {
         grid.removeAllViews()
         val gap = (2 * density).toInt()
         languages.chunked(2).forEach { pair ->
@@ -68,7 +146,7 @@ class LanguagePanelView(
                 val cell: View = if (language == null) {
                     View(context)
                 } else {
-                    LanguageOptionView(context, colors, language, language.code == selected?.code) { onSelect(language) }
+                    LanguageOptionView(context, colors, language, language.code == selectedLanguage?.code) { onSelect(language) }
                 }
                 row.addView(cell, LayoutParams(0, LayoutParams.MATCH_PARENT, 1f).apply { setMargins(gap, gap, gap, gap) })
             }
@@ -78,6 +156,7 @@ class LanguagePanelView(
 
     companion object {
         const val HEADER_HEIGHT_DP = 40
+        const val SEARCH_HEIGHT_DP = 36
         const val ROW_HEIGHT_DP = 36
     }
 }

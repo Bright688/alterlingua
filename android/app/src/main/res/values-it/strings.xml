@@ -23,6 +23,8 @@
     <string name="toolbar_language_loading">Lingua di traduzione</string>
     <string name="toolbar_translate_to">Traduci in</string>
     <string name="toolbar_close">Chiudi</string>
+    <string name="toolbar_search_languages">Cerca lingue</string>
+    <string name="toolbar_no_languages_found">Nessuna lingua trovata</string>
     <string name="translation_translating">Traduzione in %1$s…</string>
     <string name="translation_done">Tradotto</string>
     <string name="translation_restored">Testo originale ripristinato</string>

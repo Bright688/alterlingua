@@ -23,6 +23,8 @@
     <string name="toolbar_language_loading">翻译语言</string>
     <string name="toolbar_translate_to">翻译成</string>
     <string name="toolbar_close">关闭</string>
+    <string name="toolbar_search_languages">搜索语言</string>
+    <string name="toolbar_no_languages_found">未找到语言</string>
     <string name="translation_translating">正在翻译成%1$s…</string>
     <string name="translation_done">已翻译</string>
     <string name="translation_restored">已恢复原文</string>

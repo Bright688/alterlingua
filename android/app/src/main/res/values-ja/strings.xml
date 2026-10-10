@@ -23,6 +23,8 @@
     <string name="toolbar_language_loading">翻訳先の言語</string>
     <string name="toolbar_translate_to">翻訳先</string>
     <string name="toolbar_close">閉じる</string>
+    <string name="toolbar_search_languages">言語を検索</string>
+    <string name="toolbar_no_languages_found">言語が見つかりません</string>
     <string name="translation_translating">%1$sに翻訳中…</string>
     <string name="translation_done">翻訳しました</string>
     <string name="translation_restored">元のテキストに戻しました</string>

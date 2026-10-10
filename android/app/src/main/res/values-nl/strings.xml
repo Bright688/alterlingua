@@ -23,6 +23,8 @@
     <string name="toolbar_language_loading">Vertaaltaal</string>
     <string name="toolbar_translate_to">Vertalen naar</string>
     <string name="toolbar_close">Sluiten</string>
+    <string name="toolbar_search_languages">Talen zoeken</string>
+    <string name="toolbar_no_languages_found">Geen talen gevonden</string>
     <string name="translation_translating">Vertalen naar %1$s…</string>
     <string name="translation_done">Vertaald</string>
     <string name="translation_restored">Originele tekst hersteld</string>

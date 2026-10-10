@@ -23,6 +23,8 @@
     <string name="toolbar_language_loading">Übersetzungssprache</string>
     <string name="toolbar_translate_to">Übersetzen nach</string>
     <string name="toolbar_close">Schließen</string>
+    <string name="toolbar_search_languages">Sprachen suchen</string>
+    <string name="toolbar_no_languages_found">Keine Sprachen gefunden</string>
     <string name="translation_translating">Übersetze nach %1$s …</string>
     <string name="translation_done">Übersetzt</string>
     <string name="translation_restored">Originaltext wiederhergestellt</string>

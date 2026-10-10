@@ -4,6 +4,7 @@ import android.view.View
 import com.alterlingua.app.keyboard.TranslationUiState
 import android.view.ViewGroup
 import androidx.test.platform.app.InstrumentationRegistry
+import com.alterlingua.app.R
 import com.alterlingua.app.learning.Languages
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -93,6 +94,48 @@ class KeyboardViewTest {
 
         allViews(view).first { it.contentDescription?.startsWith("Espa\u00F1ol") == true }.performClick()
         assertEquals(listOf<ToolbarAction>(ToolbarAction.SelectLanguage(Languages.Spanish)), actions)
+    }
+
+    private fun editTexts(root: View): List<android.widget.EditText> = allViews(root).filterIsInstance<android.widget.EditText>()
+
+    @Test
+    fun theLanguageList_hasASearchField_thatNarrowsTheListByNativeOrEnglishNameOrCode() = onMain {
+        val view = AlterLinguaKeyboardView(context)
+        view.render(KeyboardState())
+        view.renderToolbar(ToolbarState(target = Languages.French, native = Languages.English, panel = ToolbarPanel.LANGUAGES))
+        val search = editTexts(view).single()
+
+        search.setText("japan") // matches the English name, not the native one
+        assertTrue(descriptions(view).any { it.startsWith("\u65E5\u672C\u8A9E") })
+        assertTrue(descriptions(view).none { it.startsWith("Fran") || it.startsWith("Espa") })
+
+        search.setText("zh") // matches the code
+        assertTrue(descriptions(view).any { it.startsWith("\u4E2D\u6587") })
+        assertTrue(descriptions(view).none { it.startsWith("Fran") })
+
+        search.setText("")
+        for (name in listOf("Fran\u00E7ais", "Espa\u00F1ol", "Deutsch")) assertTrue(descriptions(view).any { it.startsWith(name) }) // cleared: the full list is back
+    }
+
+    @Test
+    fun theLanguageList_searchField_isClearedEachTimeThePanelIsFreshlyOpened() = onMain {
+        val view = AlterLinguaKeyboardView(context)
+        view.render(KeyboardState())
+        view.renderToolbar(ToolbarState(target = Languages.French, native = Languages.English, panel = ToolbarPanel.LANGUAGES))
+        editTexts(view).single().setText("japan")
+        view.renderToolbar(ToolbarState(target = Languages.French, native = Languages.English)) // closed
+        view.renderToolbar(ToolbarState(target = Languages.French, native = Languages.English, panel = ToolbarPanel.LANGUAGES)) // opened again
+        assertEquals("", editTexts(view).single().text.toString())
+        assertTrue(descriptions(view).any { it.startsWith("Espa\u00F1ol") })
+    }
+
+    @Test
+    fun theLanguageList_withNoMatches_saysSo_insteadOfShowingAnEmptyPanel() = onMain {
+        val view = AlterLinguaKeyboardView(context)
+        view.render(KeyboardState())
+        view.renderToolbar(ToolbarState(target = Languages.French, native = Languages.English, panel = ToolbarPanel.LANGUAGES))
+        editTexts(view).single().setText("xyzzy")
+        assertTrue(texts(view).any { it == context.getString(R.string.toolbar_no_languages_found) })
     }
 
     @Test

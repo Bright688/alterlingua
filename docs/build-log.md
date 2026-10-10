@@ -1850,3 +1850,43 @@ Milestone 17's own earlier note said as much, and grepping every production call
 5. Check the Words tab: that word's state should read MASTERED (and should now show a rough phonetic guide beneath it, for a Latin-script language).
 6. Have someone send you a WhatsApp message in the language you are learning that reuses that exact word. The AlterLingua notification should say "Adaptive help from [language]" rather than "Translated from [language]", and the message should be shown largely in the original language rather than fully translated.
 7. As a control: switch back to Full Support, repeat step 6 — it should say "Translated from [language]" and be a full translation, as before.
+
+
+---
+
+## 2026-10-10 — Owner said "continue in implementing the rest" again; asked, twice, what that should actually mean this time
+
+**Owner's request:** with Adaptive-in-notifications and the Words tab done, a fresh "continue in implementing the rest" needed scoping again. Most of `docs/progress.md`'s remaining "NOT STARTED" rows need a real translation/speech provider and API key (the owner's choice, not mine to invent), a person on the phone, or are Authentication/Subscriptions/Monetization, which CLAUDE.md says must never be started without being explicitly asked. Offered the realistic candidates; the owner picked **both**: "Wire Adaptive into the keyboard too" and the small keyboard-toolbar polish (search box + "Full Support" chip).
+
+### Adaptive into the keyboard: investigated, found a real direction mismatch, asked, and was told to skip it
+
+Before writing speculative code, checked whether `AdaptiveEngine` actually fits the keyboard's outgoing `TranslationFlow`. It does not, without new work: `AdaptiveEngine.decide()` is built for text already written in the learning language (why it fit incoming notifications directly on 2026-10-09); the keyboard's own Translate button runs the other way — the user types in their own language and it is fully translated to the target. CLAUDE.md section 13's worked example is in fact a *harder* feature than the one built: a full translation with the not-yet-mastered pieces substituted back to the user's own language *inside* the translated sentence, which needs word-level alignment between the original and the translation (which word in French came from which word in English) — ordinary translate calls do not return that, and guessing it from word order would produce broken sentences for most language pairs. Rather than either silently building something smaller than what the worked example describes, or silently attempting the much larger alignment feature, this was explained plainly and the owner was asked how to proceed. **Decision: skip it for now.** Adaptive stays wired into incoming notifications only.
+
+### Keyboard toolbar polish: the search field, built; the "Full Support" chip, explicitly not guessed at
+
+CLAUDE.md section 6.8's own example shows a "Search languages" field in the "Translate to" list; `docs/progress.md`'s Milestone 7 detail row for it said NOT STARTED. Built it:
+
+- `LanguagePanelView.kt`: a search `EditText` between the header and the language grid (new strings `toolbar_search_languages`, `toolbar_no_languages_found`, all 8 locales). Typing filters the selectable languages by native name, English name or code, case-insensitively; the field is cleared every time the panel is freshly opened (`setLanguages` is only called on a fresh open, per `AlterLinguaKeyboardView.renderToolbar`'s own dedup guard, so this was the natural place). A match-free query shows "No languages found" instead of an empty panel.
+- The grid and empty-state text were moved into a `ScrollView` rather than a fixed-height area. Adding a search row to the panel's existing height budget (shared with the keyboard's own key rows) would otherwise risk clipping the last row of languages on a shorter keyboard — the pre-existing layout (header + up to 4 rows of 36dp) already looked close to that budget with no slack, and there was no way to confirm the real number without Stitch, which was unreachable all session (`MCP server stitch connection timed out`). Scrolling is a safe, device-size-agnostic fix regardless of the exact numbers.
+- The "Full Support" chip mentioned in the same row comes from a specific Stitch screen ("D/K6-K10 Keyboard Auxiliary") this session could not open. Rather than invent a chip's appearance or behaviour from a two-word row in a progress file, **this piece was left not started**, said so plainly in `docs/progress.md`, and should be revisited once Stitch is reachable.
+
+### Problems found and fixed while testing
+
+- `GradientDrawable` (used for the search field's background) has its own `getColors()/setColors(IntArray)` pair, which Kotlin synthesizes into a property named `colors` — inside `GradientDrawable().apply { ... colors.letterKey ... }` that synthetic property shadowed the outer `KeyboardColors colors`, giving "Unresolved reference 'letterKey' on receiver of type IntArray?". Fixed by building the drawable with `also { d -> d.setColor(...) }` (an explicit receiver name), which does not shadow.
+- `ScrollView.LayoutParams` does not exist as Kotlin can resolve it (no such nested class is declared on `ScrollView` itself, only inherited); fixed by using `ViewGroup.LayoutParams` directly, which `addView` accepts.
+- A new instrumented test (`theLanguageList_hasASearchField...`) asserted the filtered content-description list equalled `listOf("日本語")` exactly; `LanguageOptionView`'s actual content description is `"日本語, Japanese"` (native name, then English name) — an existing, correct, and intentional accessibility detail, not a bug. The test's assertion was wrong, not the product; fixed it to use `.any { it.startsWith(...) }`, the same pattern every other test in this file already uses.
+
+### Verification
+
+**Implemented and automated-tested:** debug build, lint (0 errors), release compile and instrumented-test compile all pass; 913 unit tests pass (unchanged — this work added no JVM-level unit tests, only instrumented ones, since it is a pure View/UI change). Three new instrumented tests were added to `KeyboardViewTest.kt`. With the phone connected, one of them was actually run and failed on the test's own bug above, which was found and fixed from that real run — genuine value from running instrumented tests on real hardware rather than only compiling them. Immediately after the fix, the device disconnected mid-run (an unrelated, pre-existing test, `lettersPage_hasAllLetters_underTheToolbar`, hung for 24 seconds and the instrumentation process and USB connection were both lost together — looked like a device/connection hiccup, not a code regression, since that test does not touch anything this session changed) before the full `KeyboardViewTest` class could be confirmed passing end-to-end.
+
+**Explicitly NOT manually verified:** the search field's on-screen appearance, typing into it with the real keyboard, the empty-state message, and the full instrumented test class passing end-to-end (one test ran and was fixed; the rest are believed correct from that run, code inspection and a clean compile, not confirmed).
+
+### Manual test for the owner
+
+1. Build and install (`./gradlew installDebug`).
+2. Open WhatsApp, tap the AlterLingua keyboard's language chip (`AUTO → XX`) to open "Translate to".
+3. You should see a search field below the header. Type part of a language's name (native or English) or its two-letter code (e.g. "ja", "japan", or "日本"): the grid should narrow to matching languages only.
+4. Clear the search, or close and reopen the language list: the full list should return and the search field should be empty.
+5. Type something that matches nothing (e.g. "xyz"): you should see "No languages found" instead of a blank panel.
+6. Check nothing looks clipped or cut off at the bottom of the list on your phone's screen, and that the list scrolls if it doesn't all fit.

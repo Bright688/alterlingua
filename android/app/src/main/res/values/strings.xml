@@ -36,6 +36,8 @@
     <string name="toolbar_language_loading">Translation language</string>
     <string name="toolbar_translate_to">Translate to</string>
     <string name="toolbar_close">Close</string>
+    <string name="toolbar_search_languages">Search languages</string>
+    <string name="toolbar_no_languages_found">No languages found</string>
 
     <!-- Translation status shown on the keyboard -->
     <string name="translation_translating">Translating to %1$s\u2026</string>
