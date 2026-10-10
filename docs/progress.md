@@ -1118,6 +1118,7 @@ Also observed live: the "Couldn't reach the translation service" message when th
 **Not done / not verified:**
 - Español, Deutsch, Italiano and Nederlands were not exercised on-device this session (no real speech happened to be recorded for them in the time available) — only Français, 日本語 and 中文 were confirmed with real playback. Given Android's Google TTS engine ships broad language coverage by default, they are likely fine, but this is an assumption, not an observation.
 - Mistral's `/v1/audio/speak` capability (server-side voice cloning per language, discussed in the Groq/fallback section) was not pursued, since on-device speech was chosen instead.
+- **Reaffirmed 2026-10-10:** checked live whether any connected provider now covers all 8 languages for TTS, in case that changed the calculus. None does — Mistral is English-only (and its key is dead regardless, see the Groq/Cloudflare addendum above); Cloudflare's MeloTTS covers only en/es/fr/zh/ja (as `jp`), missing de/it/nl entirely; Groq's TTS is English/Arabic only, and its one multilingual model (`playai-tts`) was retired by Groq on 2025-12-31. On-device Android `TextToSpeech` remains the only thing with a plausible path to all 8, and the owner's decision was to keep it as-is rather than add a partial-coverage cloud provider. Still true from the note above: Español, Deutsch, Italiano and Nederlands have never actually been heard played back on-device, only assumed to work.
 
 ## Keyboard bottom row cut off on a fresh window (follow-up to milestone 6)
 
