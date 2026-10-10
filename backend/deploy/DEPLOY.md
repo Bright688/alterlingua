@@ -3,6 +3,8 @@
 The backend runs as two containers: the API and Caddy (HTTPS in front of it). It stores nothing (no database yet), so there is nothing to back up.
 Nothing here needs your Mistral key or API token to be pasted anywhere except the server's own `.env` file.
 
+**This whole guide assumes a fresh, dedicated server.** If the target server already runs other things (another site, another app, your own other projects), Caddy will fail to start — something else almost certainly already owns ports 80/443 — and blindly turning on UFW with only this guide's three rules can cut off whatever else that server was already serving. On 2026-10-10 the backend was deployed to a shared VPS (`docs/build-log.md`, "Deployed the backend live"): skip the Caddy container and the UFW steps below, run the API container bound to `127.0.0.1:<some free port>` only (matching how the rest of that server's containers were already bound), and add a plain nginx server block (on whatever already terminates TLS there) instead of Caddy. Check what is already listening (`ss -tlnp`, `nginx -S` or `ls /etc/nginx/sites-enabled`, `docker ps`) before touching anything.
+
 ## What you need
 1. **A Contabo VPS** running Ubuntu 24.04 (the smallest plan is enough for a pilot) and the root login Contabo emails you.
 2. **A host name that points at the server.** Best: a domain or sub-domain (for example `api.yourdomain.com`) with an **A record** to the server's IP. No domain? Use `<ip-with-dashes>.sslip.io` (for IP 203.0.113.7 that is `203-0-113-7.sslip.io`): it resolves by itself and Caddy can get a real certificate for it.

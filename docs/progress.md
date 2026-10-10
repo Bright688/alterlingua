@@ -1088,6 +1088,19 @@ This session asked "why haven't you used a real provider" (the owner's own words
 
 **Not done:** the merge was applied to this worktree's branch (`remove-floating-bubble`) and pushed; `main` itself does not yet have this merge (a separate decision, not made this session). `backend/.env` was updated in both this worktree and the main checkout (identical files, both git-ignored, kept in sync by hand); a server actually deployed per `backend/deploy/DEPLOY.md` (if one is currently running) was not touched or reachable from this session.
 
+## Backend deployed live (2026-10-10), to the owner's own VPS, not a fresh dedicated one
+
+**Status: IMPLEMENTED and MANUALLY VERIFIED from outside the server.** `https://alterlingua.5-189-142-125.sslip.io/health` answers for real, over real HTTPS, with a real certificate; a real translation through it succeeded; a request without the API token was correctly refused (`401`).
+
+**Why this isn't exactly what `backend/deploy/DEPLOY.md` describes:** that playbook assumes a fresh, dedicated VPS (Caddy binds 80/443 directly; UFW gets enabled with only SSH/80/443 open). The server given, `5.189.142.125`, already runs several of the owner's other live projects — `jobpilotng.com`, two AI-interviewer stacks, `n8n.jobpilotng.com`, and a project called "SpendManage" already using this server's one spare sslip.io certificate. A first attempt to reuse that same certificate's hostname for AlterLingua was caught by `nginx -t`'s own conflict warning before anything was reloaded live; switched to a distinct hostname (`alterlingua.5-189-142-125.sslip.io`, its own fresh Let's Encrypt certificate) instead. Full account in `docs/build-log.md`'s 2026-10-10 "Deployed the backend live" entry.
+
+**What exists now:** a `docker run` container (not the committed `docker-compose.yml`'s Caddy service — no room for it on this shared box), bound to `127.0.0.1:8100` only, matching how every other service on this server is bound; a plain nginx vhost (modelled on the box's existing `n8n.jobpilotng.com` one) terminating TLS and proxying to it; `ALTERLINGUA_ENVIRONMENT=production` with a freshly generated `ALTERLINGUA_API_TOKENS`, so the server is not open for anyone to spend the paid provider keys. UFW, SSH hardening, and a dedicated OS user were deliberately not touched — none of that was asked for, and changing a shared server's access policy unprompted was judged not worth the risk to the owner's other, unrelated live projects (all confirmed still serving `200` after the change).
+
+**Not done:**
+- The Android app has not been pointed at this URL yet (the phone was not connected this session). See `android/app/build.gradle.kts`'s own comment: `-Palterlingua.translationBaseUrl=https://alterlingua.5-189-142-125.sslip.io -Palterlingua.apiToken=<token>` (debug) or the `releaseBackendUrl` equivalent, in `~/.gradle/gradle.properties`, never the repository.
+- No monitoring or backup was set up beyond what the box already has; the rate limit (`60`/minute) is the config's own development-era default, carried over without reconsidering it for real traffic.
+- `worktree-cloudflare-provider` still has not been merged into `main` (only into `remove-floating-bubble`, as above).
+
 ## Voice checked against the real Mistral API (follow-up to the Groq/fallback section above)
 
 **Status: text-to-speech IMPLEMENTED and MANUALLY VERIFIED for English only; speech-to-text with an explicit source language IMPLEMENTED and MANUALLY VERIFIED; speech-to-text auto-detect BLOCKED (real API limitation, not yet worked around).**

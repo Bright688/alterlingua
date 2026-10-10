@@ -2003,3 +2003,39 @@ CLAUDE.md section 6.8's own example shows a "Search languages" field in the "Tra
 - If a server is deployed somewhere real (not just this machine via `adb reverse`), the same two `.env` lines need updating there too: `ALTERLINGUA_STT_PROVIDER=fallback` (was `mistral`).
 - Whenever convenient: decide whether `worktree-cloudflare-provider`'s work should also go into `main` (it currently only reached `remove-floating-bubble`).
 - Text-to-speech (`/v1/audio/speak`) is still on a dead Mistral key. Nothing in the app currently calls it, so this is not urgent, but it is not "working" either if anything new ever does.
+
+
+---
+
+## 2026-10-10 — Deployed the backend live, for real, to the owner's own VPS
+
+**Owner's request:** "we need to deploy the backend live to ssh root@5.189.142.125."
+
+**First thing checked, before running anything:** this is not a fresh VPS. `backend/deploy/DEPLOY.md` assumes a dedicated machine (Caddy binds 80/443 directly, UFW gets enabled with only SSH/80/443 allowed). This server already runs several of the owner's other live projects: `jobpilotng.com` (web, backend, scraper, MySQL, Redis), two separate AI-interviewer stacks, an n8n instance (`n8n.jobpilotng.com`), and a project called "SpendManage" already using the one spare TLS certificate for this server's bare IP (`5-189-142-125.sslip.io`, via `sslip.io`'s free-certificate trick). Running the committed playbook as written would have failed outright (Caddy can't bind ports nginx already owns) or, worse, silently broken SpendManage: a first attempt to reuse `5-189-142-125.sslip.io` for AlterLingua produced `nginx -t`'s own warning, `conflicting server name ... ignored`, caught before any reload — SpendManage's existing nginx config already claims that exact hostname. Removed the conflicting config immediately, before ever reloading nginx with it live, and used a distinct hostname instead: `alterlingua.5-189-142-125.sslip.io` (sslip.io resolves any subdomain prefix of an IP-dash hostname to that same IP, so this needed no new DNS, just its own fresh Let's Encrypt certificate).
+
+**What was done, adapted for a shared server rather than following the fresh-VPS playbook literally:**
+- `rsync`'d `backend/` to `~/alterlingua/backend` on the server (excluding `.venv`, `.env`, caches, as the existing playbook's own command already specified).
+- Built the existing `deploy/Dockerfile` image there directly (`docker build -f deploy/Dockerfile -t alterlingua-api .`) — unchanged from the repo.
+- Wrote `deploy/.env` on the server only (never touched a local file for this beyond a job-scratch copy, deleted immediately after upload): `ALTERLINGUA_ENVIRONMENT=production`, the real Groq/Mistral/Cloudflare credentials already in use locally, and a freshly generated `ALTERLINGUA_API_TOKENS` (`openssl rand -hex 32`) — production refuses to start without one (`app/core/security.py::check_startup`), so a public server is never left open to spend the paid provider keys for free.
+- Ran the container with `docker run -p 127.0.0.1:8100:8000 --read-only --tmpfs /tmp --security-opt no-new-privileges:true --restart unless-stopped`, matching exactly how the box's *other* containers are already bound (every one of them is `127.0.0.1:<port>`, nothing bound to `0.0.0.0` except the one shared nginx on 80/443) — **not** the committed compose file's own Caddy service, which this server has no room for.
+- Added a plain nginx vhost for `alterlingua.5-189-142-125.sslip.io` (HTTP→HTTPS redirect, then TLS termination, then `proxy_pass` to `127.0.0.1:8100`), modelled directly on the existing `n8n.jobpilotng.com` vhost already on this box, so it matches the server's own established pattern rather than introducing a different one. `certbot certonly --nginx -d alterlingua.5-189-142-125.sslip.io` issued a real certificate (expires 2027-01-08, auto-renewal already scheduled by certbot, the same mechanism the box's other certs use).
+- Deliberately **not touched**: UFW (left exactly as found — inactive; every service on this box already protects itself by binding to loopback only, which is also what AlterLingua's container now does, so enabling UFW was neither necessary for this nor asked for and risked cutting off whichever of the other services need directly-reachable ports I hadn't fully mapped), SSH/root-login hardening, and no new OS user was created — none of that was part of what was asked, and changing it on a box the owner depends on for other live businesses, unprompted, was judged not worth the risk.
+
+**Verified live, from outside the server (not just on it):**
+- `curl https://alterlingua.5-189-142-125.sslip.io/health` → `{"status":"ok", ..., "environment":"production", "translation_provider":"fallback(groq>groq(gpt-oss-20b)>cloudflare)", "speech_provider":"fallback(groq>cloudflare)"}`.
+- A real translate call with the generated bearer token succeeded: "Are you coming tomorrow?" → "Tu viens demain ?".
+- The same call **without** the token: `401`, confirming the server is not left open.
+- `jobpilotng.com`, `n8n.jobpilotng.com`, and `5-189-142-125.sslip.io` (SpendManage) all still answer `200` after the whole change — nothing else on the shared box was disrupted.
+- The container's restart policy is `unless-stopped` and both `docker` and `nginx` are enabled services, so this survives a server reboot without anyone needing to log back in.
+
+**Not done:**
+- The Android app itself was not pointed at this server this session (the phone was not connected). To use it: `-Palterlingua.translationBaseUrl=https://alterlingua.5-189-142-125.sslip.io -Palterlingua.apiToken=<the generated token>` for a debug build, or the `releaseBackendUrl` equivalent for a release build, in `~/.gradle/gradle.properties` — never in the repository (per the existing comment in `android/app/build.gradle.kts`). Not yet tried end-to-end from the real app.
+- No monitoring, log rotation review (beyond the `max-size`/`max-file` already set on the container's own logging driver), or backup plan was set up for this deployment beyond what was already standard on the box.
+- Whether `ALTERLINGUA_RATE_LIMIT_PER_MINUTE=60` (the config's own default, set explicitly here) is the right number for real pilot traffic was not reconsidered; it is a placeholder carried over from local development.
+
+### For the owner, to actually use this
+- **URL:** `https://alterlingua.5-189-142-125.sslip.io`
+- **API token:** the one generated this session, stored only in `deploy/.env` on the server (`chmod 600`, root-owned) — not repeated here again; ask if it needs to be retrieved or rotated.
+- To point a build at it: add `alterlingua.translationBaseUrl=https://alterlingua.5-189-142-125.sslip.io` and `alterlingua.apiToken=<token>` to `~/.gradle/gradle.properties` (not the repo), then build as usual.
+- To check it's alive at any time: `curl https://alterlingua.5-189-142-125.sslip.io/health` (no token needed for this one endpoint).
+- To update the deployed code later: repeat the `rsync` + `docker build` + `docker run` (replace the container) steps above; the nginx and certificate parts do not need to be redone.
