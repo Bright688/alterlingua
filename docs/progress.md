@@ -4,7 +4,7 @@ Status values: `NOT STARTED`, `IN PROGRESS`, `IMPLEMENTED`, `MANUALLY VERIFIED`,
 `IMPLEMENTED` means the code exists and passed automated checks. It is **not** the same as
 `MANUALLY VERIFIED`, which means a person confirmed it on a real device.
 
-Last updated: 2026-10-10 (keyboard language-list search field added; the "Full Support" chip and keyboard-side Adaptive explicitly left undone, the first for lack of Stitch access, the second by the owner's own choice)
+Last updated: 2026-10-10 (merged the real Groq+Cloudflare provider setup from an unmerged branch after finding Mistral's key dead; keyboard language-list search field added; the "Full Support" chip and keyboard-side Adaptive explicitly left undone, the first for lack of Stitch access, the second by the owner's own choice)
 
 ## Numbering note
 
@@ -126,7 +126,7 @@ Deliberately not implemented: translation, notification translation, voice recor
 | Central language catalogue (en fr es de it nl zh ja) with per-feature support flags; locale codes such as `fr-FR` reduce to `fr` | IMPLEMENTED |
 | `TranslationProvider` abstraction with capability checks (languages, auto-detect, pair); controlled errors for unsupported language, unsupported pair, missing auto-detect, undetected source, same language, too long, provider failure / unavailable / timeout | IMPLEMENTED |
 | Development-only `fake` provider (small phrasebook for sample phrases, otherwise output marked `[xx] text`). **It is not a real translator** | IMPLEMENTED |
-| A real translation provider | IMPLEMENTED (Mistral; Groq + Groq-then-Mistral fallback added 2026-09-22) — see the dedicated section below |
+| A real translation provider | IMPLEMENTED (Groq primary; Cloudflare Workers AI fallback since 2026-10-10, replacing a Mistral fallback whose key died) — see the dedicated section below |
 | Input validation, Unicode-safe processing (NFC, characters not bytes, UTF-8 JSON, CJK and emoji tested), one error shape that never echoes the text | IMPLEMENTED |
 | Environment-variable configuration (`ALTERLINGUA_*`), `.env.example`, `.env` git-ignored, no keys in code | IMPLEMENTED |
 | No message storage; logs hold languages, character counts and latency only (checked by tests, including a deliberate break of the rule) | IMPLEMENTED |
@@ -1075,6 +1075,18 @@ To check on a phone: set My language to Français, open the keyboard in any app:
 - New `fallback` provider (`ALTERLINGUA_TRANSLATION_PROVIDER=fallback`, the owner's chosen configuration, 2026-09-22): tries Groq first, then Mistral, for the translation endpoint only. A leg with no key configured is left out at startup rather than failing the chain; a runtime failure (down, rejected, timed out, unusable answer) moves to the next leg. Speech-to-text and text-to-speech are unchanged (still `mistral`, `fake`, etc. — no fallback wired for them yet, not asked for).
 - The two legs share one timeout budget (`ALTERLINGUA_PROVIDER_TIMEOUT_SECONDS`): a slow primary can leave little time for the fallback attempt. Documented in `.env.example`.
 - Tests: 21 new tests (`tests/test_groq_and_fallback.py`) covering the Groq client/provider and the fallback provider's ordering, error-skipping, capability intersection and registry wiring; 283 backend tests pass in total (all against a fake HTTP transport — no network, no key — plus the separate manual live check above).
+
+### Addendum (2026-10-10): Mistral's key is dead; the fallback is now Cloudflare, not Mistral
+
+This session asked "why haven't you used a real provider" (the owner's own words), having forgotten this section already existed — a fair question to ask again, since the branch being worked on that day (`remove-floating-bubble`) predates a separate, unmerged branch (`worktree-cloudflare-provider`) where later sessions had already moved the fallback off Mistral.
+
+**Checked live, not assumed:** called `GET https://api.mistral.ai/v1/models` directly with the account's Mistral key from `.env` — `401 Unauthorized`. The key is dead (consistent with the 2026-09-22/24 build-log entries already recording the account as having both an expired key and, separately, a zero-rate-limit hold on every replacement key tried — an account-side problem, not a code one).
+
+**Fix:** merged `worktree-cloudflare-provider`'s 7 unique commits (all backend-only: `app/core/cloudflare.py`, `app/translation/cloudflare_provider.py`, `app/speech/{cloudflare_stt_provider,fallback_provider,groq_stt_provider,normalize,preprocess,whisper_languages}.py`, plus their tests) into this branch. `ALTERLINGUA_TRANSLATION_PROVIDER=fallback` is now Groq → Groq's secondary model → Cloudflare Workers AI (Qwen3-30B-A3B FP8), and `.env`'s `ALTERLINGUA_STT_PROVIDER` was changed from `mistral` to `fallback` (Groq Whisper large-v3 → Cloudflare Whisper large-v3-turbo). **Text-to-speech has no Cloudflare equivalent and was left on `mistral`** — it is therefore currently non-functional (the dead key) for the one feature that still calls the backend's `/v1/audio/speak` route; see the "Translated outgoing voice" section below, which already moved its own TTS to on-device Android speech and no longer depends on this at all. The still-broken server-side TTS route is unused dead weight, not a live gap, unless something new starts calling it.
+
+**Verified live, this session:** `/health` now reports `"translation_provider":"fallback(groq>groq(gpt-oss-20b)>cloudflare)"` and `"speech_provider":"fallback(groq>cloudflare)"`. A translation through the normal fallback chain succeeded (Groq answered, as it always does when healthy). The Cloudflare leg was then isolated (`ALTERLINGUA_TRANSLATION_PROVIDER=cloudflare` alone, bypassing Groq) and itself correctly translated "Are you coming tomorrow?" to Japanese — confirming the Cloudflare credentials in `.env` are still valid today, not just at the time they were first verified. 405 backend tests pass after the merge (same count as the source branch; nothing regressed). The merge touched only `backend/` and `docs/build-log.md`/`docs/privacy.md` — no Android code was affected, confirmed by the full 913-test Android unit suite and lint still passing unchanged.
+
+**Not done:** the merge was applied to this worktree's branch (`remove-floating-bubble`) and pushed; `main` itself does not yet have this merge (a separate decision, not made this session). `backend/.env` was updated in both this worktree and the main checkout (identical files, both git-ignored, kept in sync by hand); a server actually deployed per `backend/deploy/DEPLOY.md` (if one is currently running) was not touched or reachable from this session.
 
 ## Voice checked against the real Mistral API (follow-up to the Groq/fallback section above)
 
