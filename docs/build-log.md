@@ -2049,3 +2049,13 @@ Checking `~/.gradle/gradle.properties` on this machine (not checked before today
 **Verified after teardown:** `https://alterlingua.5-189-142-125.sslip.io/health` no longer connects at all (`000`, TLS handshake fails — correct, since its certificate is gone). `jobpilotng.com`, `n8n.jobpilotng.com` and `5-189-142-125.sslip.io` (SpendManage) all still answer `200`, unaffected by either the setup or the teardown. `docker ps -a`, `docker images`, `~/alterlingua`, `sites-enabled` and `/etc/letsencrypt/live` all confirmed to have no remaining trace of AlterLingua on this server.
 
 **Net result:** `5.189.142.125` is back to exactly the state it was in before this session touched it. The real, in-use production backend remains `169.58.53.29`, unchanged throughout.
+
+### A nicer-looking hostname on the real server (same day)
+
+**Owner's request:** "hope we have this https://alterlingua.sslip.io" on `169.58.53.29`. That exact string cannot work: sslip.io's wildcard DNS only resolves a hostname that has an IP encoded in it somewhere (`<ip-with-dashes>.sslip.io`, optionally with a label in front); `alterlingua.sslip.io` has no IP in it at all and does not resolve anywhere, confirmed with `getent hosts` before saying so.
+
+**What exists instead:** `alterlingua.169-58-53-29.sslip.io` — a second hostname for the same real backend, added alongside (not replacing) the existing bare `169-58-53-29.sslip.io`. Checked first that `deploy-api-1` (`127.0.0.1:8090`) is really AlterLingua (`curl`'d its `/health` directly) and that no catch-all/default nginx site was enabled on this box (it is only in `sites-available`, never linked into `sites-enabled` — unlike the near-miss on `5.189.142.125` earlier the same day). Added a new nginx vhost (port-80 placeholder first, confirmed routing, then a Let's Encrypt certificate via `certbot certonly --nginx`, then the full HTTPS block, same two-step order used earlier), proxying to the same `127.0.0.1:8090` the existing hostname already uses.
+
+**Verified live:** both hostnames answer the same `/health` now; the box's other two sites (`dashboard.whatsapptranslator.tech`, `detaskreviews.com`) still answer `200`, unaffected.
+
+**Not done:** the app's `~/.gradle/gradle.properties` still points at the bare `169-58-53-29.sslip.io`, not the new prettier name — switching it was not asked for, so both now exist and either works.
