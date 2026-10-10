@@ -1472,6 +1472,39 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 
 **Manual test for the owner:** Settings -> "Read chat screens live" on (accept the consent), enable AlterLingua in Android Accessibility. Open a conversation in a supported app that contains messages in a language other than yours. Within a second or two a small caption should appear under each such message; scroll and captions hide, then return once it stops; switch to another app and they disappear. Report which app it was and where captions sit wrong, and whether the caption covers the time stamp.
 
+---
+
+## 2026-09-24 — Translation fallback moved from Mistral to Cloudflare Workers AI (Qwen3-30B-A3B FP8)
+
+**Owner request:** "replace mistral with Cloudflare Workers AI + Qwen3 30B A3B FP8", after the Mistral fallback proved unusable.
+
+**Why Mistral was dropped.** Its key had expired on 2026-09-22; three replacement keys from the owner's account were then tried, and every one authenticated fine but returned `x-ratelimit-limit-req-minute: 0` — with both `mistral-small-latest` and the exact `mistral-small-2603` name from the account's own Limits page (which showed non-zero quotas). That points to an account-side hold only Mistral can see, not a key, model-name or code problem. Along the way one help-centre link cited from a web search turned out to be a 404, so guidance from that source was re-checked against the live API instead of trusted.
+
+**Built (backend only):**
+- `app/core/cloudflare.py` — `CloudflareClient`, a copy of `GroqClient`'s shape. The one difference: Cloudflare puts the account id in the URL path (`/accounts/{id}/ai/v1`), so the client needs both a token and an account id and refuses to start without either.
+- `app/translation/cloudflare_provider.py` — `CloudflareTranslationProvider`, same JSON-answer contract, prompt and parsing as the Groq/Mistral providers, via Cloudflare's OpenAI-compatible `/chat/completions`. Default model `@cf/qwen/qwen3-30b-a3b-fp8`.
+- Settings `cloudflare_api_token`, `cloudflare_account_id`, `cloudflare_base_url`, `cloudflare_translation_model`. The token setting is named `..._API_TOKEN` (Cloudflare's own word, and what the owner's `.env` already used) rather than `..._API_KEY` as first drafted.
+- `registry.py`: the `fallback` chain is now **Groq → Cloudflare**; a leg with missing credentials is skipped as before. `mistral` stays registered as a standalone provider because Mistral is still what STT/TTS use — that was deliberately not touched.
+
+**Verification:** 297 of 297 backend tests pass (new `test_cloudflare_providers.py`; the fallback-chain test updated for the new order). **Manually verified live:** the owner's real Cloudflare credentials returned HTTP 200 with valid JSON in the exact expected shape (`response_format: json_object` is accepted); the deployed server reports `provider=fallback(groq>cloudflare)`; and the Cloudflare leg run alone on the server, with Groq bypassed, translated "Tu viens demain ?" to English with the source auto-detected as French in 1.7s.
+
+**Notes:** Qwen3 returns a `reasoning` field alongside the answer, which costs some output tokens and latency on this leg (~1.7s here versus ~0.3–0.9s for Groq); acceptable for a fallback, and worth revisiting if Cloudflare ever becomes primary. The old Mistral key is still in the server's `.env`, used only by STT/TTS. Not checked: whether Mistral's STT/TTS are affected by the same account hold.
+
+
+---
+
+## 2026-09-25 — Shared WhatsApp voice notes failed with "Unclear voice recording"
+
+**Symptom (owner, screenshots):** Share a WhatsApp voice note (`PTT-…opus`) to AlterLingua; the app shows "Unclear voice recording — I couldn't understand that."
+
+**Diagnosis:** the server log showed the same pattern on every attempt: Mistral's transcription returned `200 OK`, then `POST /v1/audio/translate` returned `422` within a fraction of a second. The log did not say which 422. Candidate causes were an empty transcript, an unsupported detected language, or an undetected language. A probe on the live server (synthetic English speech only, printing shapes and lengths, no text) showed Mistral's Voxtral transcribes correctly (72 characters) but its `language` field is `None`, both with and without a language in the request. A shared voice note is sent with the spoken language on `auto`, so `SpeechTranslationService` found no detected language and raised `source_language_undetected`, which the app shows as "unclear recording". Every shared voice note failed this way; the keyboard microphone works because it names the language.
+
+**Fix (backend, `speech/service.py`):** when neither the request nor the speech engine names the language, the transcript is passed to the translation service with `source=auto`, whose provider detects the language while translating; speech already in the target language comes back unchanged; if the translator cannot tell either, the answer is still `source_language_undetected`. A provider-reported language that is not in the catalogue is still rejected as before.
+
+**Also:** `main.py` now logs a `request_rejected` line with the path, status and error *code* (never any text) for every controlled error, so two requests with the same status can be told apart. That gap is what made this slow to diagnose.
+
+**Verification:** 301 backend tests pass (the old test that pinned the failing behaviour was replaced by three: language detected from the transcript, target-language speech returned as it is, and still undetected when the translator cannot tell). Deployed to the production server; a live end-to-end call (synthetic English speech, `source=auto`, target `fr` and `en`) returned HTTP 200 with the language detected. IMPLEMENTED and verified against the live server with synthetic audio; NOT yet verified with the owner's real voice note.
+
 
 ---
 
@@ -1489,6 +1522,25 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 
 **Verification:** 825 unit tests pass, 0 failures. IMPLEMENTED, not MANUALLY VERIFIED: captions have still not been seen under a foreign-language message on the phone.
 
+---
+
+## 2026-09-25 — Accurate transcription of unclear voice notes: Whisper large-v3 on Groq, Cloudflare Whisper as fallback
+
+**Request (owner):** the shared voice note must be understood clearly, each word and sentence, even when the recording is unclear, and translated accurately. After a question about Azure, the owner chose: **Groq Whisper large-v3** (free tier: 2,000 requests/day, 28,800 audio seconds/day) and **Cloudflare Whisper large-v3-turbo** (free tier: 10,000 neurons/day).
+
+**Why:** the only speech engine was Mistral's small Voxtral model. Wording can't fix words the recogniser got wrong, so the recogniser itself had to be stronger. Whisper large-v3 is trained on a lot of noisy and accented speech, and reports the language it heard.
+
+**Built (backend, `speech/`):** `groq_stt_provider.py` (multipart upload, temperature 0, verbose JSON, upload named after its real format because Groq decodes by extension, Ogg for WhatsApp voice notes), `cloudflare_stt_provider.py` (native `/ai/run/` endpoint, base64 audio; `CloudflareClient.run` added, the OpenAI-compatible path is unchanged), `fallback_provider.py` (tries the engines in order; moves on when an engine fails, is out of quota, does not support the format or language, **or hears nothing**: unclear audio is exactly where one engine can return an empty transcript while another still gets the words), `whisper_languages.py` (Whisper says "french", the rest of the app uses `fr`; a language outside the catalogue is still reported by its code so it is refused as unsupported rather than mistaken for another). `GroqClient.post` gained multipart support. Registry: `groq`, `cloudflare`, `fallback` (groq>cloudflare; an engine without credentials is left out); `mistral` stays available. Server `deploy/.env`: `ALTERLINGUA_STT_PROVIDER=fallback`.
+
+**Decision:** the extra benchmark I had proposed (a Voxtral-vs-Whisper comparison) was skipped once the owner chose the engines; the live check below verified the chosen ones instead. No claim is made that Whisper beats Voxtral on the owner's real voice notes; that was not measured.
+
+**Verification:**
+- 353 backend tests pass (52 new: language names, upload naming per format, no audio echoed in errors, fallback on failure / silence / unsupported language, capabilities, registry, the shared-voice-note route).
+- Live, on the deployed server, with **synthetic** speech only (Mistral voice, so English), printing only error rates: both engines alone and the full route, on clean WAV, a **real Ogg/Opus file** (the WhatsApp format), and WAV with added noise. Word error rate about 3% clean and down to 3 dB signal-to-noise; 15% (Cloudflare) and 18% (Groq) when the noise is as loud as the speech (0 dB). Language detected every time; route returned HTTP 200; 0.4 to 0.7 s for Groq, 1.3 to 4.8 s for Cloudflare.
+- **Not verified:** the owner's real voice note; French, Spanish, Chinese or other languages (the only synthetic voice available was English); real-world noise such as crowds or wind, which is not white noise.
+
+**Privacy:** `docs/privacy.md` now has a Groq / Cloudflare section, including that a second company sees the audio when the first engine fails or hears nothing, and that both companies' retention terms are not verified.
+
 
 ---
 
@@ -1503,6 +1555,16 @@ All three used a fixed `.padding(vertical = 24.dp)` regardless of the actual sta
 **Trade-off, stated to the owner:** in a dense chat some messages will get their caption beside the bubble, in a smaller style, or not at all.
 
 **Verification:** 835 unit tests pass (13 placer tests, including the owner's tight-bubble case). Installed on the phone; not yet seen by the owner.
+
+---
+
+## 2026-09-25 — Second opinion for voice notes whose language was misdetected (backend)
+
+**Problem:** a shared French voice note was refused with `unsupported_language` (server log: `request_rejected status=422 code=unsupported_language`, 357 ms). Automatic language detection on a short or unclear recording is unreliable; the engine named a language outside the catalogue and the request was refused although the words were recognisable in French.
+
+**Change:** `POST /v1/audio/translate` accepts an optional `hints` form field (comma-separated language codes, cleaned, de-duplicated, at most three). Only when `source=auto` and detection either named a language outside the catalogue or returned an empty transcript, `SpeechTranslationService._second_opinion` transcribes the recording again forced to each hint the engine can recognise and keeps the attempt with the best confidence. `SpeechResult.confidence` (the length-weighted mean of Whisper's `avg_logprob`, from Groq and, when reported, Cloudflare) is new. An attempt below -1.0 is discarded so speech in a genuinely unsupported language is still refused rather than turned into nonsense; failed attempts are skipped; without confidence the first hint wins; a supported detected language and an explicit source are never second-guessed. `request_rejected` log lines now include the language code and role when the value is a short code (`language=yo role=source`).
+
+**Verification:** 377 backend tests pass (25 new across the second opinion, hint cleaning, confidence, and the log line). Deployed to the server; health check 200. The retry path was exercised with scripted engines only, not against a real misdetected recording (the exact language the engine named for the owner's note was not logged at the time). Android sends the hints (see the Android branch's build log).
 
 
 ---
@@ -1890,3 +1952,25 @@ CLAUDE.md section 6.8's own example shows a "Search languages" field in the "Tra
 4. Clear the search, or close and reopen the language list: the full list should return and the search field should be empty.
 5. Type something that matches nothing (e.g. "xyz"): you should see "No languages found" instead of a blank panel.
 6. Check nothing looks clipped or cut off at the bottom of the list on your phone's screen, and that the list scrolls if it doesn't all fit.
+
+---
+
+## 2026-09-25 — Better transcription of unclear French voice notes; translation that survives a used-up free allowance
+
+**Report (owner):** a shared French voice note is "not listened to correctly". The server log for that note showed Whisper's automatic guess was **Russian** (`first_language=ru`); the earlier second-opinion fix recovered it as French (confidence -0.54) but the words were still not accurate enough.
+
+**What was measured, and what it can and cannot say.** A benchmark on **synthetic** French (four sentences, an English preset voice reading French text so it is accented; degraded like a poor WhatsApp voice note: quiet, noise, 12 kbps Ogg Opus; 74 words, 16 clips) compared ways of calling Whisper. It cannot reproduce the owner's real failure (an accented, spontaneous, noisy note), so the differences are hints, not proof.
+- Most variants score about 3% wrong words until the noise is as loud as the speech; at 0 dB, Groq large-v3: automatic detection 25%, forced French 17%, forced French on levelled audio 8%, plus a prompt 25%, simple noise removal 15%, large-v3-turbo 23%, Cloudflare 23%, Mistral Voxtral mini 30% (auto) / 23% (French).
+- Whisper's own confidence (mean log-probability) tracked accuracy well enough to pick between attempts: over 16 clips, automatic 9%, forced French 7%, levelled forced French 5%, forced English on French speech 88% (always low confidence, never picked), and "pick the most confident attempt" 5%.
+
+**Built (backend):**
+- `normalize.py` / `preprocess.py`: decode the note, cut everything below 80 Hz, set the loudness to a steady level (RMS -20 dBFS, peak-limited), write 16 kHz mono WAV. Runs as **its own process** (`python -m app.speech.normalize`) with a 20 s limit, a 2 GiB memory limit and a 300 s recording limit, so a malformed file that upsets the audio decoder cannot crash the server; any failure means the original file is used. Dependencies added: `av` (PyAV, bundles ffmpeg's decoders) and `numpy`. This puts an audio decoder on untrusted uploads; the type check on the file's first bytes still runs first, and the decoder is isolated in the subprocess.
+- `SpeechTranslationService._best_of`: for `source=auto` with `hints`, one plain attempt (automatic detection) plus, for up to two hinted languages, an attempt on the levelled audio forced to that language, all at once. A forced attempt must clear -1.0 and beat automatic detection by 0.05 (an attempt that won by 0.02 in the benchmark was actually worse) to replace it; automatic detection naming an unsupported language is never used; if nothing is usable the plain result is returned so the honest error (unsupported language / nothing heard) is still reported.
+- The answer carries `clarity` (`clear` / `unclear`, unclear below -0.5, left out when the engine reports no confidence); the app shows a notice.
+- If the translator fails after the words were understood, `/v1/audio/translate` returns the transcript with an **empty translation** (the app already shows "what was heard") instead of an error; translated voice (`/v1/audio/speak`) still fails rather than speak nothing; a translation needed to detect the language still fails.
+
+**A finding that mattered more than expected.** The first live measurement mostly returned 503, because the *translation* step was refused: Groq's translation model has a free limit of **200,000 tokens a day** (measured, in Groq's own error text: "Limit 200000, Used 199902") and each short translation cost about 390 tokens because the model reasons first. One day of testing used it up, and Cloudflare's daily allowance was also exhausted. Changes: `reasoning_effort: low` (measured on the 20b model: 210 tokens instead of 340, 0.37 s instead of 0.64 s), and `openai/gpt-oss-20b` as a second Groq leg (its own allowance) before Cloudflare: chain `groq > groq(gpt-oss-20b) > cloudflare`. At roughly 200 to 300 tokens per translation the free tier is on the order of 700 to 1,000 translations a day per model: enough for a pilot, not for many users.
+
+**Verification:** 405 backend tests pass (best-of selection rules, levelling on real audio in the real subprocess, timeouts and junk input leaving no files, the partial answer and its exceptions, the second Groq leg, no words or file names in the new log lines). Deployed. Live, on the deployed server with the same 16 synthetic degraded French files and the app's hints: 3%, 3%, 3% and 8% wrong words (clean, 10 dB, 5 dB, 0 dB), against 3%, 3%, 3% and 25% for the previous automatic-only route; the "unclear" label fired on exactly one clip of four in the noisiest set. One live request with translation returned transcript and translation. **Not verified: the owner's real voice note** (its transcript is never logged, by design), other languages, and real-world noise.
+
+**Not done / open:** a second engine (Cloudflare) is only used for the fallback, not compared per note; the levelling could be turned off if it ever hurts, and only the benchmark (74 words) supports it. The owner's phone was not connected to adb when the app change (the "unclear" notice and the hints) was ready, so that build is committed and tested but not installed.

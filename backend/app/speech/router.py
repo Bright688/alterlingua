@@ -59,7 +59,7 @@ async def speak_audio(
         await audio.close()
 
 
-@router.post("/translate", response_model=AudioTranslateResponse)
+@router.post("/translate", response_model=AudioTranslateResponse, response_model_exclude_none=True)
 async def translate_audio(
     request: Request,
     audio: UploadFile = File(description="The recording (wav, mp3, m4a/mp4, aac, ogg/opus, webm, flac, amr)."),
@@ -67,10 +67,11 @@ async def translate_audio(
     source: str = Form("auto", description="The language spoken, or 'auto' to detect it."),
     context: str = Form("messaging"),
     tone: str = Form("natural"),
+    hints: str = Form("", description="Optional comma-separated languages the speaker is likely to use, most likely first."),
     service: SpeechTranslationService = Depends(get_speech_service),
 ) -> AudioTranslateResponse:
     try:
-        options = AudioTranslateOptions(target=target, source=source, context=context, tone=tone)
+        options = AudioTranslateOptions(target=target, source=source, context=context, tone=tone, hints=hints)
     except ValidationError as error:
         # Only the field and the problem are reported, never the submitted values.
         details = [{"field": ".".join(str(p) for p in item["loc"]), "message": item["msg"]} for item in error.errors()]
@@ -82,6 +83,6 @@ async def translate_audio(
         async with temporary_audio(
             audio, audio.content_type, max_bytes=settings.max_audio_bytes, directory=settings.temp_dir
         ) as recording:
-            return await service.translate_audio(recording, options, checked_target, spoken)
+            return await service.translate_audio(recording, options, checked_target, spoken, allow_partial=True)
     finally:
         await audio.close()

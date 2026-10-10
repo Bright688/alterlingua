@@ -85,8 +85,28 @@ def test_a_detected_language_that_is_not_supported_is_a_controlled_error():
     assert response.json()["error"]["code"] == "unsupported_language"
 
 
-def test_no_language_reported_for_auto_is_undetected():
-    stt = StubSpeech(detected="")  # the provider reports nothing
+@pytest.mark.parametrize("heard", ["fr", "es", "ja"])
+def test_when_the_speech_engine_names_no_language_the_translator_detects_it_from_the_transcript(heard):
+    # Mistral's Voxtral transcribes but leaves `language` empty, even when asked (found on the live service: every
+    # shared voice note, which is sent with source=auto, failed with source_language_undetected because of this).
+    stt = StubSpeech(detected="", transcripts={"en": SAMPLE_PHRASES[heard]})
+    response = post(make_client(stt=stt), source="auto", target="de")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["source_language"] == heard
+    assert body["transcript"] == SAMPLE_PHRASES[heard]
+    assert body["translation"] == SAMPLE_PHRASES["de"]
+
+
+def test_speech_in_the_target_language_with_no_language_reported_is_returned_as_it_is():
+    stt = StubSpeech(detected="", transcripts={"en": SAMPLE_PHRASES["fr"]})
+    body = post(make_client(stt=stt), source="auto", target="fr").json()
+    assert body["source_language"] == "fr"
+    assert body["transcript"] == body["translation"] == SAMPLE_PHRASES["fr"]
+
+
+def test_if_neither_the_speech_engine_nor_the_translator_can_tell_the_language_it_is_undetected():
+    stt = StubSpeech(detected="", transcripts={"en": "a sentence the development translator has never seen"})
     response = post(make_client(stt=stt), source="auto")
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "source_language_undetected"
@@ -200,12 +220,31 @@ def test_nothing_recognised_is_a_controlled_error():
     assert response.json()["error"]["code"] == "speech_not_recognized"
 
 
-def test_a_failing_translation_step_is_a_controlled_error():
+@pytest.mark.parametrize("error_name", ["ProviderError", "ProviderUnavailableError", "ProviderTimeoutError"])
+def test_when_only_the_translation_step_fails_the_transcript_is_still_returned_with_an_empty_translation(error_name):
+    # The words were understood; the translator is rate-limited or down. Losing the transcript too would be worse.
+    from app.core import errors
+
+    spy = SpyProvider(error=getattr(errors, error_name)("x"))
+    response = post(make_client(spy, StubSpeech(transcripts={"en": "Are you coming tomorrow?"})), source="en", target="fr")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["transcript"] == "Are you coming tomorrow?" and body["translation"] == ""
+    assert (body["source_language"], body["target_language"]) == ("en", "fr")
+
+
+def test_a_translation_problem_that_is_not_an_outage_is_still_an_error():
+    # A request that cannot be translated at all is refused, not answered with an empty translation.
+    response = post(make_client(SpyProvider(languages=("en", "es"))), source="en", target="fr")
+    assert response.status_code == 422
+
+
+def test_a_failing_translation_step_still_fails_when_the_translation_is_needed_to_detect_the_language():
     from app.core.errors import ProviderError
 
-    response = post(make_client(SpyProvider(error=ProviderError("x"))), source="en", target="fr")
-    assert response.status_code == 502
-    assert response.json()["error"]["code"] == "provider_error"
+    stt = StubSpeech(detected="", transcripts={"en": "a sentence"})
+    response = post(make_client(SpyProvider(error=ProviderError("x")), stt), source="auto", target="fr")
+    assert response.status_code == 502 and response.json()["error"]["code"] == "provider_error"
 
 
 def test_health_reports_the_speech_provider(client):

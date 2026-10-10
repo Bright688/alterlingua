@@ -1,5 +1,7 @@
 """Request options and response for POST /v1/audio/translate."""
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.translation.languages import AUTO
@@ -15,6 +17,25 @@ class AudioTranslateOptions(BaseModel):
     source: str = AUTO  # the language spoken, or "auto" to detect it
     context: Context = "messaging"
     tone: Tone = "natural"
+    # Languages the speaker is likely to be using, most likely first (the app sends the user's learning language and own
+    # language). Only used when automatic detection names a language we cannot translate or hears nothing, to try again
+    # with these instead of giving up. Codes that are not valid languages are ignored.
+    hints: list[str] = []
+
+    @field_validator("hints", mode="before")
+    @classmethod
+    def _clean_hints(cls, value: object) -> list[str]:
+        if isinstance(value, str):
+            value = value.split(",")
+        cleaned: list[str] = []
+        for item in value if isinstance(value, (list, tuple)) else []:
+            try:
+                code = _clean_language_code(str(item), allow_auto=False)
+            except ValueError:
+                continue
+            if code not in cleaned:
+                cleaned.append(code)
+        return cleaned[:3]
 
     @field_validator("source")
     @classmethod
@@ -32,6 +53,9 @@ class AudioTranslateResponse(BaseModel):
     transcript: str
     target_language: str
     translation: str
+    # "unclear" when the speech engine was not sure of its words (noise, a poor recording), so the app can say some words may
+    # be wrong; "clear" when it was. Left out when the engine does not report how sure it is.
+    clarity: Literal["clear", "unclear"] | None = None
 
 
 class AudioSpeakOptions(AudioTranslateOptions):

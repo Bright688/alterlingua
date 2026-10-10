@@ -201,6 +201,14 @@ def test_without_a_voice_choice_the_first_voice_for_the_language_speaks():
 
 # ---- failures ----
 
+def test_a_translation_outage_still_fails_translated_voice_rather_than_speaking_nothing():
+    # /v1/audio/translate may return the transcript with an empty translation; speaking an empty translation would be nonsense.
+    tts = StubTts()
+    response = post(make_client(SpyProvider(error=ProviderError("down")), tts=tts), source="en", target="fr")
+    assert response.status_code == 502 and response.json()["error"]["code"] == "provider_error"
+    assert tts.requests == []
+
+
 def test_a_speech_provider_failure_is_a_controlled_error():
     response = post(make_client(tts=StubTts(error=ProviderError("boom"))))
     assert response.status_code == 502
