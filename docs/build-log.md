@@ -2039,3 +2039,13 @@ CLAUDE.md section 6.8's own example shows a "Search languages" field in the "Tra
 - To point a build at it: add `alterlingua.translationBaseUrl=https://alterlingua.5-189-142-125.sslip.io` and `alterlingua.apiToken=<token>` to `~/.gradle/gradle.properties` (not the repo), then build as usual.
 - To check it's alive at any time: `curl https://alterlingua.5-189-142-125.sslip.io/health` (no token needed for this one endpoint).
 - To update the deployed code later: repeat the `rsync` + `docker build` + `docker run` (replace the container) steps above; the nginx and certificate parts do not need to be redone.
+
+### Torn down the same day, once it turned out to be redundant
+
+Checking `~/.gradle/gradle.properties` on this machine (not checked before today, which is how the earlier wrong "no real provider" answer happened in the first place) found the Android app had already been pointed at a **third**, different, already-live server since 2026-09-22: `169.58.53.29`, already running the identical Groq→Cloudflare fallback chain, already what every debug build this session (including earlier today's) had actually been calling without my realising it. The owner confirmed: keep using `169.58.53.29`, and remove everything just deployed to `5.189.142.125` since it was now redundant.
+
+**Removed, in this order, verifying after each step:** the `alterlingua-api` container (stopped, removed) and its image; the nginx vhost (`sites-enabled` symlink and `sites-available` file, `nginx -t` checked clean, then reloaded); the TLS certificate (`certbot delete --cert-name alterlingua.5-189-142-125.sslip.io`, which also removes its auto-renewal entry); the entire `~/alterlingua` directory on the server (the synced source and the `.env` holding the real Groq/Mistral/Cloudflare keys and the generated API token — nothing with real credentials was left behind).
+
+**Verified after teardown:** `https://alterlingua.5-189-142-125.sslip.io/health` no longer connects at all (`000`, TLS handshake fails — correct, since its certificate is gone). `jobpilotng.com`, `n8n.jobpilotng.com` and `5-189-142-125.sslip.io` (SpendManage) all still answer `200`, unaffected by either the setup or the teardown. `docker ps -a`, `docker images`, `~/alterlingua`, `sites-enabled` and `/etc/letsencrypt/live` all confirmed to have no remaining trace of AlterLingua on this server.
+
+**Net result:** `5.189.142.125` is back to exactly the state it was in before this session touched it. The real, in-use production backend remains `169.58.53.29`, unchanged throughout.
