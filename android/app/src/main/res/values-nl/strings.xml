@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua bewaart alleen de woorden die je leert, hoe vaak je ze tegenkomt en hun leerstatus. Je berichten worden niet opgeslagen.</string>
     <string name="set_export_my_learning_data">Mijn leergegevens exporteren</string>
     <string name="set_available_later">Later beschikbaar</string>
+    <string name="set_pilot_report_row">Pilootrapport delen</string>
+    <string name="set_pilot_consent_body">Dit maakt een rapport van alleen getallen: hoeveel berichten je hebt vertaald, hoeveel woorden je bent tegengekomen, hoeveel lessen en uitspraakoefeningen je hebt voltooid en welke ondersteuningsmodus je gebruikte — per week. Het bevat nooit een bericht, woord, zin, audio of transcript. Niets wordt automatisch verzonden: het rapport verlaat je telefoon alleen als je ervoor kiest het te delen, met wie je wilt, via het eigen deelscherm van je telefoon. Je kunt op elk moment stoppen met delen en op elk moment al je lokale leergegevens wissen vanuit datzelfde Privacy-gedeelte.</string>
+    <string name="set_pilot_continue">Doorgaan</string>
+    <string name="set_pilot_participant_code">Deelnemerscode (optioneel)</string>
+    <string name="set_pilot_participant_help">Niet je naam of telefoonnummer — wat je maar wilt, zodat je rapport te onderscheiden is van andere als je ooit meer dan één deelt.</string>
+    <string name="set_pilot_generate">Rapport genereren</string>
+    <string name="set_pilot_share">Delen</string>
+    <string name="set_pilot_share_title">Pilootrapport delen</string>
     <string name="set_delete_all_learning_data">Alle leergegevens verwijderen?</string>
     <string name="set_this_removes_your_words_your">Dit verwijdert je woorden, je voortgangsgeschiedenis en de les van vandaag van deze telefoon, voor alle talen. Dit kan niet ongedaan worden gemaakt. Je instellingen blijven bewaard.</string>
     <string name="set_delete_all_learning_data2">Alle leergegevens verwijderen</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">Alles (%1$d)</string>
     <string name="wd_status_count">%1$s (%2$d)</string>
     <string name="wd_encounters">%1$d keer tegengekomen</string>
+    <string name="wd_from_lemma">Van %1$s</string>
     <string name="wd_no_matching_words">Geen overeenkomende woorden.</string>
     <string name="vn_voice_note">Spraaknotitie</string>
     <string name="vn_audio_is_sent_securely_to">De audio wordt veilig verstuurd om te worden getranscribeerd en na verwerking verwijderd.</string>

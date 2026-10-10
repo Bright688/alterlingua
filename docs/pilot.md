@@ -141,20 +141,21 @@ failures are not instrumented.
 
 **Blockers (the pilot cannot answer its main question until these are resolved):**
 
-- **B1. The primary measure cannot move.** Mastery needs correct recognitions and nothing records them yet, so no word can become
-  FAMILIAR or MASTERED, and Translation Dependence will read near 100% for everyone (metrics 5, 6 and 12 stay flat). The recall check
-  (a Stitch design exists, "Learn: Recall Check") or an equivalent evidence source must be built before H2 can be tested. Without it the
-  pilot can still test H1 and can report UNKNOWN to LEARNING.
-- **B2. No real providers and no backend protection.** The translation, speech-recognition and speech-synthesis providers are development
-  stand-ins, and the backend has no authentication, rate limiting or TLS of its own (`docs/privacy.md`, finding H3). Real providers,
-  provider terms reviewed and disclosed to participants, an authenticated and rate-limited backend behind HTTPS, and a release build with
-  the server address are needed.
-- **B3. There is no way yet to get the report off a phone.** The report is built, but there is no export or upload screen. Two options:
-  (a) *recommended for 30 to 50 people:* a "Share pilot report" action in Settings that shows the exact JSON, asks for the participant
-  code, and hands it to the Android Share sheet so the participant sends it themselves (no server, no account, full transparency);
-  (b) an authenticated upload endpoint, which needs the Authentication milestone and a data-processing arrangement.
-- **B4. Consent and participant information** (what is measured, that content is not, who sees data, how to withdraw) must be written and
-  agreed before anyone joins; the app has no such screen.
+- **B1. Resolved, 2026-10-09, not manually verified.** A recall check ("Did you already know this?", Yes/No) was added under lesson cards
+  with a saved meaning, feeding `LanguageMapService.recordRecognition` — mastery can now reach FAMILIAR or MASTERED from real use, and
+  Adaptive mode was wired into incoming notifications the same day. Still true: this is a self-report, not a verified quiz, and no real
+  phone has yet shown a word actually reach MASTERED from real answers.
+- **B2. Real providers and backend protection — mostly resolved, 2026-10-10, not load-tested.** The backend at `169.58.53.29` runs real
+  Groq (primary) and Cloudflare Workers AI (fallback) providers for translation and speech-to-text, behind real HTTPS (sslip.io +
+  Let's Encrypt) and a required API token (the server refuses to start in production without one). None of this has been reviewed or
+  tested under real pilot-scale concurrent traffic, and the rate limit is still the config's own development-era default (60/minute),
+  not reconsidered for this. Provider terms have not been reviewed or disclosed to participants.
+- **B3. Resolved, 2026-10-10.** Settings → Privacy → "Share pilot report": consent shown every time (not a one-time checkbox), a
+  participant-code field, the exact JSON shown before sharing, handed to the Android Share sheet exactly as recommended above (option a).
+  No server, no account. Not yet tried on a phone.
+- **B4. Resolved, 2026-10-10,** by the same screen: the consent dialog states what is measured, that no message/word/audio/transcript is
+  ever included, that nothing is sent automatically (only when the participant chooses to share), and that withdrawing means simply not
+  sharing again, plus that all local learning data can be erased at any time from the same Privacy section.
 
 **Known gaps that limit interpretation (not blockers):**
 - Translation failures are not counted, so there is no success rate (use the qualitative question).

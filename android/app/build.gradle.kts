@@ -85,6 +85,11 @@ android {
             jniLibs.directories.add("src/rime/jniLibs")
             assets.directories.add("src/rime/assets")
         }
+        getByName("androidTest") {
+            // Room's own exported schema history (every version of every database), for MigrationTestHelper to build a
+            // real old-version database from and migrate, rather than only ever testing against today's schema.
+            assets.directories.add("schemas")
+        }
     }
 
     packaging {
@@ -129,6 +134,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    // Encrypts the Room databases at rest; the passphrase itself lives only in Keystore-backed encrypted storage.
+    implementation(libs.sqlcipher.android)
+    implementation(libs.androidx.security.crypto)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -137,5 +145,6 @@ dependencies {
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.room.testing)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

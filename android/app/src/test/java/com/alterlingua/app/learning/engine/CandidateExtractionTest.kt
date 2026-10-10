@@ -141,6 +141,37 @@ class CandidateExtractionTest {
         assertEquals(composed.normalized, decomposed.normalized)
     }
 
+    // ---- the lemma (a curated table, not a general lemmatizer) ----
+
+    @Test
+    fun aConjugatedForm_keepsItsOwnIdentity_butCarriesItsLemma() {
+        // "enverrai" (CLAUDE.md's own worked example) is an irregular future stem unrelated to the infinitive by any
+        // simple rule; it is still its own unit (own mastery), now labelled with the dictionary form that reads it.
+        val units = extract(Languages.French, "Je vous enverrai le devis.")
+        val word = units.first { it.type == UnitType.WORD && it.normalized == "enverrai" }
+        assertEquals("envoyer", word.lemma)
+    }
+
+    @Test
+    fun theInfinitiveItself_hasNoLemma_becauseItIsAlreadyOne() {
+        val units = extract(Languages.French, "Je vais vous envoyer le devis avant midi.")
+        val word = units.first { it.type == UnitType.WORD && it.normalized == "envoyer" }
+        assertNull(word.lemma)
+    }
+
+    @Test
+    fun aWordWithNoCuratedLemma_hasNoLemma() {
+        val units = extract(Languages.French, "un devis clair")
+        val word = units.first { it.type == UnitType.WORD && it.normalized == "devis" }
+        assertNull(word.lemma)
+    }
+
+    @Test
+    fun aPhraseOrExpression_hasNoLemmaOfItsOwn() {
+        val units = extract(Languages.French, "Je vous enverrai le devis avant midi.")
+        assertTrue(units.filter { it.type != UnitType.WORD }.all { it.lemma == null })
+    }
+
     // ---- what a candidate carries ----
 
     @Test

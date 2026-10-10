@@ -122,6 +122,17 @@ fun SettingsScreen(
     }
     var showLicences by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     if (showLicences) LicencesDialog(onDismiss = { showLicences = false })
+    var showPilotConsent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var showPilotReport by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    if (showPilotConsent) {
+        PilotConsentDialog(
+            onAgree = { showPilotConsent = false; showPilotReport = true },
+            onDismiss = { showPilotConsent = false },
+        )
+    }
+    if (showPilotReport) {
+        PilotReportDialog(onDismiss = { showPilotReport = false })
+    }
     var showLiveChatConsent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     if (showLiveChatConsent) {
         androidx.compose.material3.AlertDialog(
@@ -446,6 +457,11 @@ fun SettingsScreen(
             )
             HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
             InfoRow(stringResource(R.string.set_export_my_learning_data), stringResource(R.string.set_available_later))
+            HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
+            androidx.compose.material3.TextButton(
+                onClick = { showPilotConsent = true },
+                modifier = Modifier.fillMaxWidth().testTag("settings_pilot_report"),
+            ) { Text(stringResource(R.string.set_pilot_report_row)) }
             HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
             androidx.compose.material3.TextButton(
                 onClick = { confirmErase = true },

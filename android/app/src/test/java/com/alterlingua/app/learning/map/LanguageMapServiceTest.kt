@@ -39,9 +39,9 @@ class LanguageMapServiceTest {
 
     private val devis = UnitKey("fr", "devis", UnitType.WORD)
 
-    private fun candidate(key: UnitKey, surface: String = key.normalized, native: String = "en", at: Long = now) = LearningCandidate(
+    private fun candidate(key: UnitKey, surface: String = key.normalized, native: String = "en", at: Long = now, lemma: String? = null) = LearningCandidate(
         surface = surface, normalized = key.normalized, type = key.type, learningLanguage = key.language, meaningLanguage = native,
-        usefulness = Usefulness(0.4, listOf(UsefulnessSignal.CONTENT_WORD)), exposure = Exposure(1, at, at),
+        usefulness = Usefulness(0.4, listOf(UsefulnessSignal.CONTENT_WORD)), exposure = Exposure(1, at, at), lemma = lemma,
     )
 
     private fun event(vararg keys: UnitKey, surface: String? = null) =
@@ -92,6 +92,23 @@ class LanguageMapServiceTest {
         assertEquals(before.masteryScore, after.masteryScore, 0.0)
         assertEquals(before.exposureCount, after.exposureCount)
         assertNull(service.setMeaning(UnitKey("fr", "inconnu", UnitType.WORD), "x", "en")) // nothing to fill in
+    }
+
+    @Test
+    fun aLemmaIsSaved_andDoesNotChangeTheUnitsOwnIdentityOrMastery() = runTest {
+        val enverrai = UnitKey("fr", "enverrai", UnitType.WORD)
+        service.recordLearningEvent(LearningEvent("e", now, InteractionKind.OUTGOING_TEXT, "fr", "en", listOf(candidate(enverrai, lemma = "envoyer"))))
+        val item = service.item(enverrai)!!
+        assertEquals("enverrai", item.normalized) // its own unit, its own mastery
+        assertEquals("envoyer", item.lemma)
+    }
+
+    @Test
+    fun anExistingLemma_isNotOverwrittenByALaterEventWithNone() = runTest {
+        val enverrai = UnitKey("fr", "enverrai", UnitType.WORD)
+        service.recordLearningEvent(LearningEvent("e1", now, InteractionKind.OUTGOING_TEXT, "fr", "en", listOf(candidate(enverrai, lemma = "envoyer"))))
+        service.recordLearningEvent(LearningEvent("e2", now, InteractionKind.OUTGOING_TEXT, "fr", "en", listOf(candidate(enverrai, lemma = null))))
+        assertEquals("envoyer", service.item(enverrai)!!.lemma)
     }
 
     // ---- a journey through the service: UNKNOWN -> LEARNING -> FAMILIAR -> MASTERED ----

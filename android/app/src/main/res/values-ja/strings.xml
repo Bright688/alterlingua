@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua が保持するのは、学んだ単語、出会った回数、学習の状態だけです。メッセージは保存されません。</string>
     <string name="set_export_my_learning_data">学習データを書き出す</string>
     <string name="set_available_later">近日対応</string>
+    <string name="set_pilot_report_row">パイロットレポートを共有</string>
+    <string name="set_pilot_consent_body">これは数値だけのレポートを作成します：翻訳したメッセージの数、出会った単語の数、完了したレッスンと発音練習の回数、使用したアシスタントモードを、週ごとに記録します。メッセージ、単語、文、音声、文字起こしは一切含まれません。自動で送信されることはありません。レポートは、あなたが共有することを選んだときにのみ、スマートフォン自体の共有画面を使って、選んだ相手に届きます。共有はいつでもやめられますし、このプライバシーセクションからいつでもローカルの学習データをすべて削除できます。</string>
+    <string name="set_pilot_continue">続ける</string>
+    <string name="set_pilot_participant_code">参加者コード（任意）</string>
+    <string name="set_pilot_participant_help">名前や電話番号ではなく、好きなものをどうぞ。複数共有する場合に区別できます。</string>
+    <string name="set_pilot_generate">レポートを作成</string>
+    <string name="set_pilot_share">共有</string>
+    <string name="set_pilot_share_title">パイロットレポートを共有</string>
     <string name="set_delete_all_learning_data">すべての学習データを削除しますか？</string>
     <string name="set_this_removes_your_words_your">この電話から、すべての言語の単語、進捗の履歴、今日のレッスンが削除されます。元に戻せません。設定は残ります。</string>
     <string name="set_delete_all_learning_data2">すべての学習データを削除</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">すべて（%1$d）</string>
     <string name="wd_status_count">%1$s（%2$d）</string>
     <string name="wd_encounters">%1$d 回出会い</string>
+    <string name="wd_from_lemma">%1$sの形</string>
     <string name="wd_no_matching_words">一致する単語がありません。</string>
     <string name="vn_voice_note">音声メモ</string>
     <string name="vn_audio_is_sent_securely_to">音声は文字起こしのために安全に送信され、処理後に削除されます。</string>

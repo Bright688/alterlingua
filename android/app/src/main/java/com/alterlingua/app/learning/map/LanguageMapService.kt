@@ -48,6 +48,7 @@ class LanguageMapService(
                     firstSeen = if (item.firstSeen == 0L) candidate.exposure.firstSeenMillis else minOf(item.firstSeen, candidate.exposure.firstSeenMillis),
                     lastSeen = maxOf(item.lastSeen, candidate.exposure.lastSeenMillis),
                     meaning = item.meaning ?: candidate.meaning,
+                    lemma = item.lemma ?: candidate.lemma,
                     usefulness = maxOf(item.usefulness, candidate.usefulness.score),
                     lastContext = if (candidate.exposure.lastSeenMillis >= item.lastSeen) event.kind else item.lastContext,
                 )

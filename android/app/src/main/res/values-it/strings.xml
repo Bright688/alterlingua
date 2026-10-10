@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua conserva solo le parole che impari, quante volte le incontri e il loro stato di apprendimento. I tuoi messaggi non vengono salvati.</string>
     <string name="set_export_my_learning_data">Esporta i miei dati di apprendimento</string>
     <string name="set_available_later">Disponibile in seguito</string>
+    <string name="set_pilot_report_row">Condividi il rapporto pilota</string>
+    <string name="set_pilot_consent_body">Questo crea un rapporto fatto solo di numeri: quanti messaggi hai tradotto, quante parole hai incontrato, quante lezioni ed esercizi di pronuncia hai completato e quale modalità di assistenza hai usato, settimana per settimana. Non include mai alcun messaggio, parola, frase, audio o trascrizione. Niente viene inviato automaticamente: il rapporto lascia il tuo telefono solo quando scegli di condividerlo, con chi vuoi, usando la schermata di condivisione del tuo telefono. Puoi smettere di condividerlo in qualsiasi momento ed eliminare tutti i tuoi dati di apprendimento locali in qualsiasi momento da questa stessa sezione Privacy.</string>
+    <string name="set_pilot_continue">Continua</string>
+    <string name="set_pilot_participant_code">Codice partecipante (facoltativo)</string>
+    <string name="set_pilot_participant_help">Non il tuo nome o numero di telefono: qualsiasi cosa tu voglia, così il tuo rapporto può essere distinto da altri se mai ne condividi più di uno.</string>
+    <string name="set_pilot_generate">Genera rapporto</string>
+    <string name="set_pilot_share">Condividi</string>
+    <string name="set_pilot_share_title">Condividi il rapporto pilota</string>
     <string name="set_delete_all_learning_data">Eliminare tutti i dati di apprendimento?</string>
     <string name="set_this_removes_your_words_your">Questo rimuove da questo telefono le tue parole, la cronologia dei progressi e la lezione di oggi, per tutte le lingue. Non si può annullare. Le impostazioni restano.</string>
     <string name="set_delete_all_learning_data2">Elimina tutti i dati di apprendimento</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">Tutti (%1$d)</string>
     <string name="wd_status_count">%1$s (%2$d)</string>
     <string name="wd_encounters">%1$d incontri</string>
+    <string name="wd_from_lemma">Da %1$s</string>
     <string name="wd_no_matching_words">Nessuna parola corrispondente.</string>
     <string name="vn_voice_note">Nota vocale</string>
     <string name="vn_audio_is_sent_securely_to">L’audio viene inviato in modo sicuro per essere trascritto ed eliminato dopo l’elaborazione.</string>

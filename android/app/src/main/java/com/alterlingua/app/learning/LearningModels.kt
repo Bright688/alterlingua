@@ -30,6 +30,9 @@ data class WordEntry(
     val meaning: String,
     val status: MasteryStatus,
     val encounters: Int,
+    /** The dictionary form of [term], only when [term] is a conjugated or inflected form and the language has one
+     * curated for it (`LanguageProfile.lemmaOf`); null for most words. [term] keeps its own mastery regardless. */
+    val lemma: String? = null,
 )
 
 /** One item of the daily micro-lesson. */

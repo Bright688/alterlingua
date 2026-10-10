@@ -13,6 +13,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Upsert
 import androidx.room.withTransaction
+import com.alterlingua.app.storage.DatabaseEncryptor
+import com.alterlingua.app.storage.DatabasePassphrase
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import com.alterlingua.app.learning.MasteryStatus
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.UnitKey
@@ -54,6 +57,8 @@ data class LanguageMapItemEntity(
     // Added in version 4.
     @ColumnInfo(defaultValue = "0") val pronunciationTries: Int = 0,
     @ColumnInfo(defaultValue = "0") val pronunciationGood: Int = 0,
+    // Added in version 5: this unit's dictionary form, shown to the learner, never counted.
+    val lemma: String? = null,
 )
 
 @Dao
@@ -79,9 +84,9 @@ interface LanguageMapDao {
 
 @Database(
     entities = [LanguageMapItemEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5)],
 )
 abstract class LanguageMapDatabase : RoomDatabase() {
     abstract fun dao(): LanguageMapDao
@@ -89,8 +94,16 @@ abstract class LanguageMapDatabase : RoomDatabase() {
     companion object {
         const val NAME = "language_map.db"
 
-        fun create(context: Context): LanguageMapDatabase =
-            Room.databaseBuilder(context.applicationContext, LanguageMapDatabase::class.java, NAME).build()
+        /** The Personal Language Map, encrypted at rest (SQLCipher): the phone's own screen lock no longer has to be
+         * the only thing standing between this data and anyone with file access to the device. */
+        fun create(context: Context): LanguageMapDatabase {
+            val app = context.applicationContext
+            val passphrase = DatabasePassphrase.get(app)
+            DatabaseEncryptor.ensureEncrypted(app, NAME, passphrase)
+            return Room.databaseBuilder(app, LanguageMapDatabase::class.java, NAME)
+                .openHelperFactory(SupportOpenHelperFactory(passphrase))
+                .build()
+        }
     }
 }
 
@@ -124,7 +137,7 @@ internal fun LanguageMapItemEntity.toItem() = LanguageMapItem(
     lessonEncounters = lessonEncounters, correctRecognitions = correctRecognitions, incorrectRecognitions = incorrectRecognitions,
     firstSeen = firstSeen, lastSeen = lastSeen, masteryScore = masteryScore, masteryState = MasteryStatus.valueOf(masteryState),
     usefulness = usefulness, lastContext = lastContext?.let { runCatching { InteractionKind.valueOf(it) }.getOrNull() }, lastLessonAt = lastLessonAt, lastHelpAt = lastHelpAt,
-    pronunciationTries = pronunciationTries, pronunciationGood = pronunciationGood,
+    pronunciationTries = pronunciationTries, pronunciationGood = pronunciationGood, lemma = lemma,
 )
 
 internal fun LanguageMapItem.toEntity(id: Long) = LanguageMapItemEntity(
@@ -133,5 +146,5 @@ internal fun LanguageMapItem.toEntity(id: Long) = LanguageMapItemEntity(
     lessonEncounters = lessonEncounters, correctRecognitions = correctRecognitions, incorrectRecognitions = incorrectRecognitions,
     firstSeen = firstSeen, lastSeen = lastSeen, masteryScore = masteryScore, masteryState = masteryState.name,
     usefulness = usefulness, lastContext = lastContext?.name, lastLessonAt = lastLessonAt, lastHelpAt = lastHelpAt,
-    pronunciationTries = pronunciationTries, pronunciationGood = pronunciationGood,
+    pronunciationTries = pronunciationTries, pronunciationGood = pronunciationGood, lemma = lemma,
 )

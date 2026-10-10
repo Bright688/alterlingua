@@ -39,6 +39,10 @@ data class LanguageMapItem(
     /** Pronunciation practice: attempts, and the ones the speech recognizer understood. Counts only, never audio or text. */
     val pronunciationTries: Int = 0,
     val pronunciationGood: Int = 0,
+    /** This unit's dictionary form, only when a conjugated or inflected surface form was met and the language has
+     * one curated for it (`LanguageProfile.lemmaOf`); null for most units. Shown to the learner, never counted: a
+     * conjugated form keeps its own mastery, exactly as before this existed. */
+    val lemma: String? = null,
 ) {
     val key: UnitKey get() = UnitKey(language, normalized, type)
 

@@ -60,7 +60,10 @@ class RuleBasedAnalyzer(
         }
         val role = classify(lower, profile)
         val exclusion = exclusionFor(text, lower, role, profile, startsSentence)
-        return listOf(AnalyzedToken(text, lower, TokenKind.WORD, role, exclusion, startsSentence))
+        // The lemma is a separate, informational field (EngineModels.kt): it never changes `normalized`, so it never
+        // changes which unit is counted. "enverrai" is still its own unit; it is now also labelled as a form of "envoyer".
+        val lemma = if (role == TokenRole.CONTENT) profile.lemmaOf(lower).takeIf { it != lower } else null
+        return listOf(AnalyzedToken(text, lower, TokenKind.WORD, role, exclusion, startsSentence, lemma))
     }
 
     private fun classify(lower: String, profile: LanguageProfile): TokenRole {

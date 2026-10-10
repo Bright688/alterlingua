@@ -99,6 +99,23 @@ class WordsViewModelTest {
     }
 
     @Test
+    fun aWordsCuratedLemma_isShown_whenItHasOne() = runBlocking {
+        val enverrai = key("fr", "enverrai")
+        val candidate = com.alterlingua.app.learning.engine.LearningCandidate(
+            surface = "enverrai", normalized = "enverrai", type = UnitType.WORD, learningLanguage = "fr", meaningLanguage = "en",
+            usefulness = com.alterlingua.app.learning.engine.Usefulness(0.4, listOf(com.alterlingua.app.learning.engine.UsefulnessSignal.CONTENT_WORD)),
+            exposure = com.alterlingua.app.learning.engine.Exposure(1, 0, 0), lemma = "envoyer",
+        )
+        map.recordLearningEvent(com.alterlingua.app.learning.engine.LearningEvent("e", 0, com.alterlingua.app.learning.engine.InteractionKind.OUTGOING_TEXT, "fr", "en", listOf(candidate)))
+        val vm = viewModel()
+        val word = vm.awaitWords(1).words.single()
+        assertEquals("envoyer", word.lemma)
+        know("fr", "devis", "quotation") // a word with no curated lemma shows none
+        val plain = vm.awaitWords(2).words.single { it.term == "devis" }
+        assertEquals(null, plain.lemma)
+    }
+
+    @Test
     fun wordsCarryARoughPronunciationGuide_exceptWhereTheLanguageHasNone() = runBlocking {
         know("fr", "devis", "quotation")
         val vm = viewModel()

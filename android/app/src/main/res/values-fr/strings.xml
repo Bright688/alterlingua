@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua ne conserve que les mots que vous apprenez, la fréquence à laquelle vous les rencontrez et leur statut d’apprentissage. Vos messages ne sont pas conservés.</string>
     <string name="set_export_my_learning_data">Exporter mes données d’apprentissage</string>
     <string name="set_available_later">Bientôt disponible</string>
+    <string name="set_pilot_report_row">Partager le rapport pilote</string>
+    <string name="set_pilot_consent_body">Ceci crée un rapport fait uniquement de nombres : combien de messages vous avez traduits, combien de mots vous avez rencontrés, combien de leçons et d’essais de prononciation vous avez terminés, et quel mode d’assistance vous avez utilisé — semaine par semaine. Il n’inclut jamais aucun message, mot, phrase, audio ni transcription. Rien n’est envoyé automatiquement : le rapport ne quitte votre téléphone que si vous choisissez de le partager, avec qui vous voulez, via l’écran de partage de votre téléphone. Vous pouvez arrêter de le partager à tout moment, et supprimer toutes vos données d’apprentissage locales à tout moment depuis cette même section Confidentialité.</string>
+    <string name="set_pilot_continue">Continuer</string>
+    <string name="set_pilot_participant_code">Code participant (facultatif)</string>
+    <string name="set_pilot_participant_help">Pas votre nom ni votre numéro de téléphone — ce que vous voulez, pour que votre rapport puisse se distinguer de celui des autres si vous en partagez plusieurs un jour.</string>
+    <string name="set_pilot_generate">Générer le rapport</string>
+    <string name="set_pilot_share">Partager</string>
+    <string name="set_pilot_share_title">Partager le rapport pilote</string>
     <string name="set_delete_all_learning_data">Supprimer toutes les données d’apprentissage ?</string>
     <string name="set_this_removes_your_words_your">Cela supprime vos mots, votre historique de progression et la leçon du jour de ce téléphone, pour toutes les langues. Impossible d’annuler. Vos paramètres sont conservés.</string>
     <string name="set_delete_all_learning_data2">Supprimer toutes les données d’apprentissage</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">Tous (%1$d)</string>
     <string name="wd_status_count">%1$s (%2$d)</string>
     <string name="wd_encounters">%1$d rencontres</string>
+    <string name="wd_from_lemma">De %1$s</string>
     <string name="wd_no_matching_words">Aucun mot correspondant.</string>
     <string name="vn_voice_note">Note vocale</string>
     <string name="vn_audio_is_sent_securely_to">L’audio est envoyé de façon sécurisée pour être transcrit, puis supprimé après traitement.</string>

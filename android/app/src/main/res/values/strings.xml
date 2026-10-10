@@ -289,6 +289,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua keeps only the words you learn, how often you meet them and their learning status. Your messages are not stored.</string>
     <string name="set_export_my_learning_data">Export my learning data</string>
     <string name="set_available_later">Available later</string>
+    <string name="set_pilot_report_row">Share pilot report</string>
+    <string name="set_pilot_consent_body">This builds a report of numbers only: how many messages you translated, how many words you met, how many lessons and pronunciation attempts you completed, and which assistance mode you used — one week at a time. It never includes any message, word, sentence, audio or transcript. Nothing is sent automatically: the report only leaves your phone when you choose to share it, with whoever you choose, using your phone’s own Share screen. You can stop sharing at any time, and you can erase all of your local learning data at any time from this same Privacy section.</string>
+    <string name="set_pilot_continue">Continue</string>
+    <string name="set_pilot_participant_code">Participant code (optional)</string>
+    <string name="set_pilot_participant_help">Not your name or phone number — anything you like, so your report can be told apart from others’ if you ever share more than one.</string>
+    <string name="set_pilot_generate">Generate report</string>
+    <string name="set_pilot_share">Share</string>
+    <string name="set_pilot_share_title">Share pilot report</string>
     <string name="set_delete_all_learning_data">Delete all learning data?</string>
     <string name="set_this_removes_your_words_your">This removes your words, your progress history and today\'s lesson from this phone, for every language. It cannot be undone. Your settings stay.</string>
     <string name="set_delete_all_learning_data2">Delete all learning data</string>
@@ -397,6 +405,7 @@
     <string name="wd_all">All (%1$d)</string>
     <string name="wd_status_count">%1$s (%2$d)</string>
     <string name="wd_encounters">%1$d encounters</string>
+    <string name="wd_from_lemma">From %1$s</string>
     <string name="wd_no_matching_words">No matching words.</string>
     <string name="vn_voice_note">Voice note</string>
     <string name="vn_audio_is_sent_securely_to">Audio is sent securely to be transcribed and is deleted after processing.</string>

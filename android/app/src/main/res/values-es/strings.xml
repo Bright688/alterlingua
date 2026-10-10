@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua solo guarda las palabras que aprendes, con qué frecuencia las encuentras y su estado de aprendizaje. Tus mensajes no se guardan.</string>
     <string name="set_export_my_learning_data">Exportar mis datos de aprendizaje</string>
     <string name="set_available_later">Disponible más adelante</string>
+    <string name="set_pilot_report_row">Compartir informe del piloto</string>
+    <string name="set_pilot_consent_body">Esto genera un informe de solo números: cuántos mensajes tradujiste, cuántas palabras encontraste, cuántas lecciones e intentos de pronunciación completaste, y qué modo de asistencia usaste, semana a semana. Nunca incluye ningún mensaje, palabra, frase, audio ni transcripción. Nada se envía automáticamente: el informe solo sale de tu teléfono cuando decides compartirlo, con quien elijas, usando la propia pantalla para compartir de tu teléfono. Puedes dejar de compartir en cualquier momento, y puedes borrar todos tus datos de aprendizaje locales en cualquier momento desde esta misma sección de Privacidad.</string>
+    <string name="set_pilot_continue">Continuar</string>
+    <string name="set_pilot_participant_code">Código de participante (opcional)</string>
+    <string name="set_pilot_participant_help">No tu nombre ni tu número de teléfono: lo que quieras, para poder distinguir tu informe de otros si alguna vez compartes más de uno.</string>
+    <string name="set_pilot_generate">Generar informe</string>
+    <string name="set_pilot_share">Compartir</string>
+    <string name="set_pilot_share_title">Compartir informe del piloto</string>
     <string name="set_delete_all_learning_data">¿Eliminar todos los datos de aprendizaje?</string>
     <string name="set_this_removes_your_words_your">Esto elimina tus palabras, tu historial de progreso y la lección de hoy de este teléfono, para todos los idiomas. No se puede deshacer. Tus ajustes se conservan.</string>
     <string name="set_delete_all_learning_data2">Eliminar todos los datos de aprendizaje</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">Todos (%1$d)</string>
     <string name="wd_status_count">%1$s (%2$d)</string>
     <string name="wd_encounters">%1$d encuentros</string>
+    <string name="wd_from_lemma">De %1$s</string>
     <string name="wd_no_matching_words">No hay palabras que coincidan.</string>
     <string name="vn_voice_note">Nota de voz</string>
     <string name="vn_audio_is_sent_securely_to">El audio se envía de forma segura para transcribirlo y se elimina tras procesarlo.</string>

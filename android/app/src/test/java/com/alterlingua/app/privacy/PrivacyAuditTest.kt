@@ -152,8 +152,14 @@ class PrivacyAuditTest {
     }
 
     @Test fun nothingIsPersistedOutsideTheKnownPrivateStores() {
-        // Every place the app writes: two private databases, two DataStores, and the audio cache folders. Nothing on shared storage.
+        // Every place the app writes: two private databases, two DataStores, the audio cache folders, and one
+        // Keystore-backed EncryptedSharedPreferences file (DatabasePassphrase.kt) holding nothing but a random,
+        // meaningless 256-bit value used only to encrypt the two databases above — never a setting, never anything
+        // about the user or their learning. It is a narrow, deliberate exception, not a new general-purpose store:
+        // a plain DataStore cannot hold it, because Room needs the passphrase synchronously, before any suspend
+        // function (including a DataStore read) could run, to open the database at all. Nothing on shared storage.
         val writers = Regex("""(getExternalFilesDir|externalCacheDir|Environment\.getExternalStorage|MediaStore|openFileOutput|getSharedPreferences|SharedPreferences)""")
-        assertEquals(emptyList<String>(), kotlinFiles(sourceRoot).filter { writers.containsMatchIn(it.readText()) }.map { it.name })
+        val allowed = setOf("DatabasePassphrase.kt")
+        assertEquals(emptyList<String>(), kotlinFiles(sourceRoot).filter { it.name !in allowed && writers.containsMatchIn(it.readText()) }.map { it.name })
     }
 }

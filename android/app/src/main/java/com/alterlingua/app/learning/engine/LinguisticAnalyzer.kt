@@ -22,6 +22,9 @@ data class AnalyzedToken(
     val role: TokenRole = TokenRole.CONTENT,
     val exclusion: Exclusion = Exclusion.NONE,
     val startsSentence: Boolean = false,
+    /** This word's dictionary form, only when it differs from [normalized] and the language has one curated for it
+     * (`LanguageProfile.lemmaOf`); never changes what is counted, only what the learner is shown. */
+    val lemma: String? = null,
 )
 
 /**

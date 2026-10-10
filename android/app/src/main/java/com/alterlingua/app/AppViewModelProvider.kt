@@ -101,5 +101,8 @@ object AppViewModelProvider {
         }
         initializer { WordsViewModel(application().userSettings, application().languageMap) }
         initializer { SettingsViewModel(application().userSettings, application().incomingStatus.last, liveChatReading = application().liveChatStatus.last, voiceCaptureListening = com.alterlingua.app.capture.VoiceCaptureState.listening, eraseLearningData = application().learningDataEraser::eraseAll) }
+        initializer {
+            com.alterlingua.app.ui.settings.PilotReportViewModel(application().userSettings, application().progressLog, com.alterlingua.app.BuildConfig.VERSION_NAME)
+        }
     }
 }

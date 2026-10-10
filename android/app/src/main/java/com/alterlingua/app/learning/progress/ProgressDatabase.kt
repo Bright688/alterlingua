@@ -10,6 +10,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Upsert
 import androidx.room.withTransaction
+import com.alterlingua.app.storage.DatabaseEncryptor
+import com.alterlingua.app.storage.DatabasePassphrase
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 /** One row per language and local day. Counts only. */
 @Entity(tableName = "daily_progress", primaryKeys = ["date", "language"])
@@ -72,8 +75,15 @@ abstract class ProgressDatabase : RoomDatabase() {
     companion object {
         const val NAME = "progress.db"
 
-        fun create(context: Context): ProgressDatabase =
-            Room.databaseBuilder(context.applicationContext, ProgressDatabase::class.java, NAME).build()
+        /** Encrypted at rest (SQLCipher), the same way and for the same reason as [com.alterlingua.app.learning.map.LanguageMapDatabase]. */
+        fun create(context: Context): ProgressDatabase {
+            val app = context.applicationContext
+            val passphrase = DatabasePassphrase.get(app)
+            DatabaseEncryptor.ensureEncrypted(app, NAME, passphrase)
+            return Room.databaseBuilder(app, ProgressDatabase::class.java, NAME)
+                .openHelperFactory(SupportOpenHelperFactory(passphrase))
+                .build()
+        }
     }
 }
 

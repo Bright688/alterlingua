@@ -35,6 +35,8 @@ class CandidateExtractor(private val profile: LanguageProfile) {
                 meaningLanguage = meaningLanguage,
                 usefulness = usefulness,
                 exposure = Exposure(1, nowMillis, nowMillis),
+                // A lemma only means anything for a single word; a phrase or expression has none of its own.
+                lemma = used.singleOrNull()?.lemma,
             )
             found.putIfAbsent(candidate.key, candidate)
         }

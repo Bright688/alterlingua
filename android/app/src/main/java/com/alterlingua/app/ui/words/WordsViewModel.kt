@@ -65,6 +65,7 @@ class WordsViewModel(repository: UserSettingsRepository, map: LanguageMapService
                     meaning = item.meaning.orEmpty(),
                     status = item.masteryState,
                     encounters = item.exposureCount,
+                    lemma = item.lemma,
                 )
             },
             query = current.query,

@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua behält nur die Wörter, die du lernst, wie oft du ihnen begegnest und ihren Lernstatus. Deine Nachrichten werden nicht gespeichert.</string>
     <string name="set_export_my_learning_data">Meine Lerndaten exportieren</string>
     <string name="set_available_later">Später verfügbar</string>
+    <string name="set_pilot_report_row">Pilotbericht teilen</string>
+    <string name="set_pilot_consent_body">Dies erstellt einen Bericht nur mit Zahlen: wie viele Nachrichten du übersetzt hast, wie viele Wörter du getroffen hast, wie viele Lektionen und Ausspracheversuche du abgeschlossen hast und welchen Unterstützungsmodus du verwendet hast — jeweils für eine Woche. Es enthält niemals eine Nachricht, ein Wort, einen Satz, Audio oder ein Transkript. Nichts wird automatisch gesendet: Der Bericht verlässt dein Telefon nur, wenn du dich entscheidest, ihn zu teilen, mit wem du möchtest, über den eigenen Teilen-Bildschirm deines Telefons. Du kannst das Teilen jederzeit beenden und jederzeit alle deine lokalen Lerndaten in diesem Datenschutz-Bereich löschen.</string>
+    <string name="set_pilot_continue">Weiter</string>
+    <string name="set_pilot_participant_code">Teilnehmercode (optional)</string>
+    <string name="set_pilot_participant_help">Nicht dein Name oder deine Telefonnummer — was du möchtest, damit dein Bericht von anderen unterschieden werden kann, falls du jemals mehr als einen teilst.</string>
+    <string name="set_pilot_generate">Bericht erstellen</string>
+    <string name="set_pilot_share">Teilen</string>
+    <string name="set_pilot_share_title">Pilotbericht teilen</string>
     <string name="set_delete_all_learning_data">Alle Lerndaten löschen?</string>
     <string name="set_this_removes_your_words_your">Dadurch werden deine Wörter, dein Fortschrittsverlauf und die heutige Lektion für alle Sprachen von diesem Telefon entfernt. Das kann nicht rückgängig gemacht werden. Deine Einstellungen bleiben erhalten.</string>
     <string name="set_delete_all_learning_data2">Alle Lerndaten löschen</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">Alle (%1$d)</string>
     <string name="wd_status_count">%1$s (%2$d)</string>
     <string name="wd_encounters">%1$d Begegnungen</string>
+    <string name="wd_from_lemma">Von %1$s</string>
     <string name="wd_no_matching_words">Keine passenden Wörter.</string>
     <string name="vn_voice_note">Sprachnachricht</string>
     <string name="vn_audio_is_sent_securely_to">Das Audio wird sicher zur Transkription gesendet und nach der Verarbeitung gelöscht.</string>

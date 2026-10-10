@@ -262,6 +262,14 @@
     <string name="set_alterlingua_keeps_only_the_words">AlterLingua 只保留您学习的词汇、遇到它们的次数以及学习状态。您的消息不会被保存。</string>
     <string name="set_export_my_learning_data">导出我的学习数据</string>
     <string name="set_available_later">稍后提供</string>
+    <string name="set_pilot_report_row">分享试点报告</string>
+    <string name="set_pilot_consent_body">这仅会生成一份纯数字的报告：你翻译了多少条信息、遇到了多少个单词、完成了多少课程和发音练习、以及使用了哪种辅助模式——按周统计。它绝不包含任何信息、单词、句子、音频或转录内容。不会自动发送任何内容：只有当你选择分享时，报告才会离开你的手机，通过手机自带的分享界面发送给你选定的对象。你可以随时停止分享，也可以随时在同一个隐私部分删除你所有的本地学习数据。</string>
+    <string name="set_pilot_continue">继续</string>
+    <string name="set_pilot_participant_code">参与者代码（可选）</string>
+    <string name="set_pilot_participant_help">不是你的姓名或电话号码——随便填写什么都行，以便在你分享多份报告时加以区分。</string>
+    <string name="set_pilot_generate">生成报告</string>
+    <string name="set_pilot_share">分享</string>
+    <string name="set_pilot_share_title">分享试点报告</string>
     <string name="set_delete_all_learning_data">删除所有学习数据？</string>
     <string name="set_this_removes_your_words_your">这会从此手机中删除所有语言的词汇、进度记录和今天的课程，且无法撤销。您的设置会保留。</string>
     <string name="set_delete_all_learning_data2">删除所有学习数据</string>
@@ -368,6 +376,7 @@
     <string name="wd_all">全部（%1$d）</string>
     <string name="wd_status_count">%1$s（%2$d）</string>
     <string name="wd_encounters">遇到 %1$d 次</string>
+    <string name="wd_from_lemma">来自 %1$s</string>
     <string name="wd_no_matching_words">没有匹配的词。</string>
     <string name="vn_voice_note">语音消息</string>
     <string name="vn_audio_is_sent_securely_to">音频会被安全地发送以进行转写，处理后即删除。</string>
