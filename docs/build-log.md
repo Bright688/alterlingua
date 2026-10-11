@@ -2592,6 +2592,22 @@ subscription products there, Play will report an empty `offers` list for both ti
 "Not available yet" state the UI already handles — and no purchase can actually complete. No code change will be
 needed once those products exist.
 
+**A real crash found only by installing on the owner's actual phone, after this entry's compile/lint/unit-test pass
+had already reported everything clean**: the app crashed on *every* launch with
+`IllegalArgumentException: Pending purchases for one-time products must be supported.` from
+`BillingClient.Builder.build()` inside `PlayBillingManager`'s constructor — meaning the entire app, not just
+billing, was unusable the moment `AlterLinguaApplication.onCreate()` touched `billingManager`. None of the earlier
+research (confirming `ProductDetails`/`queryProductDetailsAsync` and that only `setListener()` is "mandatory") had
+surfaced this: Play Billing Library 9.1.0's `build()` also requires `enablePendingPurchases(PendingPurchasesParams)`
+to be called explicitly, for *any* app, regardless of whether it sells one-time products — a Play Store policy
+requirement enforced client-side now, not just at review time. Fixed with one call:
+`.enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())` before `.build()` in
+`BillingManager.kt`. This is the second time in this project a crash invisible to every automated check (unit
+tests, lint, both compiles) was caught only by an actual install — the first was the SQLCipher native-library crash
+(earlier entry) and the second was the AnimatedContent overlap bug higher up in this same entry. **CLAUDE.md
+section 43's "manual device testing for Android system integration" is not optional diligence; for this kind of
+change it is where the actual defects are.**
+
 ### Verification
 
 Implemented and unit-tested: `SubscriptionProducts`' ID↔tier mapping (exercised indirectly through the new tests
@@ -2603,10 +2619,14 @@ offers-reflect-the-billing-catalog, offers-empty-with-no-billing-manager and sub
 the monthly/annual-specific buttons and the "not available yet" state, and `CurriculumLessonScreenTest`'s now-dead
 `comingSoonDialog_showsAndDismisses` test removed. `:app:compileDebugKotlin`, `:app:compileDebugAndroidTestKotlin`,
 `:app:compileDebugUnitTestKotlin`, `:app:testDebugUnitTest` and `:app:lintDebug` all run clean (0 errors, warning
-count down from 38 to 36 after the `ModifierParameter` fix above) after the fixes above. **Not yet manually
-verified**: no on-device install/screenshot pass has been done for this entry specifically (the previous entry's
-screenshots predate this round's changes), since the real purchase flow cannot be exercised without real Play
-Console products regardless.
+count down from 38 to 36 after the `ModifierParameter` fix above) after the fixes above.
+
+**Manually verified on the owner's real device**, after finding and fixing the real crash described below: fresh
+install, app launches without crashing, Home/Learn/Settings all render correctly. Learn tab shows "Standard plan"
+and "Premium plan" as two separate cards, each with its own "Try it" button and "Not available yet" message.
+Settings → Plan shows "Free trial" (current), "Standard plan" and "Premium plan" as three separate cards with
+their real feature lists, Standard and Premium both correctly showing "Not available yet". Confirmed via
+screenshots at each step, not just a launch check.
 
 ### Manual test for the owner
 

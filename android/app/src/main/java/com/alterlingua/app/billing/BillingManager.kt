@@ -11,6 +11,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
@@ -60,6 +61,10 @@ class PlayBillingManager(
     private val client: BillingClient = BillingClient.newBuilder(context.applicationContext)
         .setListener(listener)
         .enableAutoServiceReconnection()
+        // Required by BillingClient.Builder.build() itself (throws IllegalArgumentException without it), even
+        // though AlterLingua only sells subscriptions: Play Billing 9.x mandates declaring pending-purchases
+        // support for one-time products regardless of whether the app currently offers any.
+        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
         .build()
 
     init {

@@ -1257,6 +1257,12 @@ entitlement picture.
 **Status after this addendum**: 957 unit tests pass (7 new, covering `tier`/`offers`/`subscribe` on both
 `CurriculumLessonViewModel` and `SettingsViewModel`), lint 0 errors (one real `ModifierParameter` warning on the
 rewritten `PlansScreen` was found and fixed), `compileDebugKotlin`/`compileDebugAndroidTestKotlin`/
-`compileDebugUnitTestKotlin` all clean. **Not yet manually verified on a real device** for this specific round —
-only the previous addendum's screenshots exist, and the real purchase flow cannot be exercised at all until the
-owner creates matching products in Google Play Console.
+`compileDebugUnitTestKotlin` all clean.
+
+**A real crash was found only by installing on the owner's phone**, despite every automated check above passing:
+`BillingClient.Builder.build()` throws unless `enablePendingPurchases(...)` is called explicitly (a Play Billing
+9.1.0 requirement for every app, not just ones selling one-time products), which crashed the entire app on launch,
+not just billing. Fixed in `BillingManager.kt`; see `docs/build-log.md` for the full detail. **Manually verified
+on the owner's real device after the fix**: clean launch, Learn tab shows "Standard plan"/"Premium plan" as
+separate cards each with "Try it" and "Not available yet", Settings → Plan shows all three plans the same way —
+confirmed via screenshots, not just a launch check.
