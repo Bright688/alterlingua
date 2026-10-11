@@ -249,7 +249,9 @@
     <string name="set_plans_title">Forfait</string>
     <string name="set_plans_subtitle">Ce que chaque forfait offre vraiment aujourd\'hui — rien de promis qui n\'existe pas déjà.</string>
     <string name="set_plans_current">Forfait actuel</string>
-    <string name="set_plans_subscribe">S\'abonner</string>
+    <string name="set_plans_per_month">%1$s / mois</string>
+    <string name="set_plans_per_year">%1$s / an</string>
+    <string name="set_plans_not_available_yet">Pas encore disponible</string>
     <string name="set_plan_free_price">Gratuit, pour toujours</string>
     <string name="set_plan_free_feature_keyboard">Le clavier AlterLingua : traduction des messages envoyés et reçus</string>
     <string name="set_plan_free_feature_micro_lessons">Micro-leçons gratuites et illimitées tirées de vos propres conversations</string>
@@ -285,8 +287,8 @@
     <string name="lrn_back">Retour</string>
     <string name="lrn_curriculum_unavailable_title">Impossible de charger le programme</string>
     <string name="lrn_curriculum_retry">Réessayer</string>
-    <string name="set_coming_soon_title">Bientôt disponible</string>
-    <string name="set_coming_soon_body">Les formules Standard et Premium ne sont pas encore disponibles. Nous vous préviendrons dès qu’elles le seront.</string>
+    <string name="lrn_curriculum_open">Ouvrir</string>
+    <string name="lrn_curriculum_try_it">Essayer</string>
     <string name="set_remind_me_at">Me rappeler ma leçon de 3 éléments à %1$s.</string>
     <string name="set_translate_whatsapp_messages">Traduire les messages reçus</string>
     <string name="set_whatsapp_desc">Quand quelqu’un écrit dans une autre langue, AlterLingua affiche une traduction en %1$s dans sa propre notification.</string>

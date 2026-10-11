@@ -1,6 +1,12 @@
 package com.alterlingua.app.ui.learn
 
+import android.app.Activity
+import com.alterlingua.app.billing.BillingManager
+import com.alterlingua.app.billing.BillingPeriod
+import com.alterlingua.app.billing.SubscriptionOffer
+import com.alterlingua.app.billing.TierOffers
 import com.alterlingua.app.entitlements.EntitlementService
+import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.UserSettings
@@ -17,6 +23,7 @@ import com.alterlingua.app.share.Speaker
 import com.alterlingua.app.testing.FakeUserSettingsRepository
 import com.alterlingua.app.testing.MainDispatcherRule
 import java.io.File
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -47,6 +54,15 @@ private class FakeSpeaker(private val canSpeakAnything: Boolean = true) : Speake
     override fun shutdown() = Unit
 }
 
+private class FakeBillingManager(offers: List<TierOffers> = emptyList()) : BillingManager {
+    override val offers = MutableStateFlow(offers)
+    override val ready = MutableStateFlow(true)
+    val purchased = mutableListOf<SubscriptionOffer>()
+    override fun purchase(activity: Activity, offer: SubscriptionOffer) {
+        purchased += offer
+    }
+}
+
 class CurriculumLessonViewModelTest {
 
     @get:Rule
@@ -55,7 +71,11 @@ class CurriculumLessonViewModelTest {
     private val settings = FakeUserSettingsRepository(UserSettings(curriculumDailyGoal = 2))
     private val map = LanguageMapService(InMemoryLanguageMapStore())
 
-    private fun viewModel(words: List<String> = listOf("un", "deux", "trois"), speaker: Speaker = FakeSpeaker()) = CurriculumLessonViewModel(
+    private fun viewModel(
+        words: List<String> = listOf("un", "deux", "trois"),
+        speaker: Speaker = FakeSpeaker(),
+        billingManager: BillingManager? = null,
+    ) = CurriculumLessonViewModel(
         CurriculumLessonService(
             api = FakeApi(words),
             meanings = FakeMeanings(),
@@ -65,6 +85,8 @@ class CurriculumLessonViewModelTest {
             languages = { LessonLanguages(Languages.French, Languages.English) },
         ),
         speaker,
+        settings,
+        billingManager,
     )
 
     @Test
@@ -119,5 +141,35 @@ class CurriculumLessonViewModelTest {
         vm.listen()
         assertFalse(vm.listening.value)
         assertTrue(speaker.stopped)
+    }
+
+    @Test
+    fun tier_reflectsTheSavedSubscription() = runTest {
+        settings.update { it.copy(tier = Tier.STANDARD) }
+        val vm = viewModel()
+        assertEquals(Tier.STANDARD, vm.tier.value)
+    }
+
+    @Test
+    fun offers_reflectsWhatGooglePlaysCatalogHasRightNow() = runTest {
+        val standardOffer = SubscriptionOffer("standard_monthly", Tier.STANDARD, BillingPeriod.MONTHLY, "$3.99", "token")
+        val catalog = listOf(TierOffers(Tier.STANDARD, standardOffer, null), TierOffers(Tier.PREMIUM, null, null))
+        val vm = viewModel(billingManager = FakeBillingManager(catalog))
+        assertEquals(catalog, vm.offers.value)
+    }
+
+    @Test
+    fun offers_isEmpty_whenThereIsNoBillingManager() = runTest {
+        val vm = viewModel(billingManager = null)
+        assertEquals(emptyList<TierOffers>(), vm.offers.value)
+    }
+
+    @Test
+    fun subscribe_startsThatExactOffersPurchaseFlow() = runTest {
+        val billing = FakeBillingManager()
+        val vm = viewModel(billingManager = billing)
+        val offer = SubscriptionOffer("premium_annual", Tier.PREMIUM, BillingPeriod.ANNUAL, "$79.99", "token")
+        vm.subscribe(activity = object : Activity() {}, offer)
+        assertEquals(listOf(offer), billing.purchased)
     }
 }

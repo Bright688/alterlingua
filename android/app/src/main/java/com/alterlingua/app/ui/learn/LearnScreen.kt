@@ -1,6 +1,5 @@
 package com.alterlingua.app.ui.learn
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +55,13 @@ import com.alterlingua.app.ui.components.TagPill
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
 
+/** Google Play's purchase flow needs a real Activity, not just a Context; Compose only hands us the latter directly. */
+private tailrec fun findActivity(context: android.content.Context): android.app.Activity? = when (context) {
+    is android.app.Activity -> context
+    is android.content.ContextWrapper -> findActivity(context.baseContext)
+    else -> null
+}
+
 @Composable
 fun LearnRoute(
     modifier: Modifier = Modifier,
@@ -66,21 +72,22 @@ fun LearnRoute(
     val curriculumState by curriculumViewModel.uiState.collectAsStateWithLifecycle()
     val curriculumListening by curriculumViewModel.listening.collectAsStateWithLifecycle()
     val curriculumCanListen by curriculumViewModel.canListen.collectAsStateWithLifecycle()
+    val curriculumTier by curriculumViewModel.tier.collectAsStateWithLifecycle()
+    val curriculumOffers by curriculumViewModel.offers.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
     // New messages may have been translated while the tab was away: look again for today's lesson.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
     // Standard and Premium lessons (see CurriculumLessonService) are a second, separate source of lessons: a large,
     // shared, online word list, apart from the free micro-lesson drawn from the learner's own conversations.
+    // Standard and Premium are two separate Google Play products (CLAUDE.md section 32): each gets its own card
+    // below, with its own price and its own Subscribe button, never merged into one.
     var showingCurriculum by rememberSaveable { mutableStateOf(false) }
-    var showingComingSoon by rememberSaveable { mutableStateOf(false) }
-    if (showingComingSoon) {
-        ComingSoonDialog(onDismiss = { showingComingSoon = false })
-    }
     if (showingCurriculum) {
         CurriculumLessonScreen(
             state = curriculumState,
             onNext = curriculumViewModel::next,
             onRetry = { curriculumViewModel.start() },
-            onUpgrade = { showingComingSoon = true },
+            onUpgrade = { showingCurriculum = false }, // back to this tab's own Standard/Premium cards to pick a plan
             onLanguageSelected = { language -> curriculumViewModel.start(language) },
             onListen = curriculumViewModel::listen,
             listening = curriculumListening,
@@ -101,10 +108,12 @@ fun LearnRoute(
             onRecognition = viewModel::recordRecognition,
             footer = {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedButton(
-                        onClick = { curriculumViewModel.start(); showingCurriculum = true },
-                        modifier = Modifier.fillMaxWidth().testTag("lrn_standard_curriculum"),
-                    ) { Text(stringResource(R.string.set_standard_curriculum)) }
+                    StandardAndPremiumCards(
+                        tier = curriculumTier,
+                        offers = curriculumOffers,
+                        onOpen = { curriculumViewModel.start(); showingCurriculum = true },
+                        onSubscribe = { offer -> findActivity(context)?.let { curriculumViewModel.subscribe(it, offer) } },
+                    )
                     ReaderRoute()
                 }
             },
@@ -113,9 +122,6 @@ fun LearnRoute(
     }
 }
 
-// AnimatedContent is keyed on the card's index purely to crossfade between cards; the content itself reads the card
-// through state (the sealed LearnUiState) rather than the target-state parameter, so it is deliberately unused.
-@Suppress("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun LearnScreen(
     state: LearnUiState,
@@ -140,9 +146,7 @@ fun LearnScreen(
         when (state) {
             LearnUiState.Loading -> Unit
             is LearnUiState.Empty -> EmptyLesson(state)
-            is LearnUiState.Card -> AnimatedContent(targetState = state.index, label = "lesson_card") { _ ->
-                LessonCardContent(state, onPrevious, onNext, nowMillis, onRecognition, practice)
-            }
+            is LearnUiState.Card -> LessonCardContent(state, onPrevious, onNext, nowMillis, onRecognition, practice)
             is LearnUiState.Complete -> LessonComplete(state.lesson)
         }
         footer()
@@ -374,4 +378,83 @@ private fun LearnCardPreview() {
 @Composable
 private fun LearnEmptyPreview() {
     AlterLinguaTheme { LearnScreen(state = LearnUiState.Empty(Languages.French), onPrevious = {}, onNext = {}) }
+}
+
+/**
+ * Standard and Premium, each its own card with its own price and its own Subscribe button (CLAUDE.md section 32):
+ * never one merged "Standard & Premium" button. Tapping a card's body always opens the same shared curriculum
+ * (CLAUDE.md's own "one curriculum for all plans" decision) — what differs per card is entitlement and price, not
+ * content. A plan already owned shows "Open" instead of a price.
+ */
+@Composable
+private fun StandardAndPremiumCards(
+    tier: com.alterlingua.app.entitlements.Tier,
+    offers: List<com.alterlingua.app.billing.TierOffers>,
+    onOpen: () -> Unit,
+    onSubscribe: (com.alterlingua.app.billing.SubscriptionOffer) -> Unit,
+) {
+    PlanEntryCard(
+        name = stringResource(R.string.set_plan_standard),
+        owned = tier == com.alterlingua.app.entitlements.Tier.STANDARD || tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
+        offer = offers.firstOrNull { it.tier == com.alterlingua.app.entitlements.Tier.STANDARD },
+        onOpen = onOpen,
+        onSubscribe = onSubscribe,
+        testTag = "lrn_standard_lessons",
+    )
+    PlanEntryCard(
+        name = stringResource(R.string.set_plan_premium),
+        owned = tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
+        offer = offers.firstOrNull { it.tier == com.alterlingua.app.entitlements.Tier.PREMIUM },
+        onOpen = onOpen,
+        onSubscribe = onSubscribe,
+        testTag = "lrn_premium_lessons",
+    )
+}
+
+@Composable
+private fun PlanEntryCard(
+    name: String,
+    owned: Boolean,
+    offer: com.alterlingua.app.billing.TierOffers?,
+    onOpen: () -> Unit,
+    onSubscribe: (com.alterlingua.app.billing.SubscriptionOffer) -> Unit,
+    testTag: String,
+) {
+    AlterLinguaCard(modifier = Modifier.testTag(testTag)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+            if (owned) TagPill(stringResource(R.string.set_plans_current))
+        }
+        if (owned) {
+            OutlinedButton(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag("${testTag}_open")) {
+                Text(stringResource(R.string.lrn_curriculum_open))
+            }
+        } else if (offer?.available == true) {
+            // Still within the free trial, this plan's content can be tried before buying it.
+            OutlinedButton(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag("${testTag}_open")) {
+                Text(stringResource(R.string.lrn_curriculum_try_it))
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                offer.monthly?.let { monthly ->
+                    OutlinedButton(onClick = { onSubscribe(monthly) }, modifier = Modifier.weight(1f).testTag("${testTag}_subscribe_monthly")) {
+                        Text(stringResource(R.string.set_plans_per_month, monthly.formattedPrice))
+                    }
+                }
+                offer.annual?.let { annual ->
+                    Button(onClick = { onSubscribe(annual) }, modifier = Modifier.weight(1f).testTag("${testTag}_subscribe_annual")) {
+                        Text(stringResource(R.string.set_plans_per_year, annual.formattedPrice))
+                    }
+                }
+            }
+        } else {
+            OutlinedButton(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag("${testTag}_open")) {
+                Text(stringResource(R.string.lrn_curriculum_try_it))
+            }
+            Text(
+                text = stringResource(R.string.set_plans_not_available_yet),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }

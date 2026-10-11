@@ -249,7 +249,9 @@
     <string name="set_plans_title">Piano</string>
     <string name="set_plans_subtitle">Cosa offre davvero ogni piano oggi — nulla promesso che non esista già.</string>
     <string name="set_plans_current">Piano attuale</string>
-    <string name="set_plans_subscribe">Abbonati</string>
+    <string name="set_plans_per_month">%1$s / mese</string>
+    <string name="set_plans_per_year">%1$s / anno</string>
+    <string name="set_plans_not_available_yet">Non ancora disponibile</string>
     <string name="set_plan_free_price">Gratis, per sempre</string>
     <string name="set_plan_free_feature_keyboard">La tastiera AlterLingua: traduzione dei messaggi inviati e ricevuti</string>
     <string name="set_plan_free_feature_micro_lessons">Micro-lezioni gratuite e illimitate dalle tue conversazioni</string>
@@ -285,8 +287,8 @@
     <string name="lrn_back">Indietro</string>
     <string name="lrn_curriculum_unavailable_title">Impossibile caricare il programma</string>
     <string name="lrn_curriculum_retry">Riprova</string>
-    <string name="set_coming_soon_title">Presto disponibile</string>
-    <string name="set_coming_soon_body">I piani Standard e Premium non sono ancora disponibili. Ti avviseremo non appena lo saranno.</string>
+    <string name="lrn_curriculum_open">Apri</string>
+    <string name="lrn_curriculum_try_it">Provalo</string>
     <string name="set_remind_me_at">Ricordami la mia lezione da 3 elementi alle %1$s.</string>
     <string name="set_translate_whatsapp_messages">Traduci i messaggi in arrivo</string>
     <string name="set_whatsapp_desc">Quando qualcuno scrive in un’altra lingua, AlterLingua mostra una traduzione in %1$s come notifica separata.</string>

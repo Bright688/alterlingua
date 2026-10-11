@@ -249,7 +249,9 @@
     <string name="set_plans_title">Abonnement</string>
     <string name="set_plans_subtitle">Wat elk abonnement vandaag echt biedt — niets beloofd dat nog niet bestaat.</string>
     <string name="set_plans_current">Huidig abonnement</string>
-    <string name="set_plans_subscribe">Abonneren</string>
+    <string name="set_plans_per_month">%1$s / maand</string>
+    <string name="set_plans_per_year">%1$s / jaar</string>
+    <string name="set_plans_not_available_yet">Nog niet beschikbaar</string>
     <string name="set_plan_free_price">Gratis, voor altijd</string>
     <string name="set_plan_free_feature_keyboard">Het AlterLingua-toetsenbord: vertaling van verzonden en ontvangen berichten</string>
     <string name="set_plan_free_feature_micro_lessons">Gratis, onbeperkte microlessen uit je eigen gesprekken</string>
@@ -285,8 +287,8 @@
     <string name="lrn_back">Terug</string>
     <string name="lrn_curriculum_unavailable_title">Curriculum kon niet worden geladen</string>
     <string name="lrn_curriculum_retry">Opnieuw proberen</string>
-    <string name="set_coming_soon_title">Binnenkort beschikbaar</string>
-    <string name="set_coming_soon_body">Standard- en Premium-abonnementen zijn nog niet beschikbaar. We laten het je weten zodra dat wel zo is.</string>
+    <string name="lrn_curriculum_open">Openen</string>
+    <string name="lrn_curriculum_try_it">Proberen</string>
     <string name="set_remind_me_at">Herinner me om %1$s aan mijn les van 3 items.</string>
     <string name="set_translate_whatsapp_messages">Binnenkomende berichten vertalen</string>
     <string name="set_whatsapp_desc">Als iemand in een andere taal schrijft, toont AlterLingua een vertaling in het %1$s als eigen melding.</string>

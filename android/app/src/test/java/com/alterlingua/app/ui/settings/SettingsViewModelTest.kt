@@ -1,5 +1,10 @@
 package com.alterlingua.app.ui.settings
 
+import android.app.Activity
+import com.alterlingua.app.billing.BillingManager
+import com.alterlingua.app.billing.BillingPeriod
+import com.alterlingua.app.billing.SubscriptionOffer
+import com.alterlingua.app.billing.TierOffers
 import com.alterlingua.app.entitlements.PREMIUM_CURRICULUM_DAILY_CAP
 import com.alterlingua.app.entitlements.STANDARD_CURRICULUM_DAILY_CAP
 import com.alterlingua.app.entitlements.Tier
@@ -9,11 +14,21 @@ import com.alterlingua.app.learning.UserSettings
 import com.alterlingua.app.testing.FakeUserSettingsRepository
 import com.alterlingua.app.testing.MainDispatcherRule
 import java.time.LocalTime
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+
+private class FakeBillingManager(offers: List<TierOffers> = emptyList()) : BillingManager {
+    override val offers = MutableStateFlow(offers)
+    override val ready = MutableStateFlow(true)
+    val purchased = mutableListOf<SubscriptionOffer>()
+    override fun purchase(activity: Activity, offer: SubscriptionOffer) {
+        purchased += offer
+    }
+}
 
 class SettingsViewModelTest {
 
@@ -189,5 +204,28 @@ class SettingsViewModelTest {
         for (language in listOf(Languages.English, Languages.French, Languages.Spanish, Languages.German, Languages.Italian, Languages.Dutch)) {
             assertTrue(language.code, choicesFor(language).isEmpty())
         }
+    }
+
+    @Test
+    fun offers_reflectsWhatGooglePlaysCatalogHasRightNow() {
+        val standardOffer = SubscriptionOffer("standard_monthly", Tier.STANDARD, BillingPeriod.MONTHLY, "$3.99", "token")
+        val catalog = listOf(TierOffers(Tier.STANDARD, standardOffer, null), TierOffers(Tier.PREMIUM, null, null))
+        val vm = SettingsViewModel(FakeUserSettingsRepository(), billingManager = FakeBillingManager(catalog))
+        assertEquals(catalog, vm.uiState.value.offers)
+    }
+
+    @Test
+    fun offers_isEmpty_whenThereIsNoBillingManager() {
+        val vm = SettingsViewModel(FakeUserSettingsRepository())
+        assertEquals(emptyList<TierOffers>(), vm.uiState.value.offers)
+    }
+
+    @Test
+    fun subscribe_startsThatExactOffersPurchaseFlow() {
+        val billing = FakeBillingManager()
+        val vm = SettingsViewModel(FakeUserSettingsRepository(), billingManager = billing)
+        val offer = SubscriptionOffer("premium_annual", Tier.PREMIUM, BillingPeriod.ANNUAL, "$79.99", "token")
+        vm.subscribe(activity = object : Activity() {}, offer)
+        assertEquals(listOf(offer), billing.purchased)
     }
 }

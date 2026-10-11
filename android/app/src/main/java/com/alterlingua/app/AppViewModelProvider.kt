@@ -48,7 +48,14 @@ object AppViewModelProvider {
         initializer { ProgressViewModel(application().progressService, application().userSettings) }
         initializer { SetupViewModel(application().setupChecker, application().userSettings) }
         initializer { LearnViewModel(application().lessonService, application().userSettings) }
-        initializer { com.alterlingua.app.ui.learn.CurriculumLessonViewModel(application().curriculumLessonService, AndroidSpeaker(application())) }
+        initializer {
+            com.alterlingua.app.ui.learn.CurriculumLessonViewModel(
+                application().curriculumLessonService,
+                AndroidSpeaker(application()),
+                application().userSettings,
+                application().billingManager,
+            )
+        }
         initializer {
             val app = application()
             PracticeViewModel { scope ->
@@ -100,7 +107,16 @@ object AppViewModelProvider {
             )
         }
         initializer { WordsViewModel(application().userSettings, application().languageMap) }
-        initializer { SettingsViewModel(application().userSettings, application().incomingStatus.last, liveChatReading = application().liveChatStatus.last, voiceCaptureListening = com.alterlingua.app.capture.VoiceCaptureState.listening, eraseLearningData = application().learningDataEraser::eraseAll) }
+        initializer {
+            SettingsViewModel(
+                application().userSettings,
+                application().incomingStatus.last,
+                liveChatReading = application().liveChatStatus.last,
+                voiceCaptureListening = com.alterlingua.app.capture.VoiceCaptureState.listening,
+                eraseLearningData = application().learningDataEraser::eraseAll,
+                billingManager = application().billingManager,
+            )
+        }
         initializer {
             com.alterlingua.app.ui.settings.PilotReportViewModel(application().userSettings, application().progressLog, com.alterlingua.app.BuildConfig.VERSION_NAME)
         }

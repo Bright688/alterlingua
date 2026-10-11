@@ -47,6 +47,13 @@ import com.alterlingua.app.ui.setup.rememberSetupUi
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
 
+/** Google Play's purchase flow needs a real Activity, not just a Context; Compose only hands us the latter directly. */
+private tailrec fun findActivity(context: android.content.Context): android.app.Activity? = when (context) {
+    is android.app.Activity -> context
+    is android.content.ContextWrapper -> findActivity(context.baseContext)
+    else -> null
+}
+
 @Composable
 fun SettingsRoute(
     modifier: Modifier = Modifier,
@@ -54,16 +61,14 @@ fun SettingsRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val setup = rememberSetupUi()
+    val context = androidx.compose.ui.platform.LocalContext.current
     // Settings -> Plan (CLAUDE.md section 33): a full screen, not a dialog, since it needs room for three real cards.
     var showingPlans by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
-    var showingComingSoon by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
-    if (showingComingSoon) {
-        com.alterlingua.app.ui.learn.ComingSoonDialog(onDismiss = { showingComingSoon = false })
-    }
     if (showingPlans) {
         PlansScreen(
             tier = state.tier,
-            onSubscribe = { showingComingSoon = true },
+            offers = state.offers,
+            onSubscribe = { offer -> findActivity(context)?.let { viewModel.subscribe(it, offer) } },
             modifier = modifier,
             footer = {
                 androidx.compose.material3.OutlinedButton(

@@ -137,6 +137,9 @@ dependencies {
     // Encrypts the Room databases at rest; the passphrase itself lives only in Keystore-backed encrypted storage.
     implementation(libs.sqlcipher.android)
     implementation(libs.androidx.security.crypto)
+    // Google Play Billing (Standard/Premium subscriptions). Placeholder product IDs until real ones exist
+    // in Play Console; see com.alterlingua.app.billing.SubscriptionProducts.
+    implementation(libs.billing)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

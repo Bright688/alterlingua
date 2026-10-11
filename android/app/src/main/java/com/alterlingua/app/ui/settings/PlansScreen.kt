@@ -9,6 +9,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,23 +18,27 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alterlingua.app.R
+import com.alterlingua.app.billing.SubscriptionOffer
+import com.alterlingua.app.billing.TierOffers
 import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.ui.components.AlterLinguaCard
-import com.alterlingua.app.ui.components.TagPill
 import com.alterlingua.app.ui.components.ScreenFrame
+import com.alterlingua.app.ui.components.TagPill
 import com.alterlingua.app.ui.theme.extendedColors
 
 /**
  * Settings → Plan (CLAUDE.md section 33): what FREE, Standard and Premium each actually unlock today, so the three
  * plans are genuinely visible rather than only implied by a trial limit. Only real, already-built differences are
- * listed — nothing here promises a feature the app does not yet gate. [onSubscribe] opens the "Coming soon"
- * placeholder (CLAUDE.md sections 31-32: real Google Play Billing is a later milestone).
+ * listed — nothing here promises a feature the app does not yet gate. Standard and Premium are two separate Google
+ * Play subscriptions, each with its own monthly/annual price from [offers] — never a fixed string, since only Play
+ * Console knows the real price. [onSubscribe] launches Google Play's own purchase sheet for that exact offer.
  */
 @Composable
 fun PlansScreen(
     tier: Tier,
-    onSubscribe: () -> Unit,
     modifier: Modifier = Modifier,
+    offers: List<TierOffers> = emptyList(),
+    onSubscribe: (SubscriptionOffer) -> Unit = {},
     footer: @Composable () -> Unit = {},
 ) {
     ScreenFrame(
@@ -50,37 +55,40 @@ fun PlansScreen(
             tier = Tier.FREE,
             current = tier == Tier.FREE,
             name = stringResource(R.string.set_plan_free_trial),
-            price = stringResource(R.string.set_plan_free_price),
+            staticPrice = stringResource(R.string.set_plan_free_price),
             features = listOf(
                 stringResource(R.string.set_plan_free_feature_keyboard),
                 stringResource(R.string.set_plan_free_feature_micro_lessons),
                 stringResource(R.string.set_plan_free_feature_trial),
             ),
-            onSubscribe = null,
+            offer = null,
+            onSubscribe = onSubscribe,
         )
         PlanCard(
             tier = Tier.STANDARD,
             current = tier == Tier.STANDARD,
             name = stringResource(R.string.set_plan_standard),
-            price = stringResource(R.string.set_plan_standard_price),
+            staticPrice = null,
             features = listOf(
                 stringResource(R.string.set_plan_standard_feature_everything_free),
                 stringResource(R.string.set_plan_standard_feature_full_curriculum),
                 stringResource(R.string.set_plan_standard_feature_daily_cap),
             ),
-            onSubscribe = onSubscribe.takeIf { tier != Tier.STANDARD },
+            offer = offers.firstOrNull { it.tier == Tier.STANDARD } ?: TierOffers(Tier.STANDARD, null, null),
+            onSubscribe = onSubscribe,
         )
         PlanCard(
             tier = Tier.PREMIUM,
             current = tier == Tier.PREMIUM,
             name = stringResource(R.string.set_plan_premium),
-            price = stringResource(R.string.set_plan_premium_price),
+            staticPrice = null,
             features = listOf(
                 stringResource(R.string.set_plan_premium_feature_everything_standard),
                 stringResource(R.string.set_plan_premium_feature_all_languages),
                 stringResource(R.string.set_plan_premium_feature_no_cap),
             ),
-            onSubscribe = onSubscribe.takeIf { tier != Tier.PREMIUM },
+            offer = offers.firstOrNull { it.tier == Tier.PREMIUM } ?: TierOffers(Tier.PREMIUM, null, null),
+            onSubscribe = onSubscribe,
         )
         footer()
     }
@@ -91,16 +99,19 @@ private fun PlanCard(
     tier: Tier,
     current: Boolean,
     name: String,
-    price: String,
+    staticPrice: String?,
     features: List<String>,
-    onSubscribe: (() -> Unit)?,
+    offer: TierOffers?,
+    onSubscribe: (SubscriptionOffer) -> Unit,
 ) {
     AlterLinguaCard(modifier = Modifier.testTag("plan_card_${tier.name.lowercase()}")) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(name, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
             if (current) TagPill(stringResource(R.string.set_plans_current), modifier = Modifier.testTag("plan_current_${tier.name.lowercase()}"))
         }
-        Text(price, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        if (staticPrice != null) {
+            Text(staticPrice, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        }
         HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
         features.forEach { feature ->
             Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -108,9 +119,29 @@ private fun PlanCard(
                 Text(feature, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
             }
         }
-        if (onSubscribe != null) {
-            Button(onClick = onSubscribe, modifier = Modifier.fillMaxWidth().testTag("plan_subscribe_${tier.name.lowercase()}")) {
-                Text(stringResource(R.string.set_plans_subscribe))
+        if (offer != null && !current) {
+            if (offer.available) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    offer.monthly?.let { monthly ->
+                        OutlinedButton(
+                            onClick = { onSubscribe(monthly) },
+                            modifier = Modifier.weight(1f).testTag("plan_subscribe_${tier.name.lowercase()}_monthly"),
+                        ) { Text(stringResource(R.string.set_plans_per_month, monthly.formattedPrice)) }
+                    }
+                    offer.annual?.let { annual ->
+                        Button(
+                            onClick = { onSubscribe(annual) },
+                            modifier = Modifier.weight(1f).testTag("plan_subscribe_${tier.name.lowercase()}_annual"),
+                        ) { Text(stringResource(R.string.set_plans_per_year, annual.formattedPrice)) }
+                    }
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.set_plans_not_available_yet),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.testTag("plan_unavailable_${tier.name.lowercase()}"),
+                )
             }
         }
     }

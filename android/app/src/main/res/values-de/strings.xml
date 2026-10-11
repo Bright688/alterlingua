@@ -249,7 +249,9 @@
     <string name="set_plans_title">Tarif</string>
     <string name="set_plans_subtitle">Was jeder Tarif heute wirklich bietet — nichts versprochen, was nicht schon existiert.</string>
     <string name="set_plans_current">Aktueller Tarif</string>
-    <string name="set_plans_subscribe">Abonnieren</string>
+    <string name="set_plans_per_month">%1$s / Monat</string>
+    <string name="set_plans_per_year">%1$s / Jahr</string>
+    <string name="set_plans_not_available_yet">Noch nicht verfügbar</string>
     <string name="set_plan_free_price">Kostenlos, dauerhaft</string>
     <string name="set_plan_free_feature_keyboard">Die AlterLingua-Tastatur: Übersetzung ausgehend und eingehend</string>
     <string name="set_plan_free_feature_micro_lessons">Kostenlose, unbegrenzte Mikro-Lektionen aus deinen eigenen Unterhaltungen</string>
@@ -285,8 +287,8 @@
     <string name="lrn_back">Zurück</string>
     <string name="lrn_curriculum_unavailable_title">Lehrplan konnte nicht geladen werden</string>
     <string name="lrn_curriculum_retry">Erneut versuchen</string>
-    <string name="set_coming_soon_title">Demnächst verfügbar</string>
-    <string name="set_coming_soon_body">Die Tarife Standard und Premium sind noch nicht verfügbar. Wir informieren dich, sobald es so weit ist.</string>
+    <string name="lrn_curriculum_open">Öffnen</string>
+    <string name="lrn_curriculum_try_it">Ausprobieren</string>
     <string name="set_remind_me_at">Erinnere mich um %1$s an meine Lektion mit 3 Einträgen.</string>
     <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>

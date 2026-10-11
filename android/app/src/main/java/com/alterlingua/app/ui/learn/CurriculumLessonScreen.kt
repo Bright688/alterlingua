@@ -1,6 +1,5 @@
 package com.alterlingua.app.ui.learn
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -14,14 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,9 +51,6 @@ import com.alterlingua.app.ui.theme.extendedColors
  * [onUpgrade] offered instead of more words. Premium may switch which of its languages it is seeing
  * ([onLanguageSelected]); Standard and the FREE trial only ever show the active target language.
  */
-// AnimatedContent is keyed on the card's position purely to crossfade between cards; the content itself reads the
-// card through state.current rather than the target-state parameter, so that parameter is deliberately unused.
-@Suppress("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun CurriculumLessonScreen(
     state: CurriculumSessionState,
@@ -80,9 +74,7 @@ fun CurriculumLessonScreen(
             is CurriculumSessionState.InProgress -> {
                 PlanBadge(state.tier)
                 LanguagePicker(state.languages, onLanguageSelected)
-                AnimatedContent(targetState = state.position, label = "curriculum_card") { _ ->
-                    CurriculumCardContent(state, onNext, onListen, listening, canListen)
-                }
+                CurriculumCardContent(state, onNext, onListen, listening, canListen)
             }
             is CurriculumSessionState.DoneForToday -> {
                 PlanBadge(state.tier)
@@ -280,19 +272,4 @@ private fun CurriculumUnavailable(onRetry: () -> Unit) {
     OutlinedButton(onClick = onRetry, modifier = Modifier.fillMaxWidth().testTag("curriculum_retry")) {
         Text(stringResource(R.string.lrn_curriculum_retry))
     }
-}
-
-/**
- * The placeholder shown by "View plans" (CLAUDE.md sections 31-32: real Google Play Billing is postponed past this
- * milestone). Scaffolding only: no purchase flow, just an honest "not yet" so the trial limit is never a dead end.
- */
-@Composable
-fun ComingSoonDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.set_coming_soon_title)) },
-        text = { Text(stringResource(R.string.set_coming_soon_body)) },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_ok)) } },
-        modifier = Modifier.testTag("coming_soon_dialog"),
-    )
 }

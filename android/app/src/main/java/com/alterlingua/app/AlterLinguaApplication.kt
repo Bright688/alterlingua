@@ -109,6 +109,9 @@ class AlterLinguaApplication : Application() {
         }
         // Audio left behind by a crash or a killed process is removed; recordings younger than an hour are left alone.
         Thread({ temporaryAudio.sweep() }, "alterlingua-audio-cleanup").apply { isDaemon = true }.start()
+        // Connects now (not only when a screen first asks for it), so an existing subscription is reconciled with
+        // Play's own records on every launch, not only after opening Settings -> Plan.
+        billingManager
     }
 
     /** The daily micro-lesson: chosen from the Personal Language Map, kept for the day, and recorded as a mastery signal. */
@@ -252,5 +255,14 @@ class AlterLinguaApplication : Application() {
                 }
             },
         )
+    }
+
+    /**
+     * Standard and Premium are sold as two separate Google Play subscriptions (CLAUDE.md section 32), not one plan
+     * with an add-on. Scaffolding until real products exist in Play Console with the IDs this expects to find
+     * (see `com.alterlingua.app.billing.SubscriptionProducts`); until then, [BillingManager.offers] stays empty.
+     */
+    val billingManager: com.alterlingua.app.billing.BillingManager by lazy {
+        com.alterlingua.app.billing.PlayBillingManager(this, userSettings, CoroutineScope(SupervisorJob() + Dispatchers.Default))
     }
 }

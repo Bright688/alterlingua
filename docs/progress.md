@@ -1232,3 +1232,31 @@ corrected test counts.
 cleanly on the real device. The full on-device instrumented-test suite still has not completed end to end this
 session (a pre-existing, unrelated multi-hour hang in `AppNavigationTest`, not from this work); only a manual launch
 check and `compileDebugAndroidTestKotlin` were used to verify the UI code actually builds and runs.
+
+## Addendum (2026-10-11): real Google Play Billing, and Standard/Premium split into two separate cards
+
+**Correction (2026-10-11): "Coming soon" is gone, and Standard/Premium are no longer one merged button.** The
+owner corrected the previous addendum's single "Standard & Premium Lessons" button directly — it was supposed to
+be two separate cards, each with its own Google Play billing. Real Google Play Billing Library code
+(`billing/BillingManager.kt`, `billing/SubscriptionProducts.kt`) now exists, wired through `CurriculumLessonViewModel`
+and `SettingsViewModel`; the Learn tab shows "Standard Lessons" and "Premium Lessons" as two independent cards, each
+with its own price and Subscribe button, and Settings → Plan does the same. Both still draw from the same shared
+curriculum — the owner's own explicit "Final decision" was one curriculum for all plans, tiered by assistance, not
+by content; that larger AI-tutor/CEFR-curriculum/AdMob vision from the same message is **not** built this round
+(see `docs/build-log.md`'s matching entry for the full reasoning and scope line).
+
+An AnimatedContent layout bug from the previous addendum (card content overlapping visually, invisible to any
+automated check) was found via on-device screenshots and fixed by removing the AnimatedContent wrapping, before
+this round's billing work began.
+
+**Known limitation**: the four subscription product IDs (`standard_monthly`, `standard_annual`, `premium_monthly`,
+`premium_annual`) do not exist in Google Play Console yet, so no real purchase can complete — Play reports an
+empty catalog, which the UI already shows as "Not available yet." See `docs/entitlements.md` for the full current
+entitlement picture.
+
+**Status after this addendum**: 957 unit tests pass (7 new, covering `tier`/`offers`/`subscribe` on both
+`CurriculumLessonViewModel` and `SettingsViewModel`), lint 0 errors (one real `ModifierParameter` warning on the
+rewritten `PlansScreen` was found and fixed), `compileDebugKotlin`/`compileDebugAndroidTestKotlin`/
+`compileDebugUnitTestKotlin` all clean. **Not yet manually verified on a real device** for this specific round —
+only the previous addendum's screenshots exist, and the real purchase flow cannot be exercised at all until the
+owner creates matching products in Google Play Console.

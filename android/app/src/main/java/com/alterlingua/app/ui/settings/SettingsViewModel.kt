@@ -1,8 +1,12 @@
 package com.alterlingua.app.ui.settings
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alterlingua.app.accessibility.LiveChatReading
+import com.alterlingua.app.billing.BillingManager
+import com.alterlingua.app.billing.SubscriptionOffer
+import com.alterlingua.app.billing.TierOffers
 import com.alterlingua.app.entitlements.Feature
 import com.alterlingua.app.entitlements.PREMIUM_CURRICULUM_DAILY_CAP
 import com.alterlingua.app.entitlements.STANDARD_CURRICULUM_DAILY_CAP
@@ -22,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -65,6 +70,8 @@ data class SettingsUiState(
     val microLessonDailyGoal: Int = UserSettings.DEFAULT_MICRO_LESSON_DAILY_GOAL,
     /** The current subscription tier, so Settings can show Premium's higher curriculum-goal option only to Premium. */
     val tier: Tier = Tier.FREE,
+    /** What Google Play's catalog looks like right now for Standard and Premium (see Settings -> Plan). */
+    val offers: List<TierOffers> = emptyList(),
 )
 
 /** Shows the saved settings and saves changes made here, including switching languages (CLAUDE.md section 6.20). */
@@ -74,6 +81,8 @@ class SettingsViewModel(
     liveChatReading: Flow<LiveChatReading?> = emptyFlow(),
     /** Whether a voice-note listening session is running (see VoiceCaptureState). */
     voiceCaptureListening: Flow<Boolean> = emptyFlow(),
+    /** Standard and Premium are sold as two separate Google Play subscriptions (CLAUDE.md section 32). */
+    private val billingManager: BillingManager? = null,
     /** Removes everything learned from messages and practice; true when every part was removed. */
     private val eraseLearningData: suspend () -> Boolean = { true },
 ) : ViewModel() {
@@ -81,13 +90,27 @@ class SettingsViewModel(
     private val erased = MutableStateFlow<Boolean?>(null)
 
     val uiState: StateFlow<SettingsUiState> = combine(
-        repository.settings,
-        lastIncoming.onStart { emit(null) },
-        erased,
-        liveChatReading.onStart { emit(null) },
-        voiceCaptureListening.onStart { emit(false) },
-    ) { it, incoming, dataErased, liveReading, listening ->
-        SettingsUiState(
+        combine(
+            repository.settings,
+            lastIncoming.onStart { emit(null) },
+            erased,
+            liveChatReading.onStart { emit(null) },
+            voiceCaptureListening.onStart { emit(false) },
+        ) { it, incoming, dataErased, liveReading, listening ->
+            baseState(it, incoming, dataErased, liveReading, listening)
+        },
+        billingManager?.offers ?: flowOf(emptyList()),
+    ) { state, offers -> state.copy(offers = offers) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState())
+
+    private fun baseState(
+        it: UserSettings,
+        incoming: IncomingOutcome?,
+        dataErased: Boolean?,
+        liveReading: LiveChatReading?,
+        listening: Boolean,
+    ): SettingsUiState {
+        return SettingsUiState(
             nativeLanguage = it.nativeLanguage,
             targetLanguage = it.targetLanguage,
             assistanceMode = it.assistanceMode,
@@ -118,7 +141,11 @@ class SettingsViewModel(
             tier = it.tier,
         )
     }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState())
+
+    /** Starts Google Play's own purchase sheet for this offer. */
+    fun subscribe(activity: Activity, offer: SubscriptionOffer) {
+        billingManager?.purchase(activity, offer)
+    }
 
     /** Changes the language the user writes in. Picking the current learning language swaps the two. */
     fun onNativeLanguageSelected(language: Language) = save { it.withNativeLanguage(language) }

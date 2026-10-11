@@ -2505,3 +2505,117 @@ real device and confirmed launching cleanly, with no crash.
 4. Settings → "Subscription": a "Plan" row shows your current plan; opening it shows all three plans with real
    features, and "Subscribe" on Standard or Premium shows "Coming soon," never a purchase screen.
 5. The daily micro-lesson (Learn tab's main view) should now crossfade between cards instead of jumping.
+
+## 2026-10-11 — Correction: Standard and Premium become two separate cards, each with its own real Google Play Billing
+
+**Goal requested by the owner:** after seeing the previous entry's single "Standard & Premium Lessons" button and
+its "Coming soon" dialog, the owner corrected this directly: *"this was not how you were suppose to even add the
+standard and premium lesson suppose to be in card and also you suppose to place the google play billing... standard
+plan is seperate from premium plan and not together... having their own billing and contents."* A follow-up,
+explicitly labelled "Final decision" from the owner then settled the one open question this raised — whether
+Standard and Premium should have genuinely separate lesson *content* — the opposite way: **one shared curriculum for
+all plans; the commercial difference is assistance, not content** ("Standard: structured lessons... essential AI
+assistance. Premium: the same lessons, enhanced by a personalized AI tutor"). That second message also laid out a
+much larger vision (AdMob, a CEFR-leveled curriculum rebuild, a conversational AI tutoring engine, per-resource
+usage quotas) which is **not** built in this entry — see "Deliberately not built" below.
+
+**What was built**
+
+- **Real Google Play Billing Library (`com.android.billingclient:billing:9.1.0`)**, version confirmed against the
+  current official Android Billing docs rather than assumed (CLAUDE.md section 32 is explicit about this: "do not
+  rely on outdated billing APIs"). Confirmed before writing any code: `ProductDetails` / `queryProductDetailsAsync`
+  is the current API (the old `SkuDetails` one is deprecated), and only `setListener()` is mandatory on
+  `BillingClient.newBuilder(...)`.
+- `billing/SubscriptionProducts.kt`: four product IDs (`standard_monthly`, `standard_annual`, `premium_monthly`,
+  `premium_annual`) — placeholders, since no real Play Console products exist yet (see "Known limitation" below) —
+  plus the mapping from a product ID back to its `Tier`.
+- `billing/BillingManager.kt`: `PlayBillingManager`, a real `BillingClient` wrapper exposing `offers` (what Play's
+  catalog has right now for Standard/Premium — an empty list until real products exist, never an error) and
+  `purchase(activity, offer)`, which launches Play's own purchase sheet for that *exact* product and offer. On every
+  connect it also reconciles any existing purchase against `UserSettings.tier` (`restorePurchases`), not only at the
+  moment of a fresh purchase. Wired as a singleton in `AlterLinguaApplication`, connecting at app start rather than
+  only when a billing screen first opens, so an existing subscription is reconciled on every launch.
+- **Two separate cards, not one.** `LearnScreen.kt`'s single "Standard & Premium Lessons" button is replaced by a
+  new `StandardAndPremiumCards` composable rendering two independent `PlanEntryCard`s — "Standard Lessons" and
+  "Premium Lessons" — each showing its own price (from `offers`, not a fixed string) and its own monthly/annual
+  Subscribe buttons, and each starting its own distinct purchase flow. Tapping a card's body (not its Subscribe
+  buttons) still opens the one shared curriculum, per the owner's own "one curriculum for all plans" final decision
+  — what differs per card is entitlement and price, not lesson content.
+- `PlansScreen.kt` (Settings → Plan) reworked the same way: Standard's and Premium's cards each show their own
+  monthly/annual price from `offers` and their own Subscribe buttons, replacing the previous single "Subscribe" →
+  "Coming soon" dialog. `ComingSoonDialog` itself (and its now-dead `set_coming_soon_title`/`set_coming_soon_body`
+  strings, across all 8 locales) is deleted — there is no more "coming soon" state once there is a real purchase
+  button, only "Not available yet" for a tier Play Console has no product for.
+- `CurriculumLessonViewModel` and `SettingsViewModel` both gained `tier`/`offers` state and a `subscribe(activity,
+  offer)` call, each delegating to the shared `BillingManager`.
+- New/updated string resources (`lrn_curriculum_open`, `lrn_curriculum_try_it`, `set_plans_per_month`,
+  `set_plans_per_year`, `set_plans_not_available_yet`) across all 8 locales; the now-unused `set_plans_subscribe` and
+  `set_coming_soon_*` strings were removed rather than left dead.
+
+**A real UI bug found and fixed first, before any of the above:** the previous entry's `AnimatedContent` wrapping
+around both the curriculum and micro-lesson cards caused the card's title, meaning and buttons to visually overlap
+instead of stacking — invisible to a crash check or to the test suite (nothing crashed; the layout was just wrong),
+and only found by actually looking at a screenshot after the owner said "i dont even see what you did everything is
+same old stuff." `AnimatedContent`'s content lambda must be one cohesive layout unit; the lesson card composables it
+wrapped relied on the *outer* `Column`'s arrangement for vertical stacking, which `AnimatedContent` does not
+provide. Fixed by removing the `AnimatedContent` wrapping entirely from both `LearnScreen.kt` and
+`CurriculumLessonScreen.kt`, reverting to the direct composable calls the entry before it used. Confirmed fixed with
+fresh on-device screenshots of the Home, Learn (micro-lesson and curriculum) and Settings screens, all rendering
+cleanly.
+
+**Two more bugs caught while finishing this entry, before any device install:**
+- `PlansScreen.kt`'s `PlanCard` only rendered a subscribe row *or* an "unavailable" message when it was handed a
+  non-null `TierOffers` for that tier; when `offers` has nothing at all for a tier yet (exactly the state every real
+  user will see today, since no Play Console products exist), `offers.firstOrNull { ... }` returned `null` and the
+  card silently showed neither buttons nor a message — found while writing `PlansScreenTest`'s "not available yet"
+  case, before it ever reached a device. Fixed by defaulting to an empty `TierOffers(tier, null, null)` instead of
+  `null` when nothing is found, so "Not available yet" always has something to render.
+- `EraseLearningDataTest.kt` and three other existing tests call `SettingsViewModel(repo) { ... }` with a trailing
+  lambda for `eraseLearningData`; adding `billingManager` *after* `eraseLearningData` in the constructor silently
+  rebound every one of those trailing lambdas to `billingManager` instead (Kotlin's trailing-lambda syntax always
+  targets the last parameter), which the compiler caught immediately as a type mismatch. Fixed by reordering the
+  constructor so `eraseLearningData` stays last.
+
+**Deliberately not built this round, and why:** the owner's second message described a much larger vision — an
+AdMob ad strategy, a full CEFR-leveled curriculum rebuild ("THE FORGE": Levels → Units → Lessons → Vocabulary/
+Grammar/Listening/Reading/Writing/Speaking), a separate conversational "AI Learning Engine" that tutors, corrects
+and coaches pronunciation, and granular per-resource-type usage quotas. None of that is built here. This entry
+builds only what the correction explicitly and concretely demanded — two separately-billed cards with real Play
+Billing code — and treats the rest as separate, large, future initiatives, per CLAUDE.md section 45 ("Do Not
+Overbuild") and section 55 (monetization is the last step, not a parallel one, while the communication/learning loop
+is still being proven). This scoping choice has not yet been explicitly re-confirmed by the owner since it was
+made; it should be revisited before assuming it is settled.
+
+**Known limitation, stated plainly rather than hidden:** `standard_monthly`, `standard_annual`, `premium_monthly`
+and `premium_annual` do not exist as real products in Google Play Console yet. Until the owner creates matching
+subscription products there, Play will report an empty `offers` list for both tiers — not an error, exactly the
+"Not available yet" state the UI already handles — and no purchase can actually complete. No code change will be
+needed once those products exist.
+
+### Verification
+
+Implemented and unit-tested: `SubscriptionProducts`' ID↔tier mapping (exercised indirectly through the new tests
+below), `CurriculumLessonViewModel.tier`/`offers`/`subscribe`, `SettingsViewModel.offers`/`subscribe`, and the
+offer-availability branching in both `PlansScreen` and the new `StandardAndPremiumCards`. 957 Android unit tests
+pass (950 before this entry; 7 new: `CurriculumLessonViewModelTest` gained tier-reflects-the-saved-subscription,
+offers-reflect-the-billing-catalog, offers-empty-with-no-billing-manager and subscribe-starts-that-exact-offer, and
+`SettingsViewModelTest` gained the same three offers/subscribe cases). `PlansScreenTest` (androidTest) rewritten for
+the monthly/annual-specific buttons and the "not available yet" state, and `CurriculumLessonScreenTest`'s now-dead
+`comingSoonDialog_showsAndDismisses` test removed. `:app:compileDebugKotlin`, `:app:compileDebugAndroidTestKotlin`,
+`:app:compileDebugUnitTestKotlin`, `:app:testDebugUnitTest` and `:app:lintDebug` all run clean (0 errors, warning
+count down from 38 to 36 after the `ModifierParameter` fix above) after the fixes above. **Not yet manually
+verified**: no on-device install/screenshot pass has been done for this entry specifically (the previous entry's
+screenshots predate this round's changes), since the real purchase flow cannot be exercised without real Play
+Console products regardless.
+
+### Manual test for the owner
+
+1. Learn tab: "Standard Lessons" and "Premium Lessons" now appear as two separate cards, each with its own "Try it"
+   button and its own price area (showing "Not available yet" until Play Console has real products).
+2. Settings → Subscription → Plan: Standard's and Premium's cards each show their own monthly/annual Subscribe
+   buttons (or "Not available yet"), never a single shared "Subscribe."
+3. Tapping either card's body (not a Subscribe button) opens the same shared curriculum regardless of which card
+   was tapped.
+4. Once real `standard_monthly`/`standard_annual`/`premium_monthly`/`premium_annual` subscription products exist in
+   Google Play Console (matching those exact product IDs), real prices and a real Google Play purchase sheet should
+   appear automatically, with no app code changes.

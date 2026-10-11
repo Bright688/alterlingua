@@ -21,6 +21,7 @@ mlkitDigitalInk = "19.0.0"
 ksp = "2.3.12"
 sqlcipher = "4.19.1"
 androidxSecurityCrypto = "1.1.0"
+billing = "9.1.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -55,6 +56,8 @@ androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "
 sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
 # Keystore-backed storage for the random passphrase SQLCipher uses; the passphrase itself is never stored in plain text.
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCrypto" }
+# Google Play Billing (subscriptions): ProductDetails/queryProductDetailsAsync API, not the deprecated SkuDetails one.
+billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

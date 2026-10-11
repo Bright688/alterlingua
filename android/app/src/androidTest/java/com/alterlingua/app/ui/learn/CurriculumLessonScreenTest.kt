@@ -159,11 +159,4 @@ class CurriculumLessonScreenTest {
         composeTestRule.onNodeWithTag("curriculum_retry").performClick()
         assertEquals(1, retries)
     }
-
-    @Test
-    fun comingSoonDialog_showsAndDismisses() {
-        var dismissed = 0
-        composeTestRule.setContent { AlterLinguaTheme { ComingSoonDialog(onDismiss = { dismissed++ }) } }
-        composeTestRule.onNodeWithTag("coming_soon_dialog").assertIsDisplayed()
-    }
 }
