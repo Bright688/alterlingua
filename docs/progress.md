@@ -4,7 +4,7 @@ Status values: `NOT STARTED`, `IN PROGRESS`, `IMPLEMENTED`, `MANUALLY VERIFIED`,
 `IMPLEMENTED` means the code exists and passed automated checks. It is **not** the same as
 `MANUALLY VERIFIED`, which means a person confirmed it on a real device.
 
-Last updated: 2026-10-11 (the keyboard language-list search field, added 2026-10-10, was removed again the next day at the owner's request; a new Milestone 26, the standard curriculum — thousands of words fetched online per language, a user-set daily goal with roll-over, and FREE/Standard/Premium entitlement scaffolding with a 50-word free trial and a "Coming soon" placeholder in place of real billing; the owner reported the app crashing on open, which turned out to be a real, previously-untested bug in the 2026-10-10 database-encryption work — SQLCipher's native library was never explicitly loaded — now fixed and confirmed on the real device)
+Last updated: 2026-10-11 (the keyboard language-list search field, added 2026-10-10, was removed again the next day at the owner's request; Milestone 26, Standard & Premium lessons, added, then a real crash fixed (SQLCipher's native library was never explicitly loaded, from the earlier database-encryption work — confirmed fixed on the real device), then restructured per the owner's direct feedback: "Random lesson" removed, the free micro-lesson's size made configurable, and Premium given real differentiators from Standard (every learning language at once, and a much higher daily cap) with the three plans — Free trial/Standard/Premium — now actually visible in the UI)
 
 ## Numbering note
 
@@ -43,7 +43,7 @@ Please confirm which numbering to use going forward.
 | 23 | Privacy and security audit | IMPLEMENTED | Audit of the app, backend, storage, logging, audio, notifications, network and learning data: no CRITICAL findings, 3 HIGH (2 fixed, 1 needs the authentication milestone), 6 MEDIUM, 10 LOW; results in `docs/privacy.md`. Fixed: server logs could contain message text after a crash; no way to delete learning data. 209 backend and 693 Android unit tests pass. **Nothing here was checked on a phone.** |
 | 24 | Pilot preparation and metrics | IMPLEMENTED (definitions, counters, export and consent); pilot NOT READY | The twelve pilot metrics, eight event names, privacy boundaries and reporting requirements are defined in `docs/pilot.md`. The missing counters, a privacy-checked weekly report (`alterlingua.pilot.v1`), a Settings "Share pilot report" screen (consent shown every time, participant code, exact JSON preview, Android Share sheet) and the recall check (Milestone 17) have all been added since; 920 unit tests pass. **What used to be "no real providers or backend protection" has mostly resolved itself since this row was written: the deployed backend (`169.58.53.29`) uses real Groq/Cloudflare providers, real HTTPS (sslip.io + Let's Encrypt), and a required API token — but none of that was specifically reviewed or load-tested for pilot-scale traffic, only confirmed working for one request at a time.** Nothing tried on a phone. |
 | 25 | Localization and the three language settings | IMPLEMENTED (not run on a phone) | App language, source/default language (with AUTO) and target language are separate settings. The app language applies to every screen, the keyboard and the notification; 453 strings in each of the eight interface languages (the seven translations are AI-written and NOT reviewed by native speakers); a first-launch app-language screen (L1); the onboarding now follows the brief's 11-step order with AUTO on the source step; the keyboard toolbar and translate requests follow AUTO or a fixed source. Placeholder sample data (Words, Home) is not translated. 746 unit tests pass. See `docs/localization.md`. |
-| 26 | Standard curriculum (online lessons, daily goal and roll-over, entitlements scaffolding) | IMPLEMENTED | Owner's request: a second, separate source of lessons alongside the conversation-derived daily lesson — thousands of words, fetched online, with a user-set daily goal, unfinished days rolling into the next, gated FREE (50-word trial)/Standard/Premium with a "Coming soon" placeholder in place of real billing. Backend: `GET /v1/curriculum/{language}`, 3,000-word lists per language from Hermit Dave's FrequencyWords (CC BY-SA 4.0, attributed in Settings → Licences), 415 backend tests pass. Android: `CurriculumProgressService` (per-language cursor/backlog/roll-over), `EntitlementService`/`Tier`/`TierPolicy` (centralized, CLAUDE.md section 27), `CurriculumLessonService` (fetches, looks up meanings, records each learned word in the Personal Language Map — the same mastery signal a conversation-derived lesson gives), a "Standard Curriculum" entry point in the Learn tab, and a "Words per day" control in Settings. 949 unit tests pass, lint 0 errors, release build succeeds. See the detail section below and `docs/entitlements.md`. **Not tried on a phone: the device available this session disconnected mid-run before the new instrumented UI test could complete.** |
+| 26 | Standard & Premium lessons (online curriculum, daily goal and roll-over, entitlements), separate from the free micro-lesson | IMPLEMENTED, crash found and fixed, then restructured per owner feedback | Owner's request: a second, separate source of lessons alongside the conversation/chat-derived daily micro-lesson (which stays free and unlimited) — thousands of words, fetched online, with a user-set daily goal, unfinished days rolling into the next, gated FREE trial (50 words)/Standard (one language, capped at 20/day)/Premium (every learning language, effectively uncapped) with a "Coming soon" placeholder in place of real billing. **A real bug was found and fixed after the owner reported the app crashing on open and crash-looping while typing**: SQLCipher's native library (from the unrelated, earlier database-encryption work) was never explicitly loaded — fixed with one `System.loadLibrary("sqlcipher")` call, confirmed on the real device. **The Learn tab was then restructured per direct owner feedback**: "Random lesson" removed entirely; the daily micro-lesson's size (previously a fixed ~3) is now user-configurable (Settings → "Micro Lessons (Free)"); the curriculum is now visibly Standard vs. Premium (a plan badge, a language picker for Premium with more than one learning language) rather than one undifferentiated tier. Backend: `GET /v1/curriculum/{language}`, 3,000-word lists per language from Hermit Dave's FrequencyWords (CC BY-SA 4.0, attributed in Settings → Licences), 415 backend tests pass. Android: `CurriculumProgressService`, `EntitlementService`/`Tier`/`TierPolicy`/`Feature.CURRICULUM_PREMIUM` (centralized, CLAUDE.md section 27), `CurriculumLessonService`. 945 unit tests pass, lint 0 errors, release build succeeds, confirmed launching cleanly on the real device. See the detail sections below and `docs/entitlements.md`. **The full on-device instrumented UI-test suite has still never completed end to end this session (an unrelated, pre-existing hang); only a manual launch check and the unit-tested instrumented-compile check were done.** |
 
 Post-MVP (25 Authentication, 26 Subscription infrastructure, 27 Paywalls and quotas,
 28 Monetization analytics): NOT STARTED.
@@ -1196,12 +1196,39 @@ Two open questions were put to the owner directly and answered before building:
 **Attribution**: `android/app/src/main/assets/licenses/NOTICES.txt` now has a FrequencyWords / CC BY-SA 4.0 section, shown in Settings → Licences, as `SOURCE.md` itself says should exist.
 
 ### Deliberately not built this round
-Real Google Play Billing, a real "Plans" screen, and any way for `Tier` to become anything other than FREE — all explicitly deferred by the owner's own "scaffolding only" choice and by CLAUDE.md sections 31-32. STANDARD and PREMIUM currently differ from each other in nothing (both simply unlock unlimited curriculum access); CLAUDE.md's own tier table does not specify a difference between them for this particular feature, so none was invented.
+Real Google Play Billing, a real "Plans" screen, and any way for `Tier` to become anything other than FREE — all explicitly deferred by the owner's own "scaffolding only" choice and by CLAUDE.md sections 31-32.
+
+**Correction (2026-10-11, see the addendum below): STANDARD and PREMIUM no longer differ in nothing** — the owner was asked directly and Premium now adds both a much higher daily cap and every learning language at once, not just the active target. The paragraph above was accurate only at the moment it was written.
 
 ### To check on a phone
-1. Learn tab → "Standard Curriculum": a word and its meaning appear; tapping "Learned" moves to the next one; after the daily goal (default 3) the "done for today" card appears.
-2. Settings → "Words per day": pick 10; the next curriculum session brings 10 words instead of 3.
+1. Learn tab → "Standard & Premium Lessons": a word and its meaning appear; tapping "Learned" moves to the next one; after the daily goal (default 3) the "done for today" card appears.
+2. Settings → "Words per day" (under "Standard & Premium Lessons"): pick 10; the next curriculum session brings 10 words instead of 3.
 3. Learn a curriculum word, then check the Words tab: it appears there too, with normal mastery tracking — the same map the conversation-derived lesson feeds.
 4. Simulate reaching the 50-word FREE trial limit (or lower `FREE_CURRICULUM_TRIAL_WORDS` for a quick check): the paywall card appears instead of more words; "View plans" shows "Coming soon", never a purchase screen.
-5. Turn off the network and open "Standard Curriculum": an "unavailable" card with Retry appears; the app and keyboard otherwise keep working, per CLAUDE.md section 40.
+5. Turn off the network and open the curriculum: an "unavailable" card with Retry appears; the app and keyboard otherwise keep working, per CLAUDE.md section 40.
 6. Settings → Licences: the FrequencyWords / CC BY-SA 4.0 section is present near the end.
+
+## Addendum (2026-10-11): a real crash found on the real device, then a restructuring per direct owner feedback
+
+**The crash**: the owner reported the app opening and closing repeatedly while typing on the keyboard. Traced to the
+real device's own crash log: `UnsatisfiedLinkError` on SQLCipher's native library (from the earlier, unrelated
+database-encryption milestone), which was never explicitly loaded — every attempt to touch either encrypted database
+(in practice, the keyboard service starting) crashed the whole process, and Android kept restarting it, which is
+what "opening and closing repeatedly" was. Fixed with one `System.loadLibrary("sqlcipher")` call in
+`AlterLinguaApplication.onCreate()`; confirmed fixed by direct observation on the device (process survives past the
+exact point it used to die, clean logcat). Full detail: `docs/build-log.md`, 2026-10-11.
+
+**The restructuring**: the owner then said plainly that the Learn tab did not match what they actually wanted —
+Standard and Premium are supposed to be the paid teaching curriculum, the micro-lesson is supposed to be the free
+conversation/chat-derived one, "Random lesson" did not belong, the micro-lesson was too short, and none of the three
+plans (Free trial/Standard/Premium) were actually visible anywhere. Three decisions were asked directly rather than
+guessed again: Random lesson was removed entirely; Premium was given two concrete differentiators from Standard
+(every learning language at once, and a much higher daily-word cap); the micro-lesson's size became a user setting,
+the same pattern already built for the curriculum. See `docs/build-log.md`'s matching entry for the full detail,
+including the `Feature.CURRICULUM_PREMIUM` entitlement, the `CurriculumLanguageChoice`/plan-badge UI, and the
+corrected test counts.
+
+**Status after this addendum**: 945 unit tests pass, lint 0 errors, debug/release both compile, confirmed launching
+cleanly on the real device. The full on-device instrumented-test suite still has not completed end to end this
+session (a pre-existing, unrelated multi-hour hang in `AppNavigationTest`, not from this work); only a manual launch
+check and `compileDebugAndroidTestKotlin` were used to verify the UI code actually builds and runs.

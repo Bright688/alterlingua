@@ -2,6 +2,9 @@ package com.alterlingua.app.learning.curriculum
 
 import com.alterlingua.app.entitlements.EntitlementService
 import com.alterlingua.app.entitlements.FREE_CURRICULUM_TRIAL_WORDS
+import com.alterlingua.app.entitlements.PREMIUM_CURRICULUM_DAILY_CAP
+import com.alterlingua.app.entitlements.STANDARD_CURRICULUM_DAILY_CAP
+import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.UserSettings
@@ -38,13 +41,15 @@ private class FakeMeanings : MeaningProvider {
 class CurriculumLessonServiceTest {
 
     private val french = listOf("bonjour", "demain", "réunion", "devis", "acompte")
+    private val spanish = listOf("hola", "mañana")
     private val mapStore = InMemoryLanguageMapStore()
     private val map = LanguageMapService(mapStore, clock = { 1_000_000L })
     private var learning: Language = Languages.French
 
     private fun service(
-        api: CurriculumApi = FakeCurriculumApi(mapOf("fr" to french)),
+        api: CurriculumApi = FakeCurriculumApi(mapOf("fr" to french, "es" to spanish)),
         settings: FakeUserSettingsRepository = FakeUserSettingsRepository(UserSettings(curriculumDailyGoal = 3)),
+        learningLanguages: List<Language> = listOf(learning),
     ) = CurriculumLessonService(
         api = api,
         meanings = FakeMeanings(),
@@ -52,6 +57,7 @@ class CurriculumLessonServiceTest {
         entitlements = EntitlementService(settings),
         map = map,
         languages = { LessonLanguages(learning, Languages.English) },
+        learningLanguages = { learningLanguages },
         clock = { 1_000_000L },
     )
 
@@ -62,6 +68,8 @@ class CurriculumLessonServiceTest {
         assertEquals("meaning of bonjour", state.cards[0].meaning)
         assertEquals(3, state.goalToday)
         assertEquals(0, state.position)
+        assertEquals(Languages.French, state.languages.current)
+        assertEquals(Tier.FREE, state.tier)
     }
 
     @Test
@@ -98,8 +106,9 @@ class CurriculumLessonServiceTest {
                 .withCurriculumProgress("fr", CurriculumProgress(cursor = 3, completedToday = 3, lastActiveDate = "1970-01-01")),
         )
         val api = FakeCurriculumApi(mapOf("fr" to french))
-        val state = service(api = api, settings = settings).today()
-        assertEquals(CurriculumSessionState.DoneForToday(Languages.French, 3), state)
+        val state = service(api = api, settings = settings).today() as CurriculumSessionState.DoneForToday
+        assertEquals(Languages.French, state.languages.current)
+        assertEquals(3, state.goalToday)
         assertTrue(api.requestedOffsets.isEmpty())
     }
 
@@ -125,7 +134,55 @@ class CurriculumLessonServiceTest {
             UserSettings(curriculumDailyGoal = 3)
                 .withCurriculumProgress("fr", CurriculumProgress(cursor = french.size, lastActiveDate = "1970-01-01")),
         )
-        val state = service(settings = settings).today()
-        assertEquals(CurriculumSessionState.DoneForToday(Languages.French, 3), state)
+        val state = service(settings = settings).today() as CurriculumSessionState.DoneForToday
+        assertEquals(3, state.goalToday)
+    }
+
+    // ---- tier-based daily cap (Standard/Free: normal cap; Premium: much higher) ----
+
+    @Test
+    fun aFreeOrStandardUser_isCappedAtTheNormalDailyLimit_evenIfTheyAskedForMore() = runTest {
+        listOf(Tier.FREE, Tier.STANDARD).forEach { tier ->
+            val settings = FakeUserSettingsRepository(UserSettings(tier = tier, curriculumDailyGoal = 500))
+            val state = service(settings = settings).today() as CurriculumSessionState.InProgress
+            assertEquals(tier.name, STANDARD_CURRICULUM_DAILY_CAP, state.goalToday)
+        }
+    }
+
+    @Test
+    fun aPremiumUser_isNotCappedAtTheNormalDailyLimit() = runTest {
+        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, curriculumDailyGoal = 500))
+        val state = service(settings = settings).today() as CurriculumSessionState.InProgress
+        assertEquals(500, state.goalToday)
+        assertTrue(state.goalToday <= PREMIUM_CURRICULUM_DAILY_CAP)
+    }
+
+    // ---- language choice (Premium only) ----
+
+    @Test
+    fun aPremiumUser_mayPickAnotherLanguageTheyAreLearning() = runTest {
+        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, curriculumDailyGoal = 3))
+        val state = service(settings = settings, learningLanguages = listOf(Languages.French, Languages.Spanish))
+            .today(Languages.Spanish) as CurriculumSessionState.InProgress
+        assertEquals(Languages.Spanish, state.languages.current)
+        assertEquals(listOf("hola", "mañana"), state.cards.map { it.term })
+        assertEquals(listOf(Languages.French, Languages.Spanish), state.languages.available)
+    }
+
+    @Test
+    fun aStandardUser_cannotSwitchLanguage_evenIfAskedTo() = runTest {
+        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, curriculumDailyGoal = 3))
+        val state = service(settings = settings, learningLanguages = listOf(Languages.French, Languages.Spanish))
+            .today(Languages.Spanish) as CurriculumSessionState.InProgress
+        assertEquals("a non-Premium override request is ignored", Languages.French, state.languages.current)
+        assertEquals("non-Premium never sees a picker, even if it learns several languages", listOf(Languages.French), state.languages.available)
+    }
+
+    @Test
+    fun aPremiumUser_cannotPickALanguageTheyAreNotLearning() = runTest {
+        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, curriculumDailyGoal = 3))
+        val state = service(settings = settings, learningLanguages = listOf(Languages.French))
+            .today(Languages.Japanese) as CurriculumSessionState.InProgress
+        assertEquals(Languages.French, state.languages.current)
     }
 }

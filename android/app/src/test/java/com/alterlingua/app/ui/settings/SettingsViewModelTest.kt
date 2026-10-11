@@ -1,5 +1,8 @@
 package com.alterlingua.app.ui.settings
 
+import com.alterlingua.app.entitlements.PREMIUM_CURRICULUM_DAILY_CAP
+import com.alterlingua.app.entitlements.STANDARD_CURRICULUM_DAILY_CAP
+import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.AssistanceMode
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.UserSettings
@@ -119,6 +122,33 @@ class SettingsViewModelTest {
         vm.onCurriculumDailyGoalChanged(10)
         assertEquals(10, repo.current.curriculumDailyGoal)
         assertEquals(10, vm.uiState.value.curriculumDailyGoal)
+    }
+
+    @Test
+    fun curriculumDailyGoal_isCappedForFreeAndStandard_evenIfAskedForMore() {
+        listOf(Tier.FREE, Tier.STANDARD).forEach { tier ->
+            val repo = FakeUserSettingsRepository(UserSettings(tier = tier))
+            SettingsViewModel(repo).onCurriculumDailyGoalChanged(500)
+            assertEquals(tier.name, STANDARD_CURRICULUM_DAILY_CAP, repo.current.curriculumDailyGoal)
+        }
+    }
+
+    @Test
+    fun curriculumDailyGoal_isNotCappedAtTheNormalLimitForPremium() {
+        val repo = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM))
+        SettingsViewModel(repo).onCurriculumDailyGoalChanged(500)
+        assertEquals(500, repo.current.curriculumDailyGoal)
+        assertTrue(repo.current.curriculumDailyGoal <= PREMIUM_CURRICULUM_DAILY_CAP)
+    }
+
+    @Test
+    fun microLessonDailyGoal_defaultsToThree_andCanBeChanged_andIsSaved() {
+        val repo = FakeUserSettingsRepository()
+        val vm = SettingsViewModel(repo)
+        assertEquals(3, vm.uiState.value.microLessonDailyGoal)
+        vm.onMicroLessonDailyGoalChanged(12)
+        assertEquals(12, repo.current.microLessonDailyGoal)
+        assertEquals(12, vm.uiState.value.microLessonDailyGoal)
     }
 
     @Test

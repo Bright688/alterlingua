@@ -6,6 +6,12 @@ package com.alterlingua.app.entitlements
  * "isPremium" check wherever the feature is used.
  */
 enum class Feature {
-    /** Learning past the free trial's word count in the standard curriculum (see CurriculumProgressService). */
-    STANDARD_CURRICULUM_UNLIMITED,
+    /** Learning past the free trial's word count in the curriculum (Standard and Premium lessons). */
+    CURRICULUM_UNLIMITED_TRIAL,
+
+    /**
+     * What Premium adds on top of Standard for the curriculum: every learning language's curriculum at once (not
+     * just the active target language), and a much higher daily-word cap (see EntitlementService.maxCurriculumDailyGoal).
+     */
+    CURRICULUM_PREMIUM,
 }

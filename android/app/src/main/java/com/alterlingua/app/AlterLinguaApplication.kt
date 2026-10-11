@@ -119,6 +119,7 @@ class AlterLinguaApplication : Application() {
             store = lessonStore,
             languages = { userSettings.settings.first().let { LessonLanguages(it.targetLanguage, it.nativeLanguage) } },
             progress = progressLog,
+            dailyTarget = { userSettings.settings.first().microLessonDailyGoal },
         )
     }
 
@@ -245,6 +246,11 @@ class AlterLinguaApplication : Application() {
             entitlements = entitlements,
             map = languageMap,
             languages = { userSettings.settings.first().let { LessonLanguages(it.targetLanguage, it.nativeLanguage) } },
+            learningLanguages = {
+                userSettings.settings.first().let { settings ->
+                    (listOf(settings.targetLanguage) + settings.otherLevels.keys.mapNotNull(com.alterlingua.app.learning.Languages::fromCode)).distinct()
+                }
+            },
         )
     }
 }

@@ -1,12 +1,17 @@
 package com.alterlingua.app.ui.learn
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.alterlingua.app.entitlements.Tier
+import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.curriculum.CurriculumCard
+import com.alterlingua.app.learning.curriculum.CurriculumLanguageChoice
 import com.alterlingua.app.learning.curriculum.CurriculumSessionState
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import org.junit.Assert.assertEquals
@@ -19,8 +24,13 @@ class CurriculumLessonScreenTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private fun inProgress(position: Int = 0) = CurriculumSessionState.InProgress(
-        Languages.French,
+    private fun inProgress(
+        position: Int = 0,
+        tier: Tier = Tier.FREE,
+        languages: CurriculumLanguageChoice = CurriculumLanguageChoice(Languages.French, listOf(Languages.French)),
+    ) = CurriculumSessionState.InProgress(
+        languages,
+        tier,
         listOf(CurriculumCard("bonjour", "hello"), CurriculumCard("demain", null)),
         position,
         goalToday = 2,
@@ -43,9 +53,54 @@ class CurriculumLessonScreenTest {
     }
 
     @Test
+    fun thePlanBadge_showsWhichPlanIsActive_forEveryTier() {
+        Tier.entries.forEach { tier ->
+            composeTestRule.setContent { AlterLinguaTheme { CurriculumLessonScreen(inProgress(tier = tier), onNext = {}, onRetry = {}, onUpgrade = {}) } }
+            composeTestRule.onNodeWithTag("curriculum_plan_badge").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun aPremiumUserWithOneLanguage_seesNoLanguagePicker() {
+        composeTestRule.setContent {
+            AlterLinguaTheme {
+                CurriculumLessonScreen(inProgress(tier = Tier.PREMIUM), onNext = {}, onRetry = {}, onUpgrade = {})
+            }
+        }
+        composeTestRule.onAllNodesWithTag("curriculum_language_picker").assertCountEquals(0)
+    }
+
+    @Test
+    fun aPremiumUserWithSeveralLanguages_canSwitchLanguage() {
+        var selected: Language? = null
+        val choice = CurriculumLanguageChoice(Languages.French, listOf(Languages.French, Languages.Spanish))
+        composeTestRule.setContent {
+            AlterLinguaTheme {
+                CurriculumLessonScreen(
+                    inProgress(tier = Tier.PREMIUM, languages = choice),
+                    onNext = {},
+                    onRetry = {},
+                    onUpgrade = {},
+                    onLanguageSelected = { selected = it },
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("curriculum_language_picker").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("curriculum_language_es").performClick()
+        assertEquals(Languages.Spanish, selected)
+    }
+
+    @Test
     fun doneForToday_showsTheMessage() {
         composeTestRule.setContent {
-            AlterLinguaTheme { CurriculumLessonScreen(CurriculumSessionState.DoneForToday(Languages.French, 3), onNext = {}, onRetry = {}, onUpgrade = {}) }
+            AlterLinguaTheme {
+                CurriculumLessonScreen(
+                    CurriculumSessionState.DoneForToday(CurriculumLanguageChoice(Languages.French, listOf(Languages.French)), Tier.FREE, 3),
+                    onNext = {},
+                    onRetry = {},
+                    onUpgrade = {},
+                )
+            }
         }
         composeTestRule.onNodeWithTag("curriculum_done").assertIsDisplayed()
     }

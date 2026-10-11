@@ -51,4 +51,20 @@ class EntitlementServiceTest {
     fun tier_defaultsToFree() = runTest {
         assertEquals(Tier.FREE, EntitlementService(FakeUserSettingsRepository()).tier())
     }
+
+    @Test
+    fun maxCurriculumDailyGoal_isTheNormalCapForFreeAndStandard_muchHigherForPremium() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(STANDARD_CURRICULUM_DAILY_CAP, service.maxCurriculumDailyGoal(Tier.FREE))
+        assertEquals(STANDARD_CURRICULUM_DAILY_CAP, service.maxCurriculumDailyGoal(Tier.STANDARD))
+        assertEquals(PREMIUM_CURRICULUM_DAILY_CAP, service.maxCurriculumDailyGoal(Tier.PREMIUM))
+    }
+
+    @Test
+    fun onlyPremium_mayPickAnyLearningLanguageForTheCurriculum() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(false, service.canPickAnyLearningLanguage(Tier.FREE))
+        assertEquals(false, service.canPickAnyLearningLanguage(Tier.STANDARD))
+        assertEquals(true, service.canPickAnyLearningLanguage(Tier.PREMIUM))
+    }
 }

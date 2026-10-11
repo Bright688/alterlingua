@@ -62,6 +62,7 @@ internal object SettingsKeys {
     val TranslateCapturedNotes = booleanPreferencesKey("translate_captured_notes")
     val NotifyOnCapturedNotes = booleanPreferencesKey("notify_on_captured_notes")
     val CurriculumDailyGoal = intPreferencesKey("curriculum_daily_goal")
+    val MicroLessonDailyGoal = intPreferencesKey("micro_lesson_daily_goal")
 
     /** One set of these four per language, so each curriculum keeps its own place, goal debt and last-active day. */
     fun curriculumCursorFor(code: String) = intPreferencesKey("curriculum_cursor_$code")
@@ -137,6 +138,7 @@ internal fun Preferences.toUserSettings(): UserSettings {
                 ?.let { language.code to it }
         }.toMap(),
         curriculumDailyGoal = this[SettingsKeys.CurriculumDailyGoal] ?: defaults.curriculumDailyGoal,
+        microLessonDailyGoal = this[SettingsKeys.MicroLessonDailyGoal] ?: defaults.microLessonDailyGoal,
         curriculumProgress = Languages.supported.mapNotNull { language ->
             val cursor = this[SettingsKeys.curriculumCursorFor(language.code)] ?: return@mapNotNull null
             language.code to CurriculumProgress(
@@ -176,6 +178,7 @@ private fun androidx.datastore.preferences.core.MutablePreferences.write(setting
     this[SettingsKeys.TranslateCapturedNotes] = settings.translateCapturedNotes
     this[SettingsKeys.NotifyOnCapturedNotes] = settings.notifyOnCapturedNotes
     this[SettingsKeys.CurriculumDailyGoal] = settings.curriculumDailyGoal
+    this[SettingsKeys.MicroLessonDailyGoal] = settings.microLessonDailyGoal
     settings.curriculumProgress.forEach { (code, progress) ->
         this[SettingsKeys.curriculumCursorFor(code)] = progress.cursor
         this[SettingsKeys.curriculumCompletedTodayFor(code)] = progress.completedToday

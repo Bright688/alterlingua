@@ -15,8 +15,9 @@ import java.time.ZoneId
 data class LessonLanguages(val learning: Language, val native: Language)
 
 /**
- * The daily micro-lesson: chooses about three items from the Personal Language Map, builds their cards, keeps the day's
- * lesson, and records the learner's progress through it as a mastery signal (one lesson encounter per card).
+ * The daily micro-lesson: chooses [dailyTarget] items (the owner's own "words per day" setting, default 3) from the
+ * Personal Language Map, builds their cards, keeps the day's lesson, and records the learner's progress through it
+ * as a mastery signal (one lesson encounter per card).
  *
  * The lesson is made once per local day and language. Nothing about the messages the items came from is used beyond what the
  * map holds (counts and the kind of message), so a lesson can never show a private message.
@@ -32,6 +33,8 @@ class LessonService(
     private val meaningTimeoutMillis: Long = 10_000,
     /** Counts a finished lesson for the pilot metrics (a number only). */
     private val progress: com.alterlingua.app.learning.progress.ProgressLog? = null,
+    /** How many items today's lesson should have; read fresh each time a lesson is made, never mid-lesson. */
+    private val dailyTarget: suspend () -> Int = { 3 },
 ) {
     private val lock = Mutex()
 
@@ -94,23 +97,9 @@ class LessonService(
     }
 
     private suspend fun create(date: String, langs: LessonLanguages): DailyLesson? {
-        val chosen = selector.select(map.items(langs.learning.code), clock()).chosen
+        val chosen = selector.select(map.items(langs.learning.code), clock(), dailyTarget()).chosen
         if (chosen.isEmpty()) return null
         return DailyLesson(date, langs.learning.code, buildCards(chosen, langs))
-    }
-
-    /**
-     * A fresh "random lesson" for whatever the learner is currently learning: the same quality gate as the daily
-     * lesson (not mastered, not taught too recently, above the minimum score), but shuffled, so it can differ each
-     * time it is asked for. Unlike the daily lesson, it is never saved: [next] on it is tracked by the caller only
-     * for as long as the screen is open, though finishing a card is still recorded in the Personal Language Map,
-     * the same genuine practice signal a daily-lesson card gives.
-     */
-    suspend fun random(): LessonState {
-        val langs = languages()
-        val chosen = selector.selectRandom(map.items(langs.learning.code), clock()).chosen
-        if (chosen.isEmpty()) return LessonState.NoLesson
-        return LessonState.InProgress(DailyLesson("random", langs.learning.code, buildCards(chosen, langs)))
     }
 
     private suspend fun buildCards(chosen: List<LessonCandidate>, langs: LessonLanguages): List<LessonCard> = coroutineScope {

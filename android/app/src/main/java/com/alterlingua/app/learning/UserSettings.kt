@@ -111,10 +111,12 @@ data class UserSettings(
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */
     val keyboardStyles: Map<String, KeyboardStyle> = emptyMap(),
     /**
-     * How many words or phrases from the standard curriculum (see CurriculumProgressService) the user wants to learn
-     * each day. Separate from the ~3/day the conversation-derived daily lesson already picks on its own.
+     * How many words or phrases from the standard curriculum (Standard/Premium lessons; see CurriculumProgressService)
+     * the user wants to learn each day. Separate from [microLessonDailyGoal].
      */
     val curriculumDailyGoal: Int = DEFAULT_CURRICULUM_DAILY_GOAL,
+    /** How many items the daily micro-lesson (drawn from real conversations; see LessonService) should pick each day. */
+    val microLessonDailyGoal: Int = DEFAULT_MICRO_LESSON_DAILY_GOAL,
     /** Standard-curriculum progress, by language code, kept independently so switching languages loses none of it. */
     val curriculumProgress: Map<String, CurriculumProgress> = emptyMap(),
     /**
@@ -175,5 +177,6 @@ data class UserSettings(
     companion object {
         val DEFAULT_REMINDER_TIME: LocalTime = LocalTime.of(20, 0)
         const val DEFAULT_CURRICULUM_DAILY_GOAL: Int = 3
+        const val DEFAULT_MICRO_LESSON_DAILY_GOAL: Int = 3
     }
 }

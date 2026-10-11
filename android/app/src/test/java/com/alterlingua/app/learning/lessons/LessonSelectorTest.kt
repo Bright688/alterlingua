@@ -251,61 +251,6 @@ class LessonSelectorTest {
         assertNotNull(result.ranked.last().explain())
     }
 
-    // ---- random lesson: shuffled, but the same quality gate ----
-
-    @Test
-    fun selectRandom_stillExcludesMastered_butNotTheDailyLessonsMinimumScore() {
-        // Random practice is deliberately more permissive than the one curated daily lesson: a wider "not yet mastered"
-        // pool means more genuinely different lessons across a day (the owner's own report: "suppose to be more like
-        // 50 per day"). Only MASTERED is excluded either way; "too weak for the one daily slot" no longer applies.
-        val mastered = item("sait", usefulness = 0.9, lessons = 4, correct = 5, exposures = 40)
-        val tooWeakForTheDailyLesson = item("faible", usefulness = 0.05, exposures = 1, seenHoursAgo = 24 * 60, taughtHoursAgo = 25)
-        val good = (1..5).map { item("bon$it", usefulness = 0.5 + it / 20.0) }
-        val items = good + mastered + tooWeakForTheDailyLesson
-
-        val plainResult = selector.select(items, now)
-        assertTrue(plainResult.excluded.any { it.first.normalized == "faible" && it.second == ExclusionReason.BELOW_MINIMUM })
-
-        val randomResult = selector.selectRandom(items, now)
-        assertTrue(randomResult.excluded.any { it.first.normalized == "sait" && it.second == ExclusionReason.MASTERED })
-        assertTrue("random no longer applies the daily lesson's minimum score", "faible" in randomResult.ranked.map { it.item.normalized })
-        assertEquals(3, randomResult.chosen.size)
-        assertTrue("mastered is still excluded from random practice", randomResult.chosen.none { it.item.normalized == "sait" })
-    }
-
-    @Test
-    fun selectRandom_usesTheGivenShuffle_soItCanDifferFromSelect() {
-        val items = (1..6).map { item("mot$it", usefulness = 0.4 + it / 20.0) }
-        val reversedOrder = selector.selectRandom(items, now, shuffle = { it.reversed() })
-        val plain = selector.select(items, now)
-        assertTrue("a reversed order should not pick exactly the same top 3", reversedOrder.chosen != plain.chosen)
-    }
-
-    @Test
-    fun selectRandom_doesNotExcludeAnItemJustForBeingTaughtRecently_unlikeSelect() {
-        // So that asking for a random lesson again, right after finishing one, does not quickly run out of items:
-        // a daily lesson excludes what it taught recently (TAUGHT_RECENTLY); a random lesson does not.
-        val recentlyTaught = item("devis", usefulness = 0.6, taughtHoursAgo = 1)
-        val neverTaught = (1..2).map { item("mot$it", usefulness = 0.5 + it / 20.0) } // fill the lesson around it
-        val items = listOf(recentlyTaught) + neverTaught
-
-        val plain = selector.select(items, now)
-        assertTrue(plain.excluded.any { it.first.normalized == "devis" && it.second == ExclusionReason.TAUGHT_RECENTLY })
-        assertFalse("devis" in plain.chosen.map { it.item.normalized })
-
-        val random = selector.selectRandom(items, now, shuffle = { it })
-        assertTrue("a random lesson is not told to avoid what was taught recently", random.excluded.none { it.first.normalized == "devis" })
-        assertTrue("devis" in random.ranked.map { it.item.normalized })
-    }
-
-    @Test
-    fun selectRandom_stillAvoidsOverlapsAndOneTypeFillingTheLesson() {
-        val words = (1..4).map { item("mot$it", type = UnitType.WORD, usefulness = 0.6) }
-        val phrase = item("la phrase utile", type = UnitType.PHRASE, usefulness = 0.9)
-        val result = selector.selectRandom(words + phrase, now, shuffle = { it })
-        assertTrue("a phrase should get a place, not just words of one type", result.chosen.any { it.item.type == UnitType.PHRASE })
-    }
-
     @Test
     fun theMasteryUsedIsTheEvaluatedOne_notTheStoredOne() {
         // A stored state of MASTERED must not matter: the evidence decides.

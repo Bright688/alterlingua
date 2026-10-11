@@ -2288,3 +2288,98 @@ confirm the same thing.
 1. Update to this build and open the app normally (not through adb). It should open and stay open.
 2. Everything in the two entries above (standard curriculum, Settings → Words per day, Licences attribution) should
    now actually be visible, since this is the first build since they were written that the app can even open on.
+
+## 2026-10-11 — Owner: "everything in the learn is not properly done" — restructured Learn around what the tiers actually mean
+
+**Owner's request, verbatim:** "i dont see the lessons with free trial, standard plan and premium plan. also why
+putting random lessons. the standard lessons and premium lessons are the one to be having lessons curriculum and be
+teaching the language while micro lessons is for the conversation gotten from the keyboard, and chat screen which is
+free and the trial period is under the standard plan and the words tab would always be the words learned and
+structure the progress well with good mapping and also the micro lessons you are giving per day is too short once i
+click go to next item it finishes."
+
+This corrects a structural mistake in the previous entry's build: it treated the curriculum as one undifferentiated
+feature behind a single trial counter, with no visible plan structure, and left "Random lesson" (an older, unrelated
+feature) sitting next to it with no explanation. Three genuine product decisions could not be guessed a second time,
+so they were asked directly rather than assumed:
+
+1. **"Random lesson"** (extra practice beyond the daily micro-lesson, from the Personal Language Map) — **removed
+   entirely**, per the owner's answer.
+2. **What Premium adds over Standard, specifically for the curriculum** — the owner picked **both** offered options:
+   every learning language's curriculum at once (not just the active target), **and** a much higher/no daily-word cap.
+3. **The daily micro-lesson (~3 items, done almost instantly)** — the owner chose to make it **user-configurable**,
+   the same "words per day" pattern already built for the curriculum.
+
+### What changed
+
+**Random lesson removed.** `RandomLessonViewModel` and its test deleted; `LessonSelector.selectRandom` and its four
+tests removed (the daily-lesson selector's two quality gates — never-repeat-within-20-hours, minimum-score — are now
+unconditional, since nothing needed them relaxed any more); `LessonService.random()` removed; the Learn tab's
+"Random lesson" button and its strings removed from all eight locales.
+
+**The daily micro-lesson's size is now a setting**, not a fixed ~3. `LessonSelector.select(..., dailyTarget: Int)`
+takes the count explicitly (previously baked into `SelectionConfig`); `LessonService` takes a `dailyTarget: suspend
+() -> Int` that is read fresh each time a lesson is made (never mid-lesson, matching how the curriculum's own daily
+goal already behaves). New `UserSettings.microLessonDailyGoal` (default 3, same default as before) and a "Words per
+day" control in a new Settings → "Micro Lessons (Free)" section.
+
+**The curriculum is now genuinely Standard vs. Premium, not one undifferentiated tier.** `Feature.CURRICULUM_PREMIUM`
+(new) governs both of the owner's chosen differentiators together, since both were requested as one combined answer:
+- `EntitlementService.maxCurriculumDailyGoal(tier)`: FREE and STANDARD are capped at `STANDARD_CURRICULUM_DAILY_CAP`
+  (20); PREMIUM's cap (`PREMIUM_CURRICULUM_DAILY_CAP`, 10,000) is high enough to never matter in practice. Enforced
+  twice — in `CurriculumLessonService` (defensively, in case a tier changes under an existing saved goal) and in
+  `SettingsViewModel.onCurriculumDailyGoalChanged` (so the UI's own chip row for Standard/Free literally never shows
+  an option past 20, and Premium alone gets an "Unlimited" chip).
+- `EntitlementService.canPickAnyLearningLanguage(tier)`: PREMIUM only. `CurriculumLessonService.today(languageOverride)`
+  now accepts which language to show; a non-Premium override attempt is silently ignored (falls back to the active
+  target language), and a Premium override to a language the learner is not actually learning is also ignored —
+  "every language you are learning" (CLAUDE.md section 6.21) is read from the active target plus every language with
+  a saved proficiency level (`UserSettings.otherLevels`), not the full language catalogue. `CurriculumSessionState`
+  now carries a `CurriculumLanguageChoice` (current + available) and the `Tier` itself, so the UI can show a language
+  picker (Premium with more than one language only — it collapses to a single entry, hiding the picker, for everyone
+  else) and a plan badge ("Free trial" / "Standard plan" / "Premium plan") that is always visible, not implied.
+
+**Renamed to match the owner's own terms.** "Standard Curriculum" is now "Standard & Premium Lessons" everywhere
+(the Learn tab button, the Settings section header) across all eight locales, since that is the actual product
+structure now: Standard and Premium are the curriculum-teaching lessons; the free micro-lesson is conversation-and-
+chat-derived, as its own "Micro Lessons (Free)" Settings section now says explicitly.
+
+**The Words tab's "always shows every word learned, well mapped"** was checked rather than rebuilt: both the
+curriculum (`CurriculumLessonService.next`) and the micro-lesson already call the same
+`LanguageMapService.recordLessonEncounter`, so a word from either source already appears there under ordinary
+mastery tracking with no separate code path to diverge. No change was needed here; this is recorded so it is clear
+the concern was verified, not merely assumed still fine.
+
+### Caught during this change
+
+The first draft of `CurriculumLessonService` let `choice.available` hold every learning language regardless of tier,
+which would have shown the language-picker UI to Standard/Free users too (since the UI's own rule is simply "show it
+when there's more than one available language") — without actually letting them switch anything, a confusing
+dead-looking control. Fixed by collapsing `available` to a single entry for anyone without `CURRICULUM_PREMIUM`,
+caught by writing the test for it before trusting the behavior.
+
+### Verification
+
+945 Android unit tests pass (949 before this entry, minus 16 random-lesson tests removed across
+`RandomLessonViewModelTest` (7), `LessonServiceTest` (5) and `LessonSelectorTest` (4), plus 12 new ones: 2 in
+`EntitlementServiceTest` for the daily cap and the language-pick permission, 5 in `CurriculumLessonServiceTest` for
+the cap and the language-pick behaviour including its two "request is ignored" edge cases, 1 in
+`DataStoreUserSettingsRepositoryTest` for the new micro-lesson setting, 1 in `LessonServiceTest` proving the daily
+target actually changes lesson size end to end, 3 in `SettingsViewModelTest` for the cap clamp and the micro-lesson
+setter), lint 0 errors, debug and release builds both compile. The existing instrumented
+`CurriculumLessonScreenTest` was updated for the new three-argument state shapes and extended with plan-badge and
+language-picker coverage; it and the rest of the androidTest sources were confirmed to actually compile
+(`compileDebugAndroidTestKotlin`, checked directly rather than trusted from `lintDebug`'s own report, which had
+stayed green through an unrelated stale-cache gap once already this session). The update was installed on the real
+device and confirmed to launch cleanly. **Not re-run end-to-end on the device**: the full `connectedDebugAndroidTest`
+suite still has the pre-existing, unrelated multi-hour hang noted in the previous entry, so only a manual launch
+check was done this time, not the automated UI tests themselves.
+
+### Manual test for the owner
+
+1. Learn tab: "Random lesson" is gone; the remaining button reads "Standard & Premium Lessons".
+2. Open it as a FREE user: a "Free trial" badge is visible at the top.
+3. Settings: a new "Micro Lessons (Free)" section controls the daily conversation-lesson's size (try 10); the next
+   micro-lesson should bring that many items instead of finishing after about three.
+4. Settings → "Standard & Premium Lessons": the daily-goal chips stop at 20 unless the tier is Premium (not reachable
+   without real billing yet — this is scaffolding, matching `docs/entitlements.md`).

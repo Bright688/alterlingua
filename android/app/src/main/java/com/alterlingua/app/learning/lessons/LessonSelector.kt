@@ -63,42 +63,38 @@ data class SelectionConfig(
 )
 
 /**
- * Chooses about three high-value items for the day from the Personal Language Map. It is a fixed, deterministic ranking
- * (no learned weights): the same map and the same time always give the same lesson. Mastered items are left out; items
- * that already fell back through inactivity qualify again. Items are chosen so they do not overlap (`devis` and
- * `envoyer le devis` would teach the same thing twice) and so a lesson is not three words of the same kind.
+ * Chooses the day's high-value items from the Personal Language Map — [dailyTarget] of them, by default
+ * [SelectionConfig.dailyTarget] (the owner can set a larger one; see the Settings "words per day" control). It is a
+ * fixed, deterministic ranking (no learned weights): the same map and the same time always give the same lesson.
+ * Mastered items are left out; items that already fell back through inactivity qualify again. Items are chosen so
+ * they do not overlap (`devis` and `envoyer le devis` would teach the same thing twice) and so a lesson is not all
+ * one kind.
  */
 class LessonSelector(
     private val config: SelectionConfig = SelectionConfig(),
     private val calculator: MasteryCalculator = MasteryCalculator(),
 ) {
-    fun select(items: List<LanguageMapItem>, nowMillis: Long): SelectionResult {
-        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = true, respectMinimumScore = true)
-        return SelectionResult(choose(ranked), ranked, excluded)
+    fun select(items: List<LanguageMapItem>, nowMillis: Long, dailyTarget: Int = config.dailyTarget): SelectionResult {
+        val (ranked, excluded) = rank(items, nowMillis)
+        return SelectionResult(choose(ranked, dailyTarget), ranked, excluded)
     }
 
     /**
-     * The scoring and exclusion [select] and [selectRandom] share. The one daily lesson is deliberately scarce — about
-     * three best items a day (CLAUDE.md section 15) — so it applies both gates: [respectRecencyLimit] (never repeats an
-     * item taught within [SelectionConfig.minHoursBetweenLessons]) and [respectMinimumScore] (only the clearly useful
-     * make the cut). A random lesson is optional extra practice the learner asks for, as many times a day as they like,
-     * so neither scarcity gate applies to it: repetition is the point of practice, and a wider pool of "not yet
-     * mastered" words means more genuinely different lessons across a day, not just the handful that would have been
-     * worth the one daily slot. [MasteryStatus.MASTERED] is excluded either way: re-practising what is already mastered
-     * is not useful extra practice.
+     * Never repeats an item taught within [SelectionConfig.minHoursBetweenLessons], and only the clearly useful
+     * (above [SelectionConfig.minimumScore]) make the cut.
      */
-    private fun rank(items: List<LanguageMapItem>, nowMillis: Long, respectRecencyLimit: Boolean, respectMinimumScore: Boolean): Pair<List<LessonCandidate>, List<Pair<LanguageMapItem, ExclusionReason>>> {
+    private fun rank(items: List<LanguageMapItem>, nowMillis: Long): Pair<List<LessonCandidate>, List<Pair<LanguageMapItem, ExclusionReason>>> {
         val excluded = mutableListOf<Pair<LanguageMapItem, ExclusionReason>>()
         val ranked = mutableListOf<LessonCandidate>()
         for (item in items) {
             val state = calculator.evaluate(item.evidence, nowMillis).state // as of now, including time unseen
-            val taughtRecently = respectRecencyLimit && item.lastLessonAt > 0 && nowMillis - item.lastLessonAt < config.minHoursBetweenLessons * HOUR_MILLIS
+            val taughtRecently = item.lastLessonAt > 0 && nowMillis - item.lastLessonAt < config.minHoursBetweenLessons * HOUR_MILLIS
             when {
                 state == MasteryStatus.MASTERED -> excluded += item to ExclusionReason.MASTERED
                 taughtRecently -> excluded += item to ExclusionReason.TAUGHT_RECENTLY
                 else -> {
                     val candidate = score(item, state, nowMillis)
-                    if (respectMinimumScore && candidate.score < config.minimumScore) excluded += item to ExclusionReason.BELOW_MINIMUM else ranked += candidate
+                    if (candidate.score < config.minimumScore) excluded += item to ExclusionReason.BELOW_MINIMUM else ranked += candidate
                 }
             }
         }
@@ -109,19 +105,6 @@ class LessonSelector(
                 .thenBy { it.item.normalized },
         )
         return ranked to excluded
-    }
-
-    /**
-     * Like [select], but for a "random lesson" the learner can ask for any time, as extra practice beyond the one daily
-     * lesson, as many times a day as they like: everything not mastered qualifies — unlike the daily lesson, **neither
-     * excluded just for having been taught recently, nor held to the daily lesson's minimum-usefulness bar** — and is
-     * shuffled before the no-overlap / not-all-one-type pick, so a different lesson can come up each time, the pool is as
-     * large as the learner's real "not yet mastered" vocabulary, and asking again right after finishing one does not run
-     * out of eligible items.
-     */
-    fun selectRandom(items: List<LanguageMapItem>, nowMillis: Long, shuffle: (List<LessonCandidate>) -> List<LessonCandidate> = { it.shuffled() }): SelectionResult {
-        val (ranked, excluded) = rank(items, nowMillis, respectRecencyLimit = false, respectMinimumScore = false)
-        return SelectionResult(choose(shuffle(ranked)), ranked, excluded)
     }
 
     private fun score(item: LanguageMapItem, state: MasteryStatus, now: Long): LessonCandidate {
@@ -185,11 +168,11 @@ class LessonSelector(
     }
 
     /** Best first, skipping overlaps and not letting one type fill the lesson unless nothing else is available. */
-    private fun choose(ranked: List<LessonCandidate>): List<LessonCandidate> {
+    private fun choose(ranked: List<LessonCandidate>, dailyTarget: Int): List<LessonCandidate> {
         val chosen = mutableListOf<LessonCandidate>()
         fun take(limitPerType: Int) {
             for (candidate in ranked) {
-                if (chosen.size >= config.dailyTarget) return
+                if (chosen.size >= dailyTarget) return
                 if (candidate in chosen) continue
                 if (chosen.any { overlaps(it.item, candidate.item) }) continue
                 if (chosen.count { it.item.type == candidate.item.type } >= limitPerType) continue

@@ -272,9 +272,16 @@
     <string name="set_learning">Learning</string>
     <string name="set_learn_from_my_messages">Learn from my messages</string>
     <string name="set_learn_desc">AlterLingua picks out useful words and phrases in %1$s from messages it translates. It keeps only those words and how often you meet them, never the messages.</string>
-    <string name="set_standard_curriculum">Standard Curriculum</string>
+    <string name="set_standard_curriculum">Standard &amp; Premium Lessons</string>
+    <string name="set_plan_free_trial">Free trial</string>
+    <string name="set_plan_standard">Standard plan</string>
+    <string name="set_plan_premium">Premium plan</string>
     <string name="set_curriculum_daily_goal">Words per day</string>
-    <string name="set_curriculum_daily_goal_desc">How many words from the standard curriculum you want to learn each day. If you don\'t finish, the rest carries over to tomorrow.</string>
+    <string name="set_curriculum_daily_goal_desc">How many words from Standard or Premium lessons you want to learn each day (Standard: up to 20; Premium: unlimited). If you don\'t finish, the rest carries over to tomorrow.</string>
+    <string name="set_curriculum_daily_goal_unlimited">Unlimited</string>
+    <string name="set_micro_lessons">Micro Lessons (Free)</string>
+    <string name="set_micro_lesson_daily_goal">Words per day</string>
+    <string name="set_micro_lesson_daily_goal_desc">How many words from your conversations\' daily micro-lesson you want to review each day. Always free.</string>
     <string name="lrn_curriculum_progress">%1$d of %2$d today</string>
     <string name="lrn_curriculum_learned">Learned</string>
     <string name="lrn_curriculum_done_today_title">All done for today</string>
@@ -346,8 +353,6 @@
     <string name="home_learning_lang">Learning %1$s</string>
     <string name="home_welcome">Welcome back</string>
     <string name="lrn_no_lesson_today_yet">No lesson today yet</string>
-    <string name="lrn_random_lesson">Random lesson</string>
-    <string name="lrn_back_to_today">Back to today\'s lesson</string>
     <string name="lrn_empty_body">Today\'s lesson is made from words and phrases in %1$s that you meet in messages you translate. It appears here once you have.</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">Use the AlterLingua keyboard in WhatsApp to start.</string>
     <string name="lrn_item_of">Item %1$d of %2$d · Today\'s micro-lesson</string>

@@ -245,9 +245,16 @@
     <string name="set_learning">学習</string>
     <string name="set_learn_from_my_messages">自分のメッセージから学ぶ</string>
     <string name="set_learn_desc">AlterLingua は翻訳したメッセージから役立つ%1$sの単語やフレーズを選び出します。保持するのはその単語と出会った回数だけで、メッセージは保存しません。</string>
-    <string name="set_standard_curriculum">標準カリキュラム</string>
+    <string name="set_standard_curriculum">スタンダード・プレミアムレッスン</string>
+    <string name="set_plan_free_trial">無料トライアル</string>
+    <string name="set_plan_standard">スタンダードプラン</string>
+    <string name="set_plan_premium">プレミアムプラン</string>
     <string name="set_curriculum_daily_goal">1日の学習数</string>
-    <string name="set_curriculum_daily_goal_desc">標準カリキュラムから1日に学びたい単語数です。終わらなかった分は翌日に引き継がれます。</string>
+    <string name="set_curriculum_daily_goal_desc">スタンダードまたはプレミアムレッスンから1日に学びたい単語数です(スタンダード:最大20語、プレミアム:上限なし)。終わらなかった分は翌日に引き継がれます。</string>
+    <string name="set_curriculum_daily_goal_unlimited">上限なし</string>
+    <string name="set_micro_lessons">マイクロレッスン(無料)</string>
+    <string name="set_micro_lesson_daily_goal">1日の学習数</string>
+    <string name="set_micro_lesson_daily_goal_desc">あなたの会話から作られる毎日のマイクロレッスンで復習したい単語数です。常に無料です。</string>
     <string name="lrn_curriculum_progress">本日 %1$d / %2$d</string>
     <string name="lrn_curriculum_learned">覚えた</string>
     <string name="lrn_curriculum_done_today_title">今日の分は完了しました</string>
@@ -317,8 +324,6 @@
     <string name="home_learning_lang">%1$sを学習中</string>
     <string name="home_welcome">おかえりなさい</string>
     <string name="lrn_no_lesson_today_yet">今日のレッスンはまだありません</string>
-    <string name="lrn_random_lesson">ランダムレッスン</string>
-    <string name="lrn_back_to_today">今日のレッスンに戻る</string>
     <string name="lrn_empty_body">今日のレッスンは、翻訳したメッセージで出会った%1$sの単語やフレーズから作られます。出会ったらここに表示されます。</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">まず WhatsApp で AlterLingua キーボードを使ってみましょう。</string>
     <string name="lrn_item_of">%1$d / %2$d 項目 · 今日のマイクロレッスン</string>

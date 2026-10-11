@@ -1,6 +1,7 @@
 package com.alterlingua.app.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -64,6 +65,7 @@ fun SettingsRoute(
         onLiveChatTranslationChanged = viewModel::onLiveChatTranslationChanged,
         onLearningFromMessagesChanged = viewModel::onLearningFromMessagesChanged,
         onCurriculumDailyGoalChanged = viewModel::onCurriculumDailyGoalChanged,
+        onMicroLessonDailyGoalChanged = viewModel::onMicroLessonDailyGoalChanged,
         onEraseLearningData = viewModel::onEraseLearningData,
         onAppLanguageSelected = viewModel::onAppLanguageSelected,
         onDetectSourceChanged = viewModel::onDetectSourceChanged,
@@ -89,6 +91,7 @@ fun SettingsScreen(
     onLiveChatTranslationChanged: (Boolean) -> Unit = {},
     onLearningFromMessagesChanged: (Boolean) -> Unit = {},
     onCurriculumDailyGoalChanged: (Int) -> Unit = {},
+    onMicroLessonDailyGoalChanged: (Int) -> Unit = {},
     onEraseLearningData: () -> Unit = {},
     onAppLanguageSelected: (Language) -> Unit = {},
     onDetectSourceChanged: (Boolean) -> Unit = {},
@@ -349,6 +352,7 @@ fun SettingsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .horizontalScroll(androidx.compose.foundation.rememberScrollState())
                         .testTag("curriculum_daily_goal_choices"),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -359,6 +363,47 @@ fun SettingsScreen(
                             label = { Text(goal.toString()) },
                             shape = androidx.compose.foundation.shape.CircleShape,
                             modifier = Modifier.testTag("curriculum_daily_goal_$goal"),
+                        )
+                    }
+                    if (state.tier == com.alterlingua.app.entitlements.Tier.PREMIUM) {
+                        androidx.compose.material3.FilterChip(
+                            selected = state.curriculumDailyGoal > 20,
+                            onClick = { onCurriculumDailyGoalChanged(com.alterlingua.app.entitlements.PREMIUM_CURRICULUM_DAILY_CAP) },
+                            label = { Text(stringResource(R.string.set_curriculum_daily_goal_unlimited)) },
+                            shape = androidx.compose.foundation.shape.CircleShape,
+                            modifier = Modifier.testTag("curriculum_daily_goal_unlimited"),
+                        )
+                    }
+                }
+            }
+        }
+
+        SectionLabel(stringResource(R.string.set_micro_lessons))
+        AlterLinguaCard {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = stringResource(R.string.set_micro_lesson_daily_goal),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(R.string.set_micro_lesson_daily_goal_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("micro_lesson_daily_goal_choices"),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    listOf(3, 5, 10, 20).forEach { goal ->
+                        androidx.compose.material3.FilterChip(
+                            selected = state.microLessonDailyGoal == goal,
+                            onClick = { onMicroLessonDailyGoalChanged(goal) },
+                            label = { Text(goal.toString()) },
+                            shape = androidx.compose.foundation.shape.CircleShape,
+                            modifier = Modifier.testTag("micro_lesson_daily_goal_$goal"),
                         )
                     }
                 }

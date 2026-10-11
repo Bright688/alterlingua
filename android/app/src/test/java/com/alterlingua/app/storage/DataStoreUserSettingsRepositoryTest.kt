@@ -203,6 +203,14 @@ class DataStoreUserSettingsRepositoryTest {
     }
 
     @Test
+    fun microLessonDailyGoal_defaultsToThree_andIsSaved() = runTest {
+        val repo = DataStoreUserSettingsRepository(newStore())
+        assertEquals(3, repo.settings.first().microLessonDailyGoal)
+        repo.update { it.copy(microLessonDailyGoal = 8) }
+        assertEquals(8, repo.settings.first().microLessonDailyGoal)
+    }
+
+    @Test
     fun subscriptionTier_defaultsToFree_andIsSaved() = runTest {
         val repo = DataStoreUserSettingsRepository(newStore())
         assertEquals(Tier.FREE, repo.settings.first().tier)

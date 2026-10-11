@@ -3,6 +3,11 @@ package com.alterlingua.app.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alterlingua.app.accessibility.LiveChatReading
+import com.alterlingua.app.entitlements.Feature
+import com.alterlingua.app.entitlements.PREMIUM_CURRICULUM_DAILY_CAP
+import com.alterlingua.app.entitlements.STANDARD_CURRICULUM_DAILY_CAP
+import com.alterlingua.app.entitlements.Tier
+import com.alterlingua.app.entitlements.TierPolicy
 import com.alterlingua.app.learning.AssistanceMode
 import com.alterlingua.app.learning.KeyboardStyle
 import com.alterlingua.app.learning.Language
@@ -54,8 +59,12 @@ data class SettingsUiState(
     val notifyOnCapturedNotes: Boolean = true,
     /** True while a listening session for voice notes is running right now. */
     val voiceCaptureListening: Boolean = false,
-    /** How many standard-curriculum words a day the user wants to learn (see CurriculumProgressService). */
+    /** How many Standard/Premium-lesson words a day the user wants to learn (see CurriculumProgressService). */
     val curriculumDailyGoal: Int = UserSettings.DEFAULT_CURRICULUM_DAILY_GOAL,
+    /** How many items the free daily micro-lesson should pick each day (see LessonService). */
+    val microLessonDailyGoal: Int = UserSettings.DEFAULT_MICRO_LESSON_DAILY_GOAL,
+    /** The current subscription tier, so Settings can show Premium's higher curriculum-goal option only to Premium. */
+    val tier: Tier = Tier.FREE,
 )
 
 /** Shows the saved settings and saves changes made here, including switching languages (CLAUDE.md section 6.20). */
@@ -105,6 +114,8 @@ class SettingsViewModel(
             notifyOnCapturedNotes = it.notifyOnCapturedNotes,
             voiceCaptureListening = listening,
             curriculumDailyGoal = it.curriculumDailyGoal,
+            microLessonDailyGoal = it.microLessonDailyGoal,
+            tier = it.tier,
         )
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState())
@@ -145,8 +156,14 @@ class SettingsViewModel(
 
     fun onLearningFromMessagesChanged(enabled: Boolean) = save { it.copy(learningFromMessagesEnabled = enabled) }
 
-    /** Changes how many standard-curriculum words a day the user wants to learn. */
-    fun onCurriculumDailyGoalChanged(goal: Int) = save { it.copy(curriculumDailyGoal = goal) }
+    /** Changes how many Standard/Premium-lesson words a day the user wants to learn, capped by the current tier. */
+    fun onCurriculumDailyGoalChanged(goal: Int) = save {
+        val cap = if (TierPolicy.includes(it.tier, Feature.CURRICULUM_PREMIUM)) PREMIUM_CURRICULUM_DAILY_CAP else STANDARD_CURRICULUM_DAILY_CAP
+        it.copy(curriculumDailyGoal = goal.coerceIn(1, cap))
+    }
+
+    /** Changes how many items the free daily micro-lesson should pick each day. */
+    fun onMicroLessonDailyGoalChanged(goal: Int) = save { it.copy(microLessonDailyGoal = goal.coerceAtLeast(1)) }
 
     /** Turns automatic translation of captured voice notes on or off (off: a note is sent only when the user opens it). */
     fun onTranslateCapturedNotesChanged(enabled: Boolean) = save { it.copy(translateCapturedNotes = enabled) }

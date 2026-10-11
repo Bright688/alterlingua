@@ -103,6 +103,16 @@ class LessonServiceTest {
     }
 
     @Test
+    fun dailyTarget_isConfigurable_notAlwaysThree() = runTest {
+        fillFrench() // 3 qualifying items (devis, avant midi, au courant); bonjour stays below the minimum score
+        val lesson = LessonService(
+            map = map, meanings = meanings, store = store, languages = { LessonLanguages(learning, native) },
+            clock = { now }, zone = ZoneOffset.UTC, meaningTimeoutMillis = 10_000, dailyTarget = { 2 },
+        ).today().lesson()
+        assertEquals(2, lesson.cards.size)
+    }
+
+    @Test
     fun eachCardHasItsMeaning_itsContext_andWhyItWasChosen() = runTest {
         fillFrench()
         map.recordHelpRequest(UnitKey("fr", "devis", UnitType.WORD))
@@ -155,68 +165,6 @@ class LessonServiceTest {
         runCurrent()
         advanceTimeBy(10_001); runCurrent()
         assertTrue(state!!.lesson().cards.all { it.meaning == null })
-    }
-
-    // ---- random lesson (extra practice, never saved) ----
-
-    @Test
-    fun withNothingMetYet_randomHasNoLessonEither() = runTest {
-        assertEquals(LessonState.NoLesson, service().random())
-        assertNull("random is never saved", store.load())
-    }
-
-    @Test
-    fun aRandomLesson_hasTheSameShapeAsTheDailyOne_butIsNeverSaved() = runTest {
-        fillFrench()
-        val lesson = service().random().lesson()
-        assertEquals(3, lesson.cards.size)
-        assertEquals("fr", lesson.language)
-        assertEquals(0, lesson.position)
-        val terms = lesson.cards.map { it.term }
-        // Which 3 of the 4 qualifying items come up can vary (selectRandom shuffles the whole qualifying pool, not just
-        // the daily lesson's top 3 — see LessonSelectorTest); what must always hold is that every card actually qualifies.
-        assertTrue(terms.toString(), terms.all { it in setOf("devis", "avant midi", "au courant", "bonjour") })
-        assertNull("a random lesson is never saved", store.load())
-    }
-
-    @Test
-    fun askingForARandomLessonTwice_doesNotHaveToGiveTheSameOne_andNeitherReplacesTheDailyLesson() = runTest {
-        fillFrench()
-        met("fr", "réunion", usefulness = 0.95, times = 5)
-        met("fr", "acompte", usefulness = 0.9, times = 5)
-        met("fr", "je vous tiens au courant", UnitType.EXPRESSION, usefulness = 0.95)
-        val s = service()
-        val daily = s.today().lesson()
-        val seen = mutableSetOf<List<String>>()
-        repeat(20) { seen += s.random().lesson().cards.map { it.term } }
-        assertTrue("20 draws from a pool of 6 qualifying items should not all land on the same 3", seen.size > 1)
-        // The daily lesson (saved) is untouched by any number of random draws.
-        assertEquals(daily, s.today().lesson())
-    }
-
-    @Test
-    fun finishingARandomLesson_doesNotStopTheNextOneBeingOffered_evenRightAway() = runTest {
-        // Six qualifying items (two lessons' worth), so "finishing one random lesson empties the pool" would show up here.
-        fillFrench()
-        met("fr", "réunion", usefulness = 0.95, times = 5)
-        met("fr", "acompte", usefulness = 0.9, times = 5)
-        met("fr", "je vous tiens au courant", UnitType.EXPRESSION, usefulness = 0.95)
-        val s = service()
-        val first = s.random().lesson()
-        for (card in first.cards) map.recordLessonEncounter(card.key, card.term, now) // "finished" every card in it
-        // Asking again straight away must not come back empty just because everything was just taught.
-        assertNotEquals(LessonState.NoLesson, s.random())
-        assertEquals(3, s.random().lesson().cards.size)
-    }
-
-    @Test
-    fun finishingARandomLessonCard_recordsTheSameMasterySignalADailyCardWould() = runTest {
-        fillFrench()
-        val lesson = service().random().lesson()
-        val first = lesson.cards.first()
-        assertEquals(0, map.item(first.key)!!.lessonEncounters)
-        map.recordLessonEncounter(first.key, first.term, now) // what the ViewModel does on "next" for the current card
-        assertEquals(1, map.item(first.key)!!.lessonEncounters)
     }
 
     // ---- one lesson a day ----

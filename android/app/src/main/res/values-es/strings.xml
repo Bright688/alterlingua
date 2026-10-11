@@ -245,9 +245,16 @@
     <string name="set_learning">Aprendizaje</string>
     <string name="set_learn_from_my_messages">Aprender de mis mensajes</string>
     <string name="set_learn_desc">AlterLingua selecciona palabras y frases útiles en %1$s de los mensajes que traduce. Solo guarda esas palabras y con qué frecuencia las encuentras, nunca los mensajes.</string>
-    <string name="set_standard_curriculum">Plan de estudio estándar</string>
+    <string name="set_standard_curriculum">Lecciones Standard y Premium</string>
+    <string name="set_plan_free_trial">Prueba gratuita</string>
+    <string name="set_plan_standard">Plan Standard</string>
+    <string name="set_plan_premium">Plan Premium</string>
     <string name="set_curriculum_daily_goal">Palabras al día</string>
-    <string name="set_curriculum_daily_goal_desc">Cuántas palabras del plan de estudio estándar quieres aprender cada día. Si no terminas, el resto se traslada al día siguiente.</string>
+    <string name="set_curriculum_daily_goal_desc">Cuántas palabras de las lecciones Standard o Premium quieres aprender cada día (Standard: hasta 20; Premium: sin límite). Si no terminas, el resto se traslada al día siguiente.</string>
+    <string name="set_curriculum_daily_goal_unlimited">Sin límite</string>
+    <string name="set_micro_lessons">Microlecciones (gratis)</string>
+    <string name="set_micro_lesson_daily_goal">Palabras al día</string>
+    <string name="set_micro_lesson_daily_goal_desc">Cuántas palabras de la microlección diaria de tus conversaciones quieres repasar. Siempre gratis.</string>
     <string name="lrn_curriculum_progress">%1$d de %2$d hoy</string>
     <string name="lrn_curriculum_learned">Aprendida</string>
     <string name="lrn_curriculum_done_today_title">Todo listo por hoy</string>
@@ -317,8 +324,6 @@
     <string name="home_learning_lang">Aprendiendo %1$s</string>
     <string name="home_welcome">Te damos la bienvenida de nuevo</string>
     <string name="lrn_no_lesson_today_yet">Aún no hay lección hoy</string>
-    <string name="lrn_random_lesson">Lección aleatoria</string>
-    <string name="lrn_back_to_today">Volver a la lección de hoy</string>
     <string name="lrn_empty_body">La lección de hoy se crea con palabras y frases en %1$s que encuentras en los mensajes que traduces. Aparece aquí cuando ya las tengas.</string>
     <string name="lrn_use_the_alterlingua_keyboard_in">Usa el teclado de AlterLingua en WhatsApp para empezar.</string>
     <string name="lrn_item_of">Elemento %1$d de %2$d · Microlección de hoy</string>

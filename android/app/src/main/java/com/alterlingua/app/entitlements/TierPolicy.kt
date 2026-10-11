@@ -4,8 +4,8 @@ package com.alterlingua.app.entitlements
 object TierPolicy {
     private val featuresByTier: Map<Tier, Set<Feature>> = mapOf(
         Tier.FREE to emptySet(),
-        Tier.STANDARD to setOf(Feature.STANDARD_CURRICULUM_UNLIMITED),
-        Tier.PREMIUM to setOf(Feature.STANDARD_CURRICULUM_UNLIMITED),
+        Tier.STANDARD to setOf(Feature.CURRICULUM_UNLIMITED_TRIAL),
+        Tier.PREMIUM to setOf(Feature.CURRICULUM_UNLIMITED_TRIAL, Feature.CURRICULUM_PREMIUM),
     )
 
     fun includes(tier: Tier, feature: Feature): Boolean = featuresByTier[tier]?.contains(feature) == true
