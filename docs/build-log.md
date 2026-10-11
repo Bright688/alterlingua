@@ -2383,3 +2383,35 @@ check was done this time, not the automated UI tests themselves.
    micro-lesson should bring that many items instead of finishing after about three.
 4. Settings → "Standard & Premium Lessons": the daily-goal chips stop at 20 unless the tier is Premium (not reachable
    without real billing yet — this is scaffolding, matching `docs/entitlements.md`).
+
+## 2026-10-11 — Owner: "standard and premium lessons could not load" — the backend was never actually deployed
+
+**What happened:** the curriculum backend (`GET /v1/curriculum/{language}`) was built, tested locally (415 backend
+tests), and committed — but never pushed to the real production server the phone actually talks to
+(`169.58.53.29`). A direct `curl` of the live endpoint confirmed it before touching anything: `404 Not Found`, while
+`/health` on the same server answered normally — the server was fine, it simply had never received this code.
+
+**Checked, not assumed**, before deploying: the server's running container (`deploy-api-1`, a `docker compose`
+project named `deploy` in `/root/alterlingua-backend/deploy`, API on `127.0.0.1:8090` behind this box's existing
+nginx) was inspected directly (`docker ps`, `docker inspect`'s compose labels) to confirm exactly how it was already
+wired, rather than guessing from `docs/build-log.md`'s older deployment notes alone. This is the same shared VPS
+documented in the 2026-10-10 deployment entries, running several of the owner's other live projects
+(`jobpilotng.com`, `n8n`, a `detaskbookreview` stack, several `baileys`/translator containers) — none of them were
+touched.
+
+**What was done:** `rsync`'d the updated `backend/` tree to `/root/alterlingua-backend` (excluding `.venv`, `.env`,
+caches — the server's own production `.env` with its real credentials was never touched), then
+`docker compose --env-file .env up -d --build` in the existing `deploy/` directory, which rebuilt only the `api`
+image and recreated only that one container — the same "Updating" procedure `backend/deploy/DEPLOY.md` already
+documents.
+
+**Verified live, from outside the server:** all eight languages' `GET /v1/curriculum/{language}` now answer `200`
+with real data (confirmed `fr`'s first words: `de, je, est, pas, le`); `/health` and a real `/v1/translate` call
+both still work exactly as before; the container's own logs show clean `200`s for every call with no errors;
+`jobpilotng.com` and `n8n.jobpilotng.com` both still answer `200`, confirming nothing else on the shared box was
+disrupted.
+
+**Lesson for next time:** backend work on this project is not "done" when its tests pass locally — it needs an
+explicit deployment step to the real server, which this entry's own mistake shows is easy to forget once a feature
+feels finished. Worth checking the live server directly (`curl .../health` plus a real endpoint) as part of
+wrapping up any future backend milestone, not just assuming a passing local test suite implies the server has it.
