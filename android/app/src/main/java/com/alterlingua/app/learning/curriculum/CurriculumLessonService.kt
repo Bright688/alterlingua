@@ -15,7 +15,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 /** One word of a curriculum session and what it means in the learner's own language (null if it could not be found). */
-data class CurriculumCard(val term: String, val meaning: String?)
+data class CurriculumCard(val term: String, val meaning: String?) {
+    /** This word's identity in the Personal Language Map, for [languageCode] (the language it is shown in). */
+    fun key(languageCode: String): UnitKey = UnitKey(languageCode, term.lowercase(Locale.ROOT), UnitType.WORD)
+}
 
 /**
  * The curriculum languages open to the learner right now: [current] is the one shown, [available] is everything they
@@ -102,12 +105,18 @@ class CurriculumLessonService(
         return CurriculumSessionState.InProgress(choice, tier, buildCards(words, effective), position = 0, goalToday = goal)
     }
 
-    /** The learner marked the current card as learned: records it in the Personal Language Map and moves on. */
-    suspend fun next(state: CurriculumSessionState.InProgress): CurriculumSessionState {
+    /**
+     * The learner moved past the current card, having said whether they already knew it: records the lesson
+     * encounter (the same mastery signal a conversation-derived lesson card gives) and, separately, the recognition
+     * itself ([alreadyKnew] — the same self-reported recall signal Adaptive mode's MASTERED gate needs, that until
+     * now only the daily micro-lesson's own recall check supplied).
+     */
+    suspend fun next(state: CurriculumSessionState.InProgress, alreadyKnew: Boolean): CurriculumSessionState {
         val language = state.languages.current
         val card = state.current
-        val key = UnitKey(language.code, card.term.lowercase(Locale.ROOT), UnitType.WORD)
+        val key = card.key(language.code)
         map.recordLessonEncounter(key, card.term, clock())
+        map.recordRecognition(key, alreadyKnew, card.term, clock())
         progress.recordCompleted(language.code)
         return if (state.isLast) {
             val goal = progress.dailyGoal().coerceAtMost(entitlements.maxCurriculumDailyGoal(state.tier))

@@ -54,6 +54,26 @@ fun SettingsRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val setup = rememberSetupUi()
+    // Settings -> Plan (CLAUDE.md section 33): a full screen, not a dialog, since it needs room for three real cards.
+    var showingPlans by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    var showingComingSoon by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    if (showingComingSoon) {
+        com.alterlingua.app.ui.learn.ComingSoonDialog(onDismiss = { showingComingSoon = false })
+    }
+    if (showingPlans) {
+        PlansScreen(
+            tier = state.tier,
+            onSubscribe = { showingComingSoon = true },
+            modifier = modifier,
+            footer = {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = { showingPlans = false },
+                    modifier = Modifier.fillMaxWidth().testTag("plans_back"),
+                ) { Text(stringResource(R.string.lrn_back)) }
+            },
+        )
+        return
+    }
     SettingsScreen(
         state = state,
         setup = setup,
@@ -74,6 +94,7 @@ fun SettingsRoute(
         onVoiceCaptureAppToggled = viewModel::onVoiceCaptureAppToggled,
         onTranslateCapturedNotesChanged = viewModel::onTranslateCapturedNotesChanged,
         onNotifyOnCapturedNotesChanged = viewModel::onNotifyOnCapturedNotesChanged,
+        onOpenPlans = { showingPlans = true },
         modifier = modifier,
     )
 }
@@ -100,6 +121,7 @@ fun SettingsScreen(
     onVoiceCaptureAppToggled: (String) -> Unit = {},
     onTranslateCapturedNotesChanged: (Boolean) -> Unit = {},
     onNotifyOnCapturedNotesChanged: (Boolean) -> Unit = {},
+    onOpenPlans: () -> Unit = {},
 ) {
     var confirmErase by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     if (confirmErase) {
@@ -333,6 +355,28 @@ fun SettingsScreen(
                     onCheckedChange = onLearningFromMessagesChanged,
                     modifier = Modifier.testTag("learning_from_messages_switch"),
                 )
+            }
+        }
+
+        SectionLabel(stringResource(R.string.set_subscription))
+        AlterLinguaCard {
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { onOpenPlans() }.testTag("settings_open_plans"),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.set_plans_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        text = when (state.tier) {
+                            com.alterlingua.app.entitlements.Tier.FREE -> stringResource(R.string.set_plan_free_trial)
+                            com.alterlingua.app.entitlements.Tier.STANDARD -> stringResource(R.string.set_plan_standard)
+                            com.alterlingua.app.entitlements.Tier.PREMIUM -> stringResource(R.string.set_plan_premium)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
 

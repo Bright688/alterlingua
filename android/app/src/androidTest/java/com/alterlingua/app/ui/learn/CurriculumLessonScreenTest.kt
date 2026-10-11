@@ -37,19 +37,52 @@ class CurriculumLessonScreenTest {
     )
 
     @Test
-    fun aCard_showsTermAndMeaning_andLearnedMovesOn() {
-        var next = 0
-        composeTestRule.setContent { AlterLinguaTheme { CurriculumLessonScreen(inProgress(), onNext = { next++ }, onRetry = {}, onUpgrade = {}) } }
+    fun aFreshCard_hidesTheMeaning_untilTapped() {
+        composeTestRule.setContent { AlterLinguaTheme { CurriculumLessonScreen(inProgress(), onNext = {}, onRetry = {}, onUpgrade = {}) } }
         composeTestRule.onNodeWithTag("curriculum_term").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("curriculum_reveal_prompt").assertIsDisplayed()
+        composeTestRule.onAllNodesWithTag("curriculum_meaning").assertCountEquals(0)
+        composeTestRule.onAllNodesWithTag("curriculum_already_knew").assertCountEquals(0)
+
+        composeTestRule.onNodeWithTag("curriculum_card").performClick()
         composeTestRule.onNodeWithTag("curriculum_meaning").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("curriculum_learned").performClick()
-        assertEquals(1, next)
+        composeTestRule.onNodeWithTag("curriculum_already_knew").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("curriculum_new_to_me").assertIsDisplayed()
     }
 
     @Test
-    fun aCardWithoutAMeaning_saysSo() {
+    fun sayingYouAlreadyKnewIt_callsOnNextWithTrue() {
+        var answer: Boolean? = null
+        composeTestRule.setContent { AlterLinguaTheme { CurriculumLessonScreen(inProgress(), onNext = { answer = it }, onRetry = {}, onUpgrade = {}) } }
+        composeTestRule.onNodeWithTag("curriculum_card").performClick()
+        composeTestRule.onNodeWithTag("curriculum_already_knew").performClick()
+        assertEquals(true, answer)
+    }
+
+    @Test
+    fun sayingItIsNewToYou_callsOnNextWithFalse() {
+        var answer: Boolean? = null
+        composeTestRule.setContent { AlterLinguaTheme { CurriculumLessonScreen(inProgress(), onNext = { answer = it }, onRetry = {}, onUpgrade = {}) } }
+        composeTestRule.onNodeWithTag("curriculum_card").performClick()
+        composeTestRule.onNodeWithTag("curriculum_new_to_me").performClick()
+        assertEquals(false, answer)
+    }
+
+    @Test
+    fun aCardWithoutAMeaning_saysSoOnceRevealed() {
         composeTestRule.setContent { AlterLinguaTheme { CurriculumLessonScreen(inProgress(1), onNext = {}, onRetry = {}, onUpgrade = {}) } }
+        composeTestRule.onNodeWithTag("curriculum_card").performClick()
         composeTestRule.onNodeWithTag("curriculum_meaning_missing").assertIsDisplayed()
+    }
+
+    @Test
+    fun listenButton_reflectsWhetherItCanSpeak_andCallsOnListen() {
+        var listened = 0
+        composeTestRule.setContent {
+            AlterLinguaTheme { CurriculumLessonScreen(inProgress(), onNext = {}, onRetry = {}, onUpgrade = {}, onListen = { listened++ }, canListen = true) }
+        }
+        composeTestRule.onNodeWithTag("curriculum_listen").performClick()
+        assertEquals(1, listened)
     }
 
     @Test

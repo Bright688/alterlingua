@@ -48,7 +48,7 @@ object AppViewModelProvider {
         initializer { ProgressViewModel(application().progressService, application().userSettings) }
         initializer { SetupViewModel(application().setupChecker, application().userSettings) }
         initializer { LearnViewModel(application().lessonService, application().userSettings) }
-        initializer { com.alterlingua.app.ui.learn.CurriculumLessonViewModel(application().curriculumLessonService) }
+        initializer { com.alterlingua.app.ui.learn.CurriculumLessonViewModel(application().curriculumLessonService, AndroidSpeaker(application())) }
         initializer {
             val app = application()
             PracticeViewModel { scope ->

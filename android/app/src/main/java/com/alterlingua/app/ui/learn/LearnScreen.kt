@@ -1,5 +1,6 @@
 package com.alterlingua.app.ui.learn
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,6 +64,8 @@ fun LearnRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val curriculumState by curriculumViewModel.uiState.collectAsStateWithLifecycle()
+    val curriculumListening by curriculumViewModel.listening.collectAsStateWithLifecycle()
+    val curriculumCanListen by curriculumViewModel.canListen.collectAsStateWithLifecycle()
     // New messages may have been translated while the tab was away: look again for today's lesson.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
     // Standard and Premium lessons (see CurriculumLessonService) are a second, separate source of lessons: a large,
@@ -79,6 +82,9 @@ fun LearnRoute(
             onRetry = { curriculumViewModel.start() },
             onUpgrade = { showingComingSoon = true },
             onLanguageSelected = { language -> curriculumViewModel.start(language) },
+            onListen = curriculumViewModel::listen,
+            listening = curriculumListening,
+            canListen = curriculumCanListen,
             modifier = modifier,
             footer = {
                 OutlinedButton(onClick = { showingCurriculum = false }, modifier = Modifier.fillMaxWidth().testTag("lrn_back")) {
@@ -107,6 +113,9 @@ fun LearnRoute(
     }
 }
 
+// AnimatedContent is keyed on the card's index purely to crossfade between cards; the content itself reads the card
+// through state (the sealed LearnUiState) rather than the target-state parameter, so it is deliberately unused.
+@Suppress("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun LearnScreen(
     state: LearnUiState,
@@ -131,7 +140,9 @@ fun LearnScreen(
         when (state) {
             LearnUiState.Loading -> Unit
             is LearnUiState.Empty -> EmptyLesson(state)
-            is LearnUiState.Card -> LessonCardContent(state, onPrevious, onNext, nowMillis, onRecognition, practice)
+            is LearnUiState.Card -> AnimatedContent(targetState = state.index, label = "lesson_card") { _ ->
+                LessonCardContent(state, onPrevious, onNext, nowMillis, onRecognition, practice)
+            }
             is LearnUiState.Complete -> LessonComplete(state.lesson)
         }
         footer()

@@ -1,6 +1,8 @@
 package com.alterlingua.app.ui.learn
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,14 +12,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +39,7 @@ import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.curriculum.CurriculumLanguageChoice
 import com.alterlingua.app.learning.curriculum.CurriculumSessionState
+import com.alterlingua.app.learning.pronunciation.PronunciationGuide
 import com.alterlingua.app.ui.components.AlterLinguaCard
 import com.alterlingua.app.ui.components.ScreenFrame
 import com.alterlingua.app.ui.components.TagPill
@@ -37,18 +47,27 @@ import com.alterlingua.app.ui.theme.extendedColors
 
 /**
  * Standard and Premium lessons: a large, shared, online word list, separate from and in addition to the free daily
- * micro-lesson drawn from real conversations (see CurriculumLessonService). A FREE user is stopped once the trial's
- * word count is reached, with [onUpgrade] offered instead of more words. Premium may switch which of its languages
- * it is seeing ([onLanguageSelected]); Standard and the FREE trial only ever show the active target language.
+ * micro-lesson drawn from real conversations (see CurriculumLessonService). Each card is tapped to reveal its
+ * meaning — active recall before being told the answer, the same reason flashcard study works — then Listen (the
+ * phone's own voice) and a genuine self-assessment ("I already knew this" / "New to me") decide what happens next,
+ * rather than one flat "Learned" button. A FREE user is stopped once the trial's word count is reached, with
+ * [onUpgrade] offered instead of more words. Premium may switch which of its languages it is seeing
+ * ([onLanguageSelected]); Standard and the FREE trial only ever show the active target language.
  */
+// AnimatedContent is keyed on the card's position purely to crossfade between cards; the content itself reads the
+// card through state.current rather than the target-state parameter, so that parameter is deliberately unused.
+@Suppress("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun CurriculumLessonScreen(
     state: CurriculumSessionState,
-    onNext: () -> Unit,
+    onNext: (Boolean) -> Unit,
     onRetry: () -> Unit,
     onUpgrade: () -> Unit,
-    onLanguageSelected: (Language) -> Unit = {},
     modifier: Modifier = Modifier,
+    onLanguageSelected: (Language) -> Unit = {},
+    onListen: () -> Unit = {},
+    listening: Boolean = false,
+    canListen: Boolean = false,
     footer: @Composable () -> Unit = {},
 ) {
     ScreenFrame(
@@ -61,7 +80,9 @@ fun CurriculumLessonScreen(
             is CurriculumSessionState.InProgress -> {
                 PlanBadge(state.tier)
                 LanguagePicker(state.languages, onLanguageSelected)
-                CurriculumCardContent(state, onNext)
+                AnimatedContent(targetState = state.position, label = "curriculum_card") { _ ->
+                    CurriculumCardContent(state, onNext, onListen, listening, canListen)
+                }
             }
             is CurriculumSessionState.DoneForToday -> {
                 PlanBadge(state.tier)
@@ -113,7 +134,16 @@ private fun LanguagePicker(choice: CurriculumLanguageChoice, onLanguageSelected:
 }
 
 @Composable
-private fun CurriculumCardContent(state: CurriculumSessionState.InProgress, onNext: () -> Unit) {
+private fun CurriculumCardContent(
+    state: CurriculumSessionState.InProgress,
+    onNext: (Boolean) -> Unit,
+    onListen: () -> Unit,
+    listening: Boolean,
+    canListen: Boolean,
+) {
+    // Revealing (and the choice that follows) is per card: moving to the next one always starts face down again.
+    var revealed by rememberSaveable(state.position) { mutableStateOf(false) }
+
     TagPill(stringResource(R.string.lrn_curriculum_progress, state.position + 1, state.cards.size))
 
     // Step indicator: one segment per card in today's session.
@@ -130,32 +160,68 @@ private fun CurriculumCardContent(state: CurriculumSessionState.InProgress, onNe
     }
 
     val card = state.current
-    AlterLinguaCard {
-        Text(
-            text = card.term,
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.testTag("curriculum_term"),
-        )
-        if (card.meaning != null) {
+    val guide = PronunciationGuide.guideFor(card.term, state.languages.current)
+    AlterLinguaCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("curriculum_card")
+            .clickable(enabled = !revealed) { revealed = true },
+    ) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                text = card.meaning,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.testTag("curriculum_meaning"),
+                text = card.term,
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.testTag("curriculum_term"),
             )
+            OutlinedButton(onClick = onListen, enabled = canListen, modifier = Modifier.testTag("curriculum_listen")) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                Text(stringResource(if (listening) R.string.voice_stop_listening else R.string.prac_play))
+            }
+        }
+        if (guide != null) {
+            Text(guide, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.testTag("curriculum_pronunciation_guide"))
+        }
+        if (revealed) {
+            if (card.meaning != null) {
+                Text(
+                    text = card.meaning,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.testTag("curriculum_meaning"),
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.lrn_meaning_not_available_right_now),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.testTag("curriculum_meaning_missing"),
+                )
+            }
         } else {
             Text(
-                text = stringResource(R.string.lrn_meaning_not_available_right_now),
+                text = stringResource(R.string.lrn_curriculum_tap_to_reveal),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.testTag("curriculum_meaning_missing"),
+                modifier = Modifier.testTag("curriculum_reveal_prompt"),
             )
         }
     }
 
-    Button(onClick = onNext, modifier = Modifier.fillMaxWidth().testTag("curriculum_learned")) {
-        Text(stringResource(R.string.lrn_curriculum_learned))
+    if (revealed) {
+        Text(
+            text = stringResource(R.string.lrn_curriculum_did_you_know_it),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            OutlinedButton(onClick = { onNext(true) }, modifier = Modifier.weight(1f).testTag("curriculum_already_knew")) {
+                Text(stringResource(R.string.lrn_curriculum_already_knew))
+            }
+            Button(onClick = { onNext(false) }, modifier = Modifier.weight(1f).testTag("curriculum_new_to_me")) {
+                Text(stringResource(R.string.lrn_curriculum_new_to_me))
+            }
+        }
     }
 }
 

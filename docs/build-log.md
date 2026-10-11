@@ -2415,3 +2415,93 @@ disrupted.
 explicit deployment step to the real server, which this entry's own mistake shows is easy to forget once a feature
 feels finished. Worth checking the live server directly (`curl .../health` plus a real endpoint) as part of
 wrapping up any future backend milestone, not just assuming a passing local test suite implies the server has it.
+
+## 2026-10-11 — Owner: "you didnt not do the standard and premium lesson well... redesign the whole lessons into the best that any user would like to engage in" — also wanted a real Plan/Subscription screen
+
+**Owner's request, verbatim:** "just restructure every thing including the lessons into a best interactive lessons
+and i should also see subscription for standard and premium. redesign the whole lessons into the best that any
+user would like to engage in."
+
+Two things were missing, not just one: the curriculum's own card was a flat term → meaning → one "Learned" button
+(no audio, no real interaction, no reason to engage beyond clicking through), and nothing in the app showed the
+three plans (Free trial/Standard/Premium) as an actual page — only a trial-limit paywall implied they existed.
+
+### The curriculum card, redesigned around active recall, not past it
+
+**Tap to reveal, before being told the answer.** The term shows first; the meaning, pronunciation guide and the
+self-assessment choice all stay hidden until the card itself is tapped — the same reason flashcard study works
+(Anki, Quizlet): trying to recall before seeing the answer is what makes the recall stick, not just reading past it.
+This replaces the previous design, which showed the meaning immediately and offered nothing to do but click
+"Learned."
+
+**A real choice instead of one button.** "Learned" is gone. After revealing, the question is "Did you already know
+this word?" with two honest answers — "I already knew it" / "New to me" — each of which now also calls
+`LanguageMapService.recordRecognition`, the exact same self-reported recall signal the daily micro-lesson's own
+"Did you already know this?" check already feeds Adaptive mode's MASTERED gate from. Until this entry, the
+curriculum fed `recordLessonEncounter` (exposure) but never `recordRecognition` (recall) — Adaptive mode was
+getting a weaker signal from curriculum words than from conversation-derived ones, for no good reason. Both are
+recorded now, honestly: saying "New to me" records it as *not* correct, not silently treated the same as knowing it.
+
+**Listen, using whichever language is actually on screen.** Curriculum cards had no audio at all before this.
+Reusing the existing pronunciation-practice flow (`PracticeRoute`/`PracticeViewModel`) outright would have been
+wrong here and was deliberately rejected: that flow is scoped to the single active target language, but Premium can
+now show *any* language it is learning (the previous entry's own feature) — reusing it as-is would have spoken the
+word in the wrong language whenever a Premium user switched. Built a small, correct alternative instead: the new
+`CurriculumLessonViewModel` holds its own `Speaker` (`AndroidSpeaker`, the same class the rest of the app already
+uses) and asks it to speak `state.languages.current`, not a fixed language — so Listen is always right regardless of
+which language is picked. `PronunciationGuide.guideFor` (already built for the micro-lesson) is reused as-is for the
+rough phonetic guide shown under the term.
+
+**A smoother transition between cards**, on both the curriculum and the daily micro-lesson: wrapped each one's card
+content in `AnimatedContent` keyed by position/index, so moving to the next item crossfades instead of jumping. This
+is the one change applied to the already-working micro-lesson, kept deliberately light — its own recall-check,
+mastery chip, context and reasons were already a considered, tested design and did not need rebuilding, just this
+one consistency touch across both lesson types.
+
+### Settings → Plan: the three plans, actually visible
+
+A new `PlansScreen` (CLAUDE.md section 33) lists what FREE, Standard and Premium each *actually* unlock today —
+deliberately nothing more. Checked against CLAUDE.md's own fuller tier table (voice quotas, pronunciation, TTS
+sharing) and chose not to mention any of that: none of it is tier-gated in the app yet, so claiming it on a plans
+screen would have been false advertising inside the app itself. The only real, already-built difference is the
+curriculum: Standard unlocks the full curriculum for the active language, capped at 20 words/day; Premium adds
+every learning language at once and no practical daily cap — exactly what the previous entry built, now actually
+shown rather than only discoverable by hitting a trial limit. "Subscribe" on Standard or Premium opens the existing
+`ComingSoonDialog` (CLAUDE.md sections 31-32: real Google Play Billing stays a later, explicitly deferred milestone
+— the owner chose scaffolding-only for this earlier in the session, and nothing here revisits that choice). Reached
+from a new "Subscription" row in Settings, showing the current plan inline so it is visible without opening
+anything.
+
+### Caught during this change
+
+The first draft of `PlansScreen` built a custom `Surface` + a bespoke padding helper to get a highlighted border on
+the current plan's card, and the helper did not actually compile (a `Modifier` extension calling itself). Simplified
+to reusing the existing `AlterLinguaCard` plus a plain "Current plan" `TagPill` instead of a custom border — less
+code, and it is the same card style every other screen already uses.
+
+Compose lint caught two real, specific findings before this ever reached the device: `AnimatedContent`'s own
+target-state lambda parameter was unused in both new `AnimatedContent` calls (the content reads the current card
+through the outer `state`, not through that parameter — intentional, so suppressed with a comment explaining why,
+not silenced blindly), and `CurriculumLessonScreen`'s `modifier` parameter was not in its conventional first-optional
+position. Both fixed before the build was considered clean.
+
+### Verification
+
+950 Android unit tests pass (945 before this entry; 5 new: 2 in `CurriculumLessonServiceTest` for the recognition
+signal being recorded honestly in both directions, 3 in `CurriculumLessonViewModelTest` for Listen/canListen/stop).
+Lint 0 errors. Debug and release builds both compile. The androidTest sources (`CurriculumLessonScreenTest`,
+rewritten for the reveal/self-assessment/listen UI, and a new `PlansScreenTest`) were confirmed to actually compile
+(`compileDebugAndroidTestKotlin`), though — as in the previous two entries — the full on-device instrumented suite
+itself was not run end to end this time either (the same pre-existing, unrelated multi-hour hang). Installed on the
+real device and confirmed launching cleanly, with no crash.
+
+### Manual test for the owner
+
+1. Learn tab → "Standard & Premium Lessons": the term shows first; meaning and the two answer buttons stay hidden
+   until you tap the card.
+2. Tap Listen: the word is spoken aloud (works for any language you have a voice for, including a Premium pick).
+3. Answer "New to me" a few times, then check Settings → Words: those words should now show real mastery movement,
+   not just an exposure count.
+4. Settings → "Subscription": a "Plan" row shows your current plan; opening it shows all three plans with real
+   features, and "Subscribe" on Standard or Premium shows "Coming soon," never a purchase screen.
+5. The daily micro-lesson (Learn tab's main view) should now crossfade between cards instead of jumping.

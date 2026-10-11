@@ -76,8 +76,8 @@ class CurriculumLessonServiceTest {
     fun finishingEveryCard_recordsEachInThePersonalLanguageMap_andEndsTheSession() = runTest {
         val svc = service()
         var state = svc.today() as CurriculumSessionState.InProgress
-        repeat(state.cards.size - 1) { state = svc.next(state) as CurriculumSessionState.InProgress }
-        val done = svc.next(state)
+        repeat(state.cards.size - 1) { state = svc.next(state, alreadyKnew = true) as CurriculumSessionState.InProgress }
+        val done = svc.next(state, alreadyKnew = true)
 
         assertTrue(done is CurriculumSessionState.DoneForToday)
         listOf("bonjour", "demain", "réunion").forEach { word ->
@@ -87,13 +87,33 @@ class CurriculumLessonServiceTest {
     }
 
     @Test
+    fun theLearnersOwnAnswer_isRecordedAsARecognitionSignal_likeTheMicroLessonsRecallCheck() = runTest {
+        val svc = service()
+        val state = svc.today() as CurriculumSessionState.InProgress
+        svc.next(state, alreadyKnew = true)
+        val bonjour = map.item(UnitKey("fr", "bonjour", UnitType.WORD))!!
+        assertEquals(1, bonjour.correctRecognitions)
+        assertEquals(0, bonjour.incorrectRecognitions)
+    }
+
+    @Test
+    fun sayingYouDidNotKnowIt_isRecordedHonestly_notAsIfItWereCorrect() = runTest {
+        val svc = service()
+        val state = svc.today() as CurriculumSessionState.InProgress
+        svc.next(state, alreadyKnew = false)
+        val bonjour = map.item(UnitKey("fr", "bonjour", UnitType.WORD))!!
+        assertEquals(0, bonjour.correctRecognitions)
+        assertEquals(1, bonjour.incorrectRecognitions)
+    }
+
+    @Test
     fun theNextSession_continuesWhereTheCursorLeftOff() = runTest {
         val settings = FakeUserSettingsRepository(UserSettings(curriculumDailyGoal = 3))
         val api = FakeCurriculumApi(mapOf("fr" to french))
         val svc = service(api = api, settings = settings)
         var state = svc.today() as CurriculumSessionState.InProgress
-        repeat(state.cards.size - 1) { state = svc.next(state) as CurriculumSessionState.InProgress }
-        svc.next(state) // finishes today's 3
+        repeat(state.cards.size - 1) { state = svc.next(state, alreadyKnew = true) as CurriculumSessionState.InProgress }
+        svc.next(state, alreadyKnew = true) // finishes today's 3
 
         assertEquals(3, settings.current.curriculumProgressFor("fr").cursor)
         assertEquals(listOf(0), api.requestedOffsets) // only the first page was ever fetched today
