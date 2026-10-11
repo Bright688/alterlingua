@@ -10,11 +10,16 @@ import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.UserSettings
+import com.alterlingua.app.learning.curriculum.CefrLevel
 import com.alterlingua.app.learning.curriculum.CurriculumApi
 import com.alterlingua.app.learning.curriculum.CurriculumLessonService
 import com.alterlingua.app.learning.curriculum.CurriculumPageResult
 import com.alterlingua.app.learning.curriculum.CurriculumProgressService
 import com.alterlingua.app.learning.curriculum.CurriculumSessionState
+import com.alterlingua.app.learning.curriculum.CurriculumUnitRange
+import com.alterlingua.app.learning.curriculum.ForgeLevelState
+import com.alterlingua.app.learning.curriculum.ForgeState
+import com.alterlingua.app.learning.curriculum.ForgeUnitSummary
 import com.alterlingua.app.learning.lessons.LessonLanguages
 import com.alterlingua.app.learning.lessons.MeaningProvider
 import com.alterlingua.app.learning.map.InMemoryLanguageMapStore
@@ -171,5 +176,49 @@ class CurriculumLessonViewModelTest {
         val offer = SubscriptionOffer("premium_annual", Tier.PREMIUM, BillingPeriod.ANNUAL, "$79.99", "token")
         vm.subscribe(activity = object : Activity() {}, offer)
         assertEquals(listOf(offer), billing.purchased)
+    }
+
+    // ---- The Forge: Language -> Level -> Unit -> Lesson ----
+
+    @Test
+    fun loadForge_populatesTheLevelList() = runTest {
+        val vm = viewModel()
+        vm.loadForge()
+        val state = vm.forgeLevels.value as ForgeState.Levels
+        assertEquals(3, state.levels.size) // "un","deux","trois": 3 words banded into 3 one-word levels
+    }
+
+    @Test
+    fun openLevel_populatesItsOwnUnits() = runTest {
+        val vm = viewModel()
+        vm.loadForge()
+        val range = (vm.forgeLevels.value as ForgeState.Levels).levels.first().range
+        vm.openLevel(range)
+        val level = vm.forgeLevel.value as ForgeLevelState.Loaded
+        assertEquals(listOf("un"), level.units.first().words)
+    }
+
+    @Test
+    fun practiceUnit_thenNext_neverTouchesTodaysOwnCursor() = runTest {
+        val vm = viewModel()
+        val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 1, 0, 2), listOf("un", "deux"), masteredCount = 0)
+        vm.practiceUnit(unit)
+        val inProgress = vm.uiState.value as CurriculumSessionState.InProgress
+        assertEquals(listOf("un", "deux"), inProgress.cards.map { it.term })
+        vm.next(alreadyKnew = true)
+        vm.next(alreadyKnew = true)
+        assertTrue(vm.uiState.value is CurriculumSessionState.UnitPracticeComplete)
+        assertEquals(0, settings.current.curriculumProgressFor("fr").cursor)
+    }
+
+    @Test
+    fun start_afterPracticingAUnit_returnsToTodaysOwnSession_notPracticeMode() = runTest {
+        val vm = viewModel()
+        val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 1, 0, 1), listOf("un"), masteredCount = 0)
+        vm.practiceUnit(unit)
+        vm.next(alreadyKnew = true) // finishes the one-word unit -> UnitPracticeComplete, cursor still untouched
+        vm.start()
+        vm.next(alreadyKnew = true) // back in "today" mode: this one really does advance the cursor
+        assertEquals(1, settings.current.curriculumProgressFor("fr").cursor)
     }
 }

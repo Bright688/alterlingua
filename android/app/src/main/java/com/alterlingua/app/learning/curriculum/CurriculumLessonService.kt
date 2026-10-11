@@ -4,6 +4,7 @@ import com.alterlingua.app.entitlements.CurriculumAccess
 import com.alterlingua.app.entitlements.EntitlementService
 import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.Language
+import com.alterlingua.app.learning.MasteryStatus
 import com.alterlingua.app.learning.engine.UnitKey
 import com.alterlingua.app.learning.engine.UnitType
 import com.alterlingua.app.learning.lessons.LessonLanguages
@@ -48,8 +49,36 @@ sealed interface CurriculumSessionState {
     /** The FREE trial's word count has been reached; [limit] is how many it allowed. */
     data class TrialLimitReached(val limit: Int) : CurriculumSessionState
 
+    /**
+     * A specific unit was practiced to completion (The Forge: browsing a level/unit directly, not today's
+     * auto-advancing session) -- never affects the daily goal or cursor, so this is deliberately distinct from
+     * [DoneForToday], which carries "today" framing that would be wrong here.
+     */
+    data class UnitPracticeComplete(val level: CefrLevel, val unitNumber: Int) : CurriculumSessionState
+
     /** The curriculum could not be fetched right now (offline, or the backend is unreachable). */
     data object Unavailable : CurriculumSessionState
+}
+
+/** One CEFR-proxy level, as shown in The Forge's level list: whether it is where the learner's own cursor is. */
+data class ForgeLevelSummary(val range: CurriculumLevelRange, val isCurrent: Boolean)
+
+/** What The Forge's level list looks like for the resolved language. */
+sealed interface ForgeState {
+    data object Loading : ForgeState
+    data class Levels(val languages: CurriculumLanguageChoice, val tier: Tier, val levels: List<ForgeLevelSummary>) : ForgeState
+    data object Unavailable : ForgeState
+}
+
+/** One unit within an opened level: its own word list (so practicing it needs no second fetch) and how many of
+ * those words are already MASTERED in the Personal Language Map. */
+data class ForgeUnitSummary(val range: CurriculumUnitRange, val words: List<String>, val masteredCount: Int)
+
+/** What The Forge shows once a level has been opened. */
+sealed interface ForgeLevelState {
+    data object Loading : ForgeLevelState
+    data class Loaded(val level: CurriculumLevelRange, val units: List<ForgeUnitSummary>) : ForgeLevelState
+    data object Unavailable : ForgeLevelState
 }
 
 /**
@@ -74,20 +103,27 @@ class CurriculumLessonService(
     private val learningLanguages: suspend () -> List<Language> = { emptyList() },
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
-    /**
-     * A fresh session for [languageOverride] if given and allowed (Premium, and a language the learner is actually
-     * learning), otherwise the active target language. Nothing here is saved beyond the progress counters.
-     */
-    suspend fun today(languageOverride: Language? = null): CurriculumSessionState {
+    private data class Resolved(val learning: Language, val effective: LessonLanguages, val tier: Tier, val choice: CurriculumLanguageChoice)
+
+    /** Which language is actually in play (Premium may override; Standard/FREE always get the active target). */
+    private suspend fun resolve(languageOverride: Language?): Resolved {
         val langs = languages()
         val tier = entitlements.tier()
         val canPickLanguage = entitlements.canPickAnyLearningLanguage(tier)
         val available = if (canPickLanguage) learningLanguages() else emptyList()
         val learning = languageOverride?.takeIf { canPickLanguage && it in available } ?: langs.learning
-        val effective = LessonLanguages(learning, langs.native)
-        val code = learning.code
         // Only Premium ever sees more than one entry here: that is what makes the language picker appear at all.
         val choice = CurriculumLanguageChoice(learning, available.ifEmpty { listOf(learning) })
+        return Resolved(learning, LessonLanguages(learning, langs.native), tier, choice)
+    }
+
+    /**
+     * A fresh session for [languageOverride] if given and allowed (Premium, and a language the learner is actually
+     * learning), otherwise the active target language. Nothing here is saved beyond the progress counters.
+     */
+    suspend fun today(languageOverride: Language? = null): CurriculumSessionState {
+        val (learning, effective, tier, choice) = resolve(languageOverride)
+        val code = learning.code
 
         val access = entitlements.curriculumAccess(code)
         if (access is CurriculumAccess.TrialLimitReached) return CurriculumSessionState.TrialLimitReached(access.limit)
@@ -97,12 +133,37 @@ class CurriculumLessonService(
         val remaining = current.remainingToday(goal)
         if (remaining <= 0) return CurriculumSessionState.DoneForToday(choice, tier, goal)
 
-        val page = api.fetchPage(code, current.cursor, remaining)
-        val words = (page as? CurriculumPageResult.Success)?.words ?: return CurriculumSessionState.Unavailable
-        // The whole list has been learned (a large but finite list): nothing more until it is extended.
-        if (words.isEmpty()) return CurriculumSessionState.DoneForToday(choice, tier, goal)
+        val collected = mutableListOf<String>()
+        var probe = current.cursor
+        var skippedMastered = 0
+        while (collected.size < remaining) {
+            val fetchLimit = ((remaining - collected.size) * 2 + 10).coerceAtMost(100)
+            val page = api.fetchPage(code, probe, fetchLimit)
+            val words = (page as? CurriculumPageResult.Success)?.words
+                ?: return if (collected.isEmpty()) {
+                    CurriculumSessionState.Unavailable
+                } else {
+                    if (skippedMastered > 0) progress.recordSkipped(code, skippedMastered)
+                    CurriculumSessionState.InProgress(choice, tier, buildCards(collected, effective), position = 0, goalToday = goal)
+                }
+            // The whole list has been learned (a large but finite list): nothing more until it is extended.
+            if (words.isEmpty()) break
+            for (word in words) {
+                probe++
+                // A word already MASTERED (any tier -- CLAUDE.md's "demonstrated mastery" recommendation) is skipped
+                // for free: it does not cost today's goal, and the cursor moves past it without showing it again.
+                if (map.item(UnitKey(code, word.lowercase(Locale.ROOT), UnitType.WORD))?.masteryState == MasteryStatus.MASTERED) {
+                    skippedMastered++
+                } else {
+                    collected += word
+                    if (collected.size == remaining) break
+                }
+            }
+        }
+        if (skippedMastered > 0) progress.recordSkipped(code, skippedMastered)
+        if (collected.isEmpty()) return CurriculumSessionState.DoneForToday(choice, tier, goal)
 
-        return CurriculumSessionState.InProgress(choice, tier, buildCards(words, effective), position = 0, goalToday = goal)
+        return CurriculumSessionState.InProgress(choice, tier, buildCards(collected, effective), position = 0, goalToday = goal)
     }
 
     /**
@@ -121,6 +182,69 @@ class CurriculumLessonService(
         return if (state.isLast) {
             val goal = progress.dailyGoal().coerceAtMost(entitlements.maxCurriculumDailyGoal(state.tier))
             CurriculumSessionState.DoneForToday(state.languages, state.tier, goal)
+        } else {
+            state.copy(position = state.position + 1)
+        }
+    }
+
+    /**
+     * The Forge's level list (CLAUDE.md's pasted "Final decision": one shared curriculum, organized as
+     * Levels -> Units -> Lessons, for every plan). The banding is a frequency-based CEFR proxy (see [CurriculumStructure]);
+     * only levels the language's word list actually has words for are returned.
+     */
+    suspend fun forge(languageOverride: Language? = null): ForgeState {
+        val (learning, _, tier, choice) = resolve(languageOverride)
+        val page = api.fetchPage(learning.code, 0, 1) // one word is enough to read the list's total size
+        val total = (page as? CurriculumPageResult.Success)?.total ?: return ForgeState.Unavailable
+        val cursor = progress.progressToday(learning.code).cursor
+        val levels = CurriculumStructure.levels(total).map { range ->
+            ForgeLevelSummary(range, isCurrent = cursor in range.startIndex until range.endIndex)
+        }
+        return ForgeState.Levels(choice, tier, levels)
+    }
+
+    /** One level's units, each with its own word list and how many of those words are already mastered. */
+    suspend fun forgeLevel(range: CurriculumLevelRange, languageOverride: Language? = null): ForgeLevelState {
+        val (learning, _, _, _) = resolve(languageOverride)
+        val code = learning.code
+        val page = api.fetchPage(code, range.startIndex, range.wordCount)
+        val words = (page as? CurriculumPageResult.Success)?.words ?: return ForgeLevelState.Unavailable
+        val units = CurriculumStructure.units(range).map { unitRange ->
+            val unitWords = words.subList((unitRange.startIndex - range.startIndex).coerceIn(0, words.size), (unitRange.endIndex - range.startIndex).coerceIn(0, words.size))
+            val mastered = unitWords.count { map.item(UnitKey(code, it.lowercase(Locale.ROOT), UnitType.WORD))?.masteryState == MasteryStatus.MASTERED }
+            ForgeUnitSummary(unitRange, unitWords, mastered)
+        }
+        return ForgeLevelState.Loaded(range, units)
+    }
+
+    /**
+     * Opens [unit] as a practice session: its own words (already fetched by [forgeLevel], so no second request),
+     * shown with the same flashcard flow as today's session. Still respects the FREE trial limit -- browsing
+     * directly to a later unit must not bypass it -- but does not touch the saved cursor or daily goal; see
+     * [practiceNext].
+     */
+    suspend fun practiceUnit(unit: ForgeUnitSummary, languageOverride: Language? = null): CurriculumSessionState {
+        val (_, effective, tier, choice) = resolve(languageOverride)
+        val access = entitlements.curriculumAccess(choice.current.code)
+        if (access is CurriculumAccess.TrialLimitReached) return CurriculumSessionState.TrialLimitReached(access.limit)
+        if (unit.words.isEmpty()) return CurriculumSessionState.UnitPracticeComplete(unit.range.level, unit.range.unitNumber)
+        return CurriculumSessionState.InProgress(choice, tier, buildCards(unit.words, effective), position = 0, goalToday = unit.words.size)
+    }
+
+    /**
+     * Advances a unit-practice session (see [practiceUnit]): records the exact same Personal Language Map signal as
+     * [next], but deliberately never calls [CurriculumProgressService.recordCompleted] -- practicing a unit the
+     * learner has already reached, or is previewing ahead of where they are, must never cost or grant anything
+     * against today's goal.
+     */
+    suspend fun practiceNext(state: CurriculumSessionState.InProgress, unit: CurriculumUnitRange, alreadyKnew: Boolean): CurriculumSessionState {
+        val language = state.languages.current
+        val card = state.current
+        val key = card.key(language.code)
+        map.recordLessonEncounter(key, card.term, clock())
+        map.recordRecognition(key, alreadyKnew, card.term, clock())
+        return if (state.isLast) {
+            CurriculumSessionState.UnitPracticeComplete(unit.level, unit.unitNumber)
         } else {
             state.copy(position = state.position + 1)
         }

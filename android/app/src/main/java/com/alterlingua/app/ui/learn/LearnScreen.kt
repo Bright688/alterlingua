@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +56,9 @@ import com.alterlingua.app.ui.components.TagPill
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
 
+/** Which of the Learn tab's curriculum-related screens is showing right now (The Forge's own navigation). */
+private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION }
+
 /** Google Play's purchase flow needs a real Activity, not just a Context; Compose only hands us the latter directly. */
 private tailrec fun findActivity(context: android.content.Context): android.app.Activity? = when (context) {
     is android.app.Activity -> context
@@ -74,33 +78,93 @@ fun LearnRoute(
     val curriculumCanListen by curriculumViewModel.canListen.collectAsStateWithLifecycle()
     val curriculumTier by curriculumViewModel.tier.collectAsStateWithLifecycle()
     val curriculumOffers by curriculumViewModel.offers.collectAsStateWithLifecycle()
+    val forgeLevels by curriculumViewModel.forgeLevels.collectAsStateWithLifecycle()
+    val forgeLevel by curriculumViewModel.forgeLevel.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
     // New messages may have been translated while the tab was away: look again for today's lesson.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
-    // Standard and Premium lessons (see CurriculumLessonService) are a second, separate source of lessons: a large,
-    // shared, online word list, apart from the free micro-lesson drawn from the learner's own conversations.
-    // Standard and Premium are two separate Google Play products (CLAUDE.md section 32): each gets its own card
-    // below, with its own price and its own Subscribe button, never merged into one.
-    var showingCurriculum by rememberSaveable { mutableStateOf(false) }
-    if (showingCurriculum) {
-        CurriculumLessonScreen(
+    // Standard and Premium lessons (see CurriculumLessonService) are a second, separate source of lessons: The
+    // Forge, one shared curriculum (Language -> Level -> Unit -> Lesson) for every plan, apart from the free micro
+    // lesson drawn from the learner's own conversations. Standard and Premium are two separate Google Play products
+    // (CLAUDE.md section 32): each gets its own card below, with its own price and its own Subscribe button, never
+    // merged into one -- but tapping either opens the SAME curriculum (CLAUDE.md's own "Final decision": one
+    // curriculum for all plans, not separate lesson libraries).
+    var screen by rememberSaveable { mutableStateOf(CurriculumScreen.CARDS) }
+    var openLevelRange by remember { mutableStateOf<com.alterlingua.app.learning.curriculum.CurriculumLevelRange?>(null) }
+    var openUnit by remember { mutableStateOf<com.alterlingua.app.learning.curriculum.ForgeUnitSummary?>(null) }
+    when (screen) {
+        CurriculumScreen.SESSION -> CurriculumLessonScreen(
             state = curriculumState,
             onNext = curriculumViewModel::next,
             onRetry = { curriculumViewModel.start() },
-            onUpgrade = { showingCurriculum = false }, // back to this tab's own Standard/Premium cards to pick a plan
+            onUpgrade = { screen = CurriculumScreen.CARDS }, // back to this tab's own Standard/Premium cards to pick a plan
             onLanguageSelected = { language -> curriculumViewModel.start(language) },
             onListen = curriculumViewModel::listen,
             listening = curriculumListening,
             canListen = curriculumCanListen,
+            onUnitPracticeDone = {
+                openLevelRange?.let { curriculumViewModel.openLevel(it) } // refreshes mastered counts after practicing
+                screen = if (openUnit != null) CurriculumScreen.LESSON_MENU else CurriculumScreen.FORGE_LEVEL
+            },
             modifier = modifier,
             footer = {
-                OutlinedButton(onClick = { showingCurriculum = false }, modifier = Modifier.fillMaxWidth().testTag("lrn_back")) {
-                    Text(stringResource(R.string.lrn_back))
-                }
+                OutlinedButton(
+                    onClick = {
+                        screen = when {
+                            openUnit != null -> CurriculumScreen.LESSON_MENU
+                            openLevelRange != null -> CurriculumScreen.FORGE_LEVEL
+                            else -> CurriculumScreen.FORGE_LEVELS
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().testTag("lrn_back"),
+                ) { Text(stringResource(R.string.lrn_back)) }
             },
         )
-    } else {
-        LearnScreen(
+        CurriculumScreen.LESSON_MENU -> {
+            val unit = openUnit
+            if (unit != null) {
+                LessonMenuScreen(
+                    unit = unit,
+                    onOpenVocabulary = { curriculumViewModel.practiceUnit(unit); screen = CurriculumScreen.SESSION },
+                    onBack = { screen = CurriculumScreen.FORGE_LEVEL },
+                    modifier = modifier,
+                )
+            } else {
+                // openUnit is plain `remember`, not saveable: lost across process death. Falls back up the stack
+                // rather than rendering nothing.
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    screen = if (openLevelRange != null) CurriculumScreen.FORGE_LEVEL else CurriculumScreen.FORGE_LEVELS
+                }
+            }
+        }
+        CurriculumScreen.FORGE_LEVEL -> {
+            val range = openLevelRange
+            if (range != null) {
+                ForgeLevelScreen(
+                    state = forgeLevel,
+                    onOpenUnit = { unit -> openUnit = unit; screen = CurriculumScreen.LESSON_MENU },
+                    onBack = { screen = CurriculumScreen.FORGE_LEVELS },
+                    onRetry = { curriculumViewModel.openLevel(range) },
+                    modifier = modifier,
+                )
+            } else {
+                // openLevelRange is plain `remember`, not saveable: lost across process death. Falls back to the
+                // level list rather than rendering nothing.
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    screen = CurriculumScreen.FORGE_LEVELS
+                    curriculumViewModel.loadForge()
+                }
+            }
+        }
+        CurriculumScreen.FORGE_LEVELS -> ForgeLevelsScreen(
+            state = forgeLevels,
+            onOpenLevel = { range -> openLevelRange = range; curriculumViewModel.openLevel(range); screen = CurriculumScreen.FORGE_LEVEL },
+            onContinue = { curriculumViewModel.start(); screen = CurriculumScreen.SESSION },
+            onRetry = { curriculumViewModel.loadForge() },
+            onBack = { screen = CurriculumScreen.CARDS },
+            modifier = modifier,
+        )
+        CurriculumScreen.CARDS -> LearnScreen(
             state = state,
             onPrevious = viewModel::previous,
             onNext = viewModel::next,
@@ -111,7 +175,11 @@ fun LearnRoute(
                     StandardAndPremiumCards(
                         tier = curriculumTier,
                         offers = curriculumOffers,
-                        onOpen = { curriculumViewModel.start(); showingCurriculum = true },
+                        onOpen = {
+                            openLevelRange = null
+                            curriculumViewModel.loadForge()
+                            screen = CurriculumScreen.FORGE_LEVELS
+                        },
                         onSubscribe = { offer -> findActivity(context)?.let { curriculumViewModel.subscribe(it, offer) } },
                     )
                     ReaderRoute()

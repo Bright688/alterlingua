@@ -22,6 +22,20 @@ sealed interface CurriculumAccess {
 }
 
 /**
+ * A depth/richness label reused across several AI-assistance dimensions that differ by tier (the owner's own tier
+ * comparison table: speaking exercises, pronunciation feedback, lesson recommendations, adaptive difficulty, AI
+ * explanations, learning analytics). Not a universal currency -- each function below defines what its own levels
+ * mean -- but shared rather than one bespoke enum per dimension, since all of them are the same shape: a tier-graded
+ * richness label with no behavior of its own yet.
+ *
+ * Policy only: none of the features these levels describe (a real AI tutor, adaptive difficulty, recommendations,
+ * analytics) are built yet -- that is the separate, larger "AI Learning Engine" (CLAUDE.md's own distinction from
+ * the Curriculum Engine), explicitly deferred until an AI provider and conversation UX are chosen. These functions
+ * exist now so that engine has a tier policy to read from the day it is built, rather than retrofitting one then.
+ */
+enum class AssistanceLevel { NONE, LIMITED, BASIC, STANDARD, ADVANCED, EXTENDED }
+
+/**
  * The single place that decides what the current subscription tier allows (CLAUDE.md section 26-27), so this
  * question is never answered by a scattered tier check elsewhere in the app.
  */
@@ -47,4 +61,55 @@ class EntitlementService(private val settings: UserSettingsRepository) {
 
     /** Whether [tier] may learn the curriculum of any language it is learning, not just the active target language. */
     fun canPickAnyLearningLanguage(tier: Tier): Boolean = TierPolicy.includes(tier, Feature.CURRICULUM_PREMIUM)
+
+    /** AI conversation-practice minutes allowed per day, by tier. */
+    fun aiConversationMinutesPerDay(tier: Tier): Int = when (tier) {
+        Tier.FREE -> 5
+        Tier.STANDARD -> 15
+        Tier.PREMIUM -> 60
+    }
+
+    /** How rich speaking-exercise coaching is, by tier. */
+    fun speakingExerciseLevel(tier: Tier): AssistanceLevel = when (tier) {
+        Tier.FREE -> AssistanceLevel.LIMITED
+        Tier.STANDARD -> AssistanceLevel.BASIC
+        Tier.PREMIUM -> AssistanceLevel.ADVANCED
+    }
+
+    /** How rich pronunciation feedback is, by tier (FREE gets none at all, not merely a limited amount). */
+    fun pronunciationFeedbackLevel(tier: Tier): AssistanceLevel = when (tier) {
+        Tier.FREE -> AssistanceLevel.NONE
+        Tier.STANDARD -> AssistanceLevel.BASIC
+        Tier.PREMIUM -> AssistanceLevel.ADVANCED
+    }
+
+    /** How rich AI-generated exercises are, by tier. */
+    fun aiExerciseLevel(tier: Tier): AssistanceLevel = if (tier == Tier.PREMIUM) AssistanceLevel.EXTENDED else AssistanceLevel.LIMITED
+
+    /** How rich AI explanations of difficult concepts are, by tier. */
+    fun aiExplanationLevel(tier: Tier): AssistanceLevel = if (tier == Tier.PREMIUM) AssistanceLevel.EXTENDED else AssistanceLevel.LIMITED
+
+    /** How personalized the next-lesson recommendation is, by tier. */
+    fun lessonRecommendationLevel(tier: Tier): AssistanceLevel = when (tier) {
+        Tier.FREE -> AssistanceLevel.BASIC
+        Tier.STANDARD -> AssistanceLevel.STANDARD
+        Tier.PREMIUM -> AssistanceLevel.ADVANCED
+    }
+
+    /** How much lesson difficulty adapts to the learner, by tier (FREE gets none at all). */
+    fun adaptiveDifficultyLevel(tier: Tier): AssistanceLevel = when (tier) {
+        Tier.FREE -> AssistanceLevel.NONE
+        Tier.STANDARD -> AssistanceLevel.BASIC
+        Tier.PREMIUM -> AssistanceLevel.ADVANCED
+    }
+
+    /** How detailed the learner's own progress analytics are, by tier. */
+    fun learningAnalyticsLevel(tier: Tier): AssistanceLevel = when (tier) {
+        Tier.FREE -> AssistanceLevel.BASIC
+        Tier.STANDARD -> AssistanceLevel.STANDARD
+        Tier.PREMIUM -> AssistanceLevel.ADVANCED
+    }
+
+    /** Whether [tier] is free of advertisements (only PREMIUM is). */
+    fun isAdFree(tier: Tier): Boolean = tier == Tier.PREMIUM
 }

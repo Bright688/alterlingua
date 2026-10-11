@@ -67,4 +67,69 @@ class EntitlementServiceTest {
         assertEquals(false, service.canPickAnyLearningLanguage(Tier.STANDARD))
         assertEquals(true, service.canPickAnyLearningLanguage(Tier.PREMIUM))
     }
+
+    // ---- the owner's tier comparison table, as policy (CLAUDE.md pasted content): none of these are backed by a
+    // real AI Learning Engine yet -- this is the policy it will read from once one is built. ----
+
+    @Test
+    fun aiConversationMinutesPerDay_matchesTheTierTable() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(5, service.aiConversationMinutesPerDay(Tier.FREE))
+        assertEquals(15, service.aiConversationMinutesPerDay(Tier.STANDARD))
+        assertEquals(60, service.aiConversationMinutesPerDay(Tier.PREMIUM))
+    }
+
+    @Test
+    fun speakingExerciseLevel_matchesTheTierTable() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(AssistanceLevel.LIMITED, service.speakingExerciseLevel(Tier.FREE))
+        assertEquals(AssistanceLevel.BASIC, service.speakingExerciseLevel(Tier.STANDARD))
+        assertEquals(AssistanceLevel.ADVANCED, service.speakingExerciseLevel(Tier.PREMIUM))
+    }
+
+    @Test
+    fun pronunciationFeedbackLevel_isNoneForFree_unlikeOtherDimensions() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(AssistanceLevel.NONE, service.pronunciationFeedbackLevel(Tier.FREE))
+        assertEquals(AssistanceLevel.BASIC, service.pronunciationFeedbackLevel(Tier.STANDARD))
+        assertEquals(AssistanceLevel.ADVANCED, service.pronunciationFeedbackLevel(Tier.PREMIUM))
+    }
+
+    @Test
+    fun aiExerciseLevel_andAiExplanationLevel_areLimitedForFreeAndStandard_extendedOnlyForPremium() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        listOf(Tier.FREE, Tier.STANDARD).forEach { tier ->
+            assertEquals(tier.name, AssistanceLevel.LIMITED, service.aiExerciseLevel(tier))
+            assertEquals(tier.name, AssistanceLevel.LIMITED, service.aiExplanationLevel(tier))
+        }
+        assertEquals(AssistanceLevel.EXTENDED, service.aiExerciseLevel(Tier.PREMIUM))
+        assertEquals(AssistanceLevel.EXTENDED, service.aiExplanationLevel(Tier.PREMIUM))
+    }
+
+    @Test
+    fun lessonRecommendationLevel_andLearningAnalyticsLevel_gradeAcrossAllThreeTiers() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(AssistanceLevel.BASIC, service.lessonRecommendationLevel(Tier.FREE))
+        assertEquals(AssistanceLevel.STANDARD, service.lessonRecommendationLevel(Tier.STANDARD))
+        assertEquals(AssistanceLevel.ADVANCED, service.lessonRecommendationLevel(Tier.PREMIUM))
+        assertEquals(AssistanceLevel.BASIC, service.learningAnalyticsLevel(Tier.FREE))
+        assertEquals(AssistanceLevel.STANDARD, service.learningAnalyticsLevel(Tier.STANDARD))
+        assertEquals(AssistanceLevel.ADVANCED, service.learningAnalyticsLevel(Tier.PREMIUM))
+    }
+
+    @Test
+    fun adaptiveDifficultyLevel_isNoneForFree_basicForStandard_advancedForPremium() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(AssistanceLevel.NONE, service.adaptiveDifficultyLevel(Tier.FREE))
+        assertEquals(AssistanceLevel.BASIC, service.adaptiveDifficultyLevel(Tier.STANDARD))
+        assertEquals(AssistanceLevel.ADVANCED, service.adaptiveDifficultyLevel(Tier.PREMIUM))
+    }
+
+    @Test
+    fun isAdFree_onlyForPremium() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(false, service.isAdFree(Tier.FREE))
+        assertEquals(false, service.isAdFree(Tier.STANDARD))
+        assertEquals(true, service.isAdFree(Tier.PREMIUM))
+    }
 }

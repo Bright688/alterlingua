@@ -62,6 +62,8 @@ fun CurriculumLessonScreen(
     onListen: () -> Unit = {},
     listening: Boolean = false,
     canListen: Boolean = false,
+    /** Called when a practiced unit (The Forge) is finished; unused for today's own session. */
+    onUnitPracticeDone: () -> Unit = {},
     footer: @Composable () -> Unit = {},
 ) {
     ScreenFrame(
@@ -85,6 +87,7 @@ fun CurriculumLessonScreen(
                 PlanBadge(Tier.FREE)
                 CurriculumPaywall(state, onUpgrade)
             }
+            is CurriculumSessionState.UnitPracticeComplete -> UnitPracticeDone(state, onUnitPracticeDone)
             CurriculumSessionState.Unavailable -> CurriculumUnavailable(onRetry)
         }
         footer()
@@ -93,7 +96,7 @@ fun CurriculumLessonScreen(
 
 /** Which plan the learner is on right now, so Free trial / Standard / Premium is always visible, not implied. */
 @Composable
-private fun PlanBadge(tier: Tier) {
+internal fun PlanBadge(tier: Tier) {
     val label = when (tier) {
         Tier.FREE -> stringResource(R.string.set_plan_free_trial)
         Tier.STANDARD -> stringResource(R.string.set_plan_standard)
@@ -237,6 +240,28 @@ private fun CurriculumDone(state: CurriculumSessionState.DoneForToday) {
 }
 
 @Composable
+private fun UnitPracticeDone(state: CurriculumSessionState.UnitPracticeComplete, onDone: () -> Unit) {
+    AlterLinguaCard {
+        Column(
+            modifier = Modifier.fillMaxWidth().testTag("curriculum_unit_complete"),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(stringResource(R.string.lrn_forge_unit_complete_title), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.lrn_forge_unit_complete_body, state.level.name, state.unitNumber),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+    Button(onClick = onDone, modifier = Modifier.fillMaxWidth().testTag("curriculum_unit_complete_back")) {
+        Text(stringResource(R.string.lrn_forge_back_to_units))
+    }
+}
+
+@Composable
 private fun CurriculumPaywall(state: CurriculumSessionState.TrialLimitReached, onUpgrade: () -> Unit) {
     AlterLinguaCard {
         Column(
@@ -259,7 +284,7 @@ private fun CurriculumPaywall(state: CurriculumSessionState.TrialLimitReached, o
 }
 
 @Composable
-private fun CurriculumUnavailable(onRetry: () -> Unit) {
+internal fun CurriculumUnavailable(onRetry: () -> Unit) {
     AlterLinguaCard {
         Column(
             modifier = Modifier.fillMaxWidth().testTag("curriculum_unavailable"),

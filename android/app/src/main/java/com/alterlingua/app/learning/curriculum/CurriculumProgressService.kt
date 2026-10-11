@@ -41,6 +41,20 @@ class CurriculumProgressService(
         }
     }
 
+    /**
+     * [count] words already mastered (Personal Language Map) were found ahead of the cursor and skipped for free:
+     * advances the cursor past them without counting them against today's goal (CLAUDE.md's own "a learner who
+     * demonstrates mastery through real-world communication should be able to skip content they already know" --
+     * for every tier, not only Premium).
+     */
+    suspend fun recordSkipped(languageCode: String, count: Int) {
+        if (count <= 0) return
+        settings.update {
+            val rolled = rollOver(it.curriculumProgressFor(languageCode), it.curriculumDailyGoal, today())
+            it.withCurriculumProgress(languageCode, rolled.copy(cursor = rolled.cursor + count))
+        }
+    }
+
     internal fun rollOver(progress: CurriculumProgress, dailyGoal: Int, today: LocalDate): CurriculumProgress {
         val lastDate = progress.lastActiveDate?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
         if (lastDate == null) return progress.copy(lastActiveDate = today.toString())

@@ -82,6 +82,27 @@ class CurriculumProgressServiceTest {
     }
 
     @Test
+    fun recordSkipped_advancesTheCursor_withoutTouchingTodaysCompletedCount() = runTest {
+        val settings = FakeUserSettingsRepository(
+            UserSettings(curriculumDailyGoal = 3)
+                .withCurriculumProgress("fr", CurriculumProgress(cursor = 20, completedToday = 1, backlog = 0, lastActiveDate = "2026-10-11")),
+        )
+        serviceOn("2026-10-11", settings).recordSkipped("fr", 4)
+        val progress = settings.current.curriculumProgressFor("fr")
+        assertEquals(24, progress.cursor)
+        assertEquals(1, progress.completedToday) // unchanged: a skip is free, not a completion
+    }
+
+    @Test
+    fun recordSkipped_withZeroOrNegative_doesNothing() = runTest {
+        val settings = FakeUserSettingsRepository(
+            UserSettings().withCurriculumProgress("fr", CurriculumProgress(cursor = 5, lastActiveDate = "2026-10-11")),
+        )
+        serviceOn("2026-10-11", settings).recordSkipped("fr", 0)
+        assertEquals(5, settings.current.curriculumProgressFor("fr").cursor)
+    }
+
+    @Test
     fun eachLanguage_rollsOverIndependently() = runTest {
         val settings = FakeUserSettingsRepository(
             UserSettings(curriculumDailyGoal = 3)

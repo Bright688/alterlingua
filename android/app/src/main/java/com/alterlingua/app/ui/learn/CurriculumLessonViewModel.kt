@@ -9,7 +9,12 @@ import com.alterlingua.app.billing.TierOffers
 import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.curriculum.CurriculumLessonService
+import com.alterlingua.app.learning.curriculum.CurriculumLevelRange
 import com.alterlingua.app.learning.curriculum.CurriculumSessionState
+import com.alterlingua.app.learning.curriculum.CurriculumUnitRange
+import com.alterlingua.app.learning.curriculum.ForgeLevelState
+import com.alterlingua.app.learning.curriculum.ForgeState
+import com.alterlingua.app.learning.curriculum.ForgeUnitSummary
 import com.alterlingua.app.share.Speaker
 import com.alterlingua.app.storage.UserSettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,11 +62,45 @@ class CurriculumLessonViewModel(
     val offers: StateFlow<List<TierOffers>> = (billingManager?.offers ?: flowOf(emptyList()))
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    private val forgeLevelsState = MutableStateFlow<ForgeState>(ForgeState.Loading)
+    /** The Forge's level list: Language -> Level -> Unit -> Lesson, the one shared curriculum for every plan. */
+    val forgeLevels: StateFlow<ForgeState> = forgeLevelsState.asStateFlow()
+
+    private val forgeLevelState = MutableStateFlow<ForgeLevelState>(ForgeLevelState.Loading)
+    /** The units of whichever level was last opened with [openLevel]. */
+    val forgeLevel: StateFlow<ForgeLevelState> = forgeLevelState.asStateFlow()
+
+    /** Set only while [uiState] holds a unit being practiced (The Forge), so [next] routes to [practiceNext]
+     * instead of today's own session, and so finishing it can name which unit just finished. */
+    private var practicing: CurriculumUnitRange? = null
+
+    /** Loads The Forge's level list for [language] (Premium only; ignored otherwise), or the active target language. */
+    fun loadForge(language: Language? = null) {
+        forgeLevelsState.value = ForgeState.Loading
+        viewModelScope.launch { forgeLevelsState.value = service.forge(language) }
+    }
+
+    /** Opens one level: fetches its units, each with its own mastered-word count. */
+    fun openLevel(range: CurriculumLevelRange, language: Language? = null) {
+        forgeLevelState.value = ForgeLevelState.Loading
+        viewModelScope.launch { forgeLevelState.value = service.forgeLevel(range, language) }
+    }
+
+    /** Starts practicing one unit directly (The Forge): never touches today's own goal or cursor. */
+    fun practiceUnit(unit: ForgeUnitSummary, language: Language? = null) {
+        speaker.stop()
+        listeningState.value = false
+        practicing = unit.range
+        state.value = CurriculumSessionState.Loading
+        viewModelScope.launch { show(service.practiceUnit(unit, language)) }
+    }
+
     /**
      * Builds (or rebuilds) today's session. [language] picks which of the learner's languages to show (Premium
      * only; ignored otherwise) — null means the active target language.
      */
     fun start(language: Language? = null) {
+        practicing = null
         speaker.stop()
         listeningState.value = false
         state.value = CurriculumSessionState.Loading
@@ -73,7 +112,10 @@ class CurriculumLessonViewModel(
         val current = state.value as? CurriculumSessionState.InProgress ?: return
         speaker.stop()
         listeningState.value = false
-        viewModelScope.launch { show(service.next(current, alreadyKnew)) }
+        val unit = practicing
+        viewModelScope.launch {
+            show(if (unit != null) service.practiceNext(current, unit, alreadyKnew) else service.next(current, alreadyKnew))
+        }
     }
 
     /** Listen: the phone's own voice reads the current card's term, in the language it is actually shown in. */

@@ -20,7 +20,11 @@ than the owner manually editing a setting.
 Tier              FREE / STANDARD / PREMIUM     (UserSettings.tier, default FREE)
 Feature           a capability a tier may unlock (CURRICULUM_UNLIMITED_TRIAL, CURRICULUM_PREMIUM)
 TierPolicy        the one place deciding which tier unlocks which feature
-EntitlementService     answers questions ("can this language's curriculum still be learned from?", "what's the daily cap?")
+EntitlementService     answers questions ("can this language's curriculum still be learned from?", "what's the daily cap?",
+                       "how many AI-conversation minutes/day?", "what pronunciation-feedback depth?", ...)
+AssistanceLevel   a shared NONE/LIMITED/BASIC/STANDARD/ADVANCED/EXTENDED richness label, graded per tier, for
+                  several AI-assistance dimensions from the owner's own tier comparison table (policy only --
+                  see "What is not real yet")
 BillingManager    talks to Google Play; turns a completed purchase into a Tier (PlayBillingManager)
 SubscriptionProducts   the four Play product IDs and their mapping back to a Tier
 ```
@@ -45,6 +49,18 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   monthly/annual price pulled from `offers` and its own Subscribe button — never a shared or merged purchase flow.
   Both draw from the same underlying curriculum content; only entitlement and price differ per plan, per the
   owner's own explicit "Final decision: Use one curriculum for all three plans" (see `docs/build-log.md`).
+- **The Forge** (`docs/build-log.md`, 2026-10-11): the shared curriculum is organized as Levels (a frequency-based
+  CEFR *proxy*, A1-C2 — not an officially validated placement) -> Units -> a Lesson menu, the identical structure
+  for every plan. `EntitlementService.curriculumAccess` still gates it exactly as before — jumping straight to a
+  later unit does not bypass the FREE trial limit.
+- A demonstrated-mastery word is skipped for free (no cost to the daily goal) in both the daily "Continue" session
+  and when practicing a specific unit directly, for every tier — not a Premium-only perk, per the owner's own
+  explicit instruction.
+- The owner's full tier comparison table is modeled as entitlement policy on `EntitlementService`:
+  `aiConversationMinutesPerDay` (Free 5 / Standard 15 / Premium 60), and `AssistanceLevel`-graded
+  `speakingExerciseLevel`, `pronunciationFeedbackLevel`, `aiExerciseLevel`, `aiExplanationLevel`,
+  `lessonRecommendationLevel`, `adaptiveDifficultyLevel`, `learningAnalyticsLevel`, plus `isAdFree`. **These are
+  policy facts only — see below.**
 
 ## What is not real yet
 
@@ -56,10 +72,18 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
 - **Tier is not yet backend-verified.** `PlayBillingManager` sets `UserSettings.tier` directly from what Google
   Play's own client SDK reports; there is no backend purchase-verification step yet (CLAUDE.md section 30's
   "backend must be authoritative" is not built).
-- A dedicated AI-tutoring differentiator for Premium (a conversational AI assistant, beyond the higher cap and
-  extra languages) — part of the owner's larger pasted vision on 2026-10-11 — is not built. Neither is a CEFR-level
-  curriculum rebuild, AdMob, or granular per-resource-type usage quotas. All deliberately deferred; see
-  `docs/build-log.md`'s 2026-10-11 entry for the reasoning.
+- **No AI Learning Engine exists.** `aiConversationMinutesPerDay`, `pronunciationFeedbackLevel`,
+  `adaptiveDifficultyLevel`, `lessonRecommendationLevel`, `learningAnalyticsLevel` and `aiExplanationLevel` are real,
+  tested *policy* functions with **no feature behind them** — no conversational AI tutor, no real pronunciation
+  scoring, no adaptive difficulty, no real recommendations or analytics. This needs a chosen AI provider and a
+  designed conversation UX, a separate larger product decision the owner has not made yet.
+- **No real CEFR validation.** The Forge's A1-C2 banding is a frequency-based heuristic; no linguist has reviewed
+  any language's placement.
+- **No real content for Grammar, Listening, Reading, Writing or Speaking exercises** — only Vocabulary is real. The
+  Lesson menu shows the other five honestly as "Coming soon" rather than fabricated content.
+- **No AdMob.** `isAdFree(tier)` is real policy; no ad SDK is integrated — this needs the owner's own AdMob account
+  and ad unit IDs, which do not exist yet, the same kind of external dependency the Play Billing product IDs were.
+- Granular per-resource-type usage quotas beyond the one curriculum trial are still NOT STARTED.
 - Annual/monthly renewal, cancellation, grace periods, upgrade/downgrade and restore-purchases *UI* (the plumbing
   exists in `PlayBillingManager.restorePurchases`, but there's no "Restore purchases" button or account-hold
   messaging) are all still NOT STARTED (CLAUDE.md section 32).

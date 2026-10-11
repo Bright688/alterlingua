@@ -159,4 +159,23 @@ class CurriculumLessonScreenTest {
         composeTestRule.onNodeWithTag("curriculum_retry").performClick()
         assertEquals(1, retries)
     }
+
+    @Test
+    fun unitPracticeComplete_showsTheCompletionCard_andBackToUnitsCallsOnUnitPracticeDone() {
+        var done = 0
+        composeTestRule.setContent {
+            AlterLinguaTheme {
+                CurriculumLessonScreen(
+                    CurriculumSessionState.UnitPracticeComplete(com.alterlingua.app.learning.curriculum.CefrLevel.A1, 3),
+                    onNext = {},
+                    onRetry = {},
+                    onUpgrade = {},
+                    onUnitPracticeDone = { done++ },
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("curriculum_unit_complete").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("curriculum_unit_complete_back").performClick()
+        assertEquals(1, done)
+    }
 }

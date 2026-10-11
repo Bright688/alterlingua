@@ -1266,3 +1266,24 @@ not just billing. Fixed in `BillingManager.kt`; see `docs/build-log.md` for the 
 on the owner's real device after the fix**: clean launch, Learn tab shows "Standard plan"/"Premium plan" as
 separate cards each with "Try it" and "Not available yet", Settings → Plan shows all three plans the same way —
 confirmed via screenshots, not just a launch check.
+
+## Addendum (2026-10-11): The Forge — the shared curriculum restructured into Levels -> Units -> Lessons
+
+**Correction (2026-10-11): the owner's own detailed "Final decision" from earlier the same day had not actually
+been followed.** Standard and Premium now browse one real Level -> Unit -> Lesson structure ("The Forge"), banded
+by frequency into a CEFR proxy (A1-C2) over the existing shared word list — not an officially validated CEFR
+placement, stated plainly in the code and here. A Lesson's menu matches the owner's own worked example (Vocabulary,
+Grammar, Listening, Reading, Writing, Speaking); only Vocabulary has real content, the rest honestly say "Coming
+soon." Demonstrated mastery now skips ahead for free in both the daily "Continue" session and when practicing a
+specific unit directly — for every tier, per the owner's own explicit recommendation. The owner's full tier
+comparison table (AI conversation minutes, pronunciation feedback, adaptive difficulty, lesson recommendations,
+learning analytics, ad-free) is now modeled as entitlement policy, ready for a real "AI Learning Engine" to read
+from — but that engine, real AdMob, and genuine Grammar/Listening/Reading/Writing/Speaking content are explicitly
+NOT built this round (see `docs/build-log.md`'s matching entry for exactly why each is a real external blocker,
+not a scope choice).
+
+**Status after this addendum**: 990 unit tests pass (33 new), 0 failures, lint 0 errors,
+`compileDebugKotlin`/`compileDebugAndroidTestKotlin`/`compileDebugUnitTestKotlin` all clean. **Not yet manually
+verified on the owner's real device**: no device was connected to this session when this entry was written, and
+the Learn tab's navigation changed (opening a plan now leads to The Forge's level list, not straight into today's
+session) since the previous addendum's screenshots were taken.

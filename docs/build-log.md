@@ -2639,3 +2639,106 @@ screenshots at each step, not just a launch check.
 4. Once real `standard_monthly`/`standard_annual`/`premium_monthly`/`premium_annual` subscription products exist in
    Google Play Console (matching those exact product IDs), real prices and a real Google Play purchase sheet should
    appear automatically, with no app code changes.
+
+## 2026-10-11 — The Forge: the shared curriculum restructured into Levels -> Units -> Lessons
+
+**Goal requested by the owner:** a direct correction that the previous two entries' work did not follow the
+owner's own detailed, explicitly-labelled "Final decision" pasted earlier the same day: *"I strongly recommend one
+shared curriculum and lesson system for Standard and Premium, with different levels of access and AI
+assistance... Do not build separate curriculum sections for each subscription plan... Use one curriculum for all
+three plans."* That message described a specific structure -- "The Forge": Language -> Curriculum -> Level (CEFR
+A1-C2) -> Unit -> Lesson (Vocabulary, Grammar, Listening, Reading, Writing, Speaking) -- a Curriculum Engine
+(structured lessons, the same for every plan) kept separate from an AI Learning Engine (personalized coaching,
+richer for Premium), and a tier comparison table with specific per-feature, per-tier values. The owner's one-line
+instruction this round was: *"you didnt follow this... redesign the alterlingua."*
+
+**What was built**
+
+- **`CurriculumStructure`/`CefrLevel`/`CurriculumLevelRange`/`CurriculumUnitRange`** (new file `CefrLevel.kt`): bands
+  a language's existing frequency-ranked word list (already fetched via the existing `GET /v1/curriculum/{language}`
+  endpoint -- no backend change needed) into 6 roughly equal CEFR-proxy levels (A1-C2), each split into fixed
+  20-word units. Documented explicitly, in the code itself, as a **frequency-based proxy for CEFR level, not an
+  officially validated placement** -- the owner's own message said CEFR alignment "must be adapted and validated for
+  each supported language," which is a linguistic review task this pass cannot and does not claim to have done.
+- **The Forge's browse UI** (`ForgeScreen.kt`, new): Learn tab -> "Open"/"Try it" now opens a level list (not
+  straight into today's session). Tapping a level opens its units, each showing how many of its words are already
+  mastered (Personal Language Map). Tapping a unit opens a small Lesson menu -- the owner's own worked example
+  (French A1 Unit 3, "Introducing Yourself": Vocabulary, Grammar, Listening, Reading, Writing, Speaking) -- where
+  only **Vocabulary** is real (the existing tap-to-reveal flashcard flow, reused as-is) and the other five are shown
+  honestly as "Coming soon," the same pattern already used for billing's "Not available yet," rather than faking
+  content that does not exist. "Continue" (today's own goal-driven session, exactly as it worked before this entry)
+  stays available at the top of the level list, unchanged.
+- **One curriculum, not two**: every plan's Learn tab button and Lesson menu lead to the identical level/unit/word
+  data; `CurriculumLessonService` was never forked per tier. Only entitlement (the FREE trial limit, which still
+  applies even when jumping straight to a later unit) and -- eventually -- AI assistance depth differ, per the
+  owner's own "Final decision."
+- **Demonstrated mastery skips ahead, for every tier** (the owner's own recommendation: "A learner who demonstrates
+  mastery through real-world communication should be able to skip content they already know... This should work in
+  both Standard and Premium"): `CurriculumLessonService.today()` now scans past any word already MASTERED in the
+  Personal Language Map, advancing the cursor for free via a new `CurriculumProgressService.recordSkipped`, without
+  costing today's goal. A specific unit opened from The Forge can also be practiced directly
+  (`practiceUnit`/`practiceNext`) -- this records the same learning signal as today's own session but deliberately
+  never touches the saved cursor or daily goal, since reviewing a unit you have already passed (or previewing one
+  ahead of where you are) must never help or hurt today's count. A new `CurriculumSessionState.UnitPracticeComplete`
+  keeps this honestly distinct from "today's goal is met" (`DoneForToday`), which would have been the wrong message.
+- **The owner's tier comparison table, as entitlement policy** (`EntitlementService`, extended): AI conversation
+  minutes/day (Free 5, Standard 15, Premium 60), and a shared `AssistanceLevel` (NONE/LIMITED/BASIC/STANDARD/
+  ADVANCED/EXTENDED) graded per tier for speaking exercises, pronunciation feedback, AI-generated exercises, AI
+  explanations, lesson recommendations, adaptive difficulty, and learning analytics, plus `isAdFree(tier)`. **These
+  are policy facts only** -- none of the features they describe (a real AI tutor, adaptive difficulty, personalized
+  recommendations, analytics, ads) are built; no UI pretends they are. This exists so the separate "AI Learning
+  Engine" the owner described has a tier policy to read from the day it is actually built, rather than retrofitting
+  one then, and so the entitlement model matches CLAUDE.md section 27's own instruction not to scatter feature
+  checks.
+
+**Deliberately not built this round, stated plainly rather than silently dropped again:**
+- **Real CEFR validation** of the level banding, for any of the 8 languages. This needs a linguist's review per
+  language, which this pass is not equipped to fabricate and does not claim to have done.
+- **Real content for Grammar, Listening, Reading, Writing, Speaking.** The Lesson menu's structure is real; the
+  content is not. Authoring genuine exercises for 5 types across 8 languages is a content project, not a coding
+  task, and is honestly shown as "Coming soon" rather than invented.
+- **The AI Learning Engine itself** -- a real conversational AI tutor, real pronunciation feedback, real adaptive
+  difficulty, real personalized recommendations, real analytics. This needs a chosen AI provider and a designed
+  conversation UX, which is a separate, larger product decision the owner has not made yet. The entitlement policy
+  above is ready for it; nothing else is built.
+- **AdMob.** The tier table's "Advertisements" row is modeled as `isAdFree(tier)` (policy only); no ad SDK is
+  integrated, since that needs the owner's own AdMob account and ad unit IDs, which do not exist yet -- the same
+  kind of external dependency the Play Billing product IDs were.
+These are named here explicitly so this entry is not mistaken for "redesign complete": the *architecture* now
+matches the owner's "Final decision" and worked example; the larger AI-tutoring vision in the same message does not
+yet have a single real feature behind it.
+
+### Verification
+
+Implemented and unit-tested: `CurriculumStructureTest` (9 tests: level banding, including uneven totals and
+fewer-than-6-levels languages; unit slicing; locating a cursor position) is new. `CurriculumLessonServiceTest`
+gained mastery-skip coverage (3 tests) and Forge coverage (`forge`/`forgeLevel`/`practiceUnit`/`practiceNext`: 7
+tests, including that practicing a unit never touches today's cursor and still respects the FREE trial limit).
+`CurriculumProgressServiceTest` gained `recordSkipped` coverage (2 tests). `EntitlementServiceTest` gained the full
+tier-table policy coverage (7 tests). `CurriculumLessonViewModelTest` gained Forge navigation coverage (4 tests,
+including that `start()` after practicing a unit correctly returns to "today" mode, not practice mode). 990 Android
+unit tests pass (957 before this entry; +33 new), 0 failures. `ForgeScreenTest` (new androidTest, 10 tests) and an
+added `UnitPracticeComplete` case in `CurriculumLessonScreenTest` were confirmed to compile
+(`compileDebugAndroidTestKotlin`) and exercise real rendering logic, though the full on-device instrumented suite
+was not run end to end (consistent with every earlier entry: a pre-existing, unrelated multi-hour hang).
+`compileDebugKotlin`, `compileDebugUnitTestKotlin`, `compileDebugAndroidTestKotlin`, `testDebugUnitTest` and
+`lintDebug` all run clean (0 lint errors). **Not yet manually verified on the owner's real device**: no device was
+connected to this session at the time this entry was written; the previous entry's screenshots predate this
+round's navigation changes (Learn tab's "Open"/"Try it" now leads to The Forge's level list, not straight into
+today's session).
+
+### Manual test for the owner
+
+1. Learn tab -> tap "Try it" on either plan's card: a level list (A1 through however many levels the language's
+   word count actually fills) appears, with "Continue" at the top and the level containing your current progress
+   marked "Here."
+2. Tap a level: its units appear, each showing how many of its words you have already mastered.
+3. Tap a unit: a small menu appears -- Vocabulary (tappable), and Grammar/Listening/Reading/Writing/Speaking each
+   showing "Coming soon."
+4. Tap Vocabulary: the familiar tap-to-reveal flashcard flow opens for that unit's own words. Finishing it shows
+   "Unit complete" (not "All done for today," which would be the wrong message here) with a "Back to units" button.
+5. Confirm practicing a unit this way does not change "Continue"'s own daily progress: check Settings → Words or
+   just reopen "Continue" afterward and confirm today's count is unaffected by the unit you just practiced.
+6. Mark a few curriculum words as mastered (practice a unit's vocabulary enough times, or check via Settings →
+   Words), then use "Continue": those words should no longer appear, and the session should still fill up to the
+   full daily goal from the words after them.
