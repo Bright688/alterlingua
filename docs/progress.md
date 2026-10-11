@@ -4,7 +4,7 @@ Status values: `NOT STARTED`, `IN PROGRESS`, `IMPLEMENTED`, `MANUALLY VERIFIED`,
 `IMPLEMENTED` means the code exists and passed automated checks. It is **not** the same as
 `MANUALLY VERIFIED`, which means a person confirmed it on a real device.
 
-Last updated: 2026-10-11 (the keyboard language-list search field, added 2026-10-10, was removed again the next day at the owner's request; a new Milestone 26, the standard curriculum — thousands of words fetched online per language, a user-set daily goal with roll-over, and FREE/Standard/Premium entitlement scaffolding with a 50-word free trial and a "Coming soon" placeholder in place of real billing)
+Last updated: 2026-10-11 (the keyboard language-list search field, added 2026-10-10, was removed again the next day at the owner's request; a new Milestone 26, the standard curriculum — thousands of words fetched online per language, a user-set daily goal with roll-over, and FREE/Standard/Premium entitlement scaffolding with a 50-word free trial and a "Coming soon" placeholder in place of real billing; the owner reported the app crashing on open, which turned out to be a real, previously-untested bug in the 2026-10-10 database-encryption work — SQLCipher's native library was never explicitly loaded — now fixed and confirmed on the real device)
 
 ## Numbering note
 
@@ -550,7 +550,7 @@ Docs consulted first: Room and KSP setup with AGP 9's built-in Kotlin (Room 2.8.
 
 ### Addendum (2026-10-10): migrations were already real; encryption is new
 
-**Status: IMPLEMENTED and unit-tested (920 of 920 pass, 2 new instrumented migration tests, 5 new instrumented encryption tests — all compile; none run on a phone yet, and this is exactly the kind of change that most needs a real device before being trusted).**
+**Status: IMPLEMENTED, and now MANUALLY VERIFIED after a real bug was found and fixed on 2026-10-11** (see that date's `docs/build-log.md` entry). When this was first written, none of it had run on a phone — stated plainly at the time because it was exactly the kind of change that most needed one. That gap hid a real bug: the first time this actually ran on a device, the app crashed on launch (`UnsatisfiedLinkError`, SQLCipher's native library was never explicitly loaded — fixed with one `System.loadLibrary("sqlcipher")` call in `AlterLinguaApplication.onCreate()`). Confirmed fixed by direct observation on the device: the app now launches and stays running past the exact point it used to die.
 
 **Migrations:** `LanguageMapDatabase` was already at version 4 and `ProgressDatabase` at version 2, each via `AutoMigration`, each with its schema history already exported and checked in (`app/schemas/`) — this row's "NOT STARTED" was simply never updated as the schema grew. What was actually missing was a real `MigrationTestHelper` test proving a version-1 database with a real row survives the trip to today's version with its data intact, not just that the shapes are declared compatible. Both now have one (`LanguageMapMigrationTest`, `ProgressMigrationTest`).
 

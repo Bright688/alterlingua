@@ -2240,3 +2240,51 @@ service), so the rest carries the usual "unit-tested, not phone-tested" caveat r
 4. Settings → Licences: a FrequencyWords / CC BY-SA 4.0 section is present near the end of the list.
 5. (Needs 50 real words learned, or a temporarily lowered `FREE_CURRICULUM_TRIAL_WORDS` for a quick check): the
    paywall card appears instead of more words; "View plans" shows "Coming soon", never a purchase screen.
+
+## 2026-10-11 — Owner reported "it crashes and closes" on a real install; found and fixed the actual cause
+
+**What happened:** the previous entry's commit was pushed, but never actually installed on a phone — pushing to
+git is not the same as installing an APK, and the device available this session had disconnected before that step.
+Once it reconnected and the APK was installed and launched for real, the app crashed immediately.
+
+**Root cause, found from the real device's own logcat, not guessed:** `java.lang.UnsatisfiedLinkError: No
+implementation found for long net.zetetic.database.sqlcipher.SQLiteConnection.nativeOpen(...)`. This traces back to
+the database-encryption work from two entries ago ("Database migrations + encryption..."), which that entry itself
+had already flagged honestly: "No device was connected for any part of this... none has actually run on a phone."
+That gap turned out to hide a real bug: `net.zetetic:sqlcipher-android` bundles its native library in the AAR but,
+confirmed by decompiling it (no `loadLibrary` or `loadLibs` call anywhere in its own `classes.jar`) and by its own
+upstream documentation, never loads it automatically — the consuming app must call `System.loadLibrary("sqlcipher")`
+itself before any database operation. That call was simply never added, so the first thing to touch either
+encrypted database (in practice, the keyboard service initialising) crashed the whole app.
+
+**Fix:** one line, `System.loadLibrary("sqlcipher")`, added to `AlterLinguaApplication.onCreate()` — the one place
+guaranteed to run before any component (activity, keyboard service, notification listener) can reach either
+database. Confirmed directly against the real device (not just a test harness): force-stopped the app, relaunched
+it, and watched its process stay alive and its logcat stay clean past the exact `onStartInput` event that used to
+kill it within the same second.
+
+**A costly accident while verifying this, worth recording honestly:** ran the full `connectedDebugAndroidTest`
+suite afterward to check whether anything else in the encryption/migration work had similar undiscovered problems.
+While it was running, a `grep`-only logcat check mistakenly included `adb shell am force-stop
+com.alterlingua.app.test` — killing the instrumentation process mid-run, which hung the Gradle task for the rest of
+that attempt. Killed the hung process and reran cleanly, touching the device only before and after, never during.
+The second run completed, but then hit a long-standing, unrelated issue: `AppNavigationTest.opensEachTab_fromTheBottomBar`
+hung for roughly three hours (nothing from today's work — this test was already in the suite) before the device
+dropped its connection again (also a recurring, pre-existing environmental issue this session, not an app issue) partway
+through cleanup, leaving only 6 of the project's many instrumented test classes completing in that run. The failures
+among those 6 (`AppNavigationTest`, `ChineseTypingTest`, `JapaneseTypingTest`, `MlKitInkRecognizerTest`) are all
+pre-existing and unrelated to the SQLCipher fix or to today's curriculum feature — none of them touch either
+database. The new `CurriculumLessonScreenTest` and the existing migration/encryption instrumented tests were never
+reached before the device dropped, so they remain implemented but not run end-to-end; worth a clean, isolated rerun
+once the device holds a connection for more than a few minutes.
+
+**Verification:** unit tests (949) and lint (0 errors) re-run clean after the fix. The crash itself is confirmed
+fixed by direct observation on the real device (process survival + clean logcat past the exact failure point), which
+is a more direct check than the automated instrumented test that was trying, and failing for unrelated reasons, to
+confirm the same thing.
+
+### Manual test for the owner
+
+1. Update to this build and open the app normally (not through adb). It should open and stay open.
+2. Everything in the two entries above (standard curriculum, Settings → Words per day, Licences attribution) should
+   now actually be visible, since this is the first build since they were written that the app can even open on.

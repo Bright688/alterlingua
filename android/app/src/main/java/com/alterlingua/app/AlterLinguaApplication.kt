@@ -98,6 +98,10 @@ class AlterLinguaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // SQLCipher's native library is bundled in the app but, unlike Android's own SQLite, is never loaded
+        // automatically: every database open (LanguageMapDatabase, ProgressDatabase) needs this done first, exactly
+        // once, before any of them can be touched by any entry point (keyboard service, notification listener, UI).
+        System.loadLibrary("sqlcipher")
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
             userSettings.settings.collect {
                 appLanguageNow = it.appLanguage.takeIf { _ -> it.appLanguageChosen }
