@@ -2108,3 +2108,135 @@ Settings → Privacy gained "Share pilot report". Tapping it always shows consen
 1. **Migrations + encryption:** install this build over an install that already has real words saved. Open the Words tab: every word should still be there, mastery states unchanged. (This single step exercises both the migration path and the plaintext-to-encrypted rewrite, on real data — nothing in an emulator can substitute for it.)
 2. **Lemma:** receive, send, or type (via On-demand) a French message containing "enverrai" or "envoie". Open the Words tab: it should appear as its own entry with "From envoyer" underneath, separate from any existing "envoyer" entry's own mastery.
 3. **Pilot report:** Settings → Privacy → "Share pilot report". Confirm the consent text appears every time you tap it (even on a second visit), that Cancel does nothing, and that Agree leads to a screen where "Generate report" shows real JSON and "Share" opens your phone's normal share sheet.
+
+## 2026-10-11 — Owner said "you should remove the search box in the keyboard"
+
+**Owner's request, verbatim.** No reason was given, and none is invented here. The search field had been added the previous day (2026-10-09/10 entries above) at the owner's own request, alongside "Full Support" chip polish; this reverses only the search field.
+
+**What was done:** `LanguagePanelView.kt` reverted to its exact pre-2026-10-10 form — a plain `LinearLayout` with a header and a fixed eight-language grid, `MATCH_PARENT` height, no `EditText`, no `ScrollView`, no filtering logic. `KeyboardViewTest.kt`'s three search-related tests and its now-unused `editTexts()` helper removed. The two search-only strings (`toolbar_search_languages`, `toolbar_no_languages_found`) removed from all eight locale `strings.xml` files. No other keyboard behaviour touched.
+
+**Verification:** 920 of 920 unit tests pass (unaffected — the three removed tests were instrumented, not unit tests), lint 0 errors, debug and release compiles pass. Not re-tried on a phone specifically for this change (the keyboard was not touched beyond this one view).
+
+**Doc update:** `docs/progress.md`'s Milestone 7 row and its addendum were updated to say the search field was built, then removed the next day at the owner's request, rather than deleting the history of it having existed.
+
+## 2026-10-11 — Owner's new feature request: a second, separate source of lessons ("standard curriculum"), paid tiers with a free trial
+
+**Owner's request, verbatim:** "another thing you miss is that in the learn apart from getting from the conversation from the keyboard you should also have normal lessons for user to learn which would contains thousands to learn and would be adaptable. it should be gotten online and always accessible and shared daily so users can set how many they want to learn each day and they would see progress if they cant complete the ones they set to learn it would be move to next day for them to learn... i want a standard and premium lessons that would be paid for but they would have trial with limited number to learn."
+
+This is explicitly a **second, separate** source of lessons — not a replacement for or a change to the existing conversation-derived daily micro-lesson (Milestone 15). Two questions genuinely needed the owner's own answer before building anything, and were asked directly rather than guessed:
+
+1. **Where do the thousands of words come from?** Answered: **"find the best place to get the content online free"** — so the choice of source was mine to research and justify, not the owner's to supply.
+2. **Real billing now, or scaffolding first?** Answered: **"Scaffolding only for now"** — a real trial count and a real gate, but "Upgrade" leads to a placeholder, not a purchase flow.
+
+### Finding the content: Hermit Dave's FrequencyWords
+
+Needed something legitimately free, commercially usable, and covering all eight catalogue languages. Checked
+**before** committing to it, not assumed: queried the GitHub API (`api.github.com/repos/hermitdave/FrequencyWords/contents/content/2018/{lang}`)
+for en, fr, es, de, it, nl, zh_cn and ja, and confirmed every one of those eight folders actually exists in that
+repository. Licence: CC BY-SA 4.0 (the data; MIT covers the repository's own code) — compatible with commercial use
+given attribution and share-alike, which is why it was chosen over a corpus with a non-commercial clause.
+
+Downloaded the `_50k.txt` list for each language except Japanese (no pre-cut 50k file exists for it in that
+repository; used `ja_full.txt` instead) and cleaned each one down to 3,000 words: dropped any entry with a digit or
+a Unicode punctuation/symbol character; for the six Latin-script languages, also dropped single letters and
+elision fragments (French `l'`, `j'`, `qu'`, which are not words on their own); kept single Chinese characters (many
+are real, common words) but dropped single Japanese characters (the source list's Japanese tokenization is heavy on
+fragments and bare particles at that length). **Found and flagged, not hidden:** even after that filter, some
+surviving Japanese entries are verb/adjective stems rather than complete dictionary forms (`分か`, the stem of
+`分かる`, "to understand") because the source corpus's own tokenizer strips inflections — fixing this properly would
+need a real Japanese morphological dictionary, out of scope here, so it is written into `data/SOURCE.md` plainly
+instead of shipped as if it were as clean as the other seven languages.
+
+### Backend: `GET /v1/curriculum/{language}`
+
+A new `backend/app/vocabulary/` module, following the project's existing router/schemas/service convention exactly:
+`CurriculumService` (loads each language's 3,000-word list once, serves paginated slices), `CurriculumPage` (Pydantic
+response model), and the route itself — `offset`/`limit` (capped at 100 via `Query(..., le=100)`), a controlled
+`unsupported_language` 422 for an unknown or malformed code (reusing `is_well_formed_code`/`base_code` rather than
+reimplementing them), registered into `app/api/v1.py` so it inherits the same bearer-token guard and
+`Cache-Control: no-store` middleware every other `/v1/` route already gets, with no special-casing needed.
+
+**Caught and fixed before it shipped:** the test suite's own first draft asked for `limit=3000` to check the whole
+list for duplicates in one call, which collided with the route's own `le=100` bound and returned a validation error
+instead of data — a bug in the test, not the product; fixed by paging through in chunks of 100 instead.
+
+### Android: progress and roll-over (`learning/curriculum/`)
+
+`CurriculumProgress` (cursor, completed-today, backlog, last-active-date) is deliberately dumb data; the roll-over
+logic lives in `CurriculumProgressService`, mirroring how `LessonService` already separates "today" logic (clock
+injected, zone injected) from its data model. A day that falls short of its goal adds the shortfall to tomorrow's
+backlog; a day with no activity at all still adds a full day's goal — multiplying it by however many days were
+skipped — so a long absence is never silently forgiven, only folded into a bigger number the learner sees once they
+come back. Saved into the **existing** `user_settings` DataStore, one key per field per language (matching the
+project's own established pattern for per-language data, e.g. `otherLevels`/`levelFor`), rather than a new DataStore
+or a JSON blob — this keeps `PrivacyAuditTest`'s exact, enforced inventory of where the app may persist anything
+("two private databases, two DataStores") true without needing an exception.
+
+**Caught and fixed before it shipped:** `ChronoUnit.DAYS.between(...)` returns a `Long`; multiplying it directly by
+an `Int` daily goal failed to compile (`Argument type mismatch`) — fixed with an explicit `.toInt()`.
+
+### Android: entitlements (`entitlements/`), genuinely new to the project
+
+`Tier` (FREE/STANDARD/PREMIUM, default FREE), `Feature`, and `TierPolicy` — the "centralized entitlement abstraction"
+CLAUDE.md section 27 asks for, built now because this is the first feature that actually needs one, not before.
+`EntitlementService.curriculumAccess(language)` is the one real gate: a FREE user is stopped after
+`FREE_CURRICULUM_TRIAL_WORDS` (50) words learned in that language's own curriculum — per language, not shared, so a
+user already learning two languages keeps a full trial in each (CLAUDE.md section 6.21's independence rule applied
+to the new feature, not just to mastery). Full detail and what is deliberately **not** built (anything that could
+ever move `Tier` away from FREE, a real Plans screen, Google Play Billing itself) is in the new `docs/entitlements.md`.
+
+### Android: the lesson session and its UI
+
+`CurriculumLessonService` ties the above together: checks entitlement, rolls over progress, fetches exactly today's
+remaining words via a new `HttpCurriculumApi` (same `HttpURLConnection`/`HttpCall` pattern as the existing
+`HttpTranslationApi`, reusing the latter's package-internal `HttpCall` rather than duplicating cancellation
+handling), looks up each word's meaning through the **same** `MeaningProvider`/translation pipeline the
+conversation-derived lesson already uses (no separate pre-translation step, no new meaning-lookup code), and on
+"Learned" calls the existing `LanguageMapService.recordLessonEncounter` — the same mastery signal a
+conversation-derived lesson card gives. This was a deliberate design choice: a word learned from the standard
+curriculum is recognised later in real conversation too, and vice versa, because both sources feed one Personal
+Language Map, exactly as CLAUDE.md's own core product loop describes (section 5) rather than as two unrelated
+features bolted together.
+
+UI: a new "Standard Curriculum" entry point beside "Random lesson" in the Learn tab (`CurriculumLessonViewModel`,
+`CurriculumLessonScreen`) — a term-and-meaning card with a "Learned" button, a "done for today" state, a paywall
+card for `TrialLimitReached` whose "View plans" opens a small `ComingSoonDialog` placeholder (never a purchase
+screen), and an "unavailable" state with Retry so a network failure never destroys the session the way CLAUDE.md
+section 41 requires. A new "Words per day" control (3/5/10/20 quick picks, `FilterChip`, matching the Words tab's
+own filter-chip pattern) was added to Settings.
+
+**Caught and fixed before it shipped:** the first draft of the card composable read `state.current.meaning` twice
+across an `if`, which the Kotlin compiler correctly refused to smart-cast (`current` is a computed getter, not a
+stable value) — fixed by binding `val card = state.current` once.
+
+### Attribution
+
+`android/app/src/main/assets/licenses/NOTICES.txt` gained a FrequencyWords / CC BY-SA 4.0 section (shown in
+Settings → Licences), since `data/SOURCE.md` itself says that in-app attribution should exist there.
+
+### Verification
+
+415 backend tests pass (10 new: a valid page, every catalogue language, pagination without repeats, past-the-end
+behaviour, unsupported/malformed language codes, a regional code resolving to its base language, offset/limit
+bounds, no duplicates across the whole list, the never-cache header). 949 Android unit tests pass (29 new: 9 for
+`CurriculumProgress`/`CurriculumProgressService`'s roll-over math, 5 for `EntitlementService`, 7 for
+`CurriculumLessonService`, 3 for `CurriculumLessonViewModel`, 2 for `UserSettings`/DataStore roundtrips of the new
+tier field, 1 for daily-goal persistence, 1 for the Settings daily-goal setter, plus 1 further settings test). Lint
+0 errors. Debug and release builds both compile.
+
+**Not manually verified:** a real Android device (Infinix X6728B) was connected at the start of this work and used
+to attempt the one new instrumented UI test (`CurriculumLessonScreenTest`), but disconnected mid-run before it could
+finish, and did not reconnect afterwards. That one file is implemented and believed correct from the same
+widely-reused composable patterns `LearnScreenTest` already exercises on this exact device, but is not confirmed on
+screen. Nothing else in this entry touches system-level Android behaviour (no new permission, no new background
+service), so the rest carries the usual "unit-tested, not phone-tested" caveat rather than a system-integration one.
+
+### Manual test for the owner
+
+1. Learn tab → "Standard Curriculum": a word and its meaning appear; "Learned" moves to the next one; after the
+   daily goal (3 by default) a "done for today" card appears.
+2. Settings → "Words per day": change it to 10; the next curriculum session brings 10 words.
+3. Learn a curriculum word, then open the Words tab: it appears there too, under ordinary mastery tracking.
+4. Settings → Licences: a FrequencyWords / CC BY-SA 4.0 section is present near the end of the list.
+5. (Needs 50 real words learned, or a temporarily lowered `FREE_CURRICULUM_TRIAL_WORDS` for a quick check): the
+   paywall card appears instead of more words; "View plans" shows "Coming soon", never a purchase screen.

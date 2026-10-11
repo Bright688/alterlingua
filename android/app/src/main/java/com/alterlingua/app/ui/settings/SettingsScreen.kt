@@ -63,6 +63,7 @@ fun SettingsRoute(
         onIncomingTranslationChanged = viewModel::onIncomingTranslationChanged,
         onLiveChatTranslationChanged = viewModel::onLiveChatTranslationChanged,
         onLearningFromMessagesChanged = viewModel::onLearningFromMessagesChanged,
+        onCurriculumDailyGoalChanged = viewModel::onCurriculumDailyGoalChanged,
         onEraseLearningData = viewModel::onEraseLearningData,
         onAppLanguageSelected = viewModel::onAppLanguageSelected,
         onDetectSourceChanged = viewModel::onDetectSourceChanged,
@@ -87,6 +88,7 @@ fun SettingsScreen(
     onIncomingTranslationChanged: (Boolean) -> Unit = {},
     onLiveChatTranslationChanged: (Boolean) -> Unit = {},
     onLearningFromMessagesChanged: (Boolean) -> Unit = {},
+    onCurriculumDailyGoalChanged: (Int) -> Unit = {},
     onEraseLearningData: () -> Unit = {},
     onAppLanguageSelected: (Language) -> Unit = {},
     onDetectSourceChanged: (Boolean) -> Unit = {},
@@ -328,6 +330,38 @@ fun SettingsScreen(
                     onCheckedChange = onLearningFromMessagesChanged,
                     modifier = Modifier.testTag("learning_from_messages_switch"),
                 )
+            }
+        }
+
+        SectionLabel(stringResource(R.string.set_standard_curriculum))
+        AlterLinguaCard {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = stringResource(R.string.set_curriculum_daily_goal),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(R.string.set_curriculum_daily_goal_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("curriculum_daily_goal_choices"),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    listOf(3, 5, 10, 20).forEach { goal ->
+                        androidx.compose.material3.FilterChip(
+                            selected = state.curriculumDailyGoal == goal,
+                            onClick = { onCurriculumDailyGoalChanged(goal) },
+                            label = { Text(goal.toString()) },
+                            shape = androidx.compose.foundation.shape.CircleShape,
+                            modifier = Modifier.testTag("curriculum_daily_goal_$goal"),
+                        )
+                    }
+                }
             }
         }
 
@@ -720,7 +754,7 @@ private fun SettingsScreenPreview() {
     }
 }
 
-/** The licences of the open source software AlterLingua ships (Mozc, librime and what they use), read from the app's assets. */
+/** The licences of the open source software and data AlterLingua ships (Mozc, librime, the curriculum word lists and what they use), read from the app's assets. */
 @Composable
 private fun LicencesDialog(onDismiss: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current

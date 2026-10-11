@@ -112,6 +112,16 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun curriculumDailyGoalDefaultsToThree_andCanBeChanged_andIsSaved() {
+        val repo = FakeUserSettingsRepository()
+        val vm = SettingsViewModel(repo)
+        assertEquals(3, vm.uiState.value.curriculumDailyGoal)
+        vm.onCurriculumDailyGoalChanged(10)
+        assertEquals(10, repo.current.curriculumDailyGoal)
+        assertEquals(10, vm.uiState.value.curriculumDailyGoal)
+    }
+
+    @Test
     fun theLearningLanguageCanBeChanged_andIsSaved() {
         val repo = FakeUserSettingsRepository()
         val vm = SettingsViewModel(repo)

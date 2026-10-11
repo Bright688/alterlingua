@@ -24,6 +24,7 @@ from app.speech.tts_provider import TextToSpeechProvider
 from app.translation.provider import TranslationProvider
 from app.translation.registry import create_provider
 from app.translation.service import TranslationService
+from app.vocabulary.service import CurriculumService
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,8 @@ def create_app(
     app.state.synthesis_service = SpeechSynthesisService(
         app.state.speech_service, tts_provider, timeout_seconds=settings.tts_timeout_seconds, max_chars=settings.max_tts_chars
     )
+
+    app.state.curriculum_service = CurriculumService()
 
     @app.middleware("http")
     async def refuse_oversized_audio(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:

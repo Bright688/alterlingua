@@ -41,6 +41,11 @@ import com.alterlingua.app.translation.HttpTranslationApi
 import com.alterlingua.app.translation.HttpVoiceApi
 import com.alterlingua.app.translation.TranslationApi
 import com.alterlingua.app.translation.VoiceApi
+import com.alterlingua.app.entitlements.EntitlementService
+import com.alterlingua.app.learning.curriculum.CurriculumApi
+import com.alterlingua.app.learning.curriculum.CurriculumLessonService
+import com.alterlingua.app.learning.curriculum.CurriculumProgressService
+import com.alterlingua.app.learning.curriculum.HttpCurriculumApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -211,5 +216,31 @@ class AlterLinguaApplication : Application() {
     /** The voice translation service used by the keyboard's microphone. */
     val voiceApi: HttpVoiceApi by lazy {
         HttpVoiceApi(BuildConfig.TRANSLATION_BASE_URL, isOnline = AndroidConnectivity(this)::isOnline, apiToken = BuildConfig.API_TOKEN)
+    }
+
+    /** The standard curriculum's word lists, fetched online from the same backend as translation. */
+    val curriculumApi: CurriculumApi by lazy {
+        HttpCurriculumApi(BuildConfig.TRANSLATION_BASE_URL, apiToken = BuildConfig.API_TOKEN)
+    }
+
+    /** The current subscription tier and what it unlocks (CLAUDE.md section 26-27; scaffolding only for now). */
+    val entitlements: EntitlementService by lazy { EntitlementService(userSettings) }
+
+    /** Each language's daily goal, cursor and backlog in the standard curriculum. */
+    val curriculumProgress: CurriculumProgressService by lazy { CurriculumProgressService(userSettings) }
+
+    /**
+     * The standard curriculum: a second, separate source of lessons from the daily micro-lesson above, a large
+     * shared word list fetched online rather than drawn from the learner's own conversations.
+     */
+    val curriculumLessonService: CurriculumLessonService by lazy {
+        CurriculumLessonService(
+            api = curriculumApi,
+            meanings = TranslationMeaningProvider(translationApi),
+            progress = curriculumProgress,
+            entitlements = entitlements,
+            map = languageMap,
+            languages = { userSettings.settings.first().let { LessonLanguages(it.targetLanguage, it.nativeLanguage) } },
+        )
     }
 }

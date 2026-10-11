@@ -49,6 +49,7 @@ object AppViewModelProvider {
         initializer { SetupViewModel(application().setupChecker, application().userSettings) }
         initializer { LearnViewModel(application().lessonService, application().userSettings) }
         initializer { com.alterlingua.app.ui.learn.RandomLessonViewModel(application().lessonService, application().languageMap, application().userSettings) }
+        initializer { com.alterlingua.app.ui.learn.CurriculumLessonViewModel(application().curriculumLessonService) }
         initializer {
             val app = application()
             PracticeViewModel { scope ->

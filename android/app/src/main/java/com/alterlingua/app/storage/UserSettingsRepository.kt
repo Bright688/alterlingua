@@ -18,6 +18,7 @@ import com.alterlingua.app.learning.LanguageLevel
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.LearningPurpose
 import com.alterlingua.app.learning.UserSettings
+import com.alterlingua.app.learning.curriculum.CurriculumProgress
 import java.time.LocalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -60,6 +61,14 @@ internal object SettingsKeys {
     val VoiceCaptureApps = stringSetPreferencesKey("voice_capture_apps")
     val TranslateCapturedNotes = booleanPreferencesKey("translate_captured_notes")
     val NotifyOnCapturedNotes = booleanPreferencesKey("notify_on_captured_notes")
+    val CurriculumDailyGoal = intPreferencesKey("curriculum_daily_goal")
+
+    /** One set of these four per language, so each curriculum keeps its own place, goal debt and last-active day. */
+    fun curriculumCursorFor(code: String) = intPreferencesKey("curriculum_cursor_$code")
+    fun curriculumCompletedTodayFor(code: String) = intPreferencesKey("curriculum_completed_today_$code")
+    fun curriculumBacklogFor(code: String) = intPreferencesKey("curriculum_backlog_$code")
+    fun curriculumLastActiveDateFor(code: String) = stringPreferencesKey("curriculum_last_active_date_$code")
+    val SubscriptionTier = stringPreferencesKey("subscription_tier")
 }
 
 private val Context.userSettingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
@@ -127,6 +136,17 @@ internal fun Preferences.toUserSettings(): UserSettings {
                 ?.let { name -> runCatching { enumValueOf<KeyboardStyle>(name) }.getOrNull() }
                 ?.let { language.code to it }
         }.toMap(),
+        curriculumDailyGoal = this[SettingsKeys.CurriculumDailyGoal] ?: defaults.curriculumDailyGoal,
+        curriculumProgress = Languages.supported.mapNotNull { language ->
+            val cursor = this[SettingsKeys.curriculumCursorFor(language.code)] ?: return@mapNotNull null
+            language.code to CurriculumProgress(
+                cursor = cursor,
+                completedToday = this[SettingsKeys.curriculumCompletedTodayFor(language.code)] ?: 0,
+                backlog = this[SettingsKeys.curriculumBacklogFor(language.code)] ?: 0,
+                lastActiveDate = this[SettingsKeys.curriculumLastActiveDateFor(language.code)],
+            )
+        }.toMap(),
+        tier = enumOrDefault(this[SettingsKeys.SubscriptionTier], defaults.tier),
     )
 }
 
@@ -155,6 +175,14 @@ private fun androidx.datastore.preferences.core.MutablePreferences.write(setting
     this[SettingsKeys.VoiceCaptureApps] = settings.voiceCaptureApps
     this[SettingsKeys.TranslateCapturedNotes] = settings.translateCapturedNotes
     this[SettingsKeys.NotifyOnCapturedNotes] = settings.notifyOnCapturedNotes
+    this[SettingsKeys.CurriculumDailyGoal] = settings.curriculumDailyGoal
+    settings.curriculumProgress.forEach { (code, progress) ->
+        this[SettingsKeys.curriculumCursorFor(code)] = progress.cursor
+        this[SettingsKeys.curriculumCompletedTodayFor(code)] = progress.completedToday
+        this[SettingsKeys.curriculumBacklogFor(code)] = progress.backlog
+        progress.lastActiveDate?.let { this[SettingsKeys.curriculumLastActiveDateFor(code)] = it }
+    }
+    this[SettingsKeys.SubscriptionTier] = settings.tier.name
 }
 
 private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =

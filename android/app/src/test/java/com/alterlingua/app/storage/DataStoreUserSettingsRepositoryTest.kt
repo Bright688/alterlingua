@@ -9,6 +9,8 @@ import com.alterlingua.app.learning.LanguageLevel
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.LearningPurpose
 import com.alterlingua.app.learning.UserSettings
+import com.alterlingua.app.entitlements.Tier
+import com.alterlingua.app.learning.curriculum.CurriculumProgress
 import java.time.LocalTime
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -175,5 +177,43 @@ class DataStoreUserSettingsRepositoryTest {
         assertTrue(!repo.settings.first().onboardingCompleted)
         repo.update { it.copy(onboardingCompleted = true) }
         assertTrue(repo.settings.first().onboardingCompleted)
+    }
+
+    @Test
+    fun curriculumProgress_startsEmpty_andEachLanguageIsSavedAndReadBackSeparately() = runTest {
+        val repo = DataStoreUserSettingsRepository(newStore())
+        assertEquals(CurriculumProgress(), repo.settings.first().curriculumProgressFor("fr"))
+
+        val frenchProgress = CurriculumProgress(cursor = 42, completedToday = 2, backlog = 1, lastActiveDate = "2026-10-11")
+        repo.update { it.withCurriculumProgress("fr", frenchProgress) }
+        repo.update { it.withCurriculumProgress("es", CurriculumProgress(cursor = 5)) }
+
+        val saved = repo.settings.first()
+        assertEquals(frenchProgress, saved.curriculumProgressFor("fr"))
+        assertEquals(5, saved.curriculumProgressFor("es").cursor)
+        assertEquals(CurriculumProgress(), saved.curriculumProgressFor("de"))
+    }
+
+    @Test
+    fun curriculumDailyGoal_defaultsToThree_andIsSaved() = runTest {
+        val repo = DataStoreUserSettingsRepository(newStore())
+        assertEquals(3, repo.settings.first().curriculumDailyGoal)
+        repo.update { it.copy(curriculumDailyGoal = 10) }
+        assertEquals(10, repo.settings.first().curriculumDailyGoal)
+    }
+
+    @Test
+    fun subscriptionTier_defaultsToFree_andIsSaved() = runTest {
+        val repo = DataStoreUserSettingsRepository(newStore())
+        assertEquals(Tier.FREE, repo.settings.first().tier)
+        repo.update { it.copy(tier = Tier.PREMIUM) }
+        assertEquals(Tier.PREMIUM, repo.settings.first().tier)
+    }
+
+    @Test
+    fun anUnrecognisedTier_fallsBackToFree() = runTest {
+        val store = newStore()
+        store.edit { it[SettingsKeys.SubscriptionTier] = "NOT_A_TIER" }
+        assertEquals(Tier.FREE, DataStoreUserSettingsRepository(store).settings.first().tier)
     }
 }

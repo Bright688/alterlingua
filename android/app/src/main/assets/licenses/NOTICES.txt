@@ -1,4 +1,4 @@
-Open source software used by AlterLingua's Japanese and Chinese typing. Each component keeps its own licence, reproduced below.
+Open source software and data used by AlterLingua. Each component keeps its own licence, reproduced below.
 
 ========================================================================
 Mozc (Japanese conversion) - BSD-3-Clause, with dictionary notices (NAIST IPAdic, Okinawa, ICOT)
@@ -574,3 +574,16 @@ Google ML Kit Digital Ink Recognition (handwriting) - proprietary SDK, used unde
 The handwriting pad uses Google's ML Kit Digital Ink Recognition library. It is not open source. Recognition runs on the phone;
 what is drawn is not sent anywhere. The recognition model for each language (about 20 MB) is downloaded from Google the first time
 that language is used. Terms: https://developers.google.com/ml-kit/terms
+
+========================================================================
+FrequencyWords (standard curriculum word lists) - CC BY-SA 4.0
+========================================================================
+The standard curriculum's word lists (Settings → the "Words per day" curriculum, see Learn) are adapted from:
+
+Hermit Dave, FrequencyWords (https://github.com/hermitdave/FrequencyWords) - word frequency lists generated from the
+OpenSubtitles 2018 corpus. Licensed under the Creative Commons Attribution-ShareAlike 4.0 International licence
+(https://creativecommons.org/licenses/by-sa/4.0/).
+
+The lists used here (English, Français, Español, Deutsch, Italiano, Nederlands, 中文, 日本語) are the top ~3,000 words
+of each language, filtered to remove punctuation, digits and non-word fragments. This adaptation is offered under
+the same CC BY-SA 4.0 licence as the original.

@@ -1,5 +1,7 @@
 package com.alterlingua.app.learning
 
+import com.alterlingua.app.entitlements.Tier
+import com.alterlingua.app.learning.curriculum.CurriculumProgress
 import java.time.LocalTime
 
 /** Why the user is learning the language. */
@@ -108,6 +110,18 @@ data class UserSettings(
     val notifyOnCapturedNotes: Boolean = true,
     /** The chosen typing style per language code, only for languages with more than one (see [KeyboardStyle.forLanguage]). */
     val keyboardStyles: Map<String, KeyboardStyle> = emptyMap(),
+    /**
+     * How many words or phrases from the standard curriculum (see CurriculumProgressService) the user wants to learn
+     * each day. Separate from the ~3/day the conversation-derived daily lesson already picks on its own.
+     */
+    val curriculumDailyGoal: Int = DEFAULT_CURRICULUM_DAILY_GOAL,
+    /** Standard-curriculum progress, by language code, kept independently so switching languages loses none of it. */
+    val curriculumProgress: Map<String, CurriculumProgress> = emptyMap(),
+    /**
+     * The subscription tier (see EntitlementService). Scaffolding only for now: set locally, since there is no real
+     * purchase flow yet; not yet backed by server-verified entitlement state (CLAUDE.md section 30).
+     */
+    val tier: Tier = Tier.FREE,
 ) {
     /** The typing style in use for [languageCode]: the saved one if it is valid for that language, otherwise its default; null if it has only one. */
     fun keyboardStyleFor(languageCode: String): KeyboardStyle? {
@@ -142,6 +156,13 @@ data class UserSettings(
         )
     }
 
+    /** [languageCode]'s standard-curriculum progress, or a fresh one if it has none yet. */
+    fun curriculumProgressFor(languageCode: String): CurriculumProgress = curriculumProgress[languageCode] ?: CurriculumProgress()
+
+    /** Replaces [languageCode]'s standard-curriculum progress, leaving every other language's untouched. */
+    fun withCurriculumProgress(languageCode: String, progress: CurriculumProgress): UserSettings =
+        copy(curriculumProgress = curriculumProgress + (languageCode to progress))
+
     /** The same settings seen as language preferences, with the source choice made explicit (see [UserLanguagePreferences]). */
     val languagePreferences: UserLanguagePreferences
         get() = UserLanguagePreferences(
@@ -153,5 +174,6 @@ data class UserSettings(
 
     companion object {
         val DEFAULT_REMINDER_TIME: LocalTime = LocalTime.of(20, 0)
+        const val DEFAULT_CURRICULUM_DAILY_GOAL: Int = 3
     }
 }

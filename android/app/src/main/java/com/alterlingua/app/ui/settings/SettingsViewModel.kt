@@ -54,6 +54,8 @@ data class SettingsUiState(
     val notifyOnCapturedNotes: Boolean = true,
     /** True while a listening session for voice notes is running right now. */
     val voiceCaptureListening: Boolean = false,
+    /** How many standard-curriculum words a day the user wants to learn (see CurriculumProgressService). */
+    val curriculumDailyGoal: Int = UserSettings.DEFAULT_CURRICULUM_DAILY_GOAL,
 )
 
 /** Shows the saved settings and saves changes made here, including switching languages (CLAUDE.md section 6.20). */
@@ -102,6 +104,7 @@ class SettingsViewModel(
             translateCapturedNotes = it.translateCapturedNotes,
             notifyOnCapturedNotes = it.notifyOnCapturedNotes,
             voiceCaptureListening = listening,
+            curriculumDailyGoal = it.curriculumDailyGoal,
         )
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState())
@@ -141,6 +144,9 @@ class SettingsViewModel(
     }
 
     fun onLearningFromMessagesChanged(enabled: Boolean) = save { it.copy(learningFromMessagesEnabled = enabled) }
+
+    /** Changes how many standard-curriculum words a day the user wants to learn. */
+    fun onCurriculumDailyGoalChanged(goal: Int) = save { it.copy(curriculumDailyGoal = goal) }
 
     /** Turns automatic translation of captured voice notes on or off (off: a note is sent only when the user opens it). */
     fun onTranslateCapturedNotesChanged(enabled: Boolean) = save { it.copy(translateCapturedNotes = enabled) }

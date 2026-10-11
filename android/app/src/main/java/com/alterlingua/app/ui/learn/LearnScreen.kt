@@ -60,15 +60,37 @@ fun LearnRoute(
     modifier: Modifier = Modifier,
     viewModel: LearnViewModel = viewModel(factory = AppViewModelProvider.Factory),
     randomViewModel: RandomLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    curriculumViewModel: CurriculumLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val randomState by randomViewModel.uiState.collectAsStateWithLifecycle()
+    val curriculumState by curriculumViewModel.uiState.collectAsStateWithLifecycle()
     // New messages may have been translated while the tab was away: look again for today's lesson.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
     // Random lessons are extra practice beyond the one daily lesson (see RandomLessonViewModel): never saved, a fresh
     // one is built each time the learner asks, so "random" is scoped to this one tab visit, not kept across it.
     var showingRandom by rememberSaveable { mutableStateOf(false) }
-    if (showingRandom) {
+    // The standard curriculum (see CurriculumLessonService) is a second, separate source of lessons: a large, shared,
+    // online word list, apart from what is drawn from the learner's own conversations.
+    var showingCurriculum by rememberSaveable { mutableStateOf(false) }
+    var showingComingSoon by rememberSaveable { mutableStateOf(false) }
+    if (showingComingSoon) {
+        ComingSoonDialog(onDismiss = { showingComingSoon = false })
+    }
+    if (showingCurriculum) {
+        CurriculumLessonScreen(
+            state = curriculumState,
+            onNext = curriculumViewModel::next,
+            onRetry = curriculumViewModel::start,
+            onUpgrade = { showingComingSoon = true },
+            modifier = modifier,
+            footer = {
+                OutlinedButton(onClick = { showingCurriculum = false }, modifier = Modifier.fillMaxWidth().testTag("lrn_back")) {
+                    Text(stringResource(R.string.lrn_back))
+                }
+            },
+        )
+    } else if (showingRandom) {
         LearnScreen(
             state = randomState,
             onPrevious = randomViewModel::previous,
@@ -95,6 +117,10 @@ fun LearnRoute(
                         onClick = { randomViewModel.start(); showingRandom = true },
                         modifier = Modifier.fillMaxWidth().testTag("lrn_random_lesson"),
                     ) { Text(stringResource(R.string.lrn_random_lesson)) }
+                    OutlinedButton(
+                        onClick = { curriculumViewModel.start(); showingCurriculum = true },
+                        modifier = Modifier.fillMaxWidth().testTag("lrn_standard_curriculum"),
+                    ) { Text(stringResource(R.string.set_standard_curriculum)) }
                     ReaderRoute()
                 }
             },
