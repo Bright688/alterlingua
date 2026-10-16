@@ -92,6 +92,8 @@ sealed interface ForgeLevelState {
  * Premium may pick any language it is learning (not just the active target); Standard and the FREE trial are always
  * the active target language only (CLAUDE.md section 6.21's per-language independence, applied to this feature).
  */
+private const val MAX_PAGE_SIZE = 100 // matches the backend's own cap (backend/app/vocabulary/router.py: le=100)
+
 class CurriculumLessonService(
     private val api: CurriculumApi,
     private val meanings: MeaningProvider,
@@ -137,7 +139,7 @@ class CurriculumLessonService(
         var probe = current.cursor
         var skippedMastered = 0
         while (collected.size < remaining) {
-            val fetchLimit = ((remaining - collected.size) * 2 + 10).coerceAtMost(100)
+            val fetchLimit = ((remaining - collected.size) * 2 + 10).coerceAtMost(MAX_PAGE_SIZE)
             val page = api.fetchPage(code, probe, fetchLimit)
             val words = (page as? CurriculumPageResult.Success)?.words
                 ?: return if (collected.isEmpty()) {
@@ -207,8 +209,17 @@ class CurriculumLessonService(
     suspend fun forgeLevel(range: CurriculumLevelRange, languageOverride: Language? = null): ForgeLevelState {
         val (learning, _, _, _) = resolve(languageOverride)
         val code = learning.code
-        val page = api.fetchPage(code, range.startIndex, range.wordCount)
-        val words = (page as? CurriculumPageResult.Success)?.words ?: return ForgeLevelState.Unavailable
+        // The backend caps a single page at MAX_PAGE_SIZE words (router.py: Query(..., le=100)); a level can be
+        // larger than that (e.g. 500 words), so it is fetched in pages and concatenated, not in one request.
+        val words = mutableListOf<String>()
+        var offset = range.startIndex
+        while (offset < range.endIndex) {
+            val page = api.fetchPage(code, offset, (range.endIndex - offset).coerceAtMost(MAX_PAGE_SIZE))
+            val pageWords = (page as? CurriculumPageResult.Success)?.words ?: return ForgeLevelState.Unavailable
+            if (pageWords.isEmpty()) break // the whole list has been learned: nothing more until it is extended
+            words += pageWords
+            offset += pageWords.size
+        }
         val units = CurriculumStructure.units(range).map { unitRange ->
             val unitWords = words.subList((unitRange.startIndex - range.startIndex).coerceIn(0, words.size), (unitRange.endIndex - range.startIndex).coerceIn(0, words.size))
             val mastered = unitWords.count { map.item(UnitKey(code, it.lowercase(Locale.ROOT), UnitType.WORD))?.masteryState == MasteryStatus.MASTERED }

@@ -66,4 +66,17 @@ class PlansScreenTest {
         composeTestRule.onNodeWithTag("plan_unavailable_premium").assertIsDisplayed()
         composeTestRule.onAllNodesWithTag("plan_subscribe_standard_monthly").assertCountEquals(0)
     }
+
+    @Test
+    fun aStandardSubscriber_seesAnUpgradeLabelOnPremium_notAFreeTrialOne() {
+        val offers = listOf(offerFor(Tier.PREMIUM))
+        composeTestRule.setContent { AlterLinguaTheme { PlansScreen(tier = Tier.STANDARD, offers = offers, onSubscribe = {}) } }
+        composeTestRule.onNodeWithTag("plan_upgrade_premium").assertIsDisplayed()
+    }
+
+    @Test
+    fun aFreeUser_seesNoUpgradeLabelOnPremium() {
+        composeTestRule.setContent { AlterLinguaTheme { PlansScreen(tier = Tier.FREE, offers = emptyList(), onSubscribe = {}) } }
+        composeTestRule.onAllNodesWithTag("plan_upgrade_premium").assertCountEquals(0)
+    }
 }

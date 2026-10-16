@@ -1,5 +1,6 @@
 package com.alterlingua.app.ui.learn
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,12 +14,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -463,6 +466,13 @@ private fun StandardAndPremiumCards(
 ) {
     PlanEntryCard(
         name = stringResource(R.string.set_plan_standard),
+        accent = MaterialTheme.colorScheme.primary,
+        accentContainer = MaterialTheme.colorScheme.primaryContainer,
+        features = listOf(
+            stringResource(R.string.set_plan_standard_feature_everything_free),
+            stringResource(R.string.set_plan_standard_feature_full_curriculum),
+            stringResource(R.string.set_plan_standard_feature_daily_cap),
+        ),
         owned = tier == com.alterlingua.app.entitlements.Tier.STANDARD || tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
         offer = offers.firstOrNull { it.tier == com.alterlingua.app.entitlements.Tier.STANDARD },
         onOpen = onOpen,
@@ -471,7 +481,16 @@ private fun StandardAndPremiumCards(
     )
     PlanEntryCard(
         name = stringResource(R.string.set_plan_premium),
+        accent = MaterialTheme.colorScheme.tertiary,
+        accentContainer = MaterialTheme.colorScheme.tertiaryContainer,
+        features = listOf(
+            stringResource(R.string.set_plan_premium_feature_everything_standard),
+            stringResource(R.string.set_plan_premium_feature_all_languages),
+            stringResource(R.string.set_plan_premium_feature_no_cap),
+        ),
         owned = tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
+        // A Standard subscriber already has full curriculum access: no "trial" framing, just a clear upgrade.
+        isUpgrade = tier == com.alterlingua.app.entitlements.Tier.STANDARD,
         offer = offers.firstOrNull { it.tier == com.alterlingua.app.entitlements.Tier.PREMIUM },
         onOpen = onOpen,
         onSubscribe = onSubscribe,
@@ -479,50 +498,102 @@ private fun StandardAndPremiumCards(
     )
 }
 
+/**
+ * One tier's own card: a colour accent (Standard = primary, Premium = tertiary, the design system's own existing
+ * tokens — no new colours invented) carries through the border, the feature checkmarks and the primary button, so
+ * the two plans read as distinct, deliberate products rather than two identical grey boxes.
+ */
 @Composable
 private fun PlanEntryCard(
     name: String,
+    accent: Color,
+    accentContainer: Color,
+    features: List<String>,
     owned: Boolean,
     offer: com.alterlingua.app.billing.TierOffers?,
     onOpen: () -> Unit,
     onSubscribe: (com.alterlingua.app.billing.SubscriptionOffer) -> Unit,
     testTag: String,
+    /** True when the learner already owns the tier below this one (e.g. Standard looking at Premium): there is
+     * nothing to "try" -- the curriculum itself is already unlocked -- so this is a clear upgrade, not a trial. */
+    isUpgrade: Boolean = false,
 ) {
-    AlterLinguaCard(modifier = Modifier.testTag(testTag)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-            if (owned) TagPill(stringResource(R.string.set_plans_current))
-        }
-        if (owned) {
-            OutlinedButton(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag("${testTag}_open")) {
-                Text(stringResource(R.string.lrn_curriculum_open))
+    Surface(
+        modifier = Modifier.fillMaxWidth().testTag(testTag),
+        shape = MaterialTheme.shapes.large,
+        color = if (owned) accentContainer.copy(alpha = 0.10f) else MaterialTheme.extendedColors.card,
+        border = BorderStroke(if (owned) 1.5.dp else 1.dp, if (owned) accent else MaterialTheme.extendedColors.cardBorder),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(name, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+                if (owned) TagPill(stringResource(R.string.set_plans_current))
             }
-        } else if (offer?.available == true) {
-            // Still within the free trial, this plan's content can be tried before buying it.
-            OutlinedButton(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag("${testTag}_open")) {
-                Text(stringResource(R.string.lrn_curriculum_try_it))
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                offer.monthly?.let { monthly ->
-                    OutlinedButton(onClick = { onSubscribe(monthly) }, modifier = Modifier.weight(1f).testTag("${testTag}_subscribe_monthly")) {
-                        Text(stringResource(R.string.set_plans_per_month, monthly.formattedPrice))
-                    }
-                }
-                offer.annual?.let { annual ->
-                    Button(onClick = { onSubscribe(annual) }, modifier = Modifier.weight(1f).testTag("${testTag}_subscribe_annual")) {
-                        Text(stringResource(R.string.set_plans_per_year, annual.formattedPrice))
-                    }
+            features.forEach { feature ->
+                Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Filled.Check, contentDescription = null, tint = accent, modifier = Modifier.size(18.dp))
+                    Text(feature, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
-        } else {
-            OutlinedButton(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag("${testTag}_open")) {
-                Text(stringResource(R.string.lrn_curriculum_try_it))
+            if (owned) {
+                Button(
+                    onClick = onOpen,
+                    colors = ButtonDefaults.buttonColors(containerColor = accent),
+                    modifier = Modifier.fillMaxWidth().testTag("${testTag}_open"),
+                ) { Text(stringResource(R.string.lrn_curriculum_open)) }
+            } else if (offer?.available == true) {
+                if (isUpgrade) {
+                    // Already has full curriculum access via the tier below: this is an upgrade, not a trial.
+                    Text(
+                        text = stringResource(R.string.lrn_premium_upgrade_cta),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = accent,
+                        modifier = Modifier.testTag("${testTag}_upgrade_label"),
+                    )
+                } else {
+                    // Still within the free trial, this plan's content can be tried before buying it.
+                    OutlinedButton(
+                        onClick = onOpen,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = accent),
+                        border = BorderStroke(1.dp, accent),
+                        modifier = Modifier.fillMaxWidth().testTag("${testTag}_open"),
+                    ) { Text(stringResource(R.string.lrn_curriculum_try_it)) }
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    offer.monthly?.let { monthly ->
+                        OutlinedButton(
+                            onClick = { onSubscribe(monthly) },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = accent),
+                            border = BorderStroke(1.dp, accent),
+                            modifier = Modifier.weight(1f).testTag("${testTag}_subscribe_monthly"),
+                        ) { Text(stringResource(R.string.set_plans_per_month, monthly.formattedPrice)) }
+                    }
+                    offer.annual?.let { annual ->
+                        Button(
+                            onClick = { onSubscribe(annual) },
+                            colors = ButtonDefaults.buttonColors(containerColor = accent),
+                            modifier = Modifier.weight(1f).testTag("${testTag}_subscribe_annual"),
+                        ) { Text(stringResource(R.string.set_plans_per_year, annual.formattedPrice)) }
+                    }
+                }
+            } else {
+                if (isUpgrade) {
+                    Text(
+                        text = stringResource(R.string.lrn_premium_upgrade_cta),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = accent,
+                        modifier = Modifier.testTag("${testTag}_upgrade_label"),
+                    )
+                } else {
+                    OutlinedButton(
+                        onClick = onOpen,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = accent),
+                        border = BorderStroke(1.dp, accent),
+                        modifier = Modifier.fillMaxWidth().testTag("${testTag}_open"),
+                    ) { Text(stringResource(R.string.lrn_curriculum_try_it)) }
+                }
+                TagPill(stringResource(R.string.set_plans_not_available_yet))
             }
-            Text(
-                text = stringResource(R.string.set_plans_not_available_yet),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }

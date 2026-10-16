@@ -177,6 +177,6 @@ data class UserSettings(
     companion object {
         val DEFAULT_REMINDER_TIME: LocalTime = LocalTime.of(20, 0)
         const val DEFAULT_CURRICULUM_DAILY_GOAL: Int = 3
-        const val DEFAULT_MICRO_LESSON_DAILY_GOAL: Int = 3
+        const val DEFAULT_MICRO_LESSON_DAILY_GOAL: Int = 10
     }
 }

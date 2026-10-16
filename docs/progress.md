@@ -1287,3 +1287,26 @@ not a scope choice).
 verified on the owner's real device**: no device was connected to this session when this entry was written, and
 the Learn tab's navigation changed (opening a plan now leads to The Forge's level list, not straight into today's
 session) since the previous addendum's screenshots were taken.
+
+## Addendum (2026-10-16): a real Forge bug fixed on-device, a higher micro-lesson default, and a genuine sales pitch
+
+**A real bug, found the moment the owner actually tapped into a level**: The Forge's level screen failed with
+"Couldn't load the curriculum" because a full CEFR level (up to ~500 words) exceeded the backend's own 100-word
+page-size cap in one request. Fixed by paging the fetch; a new test with a realistic 500-word level now locks this
+in (see `docs/build-log.md`).
+
+**The daily micro-lesson's size raised 3 → 10** at the owner's direct request (corrected from an initial "5" ask),
+with the important caveat that this only affects brand-new installs — an existing install's saved preference
+overrides the code default permanently, so the owner's own phone needs the "10" chip tapped in Settings directly.
+
+**The Standard/Premium cards got a real design pass, twice**: first a visual redesign (tier-coloured accents,
+checkmarked feature lists, proper badges — the cards had no feature list at all before), then, once the owner
+confirmed the visual pass was live, a correction that the feature *copy* itself was not compelling and did not
+read as a reason to pay. Rewritten as benefit-led pitches without inventing any feature that is not actually
+built, and a "Standard → Premium" upgrade path added (an existing Standard subscriber now sees "Upgrade to
+Premium" instead of a generic trial "Try it", on both the Learn tab and Settings → Plan).
+
+**Status after this addendum**: all changes unit-tested and `lintDebug`/compiles clean (see `docs/build-log.md`
+for exact counts). The Forge paging fix and the visual redesign were confirmed via screenshots on the owner's real
+device; the copy rewrite and upgrade-path addition were built and installed on the same device but not yet
+re-screenshotted (the device repeatedly dropped off USB through this session).

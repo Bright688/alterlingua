@@ -24,13 +24,20 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Mirrors the real backend's own page-size cap (router.py: `Query(..., le=100)`) -- a request for more than that
+ * must be rejected, not silently honored, exactly like the real server would (this is how the "Couldn't load the
+ * curriculum" bug on a 500-word CEFR level, caused by [CurriculumLessonService.forgeLevel] requesting a whole level
+ * in one call, went uncaught: an earlier version of this fake had no such cap). */
 private class FakeCurriculumApi(private val byLanguage: Map<String, List<String>>) : CurriculumApi {
     var unavailable = false
     val requestedOffsets = mutableListOf<Int>()
+    val requestedLimits = mutableListOf<Int>()
 
     override suspend fun fetchPage(languageCode: String, offset: Int, limit: Int): CurriculumPageResult {
         requestedOffsets += offset
+        requestedLimits += limit
         if (unavailable) return CurriculumPageResult.Unavailable
+        if (limit !in 1..100) return CurriculumPageResult.Unavailable
         val all = byLanguage[languageCode].orEmpty()
         return CurriculumPageResult.Success(all.drop(offset).take(limit), all.size)
     }
@@ -284,6 +291,19 @@ class CurriculumLessonServiceTest {
         assertEquals(listOf(20, 20, 5), state.units.map { it.words.size })
         assertEquals(2, state.units[0].masteredCount) // word1 and word2 are both in the first unit
         assertEquals(0, state.units[1].masteredCount)
+    }
+
+    @Test
+    fun forgeLevel_onARealisticFullLevel_fetchesInPagesOfAtMost100Words_neverOneBigRequest() = runTest {
+        // A full CEFR band is ~500 words (3000-word list / 6 levels) -- this is the exact case that caused the real
+        // "Couldn't load the curriculum" bug: a single request for 500 words exceeds the real backend's own cap.
+        val words = (1..500).map { "word$it" }
+        val api = FakeCurriculumApi(mapOf("fr" to words))
+        val range = CurriculumLevelRange(CefrLevel.A1, 0, 500)
+        val state = service(api = api).forgeLevel(range) as ForgeLevelState.Loaded
+        assertEquals(25, state.units.size) // 500 / 20 words-per-unit
+        assertEquals(500, state.units.sumOf { it.words.size })
+        assertTrue("every request must respect the backend's own cap", api.requestedLimits.all { it in 1..100 })
     }
 
     @Test

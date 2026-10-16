@@ -2742,3 +2742,79 @@ today's session).
 6. Mark a few curriculum words as mastered (practice a unit's vocabulary enough times, or check via Settings →
    Words), then use "Continue": those words should no longer appear, and the session should still fill up to the
    full daily goal from the words after them.
+
+## 2026-10-16 — Real-device fixes, a higher micro-lesson default, and a genuine Standard/Premium sales pitch
+
+**A real bug found immediately on the owner's device**: tapping into The Forge's A1 level failed with "Couldn't
+load the curriculum." Root cause: `CurriculumLessonService.forgeLevel` requested an entire level's words
+(up to ~500 for a 3000-word language) in a single backend call, but `GET /v1/curriculum/{language}` caps
+`limit` at 100 (`backend/app/vocabulary/router.py: Query(..., le=100)`) — the request was rejected (422), which
+`HttpCurriculumApi` correctly treats as `Unavailable`. The previous entry's own test fixture (`FakeCurriculumApi`)
+had no such cap, so this never surfaced before a real device hit the real backend. Fixed by paging the fetch in
+chunks of at most `MAX_PAGE_SIZE` (100, named and commented to the real backend constraint) and concatenating;
+`today()`'s own existing page-size cap was pointed at the same named constant instead of a second magic number.
+A new `CurriculumLessonServiceTest` (a realistic 500-word level) asserts every request stays within the cap, so
+this exact regression cannot recur silently.
+
+**The daily micro-lesson's size, raised 3 -> 10 at the owner's direct request** (first asked for 5, then
+corrected to 10 before the build shipped): `UserSettings.DEFAULT_MICRO_LESSON_DAILY_GOAL` changed, the onboarding
+copy that named "3-item" lessons updated to "10-item" across all 8 locales, and the two unit tests asserting the
+old default renamed and updated. **Important caveat explained to the owner**: this only changes the default for a
+brand-new install that has never saved a setting -- `DataStoreUserSettingsRepository.update` snapshots every
+field on every write, so an already-used install has "3" permanently persisted the moment any setting was first
+saved, and the code default cannot retroactively override it. The owner's own already-working "Words per day"
+chip (3/5/10/20) is the correct way to change it on an existing install; the code default matters for future new
+users going through onboarding.
+
+**The Standard/Premium cards, redesigned for real this time**: the owner first asked for the cards to "stand out,
+look attractive, professional, and well designed" (they had been bare bordered boxes with a title and a button,
+no feature list at all), then -- once that visual pass was confirmed live on the device -- said plainly that the
+feature copy itself was not compelling and did not read as something worth paying for, and that a Standard
+subscriber should see a clear path to upgrade to Premium, not just a flat "Try it."
+
+- Visual pass (`LearnScreen.kt`'s `PlanEntryCard`, `PlansScreen.kt`'s `PlanCard`): each tier now has its own accent
+  colour pulled from the app's own existing design-system tokens -- Standard uses the primary blue, Premium the
+  tertiary purple, Free a neutral outline on the Settings → Plan screen -- carried through the card border, the
+  feature checkmarks and the buttons, plus a real feature checklist (previously absent entirely on the Learn tab's
+  cards) and a proper pill badge for "Not available yet" instead of plain grey caption text. No new colours were
+  invented and no new dependency was added (the checkmark icon already existed in the app).
+- Copy pass (the six `set_plan_*_feature_*` strings, shared by both screens, across all 8 locales): rewritten from
+  dry technical facts ("Up to 20 curriculum words a day") into benefit-led pitches ("Learn up to 20 new words every
+  day, at your pace"; "No more 50-word limit — the full lesson library for your active language"; "No daily limit —
+  learn as much as you want, every day"). Deliberately did **not** add any feature that is not actually built (no
+  mention of AI tutoring, pronunciation coaching, etc. from the owner's earlier larger pasted vision) -- CLAUDE.md's
+  own "trustworthy, not manipulative" design principle and this project's own prior entry ("claiming it on a plans
+  screen would have been false advertising") both still apply; only the framing of what is real changed, not the
+  substance.
+- Upgrade path (both screens): a Standard subscriber viewing the Premium card now sees "Upgrade to Premium" in the
+  accent colour instead of a generic "Try it" trial button -- correct, since a Standard subscriber already has full
+  curriculum access and is not "trying" anything, just choosing to pay for more. The same `isUpgrade` flag and
+  string (`lrn_premium_upgrade_cta`) drive this on both the Learn tab's cards and Settings → Plan, so the pitch is
+  consistent wherever it is shown.
+
+### Verification
+
+Implemented and tested: the `forgeLevel` paging fix (new regression test plus the existing 45-word test
+unaffected), the micro-lesson default (`DataStoreUserSettingsRepositoryTest`, `SettingsViewModelTest` updated),
+and the Settings → Plan upgrade-path behaviour (`PlansScreenTest`: two new tests confirming the upgrade label
+appears only for an existing Standard subscriber looking at Premium, never for a FREE user). The Learn tab's own
+`PlanEntryCard`/`StandardAndPremiumCards` are private composables embedded in `LearnRoute` and have never had
+dedicated instrumented tests of their own (verified by on-device screenshot instead, the same pattern used
+throughout this file) -- the underlying `isUpgrade` logic and strings are identical to the now-tested
+`PlansScreen.kt` version. `compileDebugKotlin`, `compileDebugAndroidTestKotlin`, `compileDebugUnitTestKotlin`,
+`testDebugUnitTest` and `lintDebug` all run clean (0 errors). **Manually verified on the owner's real device** for
+the `forgeLevel` fix and the visual redesign (confirmed via direct screenshots showing the colour-accented cards,
+checkmarks and badges rendering correctly); the copy rewrite and the upgrade-path addition were built and
+installed on the same device but not yet re-screenshotted, since the device dropped off USB (intermittently,
+across this whole session) before that specific check could be done.
+
+### Manual test for the owner
+
+1. Learn tab -> The Forge -> tap any level (A1, A2, ...): its units should now load correctly instead of showing
+   "Couldn't load the curriculum."
+2. The daily micro-lesson (Learn tab's main view) should bring up to 10 items for a fresh install; on your own
+   phone, use the "10" chip under Settings → Micro Lessons (Free) → Words per day if it is not already selected.
+3. Learn tab: "Standard plan" and "Premium plan" should each show three checkmarked benefits in their own accent
+   colour, phrased as a reason to subscribe rather than a bare technical fact.
+4. If you were already a Standard subscriber (once real Play Console products exist), the Premium card should say
+   "Upgrade to Premium" instead of "Try it" — the same on Settings → Plan.

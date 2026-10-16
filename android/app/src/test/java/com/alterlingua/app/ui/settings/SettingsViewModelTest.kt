@@ -157,10 +157,10 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun microLessonDailyGoal_defaultsToThree_andCanBeChanged_andIsSaved() {
+    fun microLessonDailyGoal_defaultsToTen_andCanBeChanged_andIsSaved() {
         val repo = FakeUserSettingsRepository()
         val vm = SettingsViewModel(repo)
-        assertEquals(3, vm.uiState.value.microLessonDailyGoal)
+        assertEquals(10, vm.uiState.value.microLessonDailyGoal)
         vm.onMicroLessonDailyGoalChanged(12)
         assertEquals(12, repo.current.microLessonDailyGoal)
         assertEquals(12, vm.uiState.value.microLessonDailyGoal)
