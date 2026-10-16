@@ -129,6 +129,11 @@ dependencies {
     implementation(libs.protobuf.javalite)
     // Handwriting recognition (Google ML Kit, on the phone; the language model is downloaded once). Not open source: see docs/privacy.md.
     implementation(libs.mlkit.digital.ink)
+    // Shared-image translation (Standard/Premium): OCR entirely on the phone, nothing uploaded as an image. Not
+    // open source: see docs/privacy.md.
+    implementation(libs.mlkit.text.recognition)
+    implementation(libs.mlkit.text.recognition.chinese)
+    implementation(libs.mlkit.text.recognition.japanese)
 
     // The Personal Language Map database (Room), with generated code from KSP.
     implementation(libs.androidx.room.runtime)

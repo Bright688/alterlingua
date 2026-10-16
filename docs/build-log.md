@@ -2849,3 +2849,105 @@ tagline addition.
 ### Manual test for the owner
 
 Already covered above — confirmed showing on both the Learn tab and Settings → Plan.
+
+## 2026-10-16 — Image translation (Standard), and PDF/DOCX translation scoped as a separate, larger follow-up (Premium)
+
+**Goal:** the owner asked for three things in one message: "some image may have words that i want translated",
+"i may want to translate pdf files and doc files as well and once pdf is translated the output would be the
+translated pdf file as well as doc files" — and a clear entitlement split: image translation under **Standard**,
+PDF/DOCX file translation under **Premium**.
+
+**Scope decision, stated to the owner and followed this round:** image translation is a straightforward extension
+of an architecture that already exists and is already tested (the shared voice-note Share flow) — on-device OCR
+instead of speech-to-text, then the same `/v1/translate` call. PDF and DOCX translation, where **the output must
+itself be a translated PDF/DOCX file**, is a materially different and larger piece of work: it needs new backend
+file-parsing and file-regeneration infrastructure (extracting translatable text from a PDF/DOCX's internal
+structure, translating each piece, and re-assembling a real PDF/DOCX from the result) that does not exist anywhere
+in this codebase yet, for either file format. Per CLAUDE.md's "implement only the requested milestone" and "do not
+overbuild," this round built **only image translation**, end to end, and leaves PDF/DOCX entirely as documented,
+unstarted future work (see below) rather than half-building it.
+
+**A layout-fidelity default was stated for PDF/DOCX, not yet confirmed by the owner:** the regenerated document
+will preserve paragraph order but **not** pixel-identical layout (page breaks, exact font/image placement) from
+the original — the same trade-off every mainstream document translator (Google Translate's document mode, DeepL
+Document Translator, Microsoft Translator) makes, because true layout-preserving translation of arbitrary PDFs is
+a much harder, open-ended problem (PDF has no native "paragraph" concept; text is positioned glyph-by-glyph) than
+"translate the PDF" sounds like. This default should be re-confirmed with the owner before PDF/DOCX work actually
+starts.
+
+**What was built (image translation):**
+- Three new, bundled (not Play-Services-dependent) ML Kit Text Recognition v2 dependencies —
+  `com.google.mlkit:text-recognition:16.0.1` (Latin), `text-recognition-chinese:16.0.1`,
+  `text-recognition-japanese:16.0.1` — verified against Google's current documentation rather than assumed,
+  the same discipline that caught the Play Billing `enablePendingPurchases` requirement earlier. Three
+  recognizers cover every one of the 8 initial languages' writing systems (CLAUDE.md section 6.10); no new
+  setting asks the user which script their image contains — all three run on the same image and the longest
+  non-blank result wins (`ImageTextRecognizer.kt`).
+- A new `Feature.IMAGE_TRANSLATION` entitlement, unlocked by `TierPolicy` for Standard and Premium only — unlike
+  the Forge curriculum's 50-word FREE trial, there is **no trial at all** here: FREE sees an immediate upgrade
+  prompt, never a partial feature, matching the owner's own wording that it "would be under standard plan."
+- The image-translation Share flow (`SharedImageReader`/`SharedImageViewModel`/`SharedImageScreen`/
+  `ShareImageActivity`), a structural mirror of the existing, already-shipped shared voice-note flow: AlterLingua
+  appears in Android's Share sheet for `image/*`; a shared photo or screenshot is read through its temporary
+  `content://` grant into a private temp file, checked by its own first bytes (JPEG/PNG/WEBP/GIF/BMP), run through
+  OCR entirely on the phone, and **the image file is deleted immediately afterwards, regardless of outcome** —
+  only the extracted text (never the image) is sent to the backend's existing `/v1/translate` endpoint. The result
+  screen shows the recognised text, its translation, and a Listen button (reusing the existing TTS plumbing); "no
+  text found" and every translation failure are handled without losing the user's shared image mid-flow.
+- Deliberately **not** wired into the Personal Language Map or `LearningPipeline` this round (no new
+  `InteractionKind` case) — doing so would touch several existing exhaustive `when` blocks (`ProgressLog.kt`,
+  `ui/learn/LessonText.kt`) for a feature the owner did not ask to be learning-aware yet; a bounded scope cut,
+  flagged here rather than silently dropped.
+
+**Problems found and fixed:**
+- A manifest `<!-- ... -->` comment containing a literal `--` failed the build
+  (`org.xml.sax.SAXParseException: The string "--" is not permitted within comments`) — XML forbids `--` inside
+  comments; reworded.
+- `PrivacyAuditTest.everyExportedComponentIsAccountedFor` correctly failed once `ShareImageActivity` was added to
+  the manifest (`android:exported="true"`, required for any Share-sheet target) — this test exists specifically
+  to force a conscious look at every new exported component before it ships. Reviewed: the new activity accepts
+  only `content://` addresses via the standard Share intent, exactly like the existing audio Share target, with no
+  new permission or broadened scope. Its expected-component list was updated to include `.share.ShareImageActivity`
+  in manifest order.
+
+### Verification
+
+Implemented and tested: `SharedImageReaderTest` (every accept/refuse/cleanup case per image type, mirroring
+`SharedAudioReaderTest`), `SharedImageViewModelTest` (entitlement gate for FREE/STANDARD/PREMIUM, OCR → translate
+flow, no-text-found including blank OCR output, temp-file deletion in every outcome, retry/cancel/lifecycle,
+Listen). Full suite: `./gradlew :app:testDebugUnitTest` passes with 0 failures (the one failure from the
+`PrivacyAuditTest` component-list gap above is fixed). `:app:lintDebug` produces no findings against the new
+files. `:app:assembleDebug` and `:app:assembleRelease` both compile cleanly. **Not yet manually verified on a real
+device** — no device was connected to this session (this round ran as a background job); the Share-sheet
+appearance, real OCR accuracy on a real photo, and the FREE-tier upgrade prompt have not been seen on a phone yet.
+
+### Manual test for the owner
+
+1. Install the new build. Take or find a photo/screenshot containing some text in any of the 8 supported
+   languages (a WhatsApp screenshot works well).
+2. From the Photos app (or wherever the image lives), use Android's Share sheet and choose **AlterLingua**.
+3. **FREE tier:** you should see an upgrade prompt ("Image translation is a Standard/Premium feature") with a
+   button to view plans, and the image itself should not be processed.
+4. **Standard or Premium tier:** the screen should show the recognised text, then its translation into your
+   target language, with a Listen button that reads the translation aloud. Try an image with no readable text
+   (e.g. a solid-colour photo): it should say no text was found, cleanly.
+5. After either outcome, run `adb shell run-as com.alterlingua.app ls cache` (or the equivalent shared-image temp
+   folder) — the shared image's temp file should already be gone.
+6. Try a Chinese or Japanese screenshot specifically, to confirm the non-Latin OCR recognizers are actually being
+   used.
+
+### PDF and DOCX translation (Premium) — scoped, not started
+
+This is the explicitly deferred second half of the owner's request. Needed before it can start:
+- Backend: a PDF text-extraction + re-generation step (e.g. `pypdf`/`pdfplumber` for extraction,
+  `reportlab`/`fpdf2` or a template-overlay approach for regeneration) and a DOCX equivalent (`python-docx` can
+  both read and write `.docx` natively, which makes DOCX materially easier than PDF).
+- A new backend endpoint shape (not yet designed) that accepts a file, returns a translated file of the same
+  format — different from `/v1/translate`'s text-in/text-out contract.
+- Android: a new Share-target/file-picker flow (mirroring this round's image flow) that uploads a file and saves
+  the translated file back to the device (`FileProvider`, matching the existing pattern used for generated
+  speech) rather than just displaying translated text on screen.
+- A `Feature.DOCUMENT_TRANSLATION` (or similarly named) entitlement, Premium-only, with no FREE/Standard trial —
+  mirroring this round's `IMAGE_TRANSLATION` gate.
+- **Needs re-confirmation with the owner:** the stated default that translated output preserves paragraph order
+  but not pixel-identical layout.

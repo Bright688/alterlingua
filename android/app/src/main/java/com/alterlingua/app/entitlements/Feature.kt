@@ -14,4 +14,7 @@ enum class Feature {
      * just the active target language), and a much higher daily-word cap (see EntitlementService.maxCurriculumDailyGoal).
      */
     CURRICULUM_PREMIUM,
+
+    /** Translating the text found in a shared image (on-device OCR, then the normal translation service). */
+    IMAGE_TRANSLATION,
 }

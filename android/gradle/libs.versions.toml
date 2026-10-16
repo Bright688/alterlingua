@@ -18,6 +18,7 @@ icu4j = "78.3"
 room = "2.8.5"
 protobuf = "4.29.3"
 mlkitDigitalInk = "19.0.0"
+mlkitTextRecognition = "16.0.1"
 ksp = "2.3.12"
 sqlcipher = "4.19.1"
 androidxSecurityCrypto = "1.1.0"
@@ -47,6 +48,12 @@ org-json = { module = "org.json:json", version.ref = "orgJson" }
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 # Local database for the Personal Language Map.
 mlkit-digital-ink = { module = "com.google.mlkit:digital-ink-recognition", version.ref = "mlkitDigitalInk" }
+# On-device OCR for the shared-image translation flow (CLAUDE.md 6.10: must cover every writing system, not just
+# Latin script). Three separate recognizers -- Latin, Chinese, Japanese -- bundled (not the Play Services variant),
+# matching how digital-ink-recognition above is already bundled.
+mlkit-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "mlkitTextRecognition" }
+mlkit-text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkitTextRecognition" }
+mlkit-text-recognition-japanese = { module = "com.google.mlkit:text-recognition-japanese", version.ref = "mlkitTextRecognition" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }

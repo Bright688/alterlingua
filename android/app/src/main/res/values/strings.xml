@@ -516,6 +516,36 @@
     <string name="pv_permission_msg">Access to a shared item lasts only a moment. Share the voice note again.</string>
     <string name="pv_unreadable_title">Couldn\'t read the audio</string>
     <string name="pv_unreadable_msg">Share the voice note again.</string>
+
+    <!-- Image translation (Standard/Premium): a shared photo or screenshot, OCR'd on the phone, then translated. -->
+    <string name="pi_image_translation">Image translation</string>
+    <string name="pi_step_reading">Getting the image…</string>
+    <string name="pi_step_recognizing">Finding the text…</string>
+    <string name="pi_step_translating">Translating…</string>
+    <string name="pi_line_get">Get the image</string>
+    <string name="pi_line_recognize">Find the text in it</string>
+    <string name="pi_line_translate">Translate it</string>
+    <string name="pi_extracted_text">Text found</string>
+    <string name="pi_is_processed_on_your_phone">The image stays on your phone: only the text found in it is sent to be translated.</string>
+    <string name="pi_no_text_title">No text found</string>
+    <string name="pi_no_text_msg">AlterLingua couldn\'t find any text in that image.</string>
+    <string name="pi_translate_failed_title">Couldn\'t translate</string>
+    <string name="pi_no_image_title">Nothing to translate</string>
+    <string name="pi_no_image_msg">No image came with the share. Share a photo and choose AlterLingua.</string>
+    <string name="pi_not_content_title">Can\'t open that item</string>
+    <string name="pi_not_content_msg">AlterLingua only opens an image that an app shares with it directly.</string>
+    <string name="pi_not_image_title">That isn\'t an image</string>
+    <string name="pi_not_image_msg">AlterLingua can translate the text in photos and screenshots.</string>
+    <string name="pi_too_large_title">That image is too large</string>
+    <string name="pi_too_large_msg">AlterLingua can translate images up to about 15 MB. Try a smaller one.</string>
+    <string name="pi_empty_title">The image is empty</string>
+    <string name="pi_empty_msg">The shared file has no image in it.</string>
+    <string name="pi_permission_title">Android didn\'t allow that</string>
+    <string name="pi_permission_msg">Access to a shared item lasts only a moment. Share the image again.</string>
+    <string name="pi_unreadable_title">Couldn\'t read the image</string>
+    <string name="pi_unreadable_msg">Share the image again.</string>
+    <string name="pi_not_entitled_title">Standard or Premium</string>
+    <string name="pi_not_entitled_msg">Image translation is part of the Standard and Premium plans.</string>
     <string name="pv_unclear_title">Unclear voice recording</string>
     <string name="pv_unclear_msg">I couldn\'t understand that. The audio might be unclear or noisy.</string>
     <string name="pv_unsupported_speech_title">Language not supported yet</string>

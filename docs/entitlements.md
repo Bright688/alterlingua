@@ -41,6 +41,12 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
 - `STANDARD` and `PREMIUM` both unlock `CURRICULUM_UNLIMITED_TRIAL`. `PREMIUM` additionally unlocks
   `CURRICULUM_PREMIUM`: every learning language's curriculum at once (not just the active target language), and a
   much higher daily-word cap than Standard's.
+- `Feature.IMAGE_TRANSLATION` (added 2026-10-16, see `docs/build-log.md`): `STANDARD` and `PREMIUM` both unlock it;
+  `FREE` gets **no trial at all** (unlike the curriculum's 50-word trial) — an immediate upgrade prompt instead.
+  Gates the Share-sheet image-translation flow (`SharedImageViewModel`): share a photo or screenshot to
+  AlterLingua, it is OCR'd on the phone (ML Kit), and the extracted text is translated through the existing
+  `/v1/translate` endpoint. PDF and DOCX file translation (Premium, per the owner's request) is scoped but not
+  started — see `docs/build-log.md`'s 2026-10-16 entry for what it needs.
 - `PlayBillingManager` is a real `BillingClient` wrapper: it queries Google Play's real catalog for the four
   `SubscriptionProducts` IDs, exposes what it finds as `offers`, and on a real completed purchase sets
   `UserSettings.tier` to the matching tier and acknowledges the purchase. It also re-checks Play's own purchase

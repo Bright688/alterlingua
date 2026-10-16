@@ -75,6 +75,23 @@
         </activity>
 
         <!--
+            Share target for images: choosing AlterLingua in Android's Share sheet on a photo or screenshot opens this
+            screen with a temporary read permission for that one item. Standard and Premium only; FREE sees an
+            upgrade prompt rather than being denied the share entirely. The image is OCR'd entirely on the phone
+            (ML Kit) and is never itself uploaded: only the text found in it is sent to be translated.
+        -->
+        <activity
+            android:name=".share.ShareImageActivity"
+            android:exported="true"
+            android:label="@string/share_voice_label">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
+        <!--
             Translated outgoing voice: record, hear the translation spoken, share it. Opened from AlterLingua's Home tab only.
         -->
         <activity

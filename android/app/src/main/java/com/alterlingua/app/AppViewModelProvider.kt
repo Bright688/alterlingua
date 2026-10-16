@@ -10,7 +10,10 @@ import com.alterlingua.app.learning.lessons.TranslationMeaningProvider
 import com.alterlingua.app.setup.SetupViewModel
 import com.alterlingua.app.share.AndroidSpeaker
 import com.alterlingua.app.share.ContentResolverAudioSource
+import com.alterlingua.app.share.MlKitImageTextRecognizer
 import com.alterlingua.app.share.SharedAudioReader
+import com.alterlingua.app.share.SharedImageReader
+import com.alterlingua.app.share.SharedImageViewModel
 import com.alterlingua.app.share.SharedVoiceViewModel
 import com.alterlingua.app.share.VoiceNoteLearning
 import java.io.File
@@ -103,6 +106,17 @@ object AppViewModelProvider {
                     runCatching { app.progressLog.translation(app.userSettings.settings.first().targetLanguage.code, interaction.kind) }
                     app.learningPipeline.record(interaction) is PipelineResult.Recorded
                 },
+                speaker = AndroidSpeaker(app),
+            )
+        }
+        initializer {
+            val app = application()
+            SharedImageViewModel(
+                reader = SharedImageReader(ContentResolverAudioSource(app.contentResolver), File(app.cacheDir, "shared_image")),
+                recognizer = MlKitImageTextRecognizer(),
+                translationApi = app.translationApi,
+                settings = app.userSettings,
+                entitlements = app.entitlements,
                 speaker = AndroidSpeaker(app),
             )
         }

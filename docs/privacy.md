@@ -191,6 +191,26 @@ Nothing in this audit was run on a phone. Manual checks worth doing: Android's *
 translated notification, `adb shell run-as com.alterlingua.app ls cache` after using each voice feature, and that *Delete all learning data*
 empties `databases/language_map.db` and `databases/progress.db`. A real provider must be reviewed separately when it is added.
 
+## Image translation (added 2026-10-16)
+
+Sharing a photo or screenshot to AlterLingua (Android's Share sheet, Standard/Premium only) uses Google ML Kit Text
+Recognition v2, which is **not open source**, in three bundled models (Latin, Chinese, Japanese — not the
+Play-Services-dependent variant) so every one of the 8 initial languages' writing systems is covered.
+- **What leaves the phone:** nothing about the image itself. The image is read once through the Share sheet's
+  temporary `content://` permission into a private temp file, recognised entirely on the phone by all three
+  bundled models (the longest non-blank result wins, so no script-selection setting is needed), and the image file
+  is deleted immediately afterwards — in every outcome, including "no text found" and a translation failure. Only
+  the **recognised text** is then sent to the existing `/v1/translate` endpoint, the same as text typed into the
+  keyboard.
+- **What is kept:** nothing. The recognised text and its translation live only in the result screen's memory until
+  it is closed; neither is logged, saved to disk, or (this round) added to the Personal Language Map.
+- **Exported component:** `ShareImageActivity` is `android:exported="true"`, required for any Share-sheet target,
+  exactly like the existing audio Share target (`ShareVoiceActivity`); it accepts only `content://` addresses via
+  the standard Share intent and reads only what the sending app could already read. `PrivacyAuditTest` lists it
+  among the audited exported components.
+- **Not verified:** what ML Kit itself does on the phone beyond its published terms
+  (https://developers.google.com/ml-kit/terms), the same open item already noted for handwriting recognition below.
+
 ## Handwriting (added September 2026)
 
 The keyboard has a handwriting pad (a pen key next to the space bar) for all eight languages. It uses Google ML Kit Digital Ink Recognition, which is **not open source**.

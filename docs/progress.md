@@ -1310,3 +1310,25 @@ Premium" instead of a generic trial "Try it", on both the Learn tab and Settings
 for exact counts). The Forge paging fix and the visual redesign were confirmed via screenshots on the owner's real
 device; the copy rewrite and upgrade-path addition were built and installed on the same device but not yet
 re-screenshotted (the device repeatedly dropped off USB through this session).
+
+## Addendum (2026-10-16): Image translation (Standard), built end to end; PDF/DOCX translation (Premium) scoped only
+
+The owner asked for images, PDFs and DOCX files to be translatable, with image translation under Standard and
+PDF/DOCX (where the **output is itself a translated file**) under Premium. This addendum covers **image
+translation only** — a structural mirror of the existing shared voice-note Share flow, with on-device ML Kit OCR
+(Latin/Chinese/Japanese recognizers, "longest result wins") standing in for speech-to-text. A new
+`Feature.IMAGE_TRANSLATION` entitlement gates it for Standard and Premium with **no FREE trial at all** (unlike
+the Forge's 50-word trial). The shared image is OCR'd entirely on the phone and deleted immediately afterwards;
+only the extracted text is ever sent to the backend. Not wired into the Personal Language Map this round (a
+deliberate, documented scope cut — see `docs/build-log.md`).
+
+**Status:** full unit test suite passes, 0 failures (a `PrivacyAuditTest` gap for the new exported
+`ShareImageActivity` was found and fixed), `lintDebug` clean, `assembleDebug`/`assembleRelease` both compile. **Not
+yet manually verified on a device** — no device was connected to this session. See `docs/build-log.md`'s matching
+entry for full detail and manual test steps.
+
+**PDF and DOCX translation (Premium) are entirely NOT STARTED.** They need new backend file-parsing/regeneration
+infrastructure that does not exist for either format yet, a new upload/download Android flow, and a new
+Premium-only entitlement — see `docs/build-log.md`'s "scoped, not started" section for the concrete list and the
+layout-fidelity default (paragraph order preserved, not pixel-identical) that still needs the owner's confirmation
+before that work begins.
