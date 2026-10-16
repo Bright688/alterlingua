@@ -2951,3 +2951,161 @@ This is the explicitly deferred second half of the owner's request. Needed befor
   mirroring this round's `IMAGE_TRANSLATION` gate.
 - **Needs re-confirmation with the owner:** the stated default that translated output preserves paragraph order
   but not pixel-identical layout.
+
+**Update (2026-10-16, later the same day): this was explicitly requested next ("do what was not done") and is now
+built.** See the entry immediately below.
+
+## 2026-10-16 (follow-up) — PDF and DOCX document translation (Premium), built end to end
+
+**Goal:** the owner asked directly to build what the entry above had scoped but deferred: real PDF and Word
+(.docx) file translation, output as a real translated file of the same format, Premium only.
+
+**What was built, backend (`backend/app/documents/`, new module):**
+- `extraction.py`: pulls translatable text out as an ordered list of units. **DOCX** uses `python-docx`'s real
+  paragraph structure (each paragraph is its own unit, with its style name kept when regeneration can plausibly
+  reuse it — `Normal`/`Title`/`Subtitle`/`Quote`/`Intense Quote`/`Heading 1-9`; anything else collapses to the
+  default rather than being guessed at). **PDF is page-level, not paragraph-level** — a real finding, not a
+  shortcut: a PDF has no paragraph markers at all, and real extraction (confirmed with `pypdf` against real
+  reportlab-generated PDFs during this round) separates a wrapped line within one paragraph from a genuinely new
+  paragraph the same way, a single `"\n"`, with no reliable blank-line gap to split on. Splitting on blank lines
+  therefore silently merges unrelated paragraphs together more often than it correctly separates them, so one
+  whole page is the translation unit instead — coarser, but honest. Encrypted PDFs and documents with no
+  extractable text (a scanned, image-only PDF) are refused with a clear `invalid_document` error rather than
+  silently producing garbage.
+- `regeneration.py`: writes the translated units back out as a real file. DOCX reuses the original's style name
+  when the new document's own template defines it, falling back to the default body style otherwise (never
+  crashes on an unknown style). PDF uses `reportlab` with escaped text (so `&`, `<`, `>` in a translation can
+  never break the generated file) and a heading style when a DOCX heading's text is later re-rendered as a PDF.
+  **Stated, confirmed-by-this-round default**: paragraph/unit order is preserved; pixel-identical layout, exact
+  page breaks, fonts and images are not — the same trade-off every mainstream document translator makes, now
+  proven out rather than just asserted, since true layout-preserving translation of arbitrary PDFs is a much
+  larger, open-ended problem than it sounds (PDF text is positioned glyph-by-glyph, not laid out in paragraphs).
+- `service.py` (`DocumentTranslationService`): reuses the *existing* `TranslationService` with no new translation
+  logic of its own. One detection call (on the first non-blank unit) decides the source language for the whole
+  document, reused for that first unit rather than translating it twice; the rest translate concurrently (capped
+  at 5 at once) through the same provider chain as `/v1/translate` and `/v1/audio/translate`. A document with more
+  translatable units than `document_max_paragraphs` (default 300) is refused before any provider call is made.
+  **Known, stated limitation**: one unit failing to translate fails the whole document (no partial-result mode
+  yet, unlike `/v1/audio/translate`'s `allow_partial`) — a reasonable scope cut for a first version, flagged here
+  rather than silently accepted.
+- `upload.py` (`temporary_document`): mirrors `speech/audio.py`'s privacy model exactly — a private (mode 0600)
+  temporary file, size-capped (`max_document_bytes`, default 20 MiB), sniffed by its own bytes (not only the
+  declared type): `%PDF-` for PDF, and for DOCX a real zip-entry check (`word/document.xml` inside the archive),
+  which correctly tells a `.docx` apart from a `.zip`, `.xlsx` or `.pptx` that merely shares the zip container
+  format. Deleted in every case: success, every error, a crash.
+- `router.py`: `POST /v1/documents/translate` (multipart `file` + `target`/`source`/`context`/`tone`, matching the
+  existing audio endpoint's shape) returns the translated file's raw bytes with the original's `Content-Type`,
+  `Content-Disposition: attachment`, and the resolved languages as `X-Source-Language`/`X-Target-Language`
+  response headers — deliberately not JSON, since the payload here *is* the file. Wired into `main.py`
+  (`document_service`, a `/v1/documents/translate`-specific oversized-upload middleware guard mirroring the
+  audio one) and `api/v1.py`.
+- New dependencies: `pypdf`, `python-docx`, `reportlab` (added to `requirements.txt`, versions pinned to what was
+  actually installed and tested: `pypdf>=6,<7`, `python-docx>=1.2,<2`, `reportlab>=5,<6`).
+- **Only `.docx` is supported for "Word files", not the legacy binary `.doc` format** — a deliberate, stated scope
+  line: `python-docx` only reads/writes the modern zip-based format, which is what the overwhelming majority of
+  real Word files are today; supporting legacy binary `.doc` would need a different, much heavier parser for an
+  increasingly rare format.
+
+**What was built, Android:**
+- `entitlements/Feature.kt` / `TierPolicy.kt`: a new `Feature.DOCUMENT_TRANSLATION`, unlocked by **Premium only**
+  — unlike image translation (Standard and Premium), per the owner's own original split ("the pdf and doc file
+  translation would be under the premium plan"). No trial at all, same as image translation: FREE and Standard
+  both see an immediate upgrade prompt.
+- `translation/DocumentModels.kt` + `HttpDocumentApi.kt`: a new `DocumentApi`, structurally mirroring the existing
+  `VoiceApi`/`HttpVoiceApi` multipart-upload pattern (same raw `HttpURLConnection` + boundary-built multipart
+  body, same cancellable-coroutine-on-a-daemon-thread shape) — but unlike voice, a **successful** response's body
+  is the translated file's raw bytes, not JSON; the source/target languages come back as response headers
+  instead, and the target language in the response is still cross-checked against what was requested before it
+  is ever accepted (never silently accepts a translation in the wrong language, the same discipline
+  `HttpVoiceApi` already applies).
+- `share/SharedDocumentReader.kt` + `DocumentSniffer`: mirrors `SharedImageReader`'s architecture (temporary
+  `content://` read permission only, a private copy, size-capped, swept after an hour) but the type check needs
+  the *whole* file, not just its first bytes — a `.docx` is a zip archive, so confirming it (not just confirming
+  "this is *a* zip") means opening it and checking for a `word/document.xml` entry once the full file is written,
+  the same real content-based check the backend's own `upload.py` uses.
+- `share/SharedDocumentViewModel.kt` + `TranslatedDocumentFiles.kt`: reads → uploads → writes the translated file
+  to a *new* private cache folder (`translated_documents`). The original upload is deleted the instant the
+  upload attempt finishes (success or failure) — mirroring image translation's "never needed again" pattern —
+  but unlike image translation, this flow must **keep its own output alive** until the user acts on it: `cancel()`
+  deletes the translated file (nothing was explicitly kept), but `keepProducedFile()` (called right before handing
+  the file to Android's Share sheet) stops that deletion, the same lifecycle `SpokenTranslationFlow`/`SpeakActivity`
+  already established for generated voice messages. A real, non-obvious bug was caught and fixed here before it
+  shipped: starting a *new* share (for example a second document, replacing an unsaved first translated result)
+  silently leaked the first translated file in the cache, since nothing deleted it before the state was
+  overwritten — fixed by discarding any outstanding, not-yet-kept `producedFile` at the start of every new run.
+- `share/SharedDocumentScreen.kt` + `ShareDocumentActivity.kt`: mirrors `SharedImageScreen`/`ShareImageActivity`'s
+  shape (Working/Result/Failed/NotEntitled states), but the result has no text to preview — just a file — so it
+  shows a "Save or share" button instead, which opens Android's own Share sheet through the *same* `FileProvider`
+  authority already declared for generated speech (`spoken_audio_paths.xml` gained a second `<cache-path>` entry,
+  `translated_documents`, rather than a second provider).
+- Manifest: a new `ShareDocumentActivity` Share target for `application/pdf` and
+  `application/vnd.openxmlformats-officedocument.wordprocessingml.document`.
+- New strings: 32 keys (`pd_*`) across all 8 locales, mostly reusing the keyboard's existing, already-translated
+  per-failure messages (`TranslationFailure.messageRes()`) for the failure modes documents share with ordinary
+  text translation (offline, backend unavailable, timeout, unsupported language, not configured), and adding new
+  strings only for the genuinely document-specific problems (unsupported file type, too large, no translatable
+  text, too complex) — the same frugal-reuse discipline established for image translation's strings.
+- Embedding a bare native-language name (for example "Français", "日本語") into a sentence works differently per
+  language once gendered articles are involved; rather than risk forcing agreement that doesn't actually hold
+  (a literal "en %1$s"/"auf %1$s"/noun-phrase-with-article construction breaks for at least one language), every
+  locale's "Translated to X" result label reuses the exact grammatical shape (verb + bare-name preposition) already
+  proven correct across all 8 locales by the existing `voice_translating_to`/`vn_listen_no_voice` strings, rather
+  than inventing a new sentence shape for this one label.
+
+**Problems found and fixed, this round:**
+- **The PDF-paragraph-extraction design from the original scoping entry turned out to be wrong once tried against
+  a real generated PDF.** Splitting on blank lines, as first implemented, silently merged two genuinely distinct
+  reportlab-generated paragraphs into one translation unit, because `pypdf`'s own text extraction does not
+  reliably insert a blank-line gap between paragraphs (confirmed with a real file, not assumed). Caught before
+  being shipped as a design flaw; fixed by moving to page-level units for PDF specifically (DOCX is unaffected,
+  since it has real paragraph structure to read from).
+- `everyExportedComponentIsAccountedFor` (`PrivacyAuditTest`) and `onlyTheGeneratedSpeechFolderCanBeShared`
+  (`SpeakManifestTest`) both correctly failed once `ShareDocumentActivity` and the new `translated_documents`
+  FileProvider path existed — both are deliberate audit mechanisms that force a conscious look at every new
+  exported component and every new shareable folder. Both were reviewed (the new activity accepts only
+  `content://` Share-sheet addresses with no new permission, exactly like the existing image/audio targets; the
+  new folder holds only this flow's own translated output, nothing else) and then updated/renamed to name both
+  entries rather than just one.
+
+### Verification
+
+Implemented and tested. **Backend**: `tests/document_helpers.py` (real tiny PDF/DOCX fixtures built with
+`reportlab`/`python-docx` themselves, not hand-written binary stubs), `test_document_extraction.py`,
+`test_document_regeneration.py` (round-trips translated content back through the extractor to confirm the
+generated files are real, readable PDF/DOCX files), `test_document_service.py` (full pipeline against the `fake`
+translation provider, paragraph-cap refusal, same-language refusal, the single-detection-call optimisation),
+`test_document_translate.py` (the HTTP endpoint: accepted/refused types, size limits, too-many-units, temp-file
+deletion in every outcome), `test_document_privacy.py` (no document text in logs or error bodies, mirroring
+`test_audio_privacy.py`). 46 new backend tests; full suite 461 passed, 0 failed.
+
+**Android**: `SharedDocumentReaderTest` (every accept/refuse case, including a plain zip that isn't a `.docx`,
+and a declared type that contradicts the real one), `SharedDocumentViewModelTest` (entitlement gate for
+FREE/STANDARD/PREMIUM — confirming Standard, unlike image translation, does *not* get this feature — upload flow,
+original-file deletion in every outcome, the translated-file keep/discard lifecycle including the leaked-file fix
+above, retry, refusals). Full suite: 0 failures (two pre-existing audit tests needed deliberate updates, not
+loosening, as described above); `lintDebug` clean; `compileDebugKotlin`/`compileDebugAndroidTestKotlin`/
+`compileDebugUnitTestKotlin`, `assembleDebug` and `assembleRelease` all run clean.
+
+**Not yet manually verified on a real device** — no device was connected to this session (background job). The
+Share-sheet appearance for both file types, a real upload against a real device's network path, the Premium
+upgrade prompt, and the Save/Share step actually producing an openable PDF/DOCX in another app have not been seen
+on a phone yet.
+
+### Manual test for the owner
+
+1. Install the new build. Find or create a PDF and a Word (.docx) file containing some text in a supported
+   language.
+2. From a file manager (or anywhere else Android's Share sheet appears for that file type), share the PDF and
+   choose **AlterLingua**.
+3. **FREE or Standard tier:** an upgrade prompt should appear ("Premium"), with a button to view plans; the file
+   should not be uploaded.
+4. **Premium tier:** the screen should show "Getting your document…" then "Translating your document…", then
+   "Translation ready" with a "Save or share" button.
+5. Tap **Save or share**: Android's Share sheet should open; choose any app that can open a PDF (or save it) and
+   confirm the file opens and shows translated text, not the original.
+6. Repeat with the Word (.docx) file and confirm it opens correctly in a Word-compatible app and shows translated
+   text.
+7. Try a password-protected PDF, or a scanned/image-only PDF with no real text: it should fail cleanly with "No
+   text to translate", not crash or hang.
+8. After each attempt, run `adb shell run-as com.alterlingua.app ls cache/shared_document` — it should be empty
+   (the original upload is always deleted immediately).

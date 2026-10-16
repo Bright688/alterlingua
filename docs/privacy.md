@@ -211,6 +211,33 @@ Play-Services-dependent variant) so every one of the 8 initial languages' writin
 - **Not verified:** what ML Kit itself does on the phone beyond its published terms
   (https://developers.google.com/ml-kit/terms), the same open item already noted for handwriting recognition below.
 
+## Document translation (added 2026-10-16)
+
+Sharing a PDF or Word (`.docx`) file to AlterLingua (Premium only) uploads it to the backend, which extracts its
+text, translates it, and returns a real translated file of the same format.
+- **What leaves the phone:** the whole document file itself (unlike image translation, where only OCR'd text
+  leaves the phone) — translating a document's layout and structure genuinely needs server-side processing
+  (`pypdf`/`python-docx` for extraction, `reportlab`/`python-docx` for regenerating the translated file), which
+  on-device OCR has no equivalent of.
+- **What the backend keeps:** nothing. The upload is a private (mode 0600) temporary file, deleted in every case
+  (success, every error, a crash) — the same model as voice-note audio. Logs record only the file's format, byte
+  size, paragraph/page count and languages, never any of its text (`document_translation_completed`).
+- **What the phone keeps:** the original upload is deleted from the phone's own private cache the instant the
+  upload attempt finishes, whether it succeeds or fails. The **translated file** is kept in a separate private
+  cache folder (`translated_documents`) only until the user saves or shares it (or leaves the screen, which
+  deletes it) — the same lifecycle already established for generated outgoing voice messages
+  (`SpokenAudioFiles`/`SpeakActivity`), reusing the same `FileProvider` authority (a second declared cache path,
+  not a second provider) so the Share sheet can read it without exporting a broader permission.
+- **Exported component:** `ShareDocumentActivity` is `android:exported="true"`, required for any Share-sheet
+  target, exactly like the existing image and audio Share targets; it accepts only `content://` addresses via the
+  standard Share intent. `PrivacyAuditTest` lists it among the audited exported components, and
+  `SpeakManifestTest` locks the FileProvider's two allowed cache paths (generated speech, translated documents) so
+  a third cannot be added without the same conscious review.
+- **Known limitation, stated, not fixed:** one paragraph/page failing to translate fails the whole document; a
+  future round could add a partial-result mode if that trade-off matters in practice.
+- **Only `.docx` is supported**, not the legacy binary `.doc` format — `python-docx` only reads/writes the modern
+  zip-based Word format.
+
 ## Handwriting (added September 2026)
 
 The keyboard has a handwriting pad (a pen key next to the space bar) for all eight languages. It uses Google ML Kit Digital Ink Recognition, which is **not open source**.

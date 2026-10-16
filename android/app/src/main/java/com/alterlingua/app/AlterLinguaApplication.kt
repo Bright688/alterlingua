@@ -226,6 +226,11 @@ class AlterLinguaApplication : Application() {
         HttpVoiceApi(BuildConfig.TRANSLATION_BASE_URL, isOnline = AndroidConnectivity(this)::isOnline, apiToken = BuildConfig.API_TOKEN)
     }
 
+    /** The document translation service used by the shared-document Share flow (Premium). */
+    val documentApi: com.alterlingua.app.translation.HttpDocumentApi by lazy {
+        com.alterlingua.app.translation.HttpDocumentApi(BuildConfig.TRANSLATION_BASE_URL, isOnline = AndroidConnectivity(this)::isOnline, apiToken = BuildConfig.API_TOKEN)
+    }
+
     /** The standard curriculum's word lists, fetched online from the same backend as translation. */
     val curriculumApi: CurriculumApi by lazy {
         HttpCurriculumApi(BuildConfig.TRANSLATION_BASE_URL, apiToken = BuildConfig.API_TOKEN)

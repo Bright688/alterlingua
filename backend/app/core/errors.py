@@ -74,6 +74,32 @@ class SpeechNotRecognizedError(AppError):
     code = "speech_not_recognized"
 
 
+class UnsupportedDocumentTypeError(AppError):
+    """The upload is not a document format we accept, or its contents do not match what it claims to be."""
+
+    status_code = 415
+    code = "unsupported_document_type"
+
+
+class DocumentTooLargeError(AppError):
+    status_code = 413
+    code = "document_too_large"
+
+
+class InvalidDocumentError(AppError):
+    """The document is empty, unreadable, or has no translatable text."""
+
+    status_code = 422
+    code = "invalid_document"
+
+
+class DocumentTooComplexError(AppError):
+    """The document has more translatable paragraphs than one request will process."""
+
+    status_code = 422
+    code = "document_too_complex"
+
+
 class UnauthorizedError(AppError):
     """The request carries no valid API token."""
 

@@ -35,6 +35,13 @@ class Settings(BaseSettings):
     # Where temporary audio is written while it is processed (deleted afterwards). Empty means the system temp folder.
     temp_dir: str = ""
 
+    # Largest PDF/DOCX upload accepted for document translation, in bytes (default 20 MiB: documents run larger than
+    # the voice recordings above).
+    max_document_bytes: int = Field(default=20 * 1024 * 1024, ge=1024, le=200 * 1024 * 1024)
+    # Most translatable paragraphs one document translation request will process (app/documents/service.py); a
+    # document with more is refused before any provider call is made.
+    document_max_paragraphs: int = Field(default=300, ge=1, le=5000)
+
     # Which translation provider to use: "fake" (a development stand-in, never a real translation), "mistral", "groq",
     # "cloudflare", or "fallback" (tries Groq first, then Cloudflare Workers AI if Groq fails or is not configured).
     translation_provider: str = "fake"

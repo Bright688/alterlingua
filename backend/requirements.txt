@@ -6,3 +6,7 @@ httpx>=0.28,<1
 # Levels voice notes before speech recognition (app/speech/normalize.py); PyAV bundles the audio decoders.
 av>=14,<20
 numpy>=2,<3
+# Document translation (app/documents/): reads PDF/DOCX text, writes a translated PDF/DOCX back.
+pypdf>=6,<7
+python-docx>=1.2,<2
+reportlab>=5,<6

@@ -118,10 +118,18 @@ class PrivacyAuditTest {
         val main = File(sourceRoot.parentFile, "AndroidManifest.xml").readText()
         val exported = Regex("""<(activity|service|receiver|provider)\s+android:name="([^"]+)"[^>]*?android:exported="true"""", RegexOption.DOT_MATCHES_ALL)
             .findAll(main).map { it.groupValues[2] }.toList()
-        // The launcher screen, the audio Share target, the image Share target, the keyboard, the notification
-        // listener and the (optional, off-by-default) accessibility service, each bound by the system only.
+        // The launcher screen, the audio/image/document Share targets, the keyboard, the notification listener and
+        // the (optional, off-by-default) accessibility service, each bound by the system only.
         assertEquals(
-            listOf(".MainActivity", ".share.ShareVoiceActivity", ".share.ShareImageActivity", ".keyboard.AlterLinguaKeyboardService", ".notifications.AlterLinguaNotificationListener", ".accessibility.AlterLinguaAccessibilityService"),
+            listOf(
+                ".MainActivity",
+                ".share.ShareVoiceActivity",
+                ".share.ShareImageActivity",
+                ".share.ShareDocumentActivity",
+                ".keyboard.AlterLinguaKeyboardService",
+                ".notifications.AlterLinguaNotificationListener",
+                ".accessibility.AlterLinguaAccessibilityService",
+            ),
             exported,
         )
         assertTrue(main.contains("android.permission.BIND_INPUT_METHOD"))

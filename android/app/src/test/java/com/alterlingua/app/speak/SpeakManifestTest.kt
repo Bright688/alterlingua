@@ -19,10 +19,18 @@ class SpeakManifestTest {
         assertTrue(provider.contains("androidx.core.content.FileProvider"))
     }
 
-    @Test fun onlyTheGeneratedSpeechFolderCanBeShared() {
+    @Test fun onlyTheGeneratedSpeechAndTranslatedDocumentFoldersCanBeShared() {
+        // A second shareable folder (the Premium document-translation flow's output) was added deliberately on
+        // 2026-10-16 -- see docs/build-log.md -- so this guard now names both, rather than just one.
         val paths = read("res/xml/spoken_audio_paths.xml")
         val entries = Regex("""<([a-z-]+)\s+name="([^"]+)"\s+path="([^"]+)"""").findAll(paths).map { it.groupValues.drop(1) }.toList()
-        assertEquals(listOf(listOf("cache-path", "spoken", "spoken_audio/")), entries)
+        assertEquals(
+            listOf(
+                listOf("cache-path", "spoken", "spoken_audio/"),
+                listOf("cache-path", "translated_documents", "translated_documents/"),
+            ),
+            entries,
+        )
         assertFalse(paths.contains("root-path"))
         assertFalse(paths.contains("external"))
     }
@@ -36,5 +44,10 @@ class SpeakManifestTest {
     @Test fun theGeneratedSpeechFolderMatchesWhereTheAppWritesIt() {
         val wiring = File(listOf("src/main/java/com/alterlingua/app/AppViewModelProvider.kt", "app/src/main/java/com/alterlingua/app/AppViewModelProvider.kt").first { File(it).exists() }).readText()
         assertTrue(wiring.contains("File(app.cacheDir, \"spoken_audio\")"))
+    }
+
+    @Test fun theTranslatedDocumentFolderMatchesWhereTheAppWritesIt() {
+        val wiring = File(listOf("src/main/java/com/alterlingua/app/AppViewModelProvider.kt", "app/src/main/java/com/alterlingua/app/AppViewModelProvider.kt").first { File(it).exists() }).readText()
+        assertTrue(wiring.contains("File(app.cacheDir, \"translated_documents\")"))
     }
 }

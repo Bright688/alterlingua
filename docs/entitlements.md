@@ -45,8 +45,14 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   `FREE` gets **no trial at all** (unlike the curriculum's 50-word trial) — an immediate upgrade prompt instead.
   Gates the Share-sheet image-translation flow (`SharedImageViewModel`): share a photo or screenshot to
   AlterLingua, it is OCR'd on the phone (ML Kit), and the extracted text is translated through the existing
-  `/v1/translate` endpoint. PDF and DOCX file translation (Premium, per the owner's request) is scoped but not
-  started — see `docs/build-log.md`'s 2026-10-16 entry for what it needs.
+  `/v1/translate` endpoint.
+- `Feature.DOCUMENT_TRANSLATION` (added 2026-10-16, same day, see `docs/build-log.md`'s follow-up entry):
+  **`PREMIUM` only** — unlike image translation, `STANDARD` does not unlock this, per the owner's own original
+  split ("image translation under Standard, PDF/DOCX file translation under Premium"). No trial, same pattern as
+  image translation. Gates the Share-sheet document-translation flow (`SharedDocumentViewModel`): share a PDF or
+  Word (`.docx`) file, it is uploaded to the backend's `POST /v1/documents/translate`, and a real translated file
+  of the same format comes back, which the user can save or share through Android's own Share sheet. Legacy
+  binary `.doc` is not supported, only the modern `.docx` format.
 - `PlayBillingManager` is a real `BillingClient` wrapper: it queries Google Play's real catalog for the four
   `SubscriptionProducts` IDs, exposes what it finds as `offers`, and on a real completed purchase sets
   `UserSettings.tier` to the matching tier and acknowledges the purchase. It also re-checks Play's own purchase

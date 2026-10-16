@@ -546,6 +546,41 @@
     <string name="pi_unreadable_msg">Share the image again.</string>
     <string name="pi_not_entitled_title">Standard or Premium</string>
     <string name="pi_not_entitled_msg">Image translation is part of the Standard and Premium plans.</string>
+
+    <!-- Document translation (Premium): a shared PDF or Word (.docx) file, uploaded and returned as a translated file of the same format. -->
+    <string name="pd_document_translation">Document translation</string>
+    <string name="pd_step_reading">Getting your document…</string>
+    <string name="pd_step_uploading">Translating your document…</string>
+    <string name="pd_line_get">Get the document</string>
+    <string name="pd_line_translate">Translate it</string>
+    <string name="pd_translated_ready">Translation ready</string>
+    <string name="pd_translated_pdf_label">Translated to %1$s — a PDF file.</string>
+    <string name="pd_translated_docx_label">Translated to %1$s — a Word file.</string>
+    <string name="pd_save_or_share">Save or share</string>
+    <string name="pd_share_title">Save or share translated document</string>
+    <string name="pd_about_privacy">Your document is uploaded only to be translated, and deleted from our server right afterward. Nothing of it is kept on your phone except the translated file you see here.</string>
+    <string name="pd_not_entitled_title">Premium</string>
+    <string name="pd_not_entitled_msg">Translating a PDF or Word file into a translated file of the same format is part of the Premium plan.</string>
+    <string name="pd_no_document_title">Nothing to translate</string>
+    <string name="pd_no_document_msg">No document came with the share. Share a PDF or Word (.docx) file and choose AlterLingua.</string>
+    <string name="pd_not_content_title">Can\'t open that item</string>
+    <string name="pd_not_content_msg">AlterLingua only opens a document that an app shares with it directly.</string>
+    <string name="pd_unsupported_type_title">That file isn\'t supported</string>
+    <string name="pd_unsupported_type_msg">AlterLingua can translate PDF and Word (.docx) files.</string>
+    <string name="pd_too_large_title">That file is too large</string>
+    <string name="pd_too_large_msg">AlterLingua can translate documents up to about 20 MB. Try a smaller one.</string>
+    <string name="pd_empty_title">The file is empty</string>
+    <string name="pd_empty_msg">The shared file has nothing in it.</string>
+    <string name="pd_permission_title">Android didn\'t allow that</string>
+    <string name="pd_permission_msg">Access to a shared item lasts only a moment. Share the file again.</string>
+    <string name="pd_unreadable_title">Couldn\'t read the file</string>
+    <string name="pd_unreadable_msg">Share the file again.</string>
+    <string name="pd_invalid_document_title">No text to translate</string>
+    <string name="pd_invalid_document_msg">AlterLingua couldn\'t find any translatable text in that document (for example a scanned, image-only PDF, or a password-protected file).</string>
+    <string name="pd_too_complex_title">That document is too long</string>
+    <string name="pd_too_complex_msg">This document has more pages or paragraphs than AlterLingua can translate in one go.</string>
+    <string name="pd_translate_failed_title">Couldn\'t translate</string>
+
     <string name="pv_unclear_title">Unclear voice recording</string>
     <string name="pv_unclear_msg">I couldn\'t understand that. The audio might be unclear or noisy.</string>
     <string name="pv_unsupported_speech_title">Language not supported yet</string>

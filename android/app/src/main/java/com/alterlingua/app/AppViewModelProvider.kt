@@ -12,9 +12,12 @@ import com.alterlingua.app.share.AndroidSpeaker
 import com.alterlingua.app.share.ContentResolverAudioSource
 import com.alterlingua.app.share.MlKitImageTextRecognizer
 import com.alterlingua.app.share.SharedAudioReader
+import com.alterlingua.app.share.SharedDocumentReader
+import com.alterlingua.app.share.SharedDocumentViewModel
 import com.alterlingua.app.share.SharedImageReader
 import com.alterlingua.app.share.SharedImageViewModel
 import com.alterlingua.app.share.SharedVoiceViewModel
+import com.alterlingua.app.share.TranslatedDocumentFiles
 import com.alterlingua.app.share.VoiceNoteLearning
 import java.io.File
 import com.alterlingua.app.ui.home.HomeViewModel
@@ -118,6 +121,16 @@ object AppViewModelProvider {
                 settings = app.userSettings,
                 entitlements = app.entitlements,
                 speaker = AndroidSpeaker(app),
+            )
+        }
+        initializer {
+            val app = application()
+            SharedDocumentViewModel(
+                reader = SharedDocumentReader(ContentResolverAudioSource(app.contentResolver), File(app.cacheDir, "shared_document")),
+                api = app.documentApi,
+                settings = app.userSettings,
+                entitlements = app.entitlements,
+                outputFiles = TranslatedDocumentFiles(File(app.cacheDir, "translated_documents")),
             )
         }
         initializer { WordsViewModel(application().userSettings, application().languageMap) }

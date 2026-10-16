@@ -92,6 +92,25 @@
         </activity>
 
         <!--
+            Share target for documents: choosing AlterLingua in Android's Share sheet on a PDF or Word (.docx) file opens
+            this screen with a temporary read permission for that one item. Premium only, with no trial; FREE and
+            Standard see an upgrade prompt rather than being denied the share entirely. The file is uploaded to be
+            translated and a real translated file of the same format is returned, which the user can save or share
+            on themselves through Android's own Share sheet.
+        -->
+        <activity
+            android:name=".share.ShareDocumentActivity"
+            android:exported="true"
+            android:label="@string/share_voice_label">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+            </intent-filter>
+        </activity>
+
+        <!--
             Translated outgoing voice: record, hear the translation spoken, share it. Opened from AlterLingua's Home tab only.
         -->
         <activity

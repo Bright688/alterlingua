@@ -17,4 +17,11 @@ enum class Feature {
 
     /** Translating the text found in a shared image (on-device OCR, then the normal translation service). */
     IMAGE_TRANSLATION,
+
+    /**
+     * Translating a shared PDF or Word (.docx) file, with the output itself a translated file of the same format.
+     * Premium only, with no FREE/Standard trial -- the owner's own request split image translation (Standard) from
+     * document file translation (Premium), see docs/build-log.md.
+     */
+    DOCUMENT_TRANSLATION,
 }

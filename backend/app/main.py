@@ -13,9 +13,10 @@ from starlette.responses import Response
 from app import __version__
 from app.api import health, v1
 from app.core.config import Settings, get_settings
-from app.core.errors import AppError, AudioTooLargeError
+from app.core.errors import AppError, AudioTooLargeError, DocumentTooLargeError
 from app.core.logging import configure_logging, kv
 from app.core.security import check_startup, make_guard
+from app.documents.service import DocumentTranslationService
 from app.speech.provider import SpeechToTextProvider
 from app.speech.registry import create_stt_provider, create_tts_provider
 from app.speech.service import SpeechTranslationService
@@ -80,6 +81,10 @@ def create_app(
 
     app.state.curriculum_service = CurriculumService()
 
+    app.state.document_service = DocumentTranslationService(
+        app.state.translation_service, max_paragraphs=settings.document_max_paragraphs
+    )
+
     @app.middleware("http")
     async def refuse_oversized_audio(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         # Turn away an obviously too large upload from its declared size, before its body is read.
@@ -87,6 +92,13 @@ def create_app(
             declared = request.headers.get("content-length", "")
             if declared.isdigit() and int(declared) > settings.max_audio_bytes + MULTIPART_OVERHEAD_BYTES:
                 error = AudioTooLargeError(f"The audio is larger than {settings.max_audio_bytes} bytes.", max_bytes=settings.max_audio_bytes)
+                return JSONResponse(status_code=error.status_code, content=error.to_body())
+        if request.method == "POST" and request.url.path == "/v1/documents/translate":
+            declared = request.headers.get("content-length", "")
+            if declared.isdigit() and int(declared) > settings.max_document_bytes + MULTIPART_OVERHEAD_BYTES:
+                error = DocumentTooLargeError(
+                    f"The document is larger than {settings.max_document_bytes} bytes.", max_bytes=settings.max_document_bytes
+                )
                 return JSONResponse(status_code=error.status_code, content=error.to_body())
         return await call_next(request)
 

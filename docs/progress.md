@@ -1332,3 +1332,26 @@ infrastructure that does not exist for either format yet, a new upload/download 
 Premium-only entitlement — see `docs/build-log.md`'s "scoped, not started" section for the concrete list and the
 layout-fidelity default (paragraph order preserved, not pixel-identical) that still needs the owner's confirmation
 before that work begins.
+
+## Addendum (2026-10-16, follow-up): PDF and DOCX document translation (Premium), built end to end
+
+The owner asked directly to build what the addendum above had scoped but deferred. **IMPLEMENTED**: a new backend
+`backend/app/documents/` module (`POST /v1/documents/translate`) extracts translatable text from a PDF (page-level
+units — a real finding during this round: PDF has no reliable paragraph boundary to split on) or a DOCX
+(real paragraph-level units, with style names preserved where plausible), translates it through the *same*
+`TranslationService` every other endpoint uses, and regenerates a real translated PDF (`reportlab`) or DOCX
+(`python-docx`) file. Android: `Feature.DOCUMENT_TRANSLATION` (**Premium only** — unlike image translation, Standard
+does not get this, per the owner's own original split), a new `SharedDocumentReader`/`SharedDocumentViewModel`/
+`SharedDocumentScreen`/`ShareDocumentActivity` Share flow (mirroring the image-translation flow's architecture),
+and a "Save or share" step that hands the translated file to Android's Share sheet through the existing
+FileProvider (a second `<cache-path>` entry, not a second provider).
+
+**Status:** 46 new backend tests (461 total, all passing), new Android `SharedDocumentReaderTest`/
+`SharedDocumentViewModelTest`, full Android unit suite 0 failures (two pre-existing audit tests — `PrivacyAuditTest`, `SpeakManifestTest` — were deliberately updated, not
+loosened, to account for the new exported Activity and the new shareable cache folder), `lintDebug` clean,
+`assembleDebug`/`assembleRelease`/instrumented-test compile all clean. **Not yet manually verified on a device** —
+no device was connected to this session. See `docs/build-log.md`'s matching entry for full detail, the real
+PDF-extraction design problem found and fixed along the way, and manual test steps.
+
+**Only `.docx` is supported, not legacy binary `.doc`** — a stated, deliberate scope line (the parsing library
+used only reads/writes the modern zip-based Word format).
