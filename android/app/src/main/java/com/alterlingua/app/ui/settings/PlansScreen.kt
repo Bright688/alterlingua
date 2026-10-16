@@ -75,6 +75,7 @@ fun PlansScreen(
             current = tier == Tier.STANDARD,
             accent = MaterialTheme.colorScheme.primary,
             name = stringResource(R.string.set_plan_standard),
+            tagline = stringResource(R.string.set_plan_standard_tagline),
             staticPrice = null,
             features = listOf(
                 stringResource(R.string.set_plan_standard_feature_everything_free),
@@ -91,6 +92,7 @@ fun PlansScreen(
             // Already a Standard subscriber: nothing to "try", this is a clear upgrade.
             isUpgrade = tier == Tier.STANDARD,
             name = stringResource(R.string.set_plan_premium),
+            tagline = stringResource(R.string.set_plan_premium_tagline),
             staticPrice = null,
             features = listOf(
                 stringResource(R.string.set_plan_premium_feature_everything_standard),
@@ -120,6 +122,8 @@ private fun PlanCard(
     features: List<String>,
     offer: TierOffers?,
     onSubscribe: (SubscriptionOffer) -> Unit,
+    /** A short benefit-led pitch shown under the plan name (null for Free, which has [staticPrice] instead). */
+    tagline: String? = null,
     /** True when the learner already owns the tier below this one: nothing to "try", just a clear upgrade. */
     isUpgrade: Boolean = false,
 ) {
@@ -136,6 +140,9 @@ private fun PlanCard(
             }
             if (staticPrice != null) {
                 Text(staticPrice, style = MaterialTheme.typography.titleMedium, color = accent)
+            }
+            if (tagline != null) {
+                Text(tagline, style = MaterialTheme.typography.titleSmall, color = accent, modifier = Modifier.testTag("plan_tagline_${tier.name.lowercase()}"))
             }
             HorizontalDivider(color = MaterialTheme.extendedColors.cardBorder)
             features.forEach { feature ->

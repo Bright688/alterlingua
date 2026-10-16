@@ -268,6 +268,8 @@
     <string name="set_plan_free_trial">Kostenlose Testversion</string>
     <string name="set_plan_standard">Standard-Tarif</string>
     <string name="set_plan_premium">Premium-Tarif</string>
+    <string name="set_plan_standard_tagline">Verwandle alltägliche Gespräche in echte Sprachgewandtheit.</string>
+    <string name="set_plan_premium_tagline">Meistere jede Sprache, die du lernst — ganz ohne Limits.</string>
     <string name="lrn_premium_upgrade_cta">Auf Premium upgraden</string>
     <string name="set_curriculum_daily_goal">Wörter pro Tag</string>
     <string name="set_curriculum_daily_goal_desc">Wie viele Wörter aus den Standard- oder Premium-Lektionen du jeden Tag lernen möchtest (Standard: bis zu 20; Premium: unbegrenzt). Schaffst du es nicht, wird der Rest auf morgen übertragen.</string>

@@ -466,6 +466,7 @@ private fun StandardAndPremiumCards(
 ) {
     PlanEntryCard(
         name = stringResource(R.string.set_plan_standard),
+        tagline = stringResource(R.string.set_plan_standard_tagline),
         accent = MaterialTheme.colorScheme.primary,
         accentContainer = MaterialTheme.colorScheme.primaryContainer,
         features = listOf(
@@ -481,6 +482,7 @@ private fun StandardAndPremiumCards(
     )
     PlanEntryCard(
         name = stringResource(R.string.set_plan_premium),
+        tagline = stringResource(R.string.set_plan_premium_tagline),
         accent = MaterialTheme.colorScheme.tertiary,
         accentContainer = MaterialTheme.colorScheme.tertiaryContainer,
         features = listOf(
@@ -506,6 +508,7 @@ private fun StandardAndPremiumCards(
 @Composable
 private fun PlanEntryCard(
     name: String,
+    tagline: String,
     accent: Color,
     accentContainer: Color,
     features: List<String>,
@@ -529,6 +532,7 @@ private fun PlanEntryCard(
                 Text(name, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                 if (owned) TagPill(stringResource(R.string.set_plans_current))
             }
+            Text(tagline, style = MaterialTheme.typography.titleSmall, color = accent, modifier = Modifier.testTag("${testTag}_tagline"))
             features.forEach { feature ->
                 Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Filled.Check, contentDescription = null, tint = accent, modifier = Modifier.size(18.dp))

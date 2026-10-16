@@ -295,6 +295,8 @@
     <string name="set_plan_free_trial">Free trial</string>
     <string name="set_plan_standard">Standard plan</string>
     <string name="set_plan_premium">Premium plan</string>
+    <string name="set_plan_standard_tagline">Turn everyday conversations into real fluency.</string>
+    <string name="set_plan_premium_tagline">Master every language you\'re learning — with zero limits.</string>
     <string name="lrn_premium_upgrade_cta">Upgrade to Premium</string>
     <string name="set_curriculum_daily_goal">Words per day</string>
     <string name="set_curriculum_daily_goal_desc">How many words from Standard or Premium lessons you want to learn each day (Standard: up to 20; Premium: unlimited). If you don\'t finish, the rest carries over to tomorrow.</string>

@@ -268,6 +268,8 @@
     <string name="set_plan_free_trial">免费试用</string>
     <string name="set_plan_standard">标准版</string>
     <string name="set_plan_premium">高级版</string>
+    <string name="set_plan_standard_tagline">把日常对话变成真正流利的语言能力。</string>
+    <string name="set_plan_premium_tagline">无限制掌握您正在学习的每一种语言。</string>
     <string name="lrn_premium_upgrade_cta">升级到高级版</string>
     <string name="set_curriculum_daily_goal">每日学习词数</string>
     <string name="set_curriculum_daily_goal_desc">您每天想从标准版或高级版课程中学习多少个单词(标准版:最多20个;高级版:不限)。如果没有完成，剩余部分会转到明天。</string>

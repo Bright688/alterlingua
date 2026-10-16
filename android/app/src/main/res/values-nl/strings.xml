@@ -268,6 +268,8 @@
     <string name="set_plan_free_trial">Gratis proefperiode</string>
     <string name="set_plan_standard">Standard-abonnement</string>
     <string name="set_plan_premium">Premium-abonnement</string>
+    <string name="set_plan_standard_tagline">Verander alledaagse gesprekken in echte vloeiendheid.</string>
+    <string name="set_plan_premium_tagline">Beheers elke taal die je leert — zonder enige limiet.</string>
     <string name="lrn_premium_upgrade_cta">Upgraden naar Premium</string>
     <string name="set_curriculum_daily_goal">Woorden per dag</string>
     <string name="set_curriculum_daily_goal_desc">Hoeveel woorden uit Standard- of Premium-lessen je elke dag wilt leren (Standard: tot 20; Premium: onbeperkt). Maak je het niet af, dan schuift de rest door naar morgen.</string>

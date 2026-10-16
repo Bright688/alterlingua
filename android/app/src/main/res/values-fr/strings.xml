@@ -268,6 +268,8 @@
     <string name="set_plan_free_trial">Essai gratuit</string>
     <string name="set_plan_standard">Forfait Standard</string>
     <string name="set_plan_premium">Forfait Premium</string>
+    <string name="set_plan_standard_tagline">Transformez vos conversations du quotidien en vraie aisance.</string>
+    <string name="set_plan_premium_tagline">Maîtrisez toutes les langues que vous apprenez — sans aucune limite.</string>
     <string name="lrn_premium_upgrade_cta">Passer à Premium</string>
     <string name="set_curriculum_daily_goal">Mots par jour</string>
     <string name="set_curriculum_daily_goal_desc">Combien de mots des leçons Standard ou Premium vous voulez apprendre chaque jour (Standard : jusqu\'à 20 ; Premium : illimité). Si vous ne terminez pas, le reste est reporté au lendemain.</string>

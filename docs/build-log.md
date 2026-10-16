@@ -2818,3 +2818,34 @@ across this whole session) before that specific check could be done.
    colour, phrased as a reason to subscribe rather than a bare technical fact.
 4. If you were already a Standard subscriber (once real Play Console products exist), the Premium card should say
    "Upgrade to Premium" instead of "Try it" — the same on Settings → Plan.
+
+## 2026-10-16 (follow-up) — A headline, not just a feature list, plus full on-device confirmation
+
+The owner said directly that the feature-list rewrite above still wasn't "good enough... users need to see
+something good enough for them to pay." The gap: three parallel bullet facts, however well-worded, read as a spec
+sheet, not a pitch -- there was no single hook making the case for *why* before listing *what*.
+
+**Added a one-line tagline per paid plan**, shown in the tier's own accent colour right under the plan name, above
+the feature checklist (`set_plan_standard_tagline`/`set_plan_premium_tagline`, all 8 locales; new `tagline`
+parameter on both `LearnScreen.kt`'s `PlanEntryCard` and `PlansScreen.kt`'s `PlanCard`, so both surfaces match):
+
+- Standard: "Turn everyday conversations into real fluency."
+- Premium: "Master every language you're learning — with zero limits."
+
+Deliberately an outcome ("real fluency", "zero limits"), not a restated feature -- the bullets underneath already
+say what it technically unlocks; the tagline says why that matters. Still nothing invented: both lines describe
+the same real curriculum-access and daily-cap facts the bullets name, just stated as the payoff first.
+
+### Verification
+
+**Manually verified on the owner's real device this time, for everything in this entry and the previous one**:
+fresh install, no crash; Learn tab shows both taglines in their accent colours above the checklists; Settings →
+Plan shows the identical taglines in the same place; the owner's own "Words per day" chips confirmed at 10/10 for
+Micro Lessons and 5 for Standard & Premium Lessons (their own choice, unrelated to the code default). Screenshots
+taken at each step this time, not just installed-and-assumed. `compileDebugKotlin`/`compileDebugAndroidTestKotlin`/
+`compileDebugUnitTestKotlin`, `testDebugUnitTest` and `lintDebug` all still run clean (0 errors) after the
+tagline addition.
+
+### Manual test for the owner
+
+Already covered above — confirmed showing on both the Learn tab and Settings → Plan.
