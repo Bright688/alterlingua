@@ -3302,3 +3302,15 @@ of this feature's Gate-C-style check to actually be confirmed live rather than o
 Already covered above, now confirmed live: Translate a message, tap **Voice** promptly (within a few seconds, same
 10-second window as Undo), confirm the Share sheet opens with a real voice file, and that choosing a chat app
 shows the file ready to send (stop there, or send it yourself if you want to hear the result).
+
+## 2026-10-17 (follow-up) — Corrected again: 5/30/unlimited per month
+
+**The owner changed the numbers once more**: "should be 5/30/unlimited per month." Free and Standard's monthly
+caps are now `FREE_TTS_SHARES_PER_MONTH=5` and `STANDARD_TTS_SHARES_PER_MONTH=30`; Premium is genuinely
+**unlimited again**, not a high finite cap — `EntitlementService.ttsShareLimitPerMonth(tier)` reverted to
+returning `Int?` (null for Premium, meaning "no limit at all"), the same shape the very first version of this
+feature used, before the previous round's "1,000, not literally unlimited" correction. `TtsShareUsageService`'s
+`access()`/`remaining()` were reverted to handle the null case. The Settings → Plan and Learn tab bullets, and all
+three test files (`EntitlementServiceTest`, `TtsShareUsageServiceTest`, `TranslatedVoiceFlowTest`), were updated to
+match. Full unit suite still passes; `assembleRelease` clean. Not re-verified on the device this round (the exact
+flow was already confirmed live in the entry above; only the numbers changed).

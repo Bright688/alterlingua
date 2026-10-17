@@ -138,6 +138,6 @@ class EntitlementServiceTest {
         val service = EntitlementService(FakeUserSettingsRepository())
         assertEquals(FREE_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.FREE))
         assertEquals(STANDARD_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.STANDARD))
-        assertEquals(PREMIUM_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.PREMIUM))
+        assertEquals(null, service.ttsShareLimitPerMonth(Tier.PREMIUM))
     }
 }

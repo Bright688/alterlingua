@@ -38,13 +38,10 @@ class TtsShareUsageServiceTest {
     }
 
     @Test
-    fun premiumHasItsOwnMuchHigherLimit_notUnlimited() = runTest {
-        val underLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = STANDARD_TTS_SHARES_PER_MONTH + 10))
-        assertEquals(TtsShareAccess.Allowed, service(underLimit, JANUARY_15_2026).access(Tier.PREMIUM))
-
-        val atLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = PREMIUM_TTS_SHARES_PER_MONTH))
-        assertEquals(TtsShareAccess.LimitReached(PREMIUM_TTS_SHARES_PER_MONTH), service(atLimit, JANUARY_15_2026).access(Tier.PREMIUM))
-        assertEquals(0, service(atLimit, JANUARY_15_2026).remaining(Tier.PREMIUM))
+    fun premiumIsNeverStopped_evenFarPastTheOtherTiersLimits() = runTest {
+        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = 10_000))
+        assertEquals(TtsShareAccess.Allowed, service(settings, JANUARY_15_2026).access(Tier.PREMIUM))
+        assertEquals(null, service(settings, JANUARY_15_2026).remaining(Tier.PREMIUM))
     }
 
     @Test

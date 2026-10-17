@@ -2,7 +2,6 @@ package com.alterlingua.app.keyboard
 
 import com.alterlingua.app.entitlements.EntitlementService
 import com.alterlingua.app.entitlements.FREE_TTS_SHARES_PER_MONTH
-import com.alterlingua.app.entitlements.PREMIUM_TTS_SHARES_PER_MONTH
 import com.alterlingua.app.entitlements.STANDARD_TTS_SHARES_PER_MONTH
 import com.alterlingua.app.entitlements.Tier
 import com.alterlingua.app.entitlements.TtsShareUsageService
@@ -102,18 +101,12 @@ class TranslatedVoiceFlowTest {
     }
 
     @Test
-    fun aPremiumUser_hasItsOwnMuchHigherLimit_notUnlimited() = runTest {
-        val underStandardsLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = STANDARD_TTS_SHARES_PER_MONTH + 10))
-        val stillAllowed = flow(underStandardsLimit, backgroundScope)
-        stillAllowed.speakAndShare("hello", Languages.French)
-        runCurrent()
-        assertEquals(1, shared.size)
-
-        val atLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = PREMIUM_TTS_SHARES_PER_MONTH))
-        val f = flow(atLimit, backgroundScope)
+    fun aPremiumUser_isNeverStopped_evenFarPastTheOtherTiersLimits() = runTest {
+        val prefs = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = 10_000))
+        val f = flow(prefs, backgroundScope)
         f.speakAndShare("hello", Languages.French)
         runCurrent()
-        assertEquals(TranslatedVoiceUiState.LimitReached(PREMIUM_TTS_SHARES_PER_MONTH), f.state)
+        assertEquals(1, shared.size)
     }
 
     @Test

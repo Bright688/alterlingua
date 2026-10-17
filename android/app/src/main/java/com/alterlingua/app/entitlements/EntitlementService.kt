@@ -13,14 +13,10 @@ const val STANDARD_CURRICULUM_DAILY_CAP: Int = 20
 const val PREMIUM_CURRICULUM_DAILY_CAP: Int = 10_000
 
 /** How many translated-keyboard-message voice shares a FREE user may make a month (see [EntitlementService.ttsShareLimitPerMonth]). */
-const val FREE_TTS_SHARES_PER_MONTH: Int = 10
+const val FREE_TTS_SHARES_PER_MONTH: Int = 5
 
-/** STANDARD's monthly cap for the same feature. */
-const val STANDARD_TTS_SHARES_PER_MONTH: Int = 50
-
-/** PREMIUM's monthly cap for the same feature: high rather than a hard "unlimited", the same style as
- * [PREMIUM_CURRICULUM_DAILY_CAP]. */
-const val PREMIUM_TTS_SHARES_PER_MONTH: Int = 1_000
+/** STANDARD's monthly cap for the same feature. PREMIUM has no cap at all (see [EntitlementService.ttsShareLimitPerMonth]). */
+const val STANDARD_TTS_SHARES_PER_MONTH: Int = 30
 
 /** Whether a translated keyboard message may be given a voice and shared right now. */
 sealed interface TtsShareAccess {
@@ -132,10 +128,11 @@ class EntitlementService(private val settings: UserSettingsRepository) {
     /** Whether [tier] is free of advertisements (only PREMIUM is). */
     fun isAdFree(tier: Tier): Boolean = tier == Tier.PREMIUM
 
-    /** How many translated-message voice shares [tier] may make a month: Free 10, Standard 50, Premium 1,000. */
-    fun ttsShareLimitPerMonth(tier: Tier): Int = when (tier) {
+    /** How many translated-message voice shares [tier] may make a month: Free 5, Standard 30, or null for no
+     * limit at all (Premium). */
+    fun ttsShareLimitPerMonth(tier: Tier): Int? = when (tier) {
         Tier.FREE -> FREE_TTS_SHARES_PER_MONTH
         Tier.STANDARD -> STANDARD_TTS_SHARES_PER_MONTH
-        Tier.PREMIUM -> PREMIUM_TTS_SHARES_PER_MONTH
+        Tier.PREMIUM -> null
     }
 }

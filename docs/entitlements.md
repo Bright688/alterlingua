@@ -56,12 +56,12 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
 - The keyboard's "give this translation a voice and share it" button (on-device text-to-speech, no backend call,
   then Android's Share sheet) is gated by a **graded monthly cap per tier, not a `Feature`/`TierPolicy` entry** —
   every tier has some real access, so there is no tier to "unlock" it. `EntitlementService.ttsShareLimitPerMonth`
-  holds the three real numbers the owner gave directly (2026-10-17): `FREE_TTS_SHARES_PER_MONTH=10`,
-  `STANDARD_TTS_SHARES_PER_MONTH=50`, `PREMIUM_TTS_SHARES_PER_MONTH=1000` (a high cap, not literally unlimited —
-  the same honesty `PREMIUM_CURRICULUM_DAILY_CAP` already uses). `TtsShareUsageService` is the app's first real
-  usage quota (a resettable monthly counter). **Manually verified live on the owner's phone** (2026-10-17,
-  follow-up): translate, tap Voice, on-device TTS produces a real audio file, Android's Share sheet hands it to
-  WhatsApp — see `docs/build-log.md` for the full device-test account, including a real manual-testing gotcha
+  holds the owner's own numbers (corrected twice, most recently 2026-10-17): `FREE_TTS_SHARES_PER_MONTH=5`,
+  `STANDARD_TTS_SHARES_PER_MONTH=30`, and **Premium is genuinely unlimited** (`null`, not a high finite cap).
+  `TtsShareUsageService` is the app's first real usage quota (a resettable monthly counter). **Manually verified
+  live on the owner's phone** (2026-10-17): translate, tap Voice, on-device TTS produces a real audio file,
+  Android's Share sheet hands it to WhatsApp — see `docs/build-log.md` for the full device-test account, including
+  a real manual-testing gotcha
   found along the way (not a code bug).
 - `PlayBillingManager` is a real `BillingClient` wrapper: it queries Google Play's real catalog for the four
   `SubscriptionProducts` IDs, exposes what it finds as `offers`, and on a real completed purchase sets
