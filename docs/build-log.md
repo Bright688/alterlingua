@@ -3399,3 +3399,31 @@ again before the updated build could be installed.
    to send to whichever chat you pick -- still your own tap on Send in WhatsApp, same as always.
 4. Try the same from the toolbar's own **Voice** button after a normal Translate, to confirm it also now goes
    straight to WhatsApp.
+
+## 2026-10-17 (follow-up) — Equal widths, and Insert as voice actually has a visible background
+
+**The owner's own words, after reinstalling and looking at the new row:** "adjust the padding of the bg color of
+the insert as text. and for the insert as voice. they suppose to have same rather than the the insert as text
+becoming more wider. also the insert as voice voice a bg color." Two real problems, found once we looked at why:
+
+1. **Insert as text was still wider.** It kept the `weight = 2f` it had back when it was the only prominent button
+   in its row (next to the much narrower "Edit"); pairing it with Insert as voice without resetting that weight
+   left it twice as wide as its new neighbour. Both now default to `weight = 1f` -- equal width.
+2. **Insert as voice effectively had no visible background.** It used `ToolbarButtonStyle.TONAL`, whose fill
+   (`functionKey`, `#E2E7FF` in light mode) is almost the same colour as the panel's own background (`board`,
+   `#EAEDFF`) -- a one-digit hex difference, invisible at a glance. Every other TONAL button on the keyboard sits
+   next to a bold PRIMARY button that draws the eye instead (Undo, Insert as text itself), which is likely why this
+   was never noticed before. Rather than changing the shared TONAL colour (used by many other buttons elsewhere, a
+   much bigger change than asked for), **Insert as voice now uses `ToolbarButtonStyle.OUTLINED`** instead -- a
+   white fill plus a visible stroke border, the same style already used elsewhere in the keyboard for a
+   button that needs to read clearly against the board background.
+
+**Status:** `compileDebugKotlin`, full Android unit suite (0 failures) and the debug build all clean; installed on
+the owner's connected phone. Not yet re-confirmed visually on the device by the owner.
+
+### Manual test for the owner
+
+1. Reopen the keyboard's microphone result screen.
+2. Confirm **Insert as text** and **Insert as voice** are now the same width.
+3. Confirm **Insert as voice** now has a clearly visible button background (a bordered outline), not just text
+   floating on the panel.

@@ -172,8 +172,8 @@ class VoicePanel(
             TranslatedVoiceUiState.Idle -> {
                 body.addView(
                     row(
-                        button(context.getString(R.string.voice_insert), ToolbarButtonStyle.PRIMARY, VoiceAction.INSERT, weight = 2f),
-                        button(context.getString(R.string.voice_insert_as_voice), ToolbarButtonStyle.TONAL, VoiceAction.SPEAK_TRANSLATION),
+                        button(context.getString(R.string.voice_insert), ToolbarButtonStyle.PRIMARY, VoiceAction.INSERT),
+                        button(context.getString(R.string.voice_insert_as_voice), ToolbarButtonStyle.OUTLINED, VoiceAction.SPEAK_TRANSLATION),
                     ),
                 )
             }
