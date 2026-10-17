@@ -29,10 +29,12 @@ data class SpokenLanguages(val spoken: Language, val target: Language)
 
 /** Where the generated speech is kept: a folder in the app's private cache that only [SpokenFileProvider] paths reach. */
 class SpokenAudioFiles(private val directory: File, private val clock: () -> Long = System::currentTimeMillis) {
-    /** A fresh file for generated speech. Android's on-device text-to-speech always writes WAV. */
+    /** A fresh file for generated speech. Android's on-device text-to-speech always writes WAV, but [Speaker]
+     * re-encodes it to AAC before this file is ever read -- WhatsApp's own voice-message bubble will not play a
+     * raw WAV. */
     fun newFile(): File {
         directory.mkdirs()
-        return File(directory, "voice-${UUID.randomUUID()}.wav")
+        return File(directory, "voice-${UUID.randomUUID()}.m4a")
     }
 
     fun delete(file: File?) {
@@ -47,7 +49,7 @@ class SpokenAudioFiles(private val directory: File, private val clock: () -> Lon
 
     companion object {
         const val STALE_MILLIS = 60L * 60 * 1000
-        const val AUDIO_TYPE = "audio/wav"
+        const val AUDIO_TYPE = "audio/mp4"
     }
 }
 

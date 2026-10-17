@@ -71,8 +71,12 @@ class AndroidSpeaker(private val context: Context) : Speaker {
         return tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "alterlingua-listen") == TextToSpeech.SUCCESS
     }
 
-    override suspend fun synthesizeToFile(text: String, language: Language, file: File): Boolean =
-        kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
+    /** Android's TextToSpeech only ever writes PCM WAV, so it is written to a temporary sibling file first, then
+     * re-encoded into [file] as AAC (see [SpeechAudioEncoder]) -- WhatsApp's own voice-message bubble refuses to
+     * play a raw WAV, even a perfectly valid one. */
+    override suspend fun synthesizeToFile(text: String, language: Language, file: File): Boolean {
+        val wav = File(file.parentFile, "${file.name}.tmp.wav")
+        val wrote = kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
             withEngine { tts ->
                 if (tts == null || tts.setLanguage(Locale.forLanguageTag(language.code)) < TextToSpeech.LANG_AVAILABLE) {
                     if (continuation.isActive) continuation.resumeWith(Result.success(false))
@@ -94,10 +98,14 @@ class AndroidSpeaker(private val context: Context) : Speaker {
                         if (continuation.isActive) continuation.resumeWith(Result.success(false))
                     }
                 })
-                val started = tts.synthesizeToFile(text, null, file, utteranceId)
+                val started = tts.synthesizeToFile(text, null, wav, utteranceId)
                 if (started != TextToSpeech.SUCCESS && continuation.isActive) continuation.resumeWith(Result.success(false))
             }
         }
+        val encoded = wrote && SpeechAudioEncoder.wavToAac(wav, file)
+        wav.delete()
+        return encoded
+    }
 
     override fun stop() {
         engine?.takeIf { ready }?.stop()

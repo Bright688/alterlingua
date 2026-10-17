@@ -1436,3 +1436,15 @@ the owner chose going straight to WhatsApp: `shareSpokenFile` now targets `com.w
 sheet fallback if it's not installed — this is the one hand-off point both Voice buttons share, so the toolbar's
 own button goes straight to WhatsApp now too. Full unit suite 0 failures, `assembleRelease` clean. Not yet
 re-verified on the device — disconnected again before the updated build could install.
+
+## Addendum (2026-10-17, follow-up): real bug — WhatsApp couldn't play the voice message, now fixed
+
+The owner sent a real voice message and got WhatsApp's own "Couldn't process audio" error on playback (delivery
+itself worked). Pulled the actual generated file off the device and confirmed it's a perfectly valid, non-silent
+WAV — the bug is that WhatsApp's voice-message bubble expects a compressed voice-note-shaped file (effectively
+Opus) and refuses to play raw PCM WAV, something no earlier round of testing had actually reached (only "Share
+sheet accepted it, ready to send" had been confirmed before). **FIXED**: new `SpeechAudioEncoder` re-encodes the
+WAV into AAC-in-MP4 on-device via `MediaCodec`/`MediaMuxer` before the file ever reaches WhatsApp — one shared
+fix point for both the toolbar's Voice button and the microphone's Insert as voice. New `SpeechAudioEncoderTest`
+covers the WAV-chunk parsing (the codec itself needs a real device to test). Full unit suite 0 failures. Installed
+on the owner's phone; not yet re-confirmed live — device dropped its USB connection again mid-test.

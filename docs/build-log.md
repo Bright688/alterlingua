@@ -3427,3 +3427,45 @@ the owner's connected phone. Not yet re-confirmed visually on the device by the 
 2. Confirm **Insert as text** and **Insert as voice** are now the same width.
 3. Confirm **Insert as voice** now has a clearly visible button background (a bordered outline), not just text
    floating on the panel.
+
+## 2026-10-17 (follow-up) — Real bug found: WhatsApp refused to play the voice message
+
+**The owner's own words, after sending one of these voice messages for real:** "after click insert as text and
+sending to the place i get this [screenshot of WhatsApp's own dialog] Couldn't process audio. Try again later...",
+then, asked whether playback itself worked or only delivery: "they look delivered but when the audio is opened i
+get that same error." A real functional bug, not a cosmetic one -- the voice message reached WhatsApp and showed as
+delivered, but could not actually be played.
+
+**Root cause, confirmed rather than guessed:** pulled one of the actual generated files off the device
+(`adb shell run-as com.alterlingua.app cat cache/spoken_audio/...` -- this app's debuggable build allows `run-as`)
+and inspected it directly. The RIFF/WAVE header was byte-for-byte correct (sample rate, channel count, data-chunk
+size all consistent with the file's own byte count), and Python's standard `wave` module decoded it cleanly as
+real, non-silent speech audio. The file Android's own TextToSpeech produces is not corrupt. The problem is that
+WhatsApp's voice-message bubble -- the one its Share hand-off lands a file into -- expects a compressed,
+voice-note-shaped file the way WhatsApp's own recordings are (effectively Opus), and refuses to play a raw PCM WAV
+even though the WAV itself is perfectly valid; this had never been caught before because no earlier round of
+testing had gotten as far as actually pressing Play on a message that had actually been sent (earlier entries only
+confirmed the Share sheet accepted the file and WhatsApp showed it ready to send).
+
+**Fix:** new `SpeechAudioEncoder` (`share/SpeechAudioEncoder.kt`) re-encodes the WAV into AAC-in-MP4 (`.m4a`)
+entirely on-device with the platform's own `MediaCodec`/`MediaMuxer` -- no new library, nothing leaves the phone a
+second time. `AndroidSpeaker.synthesizeToFile` now has TextToSpeech write to a temporary sibling WAV file first,
+then hands it to the encoder to produce the file the caller actually asked for, deleting the temporary WAV either
+way. `SpokenAudioFiles.newFile()` now names files `.m4a` and `AUDIO_TYPE` is `audio/mp4` (was `audio/wav`) --
+this is the one shared file-naming point both the toolbar's own Voice button and the microphone result's Insert as
+voice already go through, so the fix covers both without touching either of their own code.
+
+**Status:** `compileDebugKotlin`/`compileDebugUnitTestKotlin` clean. New `SpeechAudioEncoderTest` covers the
+hand-rolled WAV-chunk parsing directly (sample rate/channel count/data, an odd-sized chunk before `data`, and a
+non-RIFF rejection) -- the actual `MediaCodec` encode path itself has no real codec to run against in a plain JVM
+unit test, so it can only be confirmed on a device, consistent with how this project already treats IME/Share
+system integration (CLAUDE.md section 43). Full existing unit suite still passes (extension/mime assertions in
+`SpokenTranslationFlowTest` updated to `.m4a`/`audio/mp4`). Installed on the owner's phone; **not yet re-confirmed
+live** -- the device dropped its USB connection again before an actual voice message could be sent and played back
+with the new build.
+
+### Manual test for the owner
+
+1. Translate a message (or use the microphone), tap Voice/Insert as voice, pick the chat in WhatsApp, press Send.
+2. Open the sent voice message and tap Play.
+3. Confirm it plays the spoken translation instead of showing "Couldn't process audio."

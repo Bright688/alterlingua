@@ -125,8 +125,8 @@ class SpokenTranslationFlowTest {
         assertEquals(listOf("audio/mp4", "en", "es"), api.calls.single())
         assertEquals(listOf("translation in es" to "es"), speaker.synthesized)
         assertArrayEquals("translation in es".toByteArray(), r.audioFile.readBytes())
-        assertTrue(r.audioFile.name.endsWith(".wav"))
-        assertEquals("audio/wav", r.audioType)
+        assertTrue(r.audioFile.name.endsWith(".m4a"))
+        assertEquals("audio/mp4", r.audioType)
     }
 
     @Test fun anyTargetLanguageCanBeChosen_andIsTheOneAskedFor() = runTest {
