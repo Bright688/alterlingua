@@ -17,7 +17,20 @@ import com.alterlingua.app.learning.Language
 import java.util.Locale
 
 /** What the user asked for on the voice panel. */
-enum class VoiceAction { STOP, CANCEL, ALLOW_MICROPHONE, INSERT, EDIT, LISTEN, RECORD_AGAIN, RETRY, INSERT_HEARD }
+enum class VoiceAction {
+    STOP, CANCEL, ALLOW_MICROPHONE, INSERT, EDIT, LISTEN, RECORD_AGAIN, RETRY, INSERT_HEARD,
+
+    /** "Voice" on the recorded-and-translated result: on-device text-to-speech, then Android's own Share sheet,
+     * exactly like the keyboard toolbar's own Translate-then-Voice flow (same quota, same [TranslatedVoiceFlow]). */
+    SPEAK_TRANSLATION,
+
+    /** Dismisses a "voice limit reached" or "couldn't make the voice" message shown under the result, without
+     * affecting the recording or its translation. */
+    DISMISS_VOICE_SHARE,
+
+    /** "View plans" from the voice-limit message. */
+    OPEN_PLANS,
+}
 
 /**
  * The compact voice panel: a header strip that replaces the toolbar and a body that replaces the keys.
@@ -47,7 +60,7 @@ class VoicePanel(
     var coversKeys = false
         private set
 
-    fun render(state: VoiceUiState) {
+    fun render(state: VoiceUiState, voiceShareState: TranslatedVoiceUiState = TranslatedVoiceUiState.Idle) {
         // The recording changes ten times a second: only the timer and waveform are updated then.
         if (state is VoiceUiState.Recording && timerView != null && waveform != null) {
             timerView?.text = formatTime(state.elapsedMillis)
@@ -75,7 +88,7 @@ class VoicePanel(
             is VoiceUiState.Recording -> renderRecording(state)
             is VoiceUiState.Understanding -> renderWaiting(context.getString(R.string.voice_understanding))
             is VoiceUiState.Translating -> renderWaiting(context.getString(R.string.voice_translating_to, state.target.displayName))
-            is VoiceUiState.Result -> if (state.editing) renderEditing(state) else renderResult(state)
+            is VoiceUiState.Result -> if (state.editing) renderEditing(state) else renderResult(state, voiceShareState)
             is VoiceUiState.Failed -> renderFailed(state)
         }
     }
@@ -123,7 +136,7 @@ class VoicePanel(
         body.addView(row(button(context.getString(R.string.voice_cancel), ToolbarButtonStyle.TONAL, VoiceAction.CANCEL)))
     }
 
-    private fun renderResult(state: VoiceUiState.Result) {
+    private fun renderResult(state: VoiceUiState.Result, voiceShareState: TranslatedVoiceUiState) {
         titleHeader(context.getString(R.string.voice_title), closable = true)
         val column = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
         column.addView(text(context.getString(R.string.voice_original, languageName(state.original)), 12f, bold = true, color = colors.functionText))
@@ -150,7 +163,43 @@ class VoicePanel(
                 button(context.getString(R.string.voice_record_again), ToolbarButtonStyle.TONAL, VoiceAction.RECORD_AGAIN),
             ),
         )
+        renderVoiceShareRow(voiceShareState)
         coversKeys = true
+    }
+
+    /** "Give it a voice and share it" (on-device text-to-speech, then Android's Share sheet), with whatever
+     * [voiceShareState] it is currently in -- a monthly trial limit for FREE/Standard, or a problem making it. */
+    private fun renderVoiceShareRow(voiceShareState: TranslatedVoiceUiState) {
+        when (voiceShareState) {
+            TranslatedVoiceUiState.Idle -> {
+                body.addView(row(button(context.getString(R.string.translation_give_voice), ToolbarButtonStyle.TONAL, VoiceAction.SPEAK_TRANSLATION)))
+            }
+            TranslatedVoiceUiState.Making -> {
+                val making = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+                making.addView(
+                    ProgressBar(context).apply { isIndeterminate = true; indeterminateTintList = ColorStateList.valueOf(colors.actionKey) },
+                    LinearLayout.LayoutParams((16 * density).toInt(), (16 * density).toInt()),
+                )
+                making.addView(
+                    text(context.getString(R.string.translation_making_voice), 13f, bold = false, color = colors.functionText),
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { leftMargin = (8 * density).toInt() },
+                )
+                body.addView(making)
+            }
+            is TranslatedVoiceUiState.LimitReached -> {
+                body.addView(text(context.getString(R.string.translation_voice_limit_msg, voiceShareState.limit), 12f, bold = false, color = colors.functionText))
+                body.addView(
+                    row(
+                        button(context.getString(R.string.lrn_curriculum_upgrade), ToolbarButtonStyle.PRIMARY, VoiceAction.OPEN_PLANS),
+                        button(context.getString(R.string.translation_voice_limit_continue), ToolbarButtonStyle.TONAL, VoiceAction.DISMISS_VOICE_SHARE),
+                    ),
+                )
+            }
+            TranslatedVoiceUiState.Failed -> {
+                body.addView(text(context.getString(R.string.translation_voice_share_failed), 12f, bold = false, color = colors.functionText))
+                body.addView(row(button(context.getString(R.string.translation_dismiss), ToolbarButtonStyle.TONAL, VoiceAction.DISMISS_VOICE_SHARE)))
+            }
+        }
     }
 
     /** Editing: the keys are visible, so only the header shows the text being edited, with the Insert button. */

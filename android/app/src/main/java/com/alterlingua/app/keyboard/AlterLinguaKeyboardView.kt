@@ -306,10 +306,11 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
         updateContentArea()
     }
 
-    /** Shows the voice panel state: recording, waiting, the result to review, or an error. */
-    fun renderVoice(state: VoiceUiState) {
+    /** Shows the voice panel state: recording, waiting, the result to review, or an error. [voiceShareState] is the
+     * result's own "give it a voice and share it" status, if any. */
+    fun renderVoice(state: VoiceUiState, voiceShareState: TranslatedVoiceUiState = TranslatedVoiceUiState.Idle) {
         voiceState = state
-        voicePanel.render(state)
+        voicePanel.render(state, voiceShareState)
         // While the translation is being edited the strip is taller, to show the text; the keys stay for typing.
         toolbarFrame?.let { frame ->
             val height = ((if (voicePanel.wantsTallHeader) EDIT_HEADER_HEIGHT_DP else TOOLBAR_HEIGHT_DP) * density).toInt()

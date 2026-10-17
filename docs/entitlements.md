@@ -62,7 +62,10 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   live on the owner's phone** (2026-10-17): translate, tap Voice, on-device TTS produces a real audio file,
   Android's Share sheet hands it to WhatsApp — see `docs/build-log.md` for the full device-test account, including
   a real manual-testing gotcha
-  found along the way (not a code bug).
+  found along the way (not a code bug). As of 2026-10-17 (follow-up) there are **two entry points sharing the same
+  quota**: the keyboard toolbar's own Translate-then-Voice button, and the microphone's record-then-translate
+  result screen's own Voice button — both go through the same `TranslatedVoiceFlow` instance, so speaking a typed
+  translation and speaking a recorded one draw from one allowance, not two.
 - `PlayBillingManager` is a real `BillingClient` wrapper: it queries Google Play's real catalog for the four
   `SubscriptionProducts` IDs, exposes what it finds as `offers`, and on a real completed purchase sets
   `UserSettings.tier` to the matching tier and acknowledges the purchase. It also re-checks Play's own purchase

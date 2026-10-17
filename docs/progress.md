@@ -1401,3 +1401,25 @@ Settings → Plan and the Learn tab updated to match, Standard gaining its own b
 it, ready to send. A real manual-testing gotcha (not a code bug) was found and understood along the way: tapping
 Translate and Voice as two separate commands let `TranslationFlow`'s 10-second banner expiry elapse in between;
 tapped back-to-back in one shell call, it worked on the first try. See `docs/build-log.md` for full detail.
+
+## Addendum (2026-10-17, follow-up): corrected again to 5/30/unlimited per month
+
+The owner corrected the numbers a second time: Free 5/month, Standard 30/month, Premium genuinely unlimited (not
+1,000/month). `EntitlementService.ttsShareLimitPerMonth` is nullable again (`Int?`); `null` means Premium is never
+checked against any cap at all. `TtsShareUsageService`, three test files, 8 locales' Plan-screen strings and
+`docs/entitlements.md` all updated to match. Full unit suite still passes; `assembleRelease` clean. Not
+re-verified on the device this round (the mechanism was already confirmed live in the addendum above; only the
+numbers changed).
+
+## Addendum (2026-10-17, follow-up): the microphone's own result also gets a Voice button
+
+The owner, retesting on the device, asked for the microphone's record-then-translate result screen to also offer
+"insert as voice" alongside the existing "Insert as text" — previously only the keyboard toolbar's
+Translate-then-Voice button could give a translation a voice. **IMPLEMENTED**: `VoicePanel`'s result screen gained
+its own **Voice** row (new `VoiceAction.SPEAK_TRANSLATION`/`DISMISS_VOICE_SHARE`/`OPEN_PLANS` cases), going through
+the *same* `TranslatedVoiceFlow` instance the toolbar button already uses — one shared monthly quota and one
+in-flight-job guard for both entry points, not two. Zero new strings needed; all reused from the existing
+Translate-then-Voice feature. Full unit suite 0 failures (no new tests added — this is UI-dispatch glue of the
+same shape as the already-untested toolbar button wiring, over already-tested `TranslatedVoiceFlow` logic);
+`assembleRelease` clean. **Not yet manually verified on a device** — the phone disconnected before `installDebug`
+could run.

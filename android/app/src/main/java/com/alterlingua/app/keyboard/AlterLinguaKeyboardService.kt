@@ -121,14 +121,17 @@ class AlterLinguaKeyboardService : InputMethodService() {
         controller.onStateChanged = { keyboardView?.render(it) }
         VoiceFiles.forContext(this).sweep() // recordings left behind by a crash
         voice.onStateChanged = { state ->
-            keyboardView?.renderVoice(state)
+            keyboardView?.renderVoice(state, translatedVoice.state)
             val editing = (state as? VoiceUiState.Result)?.editing == true
             typingTarget.override = if (editing) voice.editTarget else null
             controller.traitsOverride = if (editing) EditorTraits(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE) else null
         }
         toolbar.onStateChanged = { keyboardView?.renderToolbar(it) }
         translation.onStateChanged = { keyboardView?.renderTranslation(it) }
-        translatedVoice.onStateChanged = { keyboardView?.renderTranslatedVoice(it) }
+        translatedVoice.onStateChanged = { shareState ->
+            keyboardView?.renderTranslatedVoice(shareState) // the keyboard toolbar's own Translate-then-Voice flow
+            keyboardView?.renderVoice(voice.state, shareState) // the microphone result's own "give it a voice" row
+        }
         watchCapturedNotes()
         scope.launch {
             settings.settings.collect {
@@ -492,6 +495,12 @@ class AlterLinguaKeyboardService : InputMethodService() {
             VoiceAction.RECORD_AGAIN -> voice.recordAgain()
             VoiceAction.RETRY -> voice.retry()
             VoiceAction.INSERT_HEARD -> voice.insertHeard()
+            VoiceAction.SPEAK_TRANSLATION -> onSpeakVoiceResult()
+            VoiceAction.DISMISS_VOICE_SHARE -> translatedVoice.dismiss()
+            VoiceAction.OPEN_PLANS -> {
+                startActivity(AppLinks.settingsIntent(this))
+                requestHideSelf(0)
+            }
         }
     }
 
@@ -499,6 +508,13 @@ class AlterLinguaKeyboardService : InputMethodService() {
     private fun onSpeakTranslation() {
         val translated = translation.state as? TranslationUiState.Translated ?: return
         translatedVoice.speakAndShare(translated.text, translated.target)
+    }
+
+    /** "Voice" on the microphone's own recorded-and-translated result: the same on-device text-to-speech and
+     * Share sheet, through the same [translatedVoice] flow (so it shares one quota with the toolbar's own). */
+    private fun onSpeakVoiceResult() {
+        val result = voice.state as? VoiceUiState.Result ?: return
+        translatedVoice.speakAndShare(result.translation, result.target)
     }
 
     /** Hands a generated voice message to Android's Share sheet with a temporary read grant for that one file, the

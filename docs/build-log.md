@@ -3314,3 +3314,43 @@ feature used, before the previous round's "1,000, not literally unlimited" corre
 three test files (`EntitlementServiceTest`, `TtsShareUsageServiceTest`, `TranslatedVoiceFlowTest`), were updated to
 match. Full unit suite still passes; `assembleRelease` clean. Not re-verified on the device this round (the exact
 flow was already confirmed live in the entry above; only the numbers changed).
+
+## 2026-10-17 (follow-up) — The microphone's own result also gets a "Voice" button
+
+**The owner's own words, re-testing on the device:** "i opened the keyboard and i type a message and translated the
+message but didnt see where to convert the text message to a voice message and send the voice message or record a
+voice and it translate it based on what we have already but instaead of showing only insert as text i should also
+have insert as voice." Two things here: the keyboard's existing **Voice** button on a *typed-then-translated*
+message already exists (confirmed live two entries above) -- it is a muted button next to the blue **Undo**,
+visible for the same ~10 seconds Undo is, easy to miss if you look away. The second half is a genuinely new,
+concrete request: the **microphone**'s own result screen (speak, see Original/Translated, then **Insert as text**)
+had no voice-sharing option at all until now.
+
+**Built:** the microphone result panel (`VoicePanel.renderResult`) gained its own **Voice** row, right under
+Insert as text / Edit / Listen / Record again, reusing the *same* `TranslatedVoiceFlow` instance the keyboard
+toolbar's Translate-then-Voice button already uses -- same on-device text-to-speech, same Share sheet, and
+critically **the same monthly quota counter** (speaking it from a typed translation and speaking it from a
+recorded one share one allowance, not two separate ones, since both are "give a translation a voice"). New
+`VoiceAction` cases: `SPEAK_TRANSLATION` (triggers it), `DISMISS_VOICE_SHARE` (dismisses a limit/failure message
+without touching the recording or its translation), `OPEN_PLANS` (the limit message's "View plans"). The panel now
+shows its own inline feedback for Making/LimitReached/Failed -- a spinner, the trial-limit message with View
+plans/Continue, or a failure line with Dismiss -- entirely inside the voice panel's own body, not borrowing the
+keyboard toolbar's overlay row (which is hidden while the voice panel is up anyway).
+
+### Verification
+
+Implemented: `compileDebugKotlin`/`compileDebugAndroidTestKotlin`/`compileDebugUnitTestKotlin`, full Android unit
+suite (0 failures -- this round added no new automated tests of its own, since it reuses `TranslatedVoiceFlow`'s
+already-tested logic and is otherwise UI-dispatch glue identical in shape to the already-wired keyboard toolbar
+button) and `assembleRelease` all clean. **Not yet manually verified on a device this round** -- the phone
+disconnected before `installDebug` could run; the exact mechanism (same `TranslatedVoiceFlow`, same Share-sheet
+path) was already confirmed live for the toolbar's own button two entries above.
+
+### Manual test for the owner
+
+1. Tap the keyboard's microphone, speak a sentence, let it transcribe and translate.
+2. On the result screen, below Insert as text/Edit/Listen/Record again, a new **Voice** button should appear.
+3. Tap it: on-device synthesis, then Android's Share sheet with a real voice file -- same as the toolbar's own
+   Voice button already does for typed-and-translated messages.
+4. Use it enough times in one calendar month to hit your tier's limit (Free 5, Standard 30) and confirm the
+   message with View plans/Continue appears in place of the button, without disturbing Insert as text.
