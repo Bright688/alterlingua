@@ -10,6 +10,7 @@ object TierPolicy {
             Feature.CURRICULUM_PREMIUM,
             Feature.IMAGE_TRANSLATION,
             Feature.DOCUMENT_TRANSLATION,
+            Feature.TTS_SHARING,
         ),
     )
 

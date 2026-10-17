@@ -124,6 +124,13 @@ data class UserSettings(
      * purchase flow yet; not yet backed by server-verified entitlement state (CLAUDE.md section 30).
      */
     val tier: Tier = Tier.FREE,
+    /**
+     * How many of [ttsShareMonth]'s translated-message voice shares (Feature.TTS_SHARING trial for FREE/Standard;
+     * see TtsShareUsageService) have been used. Meaningless once the calendar month has moved on from [ttsShareMonth].
+     */
+    val ttsShareUsedThisMonth: Int = 0,
+    /** The calendar month (for example "2026-10") [ttsShareUsedThisMonth] counts; null before the feature is ever used. */
+    val ttsShareMonth: String? = null,
 ) {
     /** The typing style in use for [languageCode]: the saved one if it is valid for that language, otherwise its default; null if it has only one. */
     fun keyboardStyleFor(languageCode: String): KeyboardStyle? {

@@ -53,6 +53,13 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   Word (`.docx`) file, it is uploaded to the backend's `POST /v1/documents/translate`, and a real translated file
   of the same format comes back, which the user can save or share through Android's own Share sheet. Legacy
   binary `.doc` is not supported, only the modern `.docx` format.
+- `Feature.TTS_SHARING` (added 2026-10-17, see `docs/build-log.md`): **`PREMIUM` only** (unlimited). **`FREE` and
+  `STANDARD` share a 5-per-calendar-month trial instead of zero access** — the first real usage quota in the app,
+  enforced by the new `TtsShareUsageService` (a resettable monthly counter; `EntitlementService.ttsShareLimitPerMonth`
+  holds the actual policy number, `TRIAL_TTS_SHARES_PER_MONTH`). Gates the keyboard's "give this translation a
+  voice and share it" button: on-device text-to-speech (no backend call), then Android's Share sheet. The owner's
+  own instruction did not name Standard explicitly; it is assumed here to share FREE's trial rather than get its
+  own allowance or unlimited access — flagged for confirmation, and a one-line change either way.
 - `PlayBillingManager` is a real `BillingClient` wrapper: it queries Google Play's real catalog for the four
   `SubscriptionProducts` IDs, exposes what it finds as `offers`, and on a real completed purchase sets
   `UserSettings.tier` to the matching tier and acknowledges the purchase. It also re-checks Play's own purchase
@@ -95,7 +102,9 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   Lesson menu shows the other five honestly as "Coming soon" rather than fabricated content.
 - **No AdMob.** `isAdFree(tier)` is real policy; no ad SDK is integrated — this needs the owner's own AdMob account
   and ad unit IDs, which do not exist yet, the same kind of external dependency the Play Billing product IDs were.
-- Granular per-resource-type usage quotas beyond the one curriculum trial are still NOT STARTED.
+- Granular per-resource-type usage quotas beyond the curriculum trial and `TTS_SHARING`'s monthly count (added
+  2026-10-17, see above) are still NOT STARTED — for example voice-note-translation minutes or pronunciation
+  attempts have no quota of their own yet, even though `TtsShareUsageService`'s shape is reusable for one.
 - Annual/monthly renewal, cancellation, grace periods, upgrade/downgrade and restore-purchases *UI* (the plumbing
   exists in `PlayBillingManager.restorePurchases`, but there's no "Restore purchases" button or account-hold
   messaging) are all still NOT STARTED (CLAUDE.md section 32).

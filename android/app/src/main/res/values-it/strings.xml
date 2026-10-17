@@ -30,6 +30,12 @@
     <string name="translation_retry">Riprova</string>
     <string name="translation_restore">Ripristina</string>
     <string name="translation_dismiss">Ignora</string>
+    <string name="translation_give_voice">Voce</string>
+    <string name="translation_give_voice_share_title">Condividi messaggio vocale</string>
+    <string name="translation_making_voice">Creazione della voce…</string>
+    <string name="translation_voice_share_failed">Impossibile creare il messaggio vocale.</string>
+    <string name="translation_voice_limit_msg">Hai usato i tuoi %1$d messaggi vocali inclusi per questo mese.</string>
+    <string name="translation_voice_limit_continue">Continua a scrivere</string>
     <string name="failure_empty_text">Scrivi prima qualcosa da tradurre.</string>
     <string name="failure_text_too_long">Il messaggio è troppo lungo per essere tradotto.</string>
     <string name="failure_unsupported_editor">Questo campo di testo non consente la traduzione.</string>

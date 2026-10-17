@@ -134,7 +134,7 @@ class KeyboardViewTest {
         val view = AlterLinguaKeyboardView(context)
         val actions = mutableListOf<ToolbarAction>()
         view.onToolbarAction = { actions += it }
-        view.renderTranslation(TranslationUiState.Translated(Languages.Spanish))
+        view.renderTranslation(TranslationUiState.Translated(Languages.Spanish, "¿Vienes mañana?"))
         assertTrue(texts(view).contains("Translated"))
         toolbarButtons(view).first { it.label == "Undo" }.performClick()
         assertEquals(listOf<ToolbarAction>(ToolbarAction.Undo), actions)

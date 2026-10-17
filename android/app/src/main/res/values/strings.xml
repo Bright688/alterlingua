@@ -45,6 +45,13 @@
     <string name="translation_retry">Retry</string>
     <string name="translation_restore">Restore</string>
     <string name="translation_dismiss">Dismiss</string>
+    <!-- Giving a just-translated message a voice (Premium; a monthly trial for FREE/Standard) and sharing it, so the user can send it as a voice message themselves. -->
+    <string name="translation_give_voice">Voice</string>
+    <string name="translation_give_voice_share_title">Share voice message</string>
+    <string name="translation_making_voice">Making the voice…</string>
+    <string name="translation_voice_share_failed">Couldn\'t make the voice message.</string>
+    <string name="translation_voice_limit_msg">You\'ve used your %1$d included voice messages for this month.</string>
+    <string name="translation_voice_limit_continue">Continue typing</string>
     <string name="failure_empty_text">Type something to translate first.</string>
     <string name="failure_text_too_long">That message is too long to translate.</string>
     <string name="failure_unsupported_editor">This text field doesn\'t allow translation.</string>

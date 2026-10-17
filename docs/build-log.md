@@ -3109,3 +3109,102 @@ on a phone yet.
    text to translate", not crash or hang.
 8. After each attempt, run `adb shell run-as com.alterlingua.app ls cache/shared_document` — it should be empty
    (the original upload is always deleted immediately).
+
+## 2026-10-17 — Give a translated keyboard message a voice and share it (Premium; a 5/month trial otherwise)
+
+**Goal, the owner's own words:** "premium plan should have this feature that is voice for my translated text.
+meaning my translated text i should be able to give it a voice and send it if i want from my alterlingua keyboard.
+but for trial version should allow that up to 5 times per month."
+
+**What this is:** after translating a message with the keyboard's existing Translate button (the translation
+replaces the composer text, as always), a new **Voice** button next to Undo turns that translation into a real,
+playable audio file and opens Android's own Share sheet with it, so the user can send it as a voice message
+themselves -- exactly the same "AlterLingua never sends anything, the user presses Send" rule as every other
+feature (CLAUDE.md section 18).
+
+**A real discovery that simplified this a lot: this needs no backend work at all.** The app already has
+`Speaker.synthesizeToFile` (`AndroidSpeaker`, Android's own on-device text-to-speech, used today by the standalone
+"Translated voice" screen) and an existing shareable cache folder with its FileProvider path already declared
+(`spoken_audio`, used by that same screen). Giving a keyboard translation a voice reuses both exactly as they
+are: no new network call, no new FileProvider path, no new privacy-audit change for an exported path. The text
+never leaves the phone a second time just to be spoken -- the keyboard already sent it to the backend once, to
+translate it; speaking it is now purely local.
+
+**Entitlement model, and a real ambiguity in the request, flagged rather than silently resolved:** the owner's own
+words name exactly two cases -- "premium plan" (full feature) and "trial version" (5/month) -- and never mention
+Standard. Mirroring how FREE's curriculum trial already works (`CURRICULUM_UNLIMITED_TRIAL`: Standard and Premium
+unlock it, FREE gets a bounded trial instead of zero access), this round's default, **stated here for the owner to
+confirm or correct**: `Feature.TTS_SHARING` is unlocked by **Premium only** (meaning unlimited); **both FREE and
+Standard share the same 5/month trial** rather than Standard getting something in between or getting it for free.
+If Standard should have a different number, or unlimited access like image translation, that is a one-line change
+in `TierPolicy`/`EntitlementService`, not a redesign.
+
+**What was built:**
+- `entitlements/Feature.kt` / `TierPolicy.kt`: `Feature.TTS_SHARING`, Premium only.
+- `entitlements/EntitlementService.kt`: `TtsShareAccess` (Allowed/LimitReached(limit)), `TRIAL_TTS_SHARES_PER_MONTH
+  = 5`, `ttsShareLimitPerMonth(tier)` (null = unlimited).
+- `entitlements/TtsShareUsageService.kt` (new): the monthly counter itself. There was **no usage-quota
+  infrastructure anywhere in the app before this** (confirmed by a repo-wide search: the curriculum trial is a
+  lifetime cumulative cursor per language, never resetting) -- CLAUDE.md section 28 asks for quotas to live in one
+  centralized place rather than scattered counters, so this is that first piece, built generically enough to be
+  reused by a future quota (voice-note minutes, pronunciation attempts, ...) rather than wired as a one-off. It
+  mirrors `CurriculumProgressService`'s day-rollover shape, but by calendar month (device's own time zone) and
+  with one global counter rather than one per language.
+- `learning/UserSettings.kt` / `storage/UserSettingsRepository.kt`: two new fields/keys (`ttsShareUsedThisMonth`,
+  `ttsShareMonth`), following the exact existing DataStore key pattern.
+- `keyboard/TranslationFlow.kt`: `TranslationUiState.Translated` now carries the translated `text` itself (it
+  previously carried only the target language), so the new button can act on it. One production call site and
+  five test call sites updated; no other behavior changed.
+- `keyboard/TranslatedVoiceFlow.kt` (new): the small, separate state machine for this action (Idle/Making/
+  LimitReached/Failed) -- deliberately **not** folded into `TranslationFlow`, which is specifically the
+  translate-and-replace-with-Undo flow and already carries real complexity of its own; this keeps that flow's
+  responsibility narrow, the same reasoning that already keeps the microphone's `VoiceFlow` separate from it.
+- `keyboard/AlterLinguaKeyboardView.kt`: a **Voice** button next to Undo on the Translated row; a new transient
+  overlay row (`renderTranslatedVoice`) that temporarily replaces the translation row for "Making the voice...", a
+  limit-reached message with "View plans"/"Continue typing" (CLAUDE.md section 31's own worked example, almost
+  verbatim), or a failure message -- then returns to the ordinary Translated/Undo row once dismissed or done. The
+  three local helper closures `renderTranslation` used (`text`/`button`/`spacedText`) were hoisted into shared
+  private methods so both rows can use them.
+- `keyboard/AlterLinguaKeyboardService.kt`: constructs the on-device `Speaker` and `TranslatedVoiceFlow`, dispatches
+  the new toolbar actions, and builds the Share intent exactly the way `SpeakActivity.share()` already does
+  (`FileProvider` + `ACTION_SEND` + chooser), just launched directly from the keyboard service's own context
+  (`startActivity(...addFlags(FLAG_ACTIVITY_NEW_TASK))`, the same pattern this file already uses for Settings,
+  the microphone-permission screen and the voice-note-capture screen).
+- `AlterLinguaApplication.kt`: a `ttsShareUsage` lazy singleton, alongside the existing `entitlements`.
+- New strings (6 keys, `translation_*`): the button label, "Making the voice...", a failure message, the
+  limit-reached message (parameterized with the actual limit) and its two actions. The "View plans" action reuses
+  the existing `lrn_curriculum_upgrade` string and navigates to Settings exactly like every other upgrade prompt
+  in the app, rather than inventing new navigation.
+
+### Verification
+
+Implemented and tested: `TtsShareUsageServiceTest` (allowed/stopped per tier, the calendar-month rollover, record-
+use incrementing and re-stamping the month, `remaining()` never going negative), `EntitlementServiceTest` addition
+for `ttsShareLimitPerMonth`, `TranslatedVoiceFlowTest` (Premium unlimited even far past the trial count, FREE and
+Standard stopped identically at the limit, a failed synthesis records no use and leaves no file behind, dismiss,
+double-tap-while-working is ignored), `DataStoreUserSettingsRepositoryTest` addition for the two new fields'
+round trip, and the five existing `TranslationFlowTest`/`KeyboardViewTest` call sites updated for `Translated`'s
+new field. Full Android unit suite: 0 failures. `lintDebug` clean (same 0-errors baseline as before).
+`compileDebugKotlin`/`compileDebugAndroidTestKotlin`/`compileDebugUnitTestKotlin`, `assembleDebug` and
+`assembleRelease` all run clean.
+
+**Not yet manually verified on a real device** -- no device was connected to this session (background job). In
+particular: whether the new button fits comfortably on the toolbar row next to Undo on a real screen size has not
+been visually confirmed, only built against the same layout primitives the existing multi-button row (Restore/
+Retry + Close) already uses successfully.
+
+### Manual test for the owner
+
+1. Install the new build. In WhatsApp (or any chat app), type a message and tap **Translate**.
+2. Next to **Undo**, a new **Voice** button should appear.
+3. **FREE or Standard tier**, under 5 uses this month: tapping **Voice** shows "Making the voice...", then opens
+   Android's Share sheet with a real, playable voice-message file. Choose any app and confirm it plays correctly
+   and is actually the translated text, spoken.
+4. **FREE or Standard tier, after 5 uses in the same calendar month:** tapping **Voice** should instead show "You've
+   used your 5 included voice messages for this month." with **View plans** (opens Settings) and **Continue
+   typing** (dismisses, composer and translation untouched).
+5. **Premium tier:** confirm it works every time, with no limit message ever appearing even after many uses.
+6. Try a language with no installed TTS voice on the device (if available) and confirm it fails cleanly ("Couldn't
+   make the voice message.") without losing the translated text in the composer.
+7. Confirm the composer's translated text and the Undo button are unaffected throughout -- giving the message a
+   voice must never itself send anything or alter the text.

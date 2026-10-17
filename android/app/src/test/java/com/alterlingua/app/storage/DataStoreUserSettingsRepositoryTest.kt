@@ -224,4 +224,14 @@ class DataStoreUserSettingsRepositoryTest {
         store.edit { it[SettingsKeys.SubscriptionTier] = "NOT_A_TIER" }
         assertEquals(Tier.FREE, DataStoreUserSettingsRepository(store).settings.first().tier)
     }
+
+    @Test
+    fun ttsShareUsage_defaultsToUnusedAndNoMonth_andIsSaved() = runTest {
+        val repo = DataStoreUserSettingsRepository(newStore())
+        assertEquals(0, repo.settings.first().ttsShareUsedThisMonth)
+        assertEquals(null, repo.settings.first().ttsShareMonth)
+        repo.update { it.copy(ttsShareMonth = "2026-10", ttsShareUsedThisMonth = 3) }
+        assertEquals("2026-10", repo.settings.first().ttsShareMonth)
+        assertEquals(3, repo.settings.first().ttsShareUsedThisMonth)
+    }
 }

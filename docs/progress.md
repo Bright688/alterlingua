@@ -1355,3 +1355,26 @@ PDF-extraction design problem found and fixed along the way, and manual test ste
 
 **Only `.docx` is supported, not legacy binary `.doc`** — a stated, deliberate scope line (the parsing library
 used only reads/writes the modern zip-based Word format).
+
+## Addendum (2026-10-17): give a translated keyboard message a voice and share it (Premium; 5/month trial)
+
+The owner asked for a new keyboard feature: after translating a message, give it a voice (on-device
+text-to-speech) and share it as a voice message, Premium-only with a 5-times-per-month trial otherwise. **IMPLEMENTED**:
+a new **Voice** button next to Undo on the keyboard's translation result; tapping it synthesizes the translation
+with Android's own on-device TTS (reusing the existing `Speaker`/`spoken_audio` cache folder the standalone
+"Translated voice" screen already uses — no new backend call, no new FileProvider path) and opens Android's Share
+sheet with the result. `Feature.TTS_SHARING` (Premium only) and a brand-new `TtsShareUsageService` (the app's
+first real monthly-resetting usage quota — nothing like it existed before this) enforce the limit for FREE and
+Standard, with a "Voice limit reached / View plans / Continue typing" message matching CLAUDE.md section 31's own
+worked example almost verbatim.
+
+**Stated assumption needing the owner's confirmation**: the request named only "premium" and "trial version";
+Standard was not mentioned, and is treated the same as the FREE trial (5/month) here rather than getting its own
+number or unlimited access — see `docs/build-log.md`'s matching entry for exactly why and how trivial it is to
+change.
+
+**Status:** new `TtsShareUsageServiceTest`, `TranslatedVoiceFlowTest`, `EntitlementServiceTest` and
+`DataStoreUserSettingsRepositoryTest` additions; full Android unit suite 0 failures; `lintDebug` clean;
+`assembleDebug`/`assembleRelease`/instrumented-test compile all clean. **Not yet manually verified on a device** —
+no device was connected to this session, and in particular whether the new button fits comfortably next to Undo
+on a real screen has not been visually confirmed.

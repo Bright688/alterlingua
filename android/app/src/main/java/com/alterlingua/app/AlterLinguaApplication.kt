@@ -239,6 +239,12 @@ class AlterLinguaApplication : Application() {
     /** The current subscription tier and what it unlocks (CLAUDE.md section 26-27; scaffolding only for now). */
     val entitlements: EntitlementService by lazy { EntitlementService(userSettings) }
 
+    /** FREE/Standard's monthly trial count for Feature.TTS_SHARING (the keyboard's "give this translation a voice
+     * and share it"); see docs/build-log.md. */
+    val ttsShareUsage: com.alterlingua.app.entitlements.TtsShareUsageService by lazy {
+        com.alterlingua.app.entitlements.TtsShareUsageService(userSettings, entitlements)
+    }
+
     /** Each language's daily goal, cursor and backlog in the standard curriculum. */
     val curriculumProgress: CurriculumProgressService by lazy { CurriculumProgressService(userSettings) }
 

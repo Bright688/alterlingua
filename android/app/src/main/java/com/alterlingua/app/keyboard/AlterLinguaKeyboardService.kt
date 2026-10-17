@@ -1,11 +1,13 @@
 package com.alterlingua.app.keyboard
 
 import android.Manifest
+import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.inputmethodservice.InputMethodService
 import android.text.InputType
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import android.os.Build
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -18,6 +20,8 @@ import com.alterlingua.app.capture.CapturedNote
 import com.alterlingua.app.capture.ChatApp
 import com.alterlingua.app.capture.VoiceCaptureLauncher
 import com.alterlingua.app.capture.VoiceCaptureResultActivity
+import com.alterlingua.app.share.AndroidSpeaker
+import com.alterlingua.app.speak.SpokenAudioFiles
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -29,6 +33,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.io.File
 
 /**
  * The AlterLingua keyboard: a real Android input method.
@@ -93,6 +98,21 @@ class AlterLinguaKeyboardService : InputMethodService() {
         )
     }
 
+    // On-device text-to-speech only: nothing about a translated message leaves the phone a second time just to be
+    // spoken. Shut down in onDestroy since this service, unlike a ViewModel, is not torn down between uses.
+    private val speaker by lazy { AndroidSpeaker(this) }
+
+    private val translatedVoice by lazy {
+        TranslatedVoiceFlow(
+            speaker = speaker,
+            files = SpokenAudioFiles(File(cacheDir, "spoken_audio")), // the same folder/FileProvider path the standalone Speak screen already uses
+            entitlements = (application as AlterLinguaApplication).entitlements,
+            usage = (application as AlterLinguaApplication).ttsShareUsage,
+            share = ::shareSpokenFile,
+            scope = scope,
+        )
+    }
+
     // The same saved settings the app uses (one DataStore per process).
     private val settings get() = (application as AlterLinguaApplication).userSettings
 
@@ -108,6 +128,7 @@ class AlterLinguaKeyboardService : InputMethodService() {
         }
         toolbar.onStateChanged = { keyboardView?.renderToolbar(it) }
         translation.onStateChanged = { keyboardView?.renderTranslation(it) }
+        translatedVoice.onStateChanged = { keyboardView?.renderTranslatedVoice(it) }
         watchCapturedNotes()
         scope.launch {
             settings.settings.collect {
@@ -358,10 +379,13 @@ class AlterLinguaKeyboardService : InputMethodService() {
     override fun onDestroy() {
         translation.release()
         voice.release()
+        translatedVoice.release()
+        speaker.shutdown()
         scope.cancel()
         controller.onStateChanged = null
         translation.onStateChanged = null
         voice.onStateChanged = null
+        translatedVoice.onStateChanged = null
         toolbar.onStateChanged = null
         keyboardView = null
         super.onDestroy()
@@ -380,6 +404,8 @@ class AlterLinguaKeyboardService : InputMethodService() {
             ToolbarAction.Retry -> translation.translate()
             ToolbarAction.DismissStatus -> translation.dismiss()
             ToolbarAction.CancelTranslation -> translation.cancel()
+            ToolbarAction.SpeakTranslation -> onSpeakTranslation()
+            ToolbarAction.DismissVoiceShareStatus -> translatedVoice.dismiss()
             ToolbarAction.Translate -> toolbar.onTranslate()
             ToolbarAction.Microphone -> toolbar.onMicrophone()
             is ToolbarAction.Voice -> onVoiceAction(action.action)
@@ -467,6 +493,25 @@ class AlterLinguaKeyboardService : InputMethodService() {
             VoiceAction.RETRY -> voice.retry()
             VoiceAction.INSERT_HEARD -> voice.insertHeard()
         }
+    }
+
+    /** "Voice" on a just-translated message: on-device text-to-speech, then Android's own Share sheet. */
+    private fun onSpeakTranslation() {
+        val translated = translation.state as? TranslationUiState.Translated ?: return
+        translatedVoice.speakAndShare(translated.text, translated.target)
+    }
+
+    /** Hands a generated voice message to Android's Share sheet with a temporary read grant for that one file, the
+     * same FileProvider the standalone "Translated voice" screen already uses. The user picks the chat and presses
+     * Send there themselves; AlterLingua never sends anything. */
+    private fun shareSpokenFile(file: File, contentType: String) {
+        val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+        val send = Intent(Intent.ACTION_SEND)
+            .setType(contentType)
+            .putExtra(Intent.EXTRA_STREAM, uri)
+            .apply { clipData = ClipData.newRawUri("", uri) }
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(Intent.createChooser(send, getString(R.string.translation_give_voice_share_title)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     /** Every keyboard must offer a way to leave it (Android's guidance): the globe key. */

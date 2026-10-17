@@ -21,8 +21,8 @@ sealed interface TranslationUiState {
     data object Idle : TranslationUiState
     data class Translating(val target: Language) : TranslationUiState
 
-    /** Done. Undo is available. */
-    data class Translated(val target: Language) : TranslationUiState
+    /** Done. Undo is available. [text] is the translation now in the composer, so it can be given a voice and shared. */
+    data class Translated(val target: Language, val text: String) : TranslationUiState
 
     /** Undo worked. */
     data object Restored : TranslationUiState
@@ -138,7 +138,7 @@ class TranslationFlow(
         val written = field.replaceAll(original.text.length, translated, translated.length, translated.length)
         if (written && textIs(field, translated)) {
             undoRecord = UndoRecord(original, translated)
-            set(TranslationUiState.Translated(target))
+            set(TranslationUiState.Translated(target, translated))
             scheduleExpiry(resultMillis) { undoRecord = null }
             learning.record(TranslationInteraction(InteractionKind.OUTGOING_TEXT, translated, target.code))
             return

@@ -40,6 +40,13 @@ sealed interface ToolbarAction {
     data object DismissStatus : ToolbarAction
     data object CancelTranslation : ToolbarAction
 
+    /** "Give this translation a voice" (Premium, or a monthly trial for FREE/Standard): on-device text-to-speech,
+     * then Android's own Share sheet. AlterLingua never sends anything. */
+    data object SpeakTranslation : ToolbarAction
+
+    /** Dismisses a "voice limit reached" or "couldn't make the voice" message, without affecting the translation itself. */
+    data object DismissVoiceShareStatus : ToolbarAction
+
     /** A button on the voice panel. */
     data class Voice(val action: VoiceAction) : ToolbarAction
 
@@ -166,6 +173,7 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
     private var capturedNoteState: CapturedNoteUi = CapturedNoteUi.Hidden
     private var toolbarFrame: FrameLayout? = null
     private var translationState: TranslationUiState = TranslationUiState.Idle
+    private var voiceShareState: TranslatedVoiceUiState = TranslatedVoiceUiState.Idle
     private var noticeShown = false
     private val hideNotice = Runnable {
         noticeShown = false
@@ -346,24 +354,52 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
     /** Shows the translation status in place of the toolbar: translating, translated with Undo, or an error. */
     fun renderTranslation(state: TranslationUiState) {
         translationState = state
+        // A voice-share problem (limit reached, failed) only means anything next to the translation that caused
+        // it; a new translation, Undo or dismissal must not leave a stale one showing over the new state.
+        if (state !is TranslationUiState.Translated) voiceShareState = TranslatedVoiceUiState.Idle
+        renderStatusRow()
+    }
+
+    /**
+     * Shows giving the current translation a voice, or a problem from trying to (the monthly trial limit, or the
+     * device having no voice / failing): a transient overlay on top of the normal translation row, which it returns
+     * to once this goes back to [TranslatedVoiceUiState.Idle].
+     */
+    fun renderTranslatedVoice(state: TranslatedVoiceUiState) {
+        voiceShareState = state
+        renderStatusRow()
+    }
+
+    private fun statusText(value: String, sizeSp: Float, bold: Boolean, maxLines: Int = 1) = TextView(context).apply {
+        text = value
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeSp)
+        if (bold) typeface = android.graphics.Typeface.DEFAULT_BOLD
+        setTextColor(colors.text)
+        this.maxLines = maxLines
+        ellipsize = android.text.TextUtils.TruncateAt.END
+    }
+
+    private fun statusButton(label: String, style: ToolbarButtonStyle, action: ToolbarAction) =
+        ToolbarButtonView(context, style, colors) { onToolbarAction?.invoke(action) }.apply { this.label = label }
+
+    private fun spacedStatusText(view: TextView, gap: Int) =
+        statusRow.addView(view, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f).apply { leftMargin = gap; rightMargin = gap })
+
+    private fun renderStatusRow() {
         statusRow.removeAllViews()
         val height = (34 * density).toInt()
         val gap = (6 * density).toInt()
 
-        fun text(value: String, sizeSp: Float, bold: Boolean, maxLines: Int = 1) = TextView(context).apply {
-            text = value
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeSp)
-            if (bold) typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(colors.text)
-            this.maxLines = maxLines
-            ellipsize = android.text.TextUtils.TruncateAt.END
+        if (voiceShareState != TranslatedVoiceUiState.Idle) {
+            renderVoiceShareRow(voiceShareState, height, gap)
+        } else {
+            renderTranslationRow(translationState, height, gap)
         }
+        updateToolbarArea()
+        updateContentArea() // a captured voice note gives way to the translation status, and comes back after it
+    }
 
-        fun button(label: String, style: ToolbarButtonStyle, action: ToolbarAction) =
-            ToolbarButtonView(context, style, colors) { onToolbarAction?.invoke(action) }.apply { this.label = label }
-
-        fun spacedText(view: TextView) = statusRow.addView(view, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f).apply { leftMargin = gap; rightMargin = gap })
-
+    private fun renderTranslationRow(state: TranslationUiState, height: Int, gap: Int) {
         when (state) {
             TranslationUiState.Idle -> Unit
             is TranslationUiState.Translating -> {
@@ -372,8 +408,8 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
                     indeterminateTintList = android.content.res.ColorStateList.valueOf(colors.actionKey)
                 }
                 statusRow.addView(spinner, LayoutParams((20 * density).toInt(), (20 * density).toInt()))
-                spacedText(text(context.getString(R.string.translation_translating, state.target.displayName), 13f, bold = true))
-                statusRow.addView(button(context.getString(R.string.translation_cancel), ToolbarButtonStyle.TONAL, ToolbarAction.CancelTranslation), LayoutParams(LayoutParams.WRAP_CONTENT, height))
+                spacedStatusText(statusText(context.getString(R.string.translation_translating, state.target.displayName), 13f, bold = true), gap)
+                statusRow.addView(statusButton(context.getString(R.string.translation_cancel), ToolbarButtonStyle.TONAL, ToolbarAction.CancelTranslation), LayoutParams(LayoutParams.WRAP_CONTENT, height))
             }
             is TranslationUiState.Translated -> {
                 val check = android.widget.ImageView(context).apply {
@@ -381,18 +417,19 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
                     importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
                 }
                 statusRow.addView(check, LayoutParams((20 * density).toInt(), (20 * density).toInt()))
-                spacedText(text(context.getString(R.string.translation_done), 14f, bold = true))
-                statusRow.addView(button(context.getString(R.string.translation_undo), ToolbarButtonStyle.PRIMARY, ToolbarAction.Undo), LayoutParams(LayoutParams.WRAP_CONTENT, height))
+                spacedStatusText(statusText(context.getString(R.string.translation_done), 14f, bold = true), gap)
+                statusRow.addView(statusButton(context.getString(R.string.translation_give_voice), ToolbarButtonStyle.TONAL, ToolbarAction.SpeakTranslation), LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { rightMargin = gap })
+                statusRow.addView(statusButton(context.getString(R.string.translation_undo), ToolbarButtonStyle.PRIMARY, ToolbarAction.Undo), LayoutParams(LayoutParams.WRAP_CONTENT, height))
             }
             TranslationUiState.Restored -> {
-                spacedText(text(context.getString(R.string.translation_restored), 13f, bold = true))
+                spacedStatusText(statusText(context.getString(R.string.translation_restored), 13f, bold = true), gap)
             }
             is TranslationUiState.Failed -> {
-                spacedText(text(context.getString(state.failure.messageRes(state.canRestore)), 12f, bold = false, maxLines = 2))
+                spacedStatusText(statusText(context.getString(state.failure.messageRes(state.canRestore)), 12f, bold = false, maxLines = 2), gap)
                 if (state.canRestore) {
-                    statusRow.addView(button(context.getString(R.string.translation_restore), ToolbarButtonStyle.PRIMARY, ToolbarAction.Restore), LayoutParams(LayoutParams.WRAP_CONTENT, height))
+                    statusRow.addView(statusButton(context.getString(R.string.translation_restore), ToolbarButtonStyle.PRIMARY, ToolbarAction.Restore), LayoutParams(LayoutParams.WRAP_CONTENT, height))
                 } else if (state.canRetry) {
-                    statusRow.addView(button(context.getString(R.string.translation_retry), ToolbarButtonStyle.PRIMARY, ToolbarAction.Retry), LayoutParams(LayoutParams.WRAP_CONTENT, height))
+                    statusRow.addView(statusButton(context.getString(R.string.translation_retry), ToolbarButtonStyle.PRIMARY, ToolbarAction.Retry), LayoutParams(LayoutParams.WRAP_CONTENT, height))
                 }
                 val close = ToolbarButtonView(context, ToolbarButtonStyle.TONAL, colors) { onToolbarAction?.invoke(ToolbarAction.DismissStatus) }.apply {
                     leadingIcon = ContextCompat.getDrawable(context, R.drawable.ic_tool_close)
@@ -401,8 +438,36 @@ class AlterLinguaKeyboardView(context: Context) : LinearLayout(context) {
                 statusRow.addView(close, LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { leftMargin = gap })
             }
         }
-        updateToolbarArea()
-        updateContentArea() // a captured voice note gives way to the translation status, and comes back after it
+    }
+
+    private fun renderVoiceShareRow(state: TranslatedVoiceUiState, height: Int, gap: Int) {
+        when (state) {
+            TranslatedVoiceUiState.Idle -> Unit
+            TranslatedVoiceUiState.Making -> {
+                val spinner = android.widget.ProgressBar(context).apply {
+                    isIndeterminate = true
+                    indeterminateTintList = android.content.res.ColorStateList.valueOf(colors.actionKey)
+                }
+                statusRow.addView(spinner, LayoutParams((20 * density).toInt(), (20 * density).toInt()))
+                spacedStatusText(statusText(context.getString(R.string.translation_making_voice), 13f, bold = true), gap)
+            }
+            is TranslatedVoiceUiState.LimitReached -> {
+                spacedStatusText(statusText(context.getString(R.string.translation_voice_limit_msg, state.limit), 12f, bold = false, maxLines = 2), gap)
+                statusRow.addView(statusButton(context.getString(R.string.lrn_curriculum_upgrade), ToolbarButtonStyle.PRIMARY, ToolbarAction.OpenSettings), LayoutParams(LayoutParams.WRAP_CONTENT, height))
+                statusRow.addView(
+                    statusButton(context.getString(R.string.translation_voice_limit_continue), ToolbarButtonStyle.TONAL, ToolbarAction.DismissVoiceShareStatus),
+                    LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { leftMargin = gap },
+                )
+            }
+            TranslatedVoiceUiState.Failed -> {
+                spacedStatusText(statusText(context.getString(R.string.translation_voice_share_failed), 12f, bold = false, maxLines = 2), gap)
+                val close = ToolbarButtonView(context, ToolbarButtonStyle.TONAL, colors) { onToolbarAction?.invoke(ToolbarAction.DismissVoiceShareStatus) }.apply {
+                    leadingIcon = ContextCompat.getDrawable(context, R.drawable.ic_tool_close)
+                    contentDescription = context.getString(R.string.translation_dismiss)
+                }
+                statusRow.addView(close, LayoutParams(LayoutParams.WRAP_CONTENT, height).apply { leftMargin = gap })
+            }
+        }
     }
 
     /** Shows the toolbar [state]: the language chip, and the language list when it is open. */

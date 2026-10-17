@@ -12,6 +12,23 @@ const val STANDARD_CURRICULUM_DAILY_CAP: Int = 20
 /** PREMIUM's daily-word cap: effectively none, far past what the curriculum lists could need in a day. */
 const val PREMIUM_CURRICULUM_DAILY_CAP: Int = 10_000
 
+/**
+ * FREE and STANDARD's monthly trial allowance for Feature.TTS_SHARING (giving a just-translated keyboard message a
+ * voice and sharing it); PREMIUM is unlimited (see [EntitlementService.ttsShareLimitPerMonth]). The owner's own
+ * instruction named only "premium" and "trial version"; Standard was not named explicitly and is treated the same
+ * as the trial allowance here -- a default that should be confirmed (see docs/build-log.md).
+ */
+const val TRIAL_TTS_SHARES_PER_MONTH: Int = 5
+
+/** Whether a translated keyboard message may be given a voice and shared right now. */
+sealed interface TtsShareAccess {
+    /** May proceed. */
+    data object Allowed : TtsShareAccess
+
+    /** The trial's monthly count has been reached; [limit] is how many it allowed. */
+    data class LimitReached(val limit: Int) : TtsShareAccess
+}
+
 /** Whether the curriculum (Standard/Premium lessons) is open right now, for one language. */
 sealed interface CurriculumAccess {
     /** Learning may continue. */
@@ -112,4 +129,8 @@ class EntitlementService(private val settings: UserSettingsRepository) {
 
     /** Whether [tier] is free of advertisements (only PREMIUM is). */
     fun isAdFree(tier: Tier): Boolean = tier == Tier.PREMIUM
+
+    /** How many translated-message voice shares [tier] may make a month, or null for no limit at all (Premium). */
+    fun ttsShareLimitPerMonth(tier: Tier): Int? =
+        if (TierPolicy.includes(tier, Feature.TTS_SHARING)) null else TRIAL_TTS_SHARES_PER_MONTH
 }

@@ -30,6 +30,12 @@
     <string name="translation_retry">Opnieuw proberen</string>
     <string name="translation_restore">Herstellen</string>
     <string name="translation_dismiss">Negeren</string>
+    <string name="translation_give_voice">Stem</string>
+    <string name="translation_give_voice_share_title">Spraakbericht delen</string>
+    <string name="translation_making_voice">Stem maken…</string>
+    <string name="translation_voice_share_failed">Kan het spraakbericht niet maken.</string>
+    <string name="translation_voice_limit_msg">Je hebt je %1$d inbegrepen spraakberichten voor deze maand gebruikt.</string>
+    <string name="translation_voice_limit_continue">Doorgaan met typen</string>
     <string name="failure_empty_text">Typ eerst iets om te vertalen.</string>
     <string name="failure_text_too_long">Dit bericht is te lang om te vertalen.</string>
     <string name="failure_unsupported_editor">Dit tekstveld staat vertalen niet toe.</string>

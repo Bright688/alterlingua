@@ -30,6 +30,12 @@
     <string name="translation_retry">重试</string>
     <string name="translation_restore">恢复</string>
     <string name="translation_dismiss">忽略</string>
+    <string name="translation_give_voice">语音</string>
+    <string name="translation_give_voice_share_title">分享语音消息</string>
+    <string name="translation_making_voice">正在生成语音…</string>
+    <string name="translation_voice_share_failed">无法创建语音消息。</string>
+    <string name="translation_voice_limit_msg">您本月已用完 %1$d 条包含的语音消息。</string>
+    <string name="translation_voice_limit_continue">继续输入</string>
     <string name="failure_empty_text">请先输入要翻译的内容。</string>
     <string name="failure_text_too_long">这条消息太长，无法翻译。</string>
     <string name="failure_unsupported_editor">此文本框不支持翻译。</string>

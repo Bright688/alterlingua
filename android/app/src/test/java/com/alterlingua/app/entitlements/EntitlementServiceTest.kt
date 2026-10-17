@@ -132,4 +132,12 @@ class EntitlementServiceTest {
         assertEquals(false, service.isAdFree(Tier.STANDARD))
         assertEquals(true, service.isAdFree(Tier.PREMIUM))
     }
+
+    @Test
+    fun ttsShareLimitPerMonth_isTheTrialForFreeAndStandard_unlimitedForPremium() {
+        val service = EntitlementService(FakeUserSettingsRepository())
+        assertEquals(TRIAL_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.FREE))
+        assertEquals(TRIAL_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.STANDARD))
+        assertEquals(null, service.ttsShareLimitPerMonth(Tier.PREMIUM))
+    }
 }

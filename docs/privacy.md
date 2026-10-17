@@ -211,6 +211,20 @@ Play-Services-dependent variant) so every one of the 8 initial languages' writin
 - **Not verified:** what ML Kit itself does on the phone beyond its published terms
   (https://developers.google.com/ml-kit/terms), the same open item already noted for handwriting recognition below.
 
+## Giving a translated keyboard message a voice (added 2026-10-17)
+
+The keyboard's **Voice** button (Premium; a 5-per-month trial for FREE/Standard) turns an already-translated
+message into a real voice-message file and opens Android's Share sheet with it.
+- **What leaves the phone:** nothing new. The text was already sent to the backend once, to be translated; turning
+  it into speech afterward is Android's own on-device text-to-speech (the same `Speaker`/`AndroidSpeaker` the
+  standalone "Translated voice" screen already uses) — no second network request, nothing sent anywhere a second
+  time.
+- **Where the file lives:** the existing `spoken_audio` private cache folder and `FileProvider` path the
+  standalone screen already declares and this document already covers (see "Audio" above) — reused exactly as is,
+  not a new exported path. It is swept the same way (an hour, or "Delete all learning data").
+- **The monthly trial count** (`ttsShareUsedThisMonth`, `ttsShareMonth`) is a bare number and a calendar-month
+  stamp, saved like any other setting; it carries no message content.
+
 ## Document translation (added 2026-10-16)
 
 Sharing a PDF or Word (`.docx`) file to AlterLingua (Premium only) uploads it to the backend, which extracts its

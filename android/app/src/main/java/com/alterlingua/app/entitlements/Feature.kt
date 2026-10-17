@@ -24,4 +24,11 @@ enum class Feature {
      * document file translation (Premium), see docs/build-log.md.
      */
     DOCUMENT_TRANSLATION,
+
+    /**
+     * Giving a just-translated keyboard message a voice (on-device text-to-speech) and sharing it, so the user can
+     * send it as a voice message themselves. Premium: unlimited. FREE and Standard get a monthly trial instead of
+     * no access at all -- see EntitlementService.ttsShareLimitPerMonth and TtsShareUsageService.
+     */
+    TTS_SHARING,
 }

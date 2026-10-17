@@ -30,6 +30,12 @@
     <string name="translation_retry">再試行</string>
     <string name="translation_restore">復元</string>
     <string name="translation_dismiss">閉じる</string>
+    <string name="translation_give_voice">音声</string>
+    <string name="translation_give_voice_share_title">音声メッセージを共有</string>
+    <string name="translation_making_voice">音声を作成しています…</string>
+    <string name="translation_voice_share_failed">音声メッセージを作成できませんでした。</string>
+    <string name="translation_voice_limit_msg">今月利用できる%1$d件の音声メッセージをすべて使い切りました。</string>
+    <string name="translation_voice_limit_continue">入力を続ける</string>
     <string name="failure_empty_text">まず翻訳する文章を入力してください。</string>
     <string name="failure_text_too_long">このメッセージは長すぎて翻訳できません。</string>
     <string name="failure_unsupported_editor">このテキスト欄では翻訳できません。</string>

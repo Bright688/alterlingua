@@ -103,7 +103,7 @@ class TranslationFlowTest {
 
         assertEquals(listOf(TranslationRequest(phrase, "es", "auto", "messaging", "natural")), s.api.requests)
         assertEquals("¿Vienes mañana?", s.composer.text)
-        assertEquals(TranslationUiState.Translated(Languages.Spanish), s.flow.state)
+        assertEquals(TranslationUiState.Translated(Languages.Spanish, "¿Vienes mañana?"), s.flow.state)
         assertEquals(s.composer.text.length, s.composer.selEnd) // cursor at the end of the new text
     }
 
@@ -123,7 +123,7 @@ class TranslationFlowTest {
         runCurrent()
         assertEquals("ja", s.api.requests.single().target)
         assertEquals("明日来ますか？", s.composer.text)
-        assertEquals(TranslationUiState.Translated(Languages.Japanese), s.flow.state)
+        assertEquals(TranslationUiState.Translated(Languages.Japanese, "明日来ますか？"), s.flow.state)
     }
 
     @Test
@@ -171,7 +171,7 @@ class TranslationFlowTest {
     fun theStatesGoTranslating_thenTranslated() = runTest {
         val s = setup(target = Languages.French)
         s.flow.translate(); runCurrent()
-        assertEquals(listOf(TranslationUiState.Translating(Languages.French), TranslationUiState.Translated(Languages.French)), s.states)
+        assertEquals(listOf(TranslationUiState.Translating(Languages.French), TranslationUiState.Translated(Languages.French, "Tu viens demain ?")), s.states)
     }
 
     // ---- undo ----
@@ -519,7 +519,7 @@ class TranslationFlowTest {
 
         advanceTimeBy(500); runCurrent()
         assertEquals("Tu viens demain ?", s.composer.text)
-        assertEquals(TranslationUiState.Translated(Languages.French), s.flow.state)
+        assertEquals(TranslationUiState.Translated(Languages.French, "Tu viens demain ?"), s.flow.state)
     }
 
     @Test

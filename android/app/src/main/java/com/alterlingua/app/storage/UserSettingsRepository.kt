@@ -70,6 +70,8 @@ internal object SettingsKeys {
     fun curriculumBacklogFor(code: String) = intPreferencesKey("curriculum_backlog_$code")
     fun curriculumLastActiveDateFor(code: String) = stringPreferencesKey("curriculum_last_active_date_$code")
     val SubscriptionTier = stringPreferencesKey("subscription_tier")
+    val TtsShareUsedThisMonth = intPreferencesKey("tts_share_used_this_month")
+    val TtsShareMonth = stringPreferencesKey("tts_share_month")
 }
 
 private val Context.userSettingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
@@ -149,6 +151,8 @@ internal fun Preferences.toUserSettings(): UserSettings {
             )
         }.toMap(),
         tier = enumOrDefault(this[SettingsKeys.SubscriptionTier], defaults.tier),
+        ttsShareUsedThisMonth = this[SettingsKeys.TtsShareUsedThisMonth] ?: defaults.ttsShareUsedThisMonth,
+        ttsShareMonth = this[SettingsKeys.TtsShareMonth] ?: defaults.ttsShareMonth,
     )
 }
 
@@ -186,6 +190,8 @@ private fun androidx.datastore.preferences.core.MutablePreferences.write(setting
         progress.lastActiveDate?.let { this[SettingsKeys.curriculumLastActiveDateFor(code)] = it }
     }
     this[SettingsKeys.SubscriptionTier] = settings.tier.name
+    this[SettingsKeys.TtsShareUsedThisMonth] = settings.ttsShareUsedThisMonth
+    settings.ttsShareMonth?.let { this[SettingsKeys.TtsShareMonth] = it }
 }
 
 private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
