@@ -62,6 +62,7 @@
     <string name="voice_cancel">Cancelar</string>
     <string name="voice_stop">Detener</string>
     <string name="voice_insert">Insertar como texto</string>
+    <string name="voice_insert_as_voice">Insertar como voz</string>
     <string name="voice_edit">Editar</string>
     <string name="voice_listen">Escuchar</string>
     <string name="voice_stop_listening">Detener</string>

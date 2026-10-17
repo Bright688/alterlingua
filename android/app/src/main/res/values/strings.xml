@@ -80,6 +80,7 @@
     <string name="voice_cancel">Cancel</string>
     <string name="voice_stop">Stop</string>
     <string name="voice_insert">Insert as text</string>
+    <string name="voice_insert_as_voice">Insert as voice</string>
     <string name="voice_edit">Edit</string>
     <string name="voice_listen">Listen</string>
     <string name="voice_stop_listening">Stop</string>

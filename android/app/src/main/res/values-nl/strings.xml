@@ -62,6 +62,7 @@
     <string name="voice_cancel">Annuleren</string>
     <string name="voice_stop">Stop</string>
     <string name="voice_insert">Als tekst invoegen</string>
+    <string name="voice_insert_as_voice">Als spraakbericht invoegen</string>
     <string name="voice_edit">Bewerken</string>
     <string name="voice_listen">Beluisteren</string>
     <string name="voice_stop_listening">Stop</string>

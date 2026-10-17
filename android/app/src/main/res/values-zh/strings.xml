@@ -62,6 +62,7 @@
     <string name="voice_cancel">取消</string>
     <string name="voice_stop">停止</string>
     <string name="voice_insert">作为文本插入</string>
+    <string name="voice_insert_as_voice">作为语音插入</string>
     <string name="voice_edit">编辑</string>
     <string name="voice_listen">收听</string>
     <string name="voice_stop_listening">停止</string>

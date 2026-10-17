@@ -147,32 +147,35 @@ class VoicePanel(
         )
         column.addView(text(state.translation, 16f, bold = true, color = colors.text))
         body.addView(ScrollView(context).apply { addView(column) }, fill())
+        renderPrimaryRow(voiceShareState)
         body.addView(
             row(
-                button(context.getString(R.string.voice_insert), ToolbarButtonStyle.PRIMARY, VoiceAction.INSERT, weight = 2f),
                 button(context.getString(R.string.voice_edit), ToolbarButtonStyle.TONAL, VoiceAction.EDIT),
-            ),
-        )
-        body.addView(
-            row(
                 button(
                     context.getString(if (state.playing) R.string.voice_stop_listening else R.string.voice_listen),
                     ToolbarButtonStyle.TONAL,
                     VoiceAction.LISTEN,
                 ),
-                button(context.getString(R.string.voice_record_again), ToolbarButtonStyle.TONAL, VoiceAction.RECORD_AGAIN),
             ),
         )
-        renderVoiceShareRow(voiceShareState)
+        body.addView(row(button(context.getString(R.string.voice_record_again), ToolbarButtonStyle.TONAL, VoiceAction.RECORD_AGAIN)))
         coversKeys = true
     }
 
-    /** "Give it a voice and share it" (on-device text-to-speech, then Android's Share sheet), with whatever
-     * [voiceShareState] it is currently in -- a monthly trial limit for FREE/Standard, or a problem making it. */
-    private fun renderVoiceShareRow(voiceShareState: TranslatedVoiceUiState) {
+    /** Insert as text, beside Insert as voice (on-device text-to-speech, then Android's Share sheet -- the same
+     * quota and [TranslatedVoiceFlow] the keyboard toolbar's own Translate-then-Voice flow uses), mirroring how the
+     * toolbar itself pairs its own "Voice" button beside Undo. While [voiceShareState] is anything other than idle,
+     * this row shows that status instead (a spinner, the monthly trial limit, or a failure), exactly as the
+     * toolbar's own row does -- Insert as text returns once it is dismissed or finishes. */
+    private fun renderPrimaryRow(voiceShareState: TranslatedVoiceUiState) {
         when (voiceShareState) {
             TranslatedVoiceUiState.Idle -> {
-                body.addView(row(button(context.getString(R.string.translation_give_voice), ToolbarButtonStyle.TONAL, VoiceAction.SPEAK_TRANSLATION)))
+                body.addView(
+                    row(
+                        button(context.getString(R.string.voice_insert), ToolbarButtonStyle.PRIMARY, VoiceAction.INSERT, weight = 2f),
+                        button(context.getString(R.string.voice_insert_as_voice), ToolbarButtonStyle.TONAL, VoiceAction.SPEAK_TRANSLATION),
+                    ),
+                )
             }
             TranslatedVoiceUiState.Making -> {
                 val making = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
