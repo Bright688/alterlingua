@@ -517,9 +517,13 @@ class AlterLinguaKeyboardService : InputMethodService() {
         translatedVoice.speakAndShare(result.translation, result.target)
     }
 
-    /** Hands a generated voice message to Android's Share sheet with a temporary read grant for that one file, the
-     * same FileProvider the standalone "Translated voice" screen already uses. The user picks the chat and presses
-     * Send there themselves; AlterLingua never sends anything. */
+    /** Hands a generated voice message to WhatsApp directly (the keyboard's whole reason to exist, per CLAUDE.md
+     * section 6) with a temporary read grant for that one file, the same FileProvider the standalone "Translated
+     * voice" screen already uses -- skipping the generic "choose an app" picker, since the keyboard is already
+     * attached to a WhatsApp composer when this runs. This still only opens WhatsApp's own forward/send screen: the
+     * user picks the chat and presses Send there themselves, and nothing about WhatsApp is touched besides the
+     * ordinary public Share intent any app can target it with. Falls back to the normal Share sheet if WhatsApp is
+     * not installed. */
     private fun shareSpokenFile(file: File, contentType: String) {
         val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
         val send = Intent(Intent.ACTION_SEND)
@@ -527,7 +531,13 @@ class AlterLinguaKeyboardService : InputMethodService() {
             .putExtra(Intent.EXTRA_STREAM, uri)
             .apply { clipData = ClipData.newRawUri("", uri) }
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(Intent.createChooser(send, getString(R.string.translation_give_voice_share_title)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        val toWhatsApp = Intent(send).setPackage("com.whatsapp").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val intent = if (toWhatsApp.resolveActivity(packageManager) != null) {
+            toWhatsApp
+        } else {
+            Intent.createChooser(send, getString(R.string.translation_give_voice_share_title)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        startActivity(intent)
     }
 
     /** Every keyboard must offer a way to leave it (Android's guidance): the globe key. */

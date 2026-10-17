@@ -3354,3 +3354,48 @@ path) was already confirmed live for the toolbar's own button two entries above.
    Voice button already does for typed-and-translated messages.
 4. Use it enough times in one calendar month to hit your tier's limit (Free 5, Standard 30) and confirm the
    message with View plans/Continue appears in place of the button, without disturbing Insert as text.
+
+## 2026-10-17 (follow-up) — Fixed on the owner's own live test: placement and the Share detour
+
+**The owner's own words, after trying it on the phone:** "instead of putting voice down like that you would have
+place insert as voice to be beside insert as text and its not suppose to be taking me to share again." A photo of
+the actual result screen showed exactly the layout from the entry above -- Insert as text/Edit as one row, Listen/
+Record again as another, then **Voice** as its own row underneath -- and confirmed tapping it does open Android's
+Share sheet, same as the toolbar's own button already does.
+
+**Two real fixes, not one:**
+
+1. **Placement.** The toolbar's own Translate-then-Voice flow already pairs its "Voice" button beside **Undo** in
+   one row (`AlterLinguaKeyboardView.renderTranslationRow`, `TranslationUiState.Translated`'s branch) -- the owner
+   was, in effect, asking for the microphone result to follow that same precedent rather than inventing its own
+   layout. `VoicePanel.renderResult` now puts **Insert as voice** beside **Insert as text** in one row (new string
+   `voice_insert_as_voice`, all 8 locales, distinct from the toolbar's own "Voice" label so the two buttons can read
+   differently in their two different contexts), with **Edit** moved beside **Listen**, and **Record again** on its
+   own row below. While the voice-share flow is Making/limit-reached/failed, that status now replaces the Insert
+   row entirely -- exactly how the toolbar already hides Undo during the same states -- rather than ever showing
+   both at once.
+
+2. **The Share detour.** Asked directly what should happen instead of the generic "choose an app" picker (there is
+   no Android API that lets a keyboard drop an audio file straight into another app's composer the way text can be
+   inserted -- CLAUDE.md section 37 -- so some hand-off is unavoidable), the owner chose going **straight to
+   WhatsApp**: `AlterLinguaKeyboardService.shareSpokenFile` now builds the same `ACTION_SEND` intent as before but
+   targets it at `com.whatsapp` directly (`Intent.setPackage`, with `resolveActivity` falling back to the ordinary
+   Share sheet if WhatsApp is not installed), skipping the generic chooser since the keyboard is already attached
+   to a WhatsApp composer whenever this runs. This changes the **one** shared hand-off point both Voice buttons
+   already went through, so it applies to the toolbar's own button too, not just the microphone's. Still only opens
+   WhatsApp's own forward/send screen -- the owner picks the chat and presses Send there themselves, same as
+   before; nothing about WhatsApp is touched beyond the ordinary public Share intent any app can target it with.
+
+**Status:** `compileDebugKotlin`, full Android unit suite (0 failures -- no existing test touched either changed
+function) and `assembleRelease` all clean. **Not yet re-verified on a device this round** -- the phone disconnected
+again before the updated build could be installed.
+
+### Manual test for the owner
+
+1. Rebuild and reinstall the debug APK, then repeat the microphone test above.
+2. Confirm **Insert as text** and **Insert as voice** now sit side by side on the result screen, with **Edit** next
+   to **Listen** and **Record again** on its own row.
+3. Tap **Insert as voice**: it should open WhatsApp directly (not a "choose an app" list) with the voice file ready
+   to send to whichever chat you pick -- still your own tap on Send in WhatsApp, same as always.
+4. Try the same from the toolbar's own **Voice** button after a normal Translate, to confirm it also now goes
+   straight to WhatsApp.

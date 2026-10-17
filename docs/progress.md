@@ -1423,3 +1423,16 @@ Translate-then-Voice feature. Full unit suite 0 failures (no new tests added —
 same shape as the already-untested toolbar button wiring, over already-tested `TranslatedVoiceFlow` logic);
 `assembleRelease` clean. **Not yet manually verified on a device** — the phone disconnected before `installDebug`
 could run.
+
+## Addendum (2026-10-17, follow-up): fixed on the owner's own live test — placement and the Share detour
+
+The owner tried the microphone's new Voice feature live and gave direct feedback with a screenshot: move **Insert
+as voice** beside **Insert as text** (mirroring how the toolbar already pairs its own Voice button beside Undo),
+and stop sending the user through the generic Android "choose an app" Share picker. **FIXED**: `VoicePanel`'s
+result row is now Insert as text/Insert as voice, with Edit moved beside Listen and Record again on its own row;
+while the voice-share flow is Making/limit-reached/failed, that status replaces the row instead of showing
+alongside it, exactly as the toolbar already does for Undo. Asked what should happen instead of the Share picker,
+the owner chose going straight to WhatsApp: `shareSpokenFile` now targets `com.whatsapp` directly with a Share
+sheet fallback if it's not installed — this is the one hand-off point both Voice buttons share, so the toolbar's
+own button goes straight to WhatsApp now too. Full unit suite 0 failures, `assembleRelease` clean. Not yet
+re-verified on the device — disconnected again before the updated build could install.
