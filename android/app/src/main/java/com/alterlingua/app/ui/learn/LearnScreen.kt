@@ -474,6 +474,7 @@ private fun StandardAndPremiumCards(
             stringResource(R.string.set_plan_standard_feature_full_curriculum),
             stringResource(R.string.set_plan_standard_feature_daily_cap),
             stringResource(R.string.set_plan_standard_feature_image_translation),
+            stringResource(R.string.set_plan_standard_feature_voice_share),
         ),
         owned = tier == com.alterlingua.app.entitlements.Tier.STANDARD || tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
         offer = offers.firstOrNull { it.tier == com.alterlingua.app.entitlements.Tier.STANDARD },

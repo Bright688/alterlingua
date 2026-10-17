@@ -134,10 +134,10 @@ class EntitlementServiceTest {
     }
 
     @Test
-    fun ttsShareLimitPerMonth_isTheTrialForFreeAndStandard_unlimitedForPremium() {
+    fun ttsShareLimitPerMonth_matchesTheOwnersThreeTierNumbers() {
         val service = EntitlementService(FakeUserSettingsRepository())
-        assertEquals(TRIAL_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.FREE))
-        assertEquals(TRIAL_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.STANDARD))
-        assertEquals(null, service.ttsShareLimitPerMonth(Tier.PREMIUM))
+        assertEquals(FREE_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.FREE))
+        assertEquals(STANDARD_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.STANDARD))
+        assertEquals(PREMIUM_TTS_SHARES_PER_MONTH, service.ttsShareLimitPerMonth(Tier.PREMIUM))
     }
 }

@@ -7,11 +7,11 @@ import java.time.ZoneId
 import kotlinx.coroutines.flow.first
 
 /**
- * Tracks and enforces FREE/Standard's monthly trial allowance for [Feature.TTS_SHARING] (giving a just-translated
- * keyboard message a voice and sharing it). Mirrors the day-rollover shape of
- * [com.alterlingua.app.learning.curriculum.CurriculumProgressService], but by calendar month and with a single
- * global counter rather than one per language: there is one phone, in one time zone, and only one allowance to
- * track here, so a resettable month-stamped count (like [com.alterlingua.app.learning.curriculum.CurriculumProgress.lastActiveDate])
+ * Tracks and enforces each tier's monthly cap on giving a just-translated keyboard message a voice and sharing it
+ * (see [EntitlementService.ttsShareLimitPerMonth]: Free 10, Standard 50, Premium 1,000). Mirrors the day-rollover
+ * shape of [com.alterlingua.app.learning.curriculum.CurriculumProgressService], but by calendar month and with a
+ * single global counter rather than one per language: there is one phone, in one time zone, and only one allowance
+ * to track here, so a resettable month-stamped count (like [com.alterlingua.app.learning.curriculum.CurriculumProgress.lastActiveDate])
  * is simpler than a rolling window.
  */
 class TtsShareUsageService(
@@ -24,15 +24,12 @@ class TtsShareUsageService(
 
     /** Whether a translated message may be given a voice and shared right now. */
     suspend fun access(tier: Tier): TtsShareAccess {
-        val limit = entitlements.ttsShareLimitPerMonth(tier) ?: return TtsShareAccess.Allowed
+        val limit = entitlements.ttsShareLimitPerMonth(tier)
         return if (usedThisMonth() < limit) TtsShareAccess.Allowed else TtsShareAccess.LimitReached(limit)
     }
 
-    /** How many of this month's trial allowance remain, or null when [tier] has no limit (Premium). */
-    suspend fun remaining(tier: Tier): Int? {
-        val limit = entitlements.ttsShareLimitPerMonth(tier) ?: return null
-        return (limit - usedThisMonth()).coerceAtLeast(0)
-    }
+    /** How many of this month's allowance remain for [tier]. */
+    suspend fun remaining(tier: Tier): Int = (entitlements.ttsShareLimitPerMonth(tier) - usedThisMonth()).coerceAtLeast(0)
 
     private suspend fun usedThisMonth(): Int {
         val current = settings.settings.first()

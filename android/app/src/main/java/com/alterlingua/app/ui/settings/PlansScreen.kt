@@ -83,6 +83,7 @@ fun PlansScreen(
                 stringResource(R.string.set_plan_standard_feature_full_curriculum),
                 stringResource(R.string.set_plan_standard_feature_daily_cap),
                 stringResource(R.string.set_plan_standard_feature_image_translation),
+                stringResource(R.string.set_plan_standard_feature_voice_share),
             ),
             offer = offers.firstOrNull { it.tier == Tier.STANDARD } ?: TierOffers(Tier.STANDARD, null, null),
             onSubscribe = onSubscribe,

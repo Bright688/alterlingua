@@ -24,11 +24,10 @@ enum class Feature {
      * document file translation (Premium), see docs/build-log.md.
      */
     DOCUMENT_TRANSLATION,
-
-    /**
-     * Giving a just-translated keyboard message a voice (on-device text-to-speech) and sharing it, so the user can
-     * send it as a voice message themselves. Premium: unlimited. FREE and Standard get a monthly trial instead of
-     * no access at all -- see EntitlementService.ttsShareLimitPerMonth and TtsShareUsageService.
-     */
-    TTS_SHARING,
 }
+
+// Note: giving a just-translated keyboard message a voice and sharing it (on-device text-to-speech) is available
+// to every tier, just with a different monthly cap per tier (Free 10, Standard 50, Premium 1,000) -- see
+// EntitlementService.ttsShareLimitPerMonth and TtsShareUsageService. It has no Feature/TierPolicy entry because,
+// unlike the gated features above, there is no tier that unlocks it and no tier that lacks it entirely; the policy
+// is a graded cap, the same shape as EntitlementService.aiConversationMinutesPerDay.

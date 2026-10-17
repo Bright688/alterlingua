@@ -18,34 +18,40 @@ class TtsShareUsageServiceTest {
 
     @Test
     fun aFreeUser_underTheLimit_isAllowed() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH - 1))
+        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH - 1))
         assertEquals(TtsShareAccess.Allowed, service(settings, JANUARY_15_2026).access(Tier.FREE))
     }
 
     @Test
     fun aFreeUser_atTheLimit_isStopped() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
-        assertEquals(TtsShareAccess.LimitReached(TRIAL_TTS_SHARES_PER_MONTH), service(settings, JANUARY_15_2026).access(Tier.FREE))
+        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH))
+        assertEquals(TtsShareAccess.LimitReached(FREE_TTS_SHARES_PER_MONTH), service(settings, JANUARY_15_2026).access(Tier.FREE))
     }
 
     @Test
-    fun standardIsTreatedTheSameAsFree() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
-        assertEquals(TtsShareAccess.LimitReached(TRIAL_TTS_SHARES_PER_MONTH), service(settings, JANUARY_15_2026).access(Tier.STANDARD))
+    fun standardHasItsOwnHigherLimit() = runTest {
+        val underLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH + 5))
+        assertEquals(TtsShareAccess.Allowed, service(underLimit, JANUARY_15_2026).access(Tier.STANDARD))
+
+        val atLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = STANDARD_TTS_SHARES_PER_MONTH))
+        assertEquals(TtsShareAccess.LimitReached(STANDARD_TTS_SHARES_PER_MONTH), service(atLimit, JANUARY_15_2026).access(Tier.STANDARD))
     }
 
     @Test
-    fun premiumIsNeverStopped_evenFarPastTheTrialCount() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = 10_000))
-        assertEquals(TtsShareAccess.Allowed, service(settings, JANUARY_15_2026).access(Tier.PREMIUM))
-        assertEquals(null, service(settings, JANUARY_15_2026).remaining(Tier.PREMIUM))
+    fun premiumHasItsOwnMuchHigherLimit_notUnlimited() = runTest {
+        val underLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = STANDARD_TTS_SHARES_PER_MONTH + 10))
+        assertEquals(TtsShareAccess.Allowed, service(underLimit, JANUARY_15_2026).access(Tier.PREMIUM))
+
+        val atLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = "2026-01", ttsShareUsedThisMonth = PREMIUM_TTS_SHARES_PER_MONTH))
+        assertEquals(TtsShareAccess.LimitReached(PREMIUM_TTS_SHARES_PER_MONTH), service(atLimit, JANUARY_15_2026).access(Tier.PREMIUM))
+        assertEquals(0, service(atLimit, JANUARY_15_2026).remaining(Tier.PREMIUM))
     }
 
     @Test
     fun aNewCalendarMonth_resetsTheCount() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
+        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH))
         assertEquals(TtsShareAccess.Allowed, service(settings, FEBRUARY_1_2026).access(Tier.FREE))
-        assertEquals(TRIAL_TTS_SHARES_PER_MONTH, service(settings, FEBRUARY_1_2026).remaining(Tier.FREE))
+        assertEquals(FREE_TTS_SHARES_PER_MONTH, service(settings, FEBRUARY_1_2026).remaining(Tier.FREE))
     }
 
     @Test
@@ -61,7 +67,7 @@ class TtsShareUsageServiceTest {
 
     @Test
     fun recordUse_inANewMonth_startsTheCountOverRatherThanAdding() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
+        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH))
         service(settings, FEBRUARY_1_2026).recordUse()
         assertEquals("2026-02", settings.current.ttsShareMonth)
         assertEquals(1, settings.current.ttsShareUsedThisMonth)
@@ -70,12 +76,12 @@ class TtsShareUsageServiceTest {
     @Test
     fun remaining_countsDownFromTheLimit() = runTest {
         val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = 2))
-        assertEquals(TRIAL_TTS_SHARES_PER_MONTH - 2, service(settings, JANUARY_15_2026).remaining(Tier.FREE))
+        assertEquals(FREE_TTS_SHARES_PER_MONTH - 2, service(settings, JANUARY_15_2026).remaining(Tier.FREE))
     }
 
     @Test
     fun remaining_neverGoesBelowZero() = runTest {
-        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH + 3))
+        val settings = FakeUserSettingsRepository(UserSettings(ttsShareMonth = "2026-01", ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH + 3))
         assertEquals(0, service(settings, JANUARY_15_2026).remaining(Tier.FREE))
     }
 }

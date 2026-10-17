@@ -28,5 +28,19 @@
                 <action android:name="com.alterlingua.app.DEBUG_CAPTURED_NOTE" />
             </intent-filter>
         </receiver>
+
+        <!--
+            DEBUG BUILDS ONLY. Lets `adb` set the subscription tier directly, so Standard/Premium-gated features can
+            be tried on a real device before real Google Play Billing products exist. Release builds contain no
+            such receiver.
+        -->
+        <receiver
+            android:name=".entitlements.DebugTierReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.alterlingua.app.DEBUG_SET_TIER" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

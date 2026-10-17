@@ -3246,3 +3246,59 @@ well on the card (versus the previous 3) has not been visually confirmed.
    show 4 (ending with image translation); Premium should show 5 (ending with document translation and unlimited
    voice sharing).
 2. Learn tab → Standard/Premium cards: the same new bullets should appear there too.
+
+## 2026-10-17 (follow-up) — Three distinct monthly caps (10/50/1000), and a real Gate-C-style device test
+
+**The owner corrected the quota numbers directly:** "for for the voice that allows me to share my translated text as
+a voice message... for free trial it should allow 10 times to use the feature per month, for standard it should be
+50 times to use the feature per month and for premium it should allow 1000 times." This resolves the Standard
+ambiguity flagged in the entry above: Free, Standard and Premium now each have their own real number
+(`FREE_TTS_SHARES_PER_MONTH=10`, `STANDARD_TTS_SHARES_PER_MONTH=50`, `PREMIUM_TTS_SHARES_PER_MONTH=1000`), replacing
+the single shared `TRIAL_TTS_SHARES_PER_MONTH=5` constant. `Feature.TTS_SHARING`/`TierPolicy` were removed
+entirely for this: since every tier now has *some* real access, this is a graded cap like
+`aiConversationMinutesPerDay`, not a tier-unlock gate, so keeping a `Feature`/`TierPolicy` entry for it would have
+been misleading. `ttsShareLimitPerMonth(tier)` is now non-nullable (every tier has a real, finite number -- Premium
+is a high cap, not "unlimited", the same honesty `PREMIUM_CURRICULUM_DAILY_CAP` already uses). The Settings → Plan
+and Learn tab bullets were updated to the new numbers, and Standard gained its own bullet (it previously had none
+at all for this feature).
+
+**Then the owner connected their real phone and asked to see it working.** This produced a genuine Gate-C-style
+device verification, end to end:
+- A debug-only `DebugTierReceiver` (`adb shell am broadcast -a com.alterlingua.app.DEBUG_SET_TIER --es tier
+  PREMIUM`) was added so Standard/Premium-gated features can be tried before real Google Play Billing products
+  exist -- mirrors the existing `DebugTestMessageReceiver`/`DebugCapturedNoteReceiver` pattern exactly (debug build
+  only, release contains none of it).
+- **A real, reproducible manual-testing gotcha was found and understood, not a code bug**: tapping the keyboard's
+  **Voice** button appeared to do nothing, repeatedly. Root cause, confirmed with temporary diagnostic logging
+  (added, used, then removed again before this entry): `TranslationFlow`'s own 10-second "Translated" banner
+  expiry (`resultMillis`) was elapsing between the Translate tap and the Voice tap whenever those two taps were
+  issued as *separate* tool calls, because of the dispatch latency between calls -- by the time Voice was tapped,
+  the toolbar had already silently reverted to its normal state, so the tap landed on nothing meaningful. Once
+  Translate and Voice were tapped back-to-back within a single shell invocation (no inter-call gap), the whole
+  chain fired correctly on the first try.
+- A second, genuine device quirk was found along the way: this phone's ROM does not surface `Log.d` (debug
+  priority) in `logcat` for third-party apps at all, only `Log.e` and above -- an environment fact, unrelated to
+  the app's own deliberate "nothing is logged" design, but worth recording since it cost real time to diagnose.
+
+**Confirmed working on the real device, the full chain, exactly as designed:**
+Type a message → **Translate** → translated text appears with **Voice** next to **Undo** → tap **Voice** →
+entitlement check passes (Premium) → on-device TextToSpeech synthesizes a real `.wav` file into
+`cache/spoken_audio/` (confirmed via `adb shell run-as ... ls`, a real ~50 KB file) → Android's Share sheet opens
+("Sharing 1 File") → choosing WhatsApp opens its own native "Send to..." contact picker with the voice file
+attached, ready for the user to pick a chat and press Send themselves. The flow was not completed past that point
+(no message was actually sent to any contact), consistent with AlterLingua never sending anything itself.
+
+### Verification
+
+Implemented and tested: `TtsShareUsageServiceTest`/`TranslatedVoiceFlowTest`/`EntitlementServiceTest` updated for
+the three real numbers (Free under/at 10, Standard under/at 50, Premium under/at 1,000 -- no longer "never
+stopped"). Full Android unit suite: 0 failures. `assembleRelease` and `installDebug` both clean. **Manually
+verified on the owner's real device this round** (Infinix X6728B): the Voice button, on-device synthesis producing
+a real audio file, and the Share sheet handing it to WhatsApp, all confirmed as described above -- the first part
+of this feature's Gate-C-style check to actually be confirmed live rather than only built and unit-tested.
+
+### Manual test for the owner
+
+Already covered above, now confirmed live: Translate a message, tap **Voice** promptly (within a few seconds, same
+10-second window as Undo), confirm the Share sheet opens with a real voice file, and that choosing a chat app
+shows the file ready to send (stop there, or send it yourself if you want to hear the result).

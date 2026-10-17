@@ -1388,3 +1388,16 @@ feature just built. A check found the same gap for image translation (Standard) 
 (Free's voice trial, Standard's image translation, Premium's document translation and unlimited voice sharing),
 in both places that show them, from the same shared string resources so they cannot drift apart from each other.
 Full unit suite 0 failures, lint clean, all compiles/builds clean. Not yet manually verified on a device.
+
+## Addendum (2026-10-17, follow-up): real numbers (10/50/1000), and the keyboard Voice button confirmed live
+
+The owner corrected the trial numbers directly: Free 10/month, Standard 50/month, Premium 1,000/month (not
+"unlimited") -- `EntitlementService.ttsShareLimitPerMonth` is now non-nullable with three real per-tier constants;
+`Feature.TTS_SHARING`/`TierPolicy` were removed since every tier now has some access (a graded cap, not a gate).
+Settings → Plan and the Learn tab updated to match, Standard gaining its own bullet it previously lacked.
+
+**Manually verified live on the owner's connected phone (Infinix X6728B) for the first time**: Translate → tap
+**Voice** → on-device TextToSpeech produced a real audio file → Android's Share sheet opened and WhatsApp accepted
+it, ready to send. A real manual-testing gotcha (not a code bug) was found and understood along the way: tapping
+Translate and Voice as two separate commands let `TranslationFlow`'s 10-second banner expiry elapse in between;
+tapped back-to-back in one shell call, it worked on the first try. See `docs/build-log.md` for full detail.

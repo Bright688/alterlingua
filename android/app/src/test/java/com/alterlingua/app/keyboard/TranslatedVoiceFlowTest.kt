@@ -1,8 +1,10 @@
 package com.alterlingua.app.keyboard
 
 import com.alterlingua.app.entitlements.EntitlementService
+import com.alterlingua.app.entitlements.FREE_TTS_SHARES_PER_MONTH
+import com.alterlingua.app.entitlements.PREMIUM_TTS_SHARES_PER_MONTH
+import com.alterlingua.app.entitlements.STANDARD_TTS_SHARES_PER_MONTH
 import com.alterlingua.app.entitlements.Tier
-import com.alterlingua.app.entitlements.TRIAL_TTS_SHARES_PER_MONTH
 import com.alterlingua.app.entitlements.TtsShareUsageService
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
@@ -75,31 +77,43 @@ class TranslatedVoiceFlowTest {
 
     @Test
     fun aFreeUser_atTheMonthlyLimit_isStopped_andNothingIsSynthesized() = runTest {
-        val prefs = FakeUserSettingsRepository(UserSettings(ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
+        val prefs = FakeUserSettingsRepository(UserSettings(ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH))
         val f = flow(prefs, backgroundScope)
         f.speakAndShare("hello", Languages.French)
         runCurrent()
-        assertEquals(TranslatedVoiceUiState.LimitReached(TRIAL_TTS_SHARES_PER_MONTH), f.state)
+        assertEquals(TranslatedVoiceUiState.LimitReached(FREE_TTS_SHARES_PER_MONTH), f.state)
         assertTrue(speaker.synthesized.isEmpty())
         assertTrue(shared.isEmpty())
     }
 
     @Test
-    fun aStandardUser_isAlsoStoppedAtTheLimit() = runTest {
-        val prefs = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
-        val f = flow(prefs, backgroundScope)
+    fun aStandardUser_hasItsOwnHigherLimit() = runTest {
+        val underFreesLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH + 5))
+        val stillAllowed = flow(underFreesLimit, backgroundScope)
+        stillAllowed.speakAndShare("hello", Languages.French)
+        runCurrent()
+        assertEquals(1, shared.size)
+
+        val atLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.STANDARD, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = STANDARD_TTS_SHARES_PER_MONTH))
+        val f = flow(atLimit, backgroundScope)
         f.speakAndShare("hello", Languages.French)
         runCurrent()
-        assertTrue(f.state is TranslatedVoiceUiState.LimitReached)
+        assertEquals(TranslatedVoiceUiState.LimitReached(STANDARD_TTS_SHARES_PER_MONTH), f.state)
     }
 
     @Test
-    fun aPremiumUser_isNeverStopped_evenFarPastTheTrialCount() = runTest {
-        val prefs = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = 10_000))
-        val f = flow(prefs, backgroundScope)
-        f.speakAndShare("hello", Languages.French)
+    fun aPremiumUser_hasItsOwnMuchHigherLimit_notUnlimited() = runTest {
+        val underStandardsLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = STANDARD_TTS_SHARES_PER_MONTH + 10))
+        val stillAllowed = flow(underStandardsLimit, backgroundScope)
+        stillAllowed.speakAndShare("hello", Languages.French)
         runCurrent()
         assertEquals(1, shared.size)
+
+        val atLimit = FakeUserSettingsRepository(UserSettings(tier = Tier.PREMIUM, ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = PREMIUM_TTS_SHARES_PER_MONTH))
+        val f = flow(atLimit, backgroundScope)
+        f.speakAndShare("hello", Languages.French)
+        runCurrent()
+        assertEquals(TranslatedVoiceUiState.LimitReached(PREMIUM_TTS_SHARES_PER_MONTH), f.state)
     }
 
     @Test
@@ -125,7 +139,7 @@ class TranslatedVoiceFlowTest {
 
     @Test
     fun dismiss_returnsToIdle() = runTest {
-        val prefs = FakeUserSettingsRepository(UserSettings(ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = TRIAL_TTS_SHARES_PER_MONTH))
+        val prefs = FakeUserSettingsRepository(UserSettings(ttsShareMonth = currentMonth(), ttsShareUsedThisMonth = FREE_TTS_SHARES_PER_MONTH))
         val f = flow(prefs, backgroundScope)
         f.speakAndShare("hello", Languages.French)
         runCurrent()
