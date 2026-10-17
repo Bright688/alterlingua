@@ -3208,3 +3208,41 @@ Retry + Close) already uses successfully.
    make the voice message.") without losing the translated text in the composer.
 7. Confirm the composer's translated text and the Undo button are unaffected throughout -- giving the message a
    voice must never itself send anything or alter the text.
+
+## 2026-10-17 (follow-up) — The owner caught a real gap: Settings → Plan never said any of this
+
+**What the owner said:** "you didnt add it to what the premium offers." Correct, and not only for the voice
+feature just built: a repo-wide check found that **none of the three most recent Standard/Premium features --
+image translation, document translation, and now voice-and-share -- had ever been added to the actual
+user-facing "what you get" lists** in Settings → Plan (`PlansScreen.kt`) or the Learn tab's own plan cards
+(`LearnScreen.kt`'s `StandardAndPremiumCards`). The entitlement code gated them correctly; the marketing copy
+simply never caught up, three times in a row. Fixed for all three at once rather than only the one the owner
+named, since leaving the other two silently missing would just be the same complaint again later.
+
+**What changed:** four new feature bullets, added to both `PlansScreen.kt` and `LearnScreen.kt` (which read the
+exact same string resources, so they can't drift apart from each other, only from the entitlement code if a
+future feature is forgotten here again):
+- FREE: "5 translated voice messages a month, from the keyboard" (`set_plan_free_feature_voice_trial`).
+- Standard: "Translate the text in any photo or screenshot" (`set_plan_standard_feature_image_translation`).
+- Premium: "Translate whole PDF and Word files — get a translated file back"
+  (`set_plan_premium_feature_document_translation`) and "Unlimited translated voice messages to send from the
+  keyboard" (`set_plan_premium_feature_voice_share`).
+
+Premium's existing first bullet ("Everything in Standard, and more") already covers image translation by
+implication, so no separate Premium bullet was added for that one.
+
+### Verification
+
+Implemented: new strings added across all 8 locales; both screens' `features = listOf(...)` updated. No existing
+test asserts an exact feature-list length or content for these cards (checked before adding, to confirm nothing
+would break). Full Android unit suite: 0 failures. `lintDebug` clean. `compileDebugKotlin`/
+`compileDebugAndroidTestKotlin`, `assembleDebug` and `assembleRelease` all run clean. **Not manually verified on a
+device** — no device was connected to this session; in particular, whether a 4-5 line feature list still reads
+well on the card (versus the previous 3) has not been visually confirmed.
+
+### Manual test for the owner
+
+1. Settings → Plan: the Free card should now show 4 bullets (ending with the 5/month voice trial); Standard should
+   show 4 (ending with image translation); Premium should show 5 (ending with document translation and unlimited
+   voice sharing).
+2. Learn tab → Standard/Premium cards: the same new bullets should appear there too.

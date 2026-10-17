@@ -1378,3 +1378,13 @@ change.
 `assembleDebug`/`assembleRelease`/instrumented-test compile all clean. **Not yet manually verified on a device** —
 no device was connected to this session, and in particular whether the new button fits comfortably next to Undo
 on a real screen has not been visually confirmed.
+
+## Addendum (2026-10-17, follow-up): Settings → Plan and the Learn tab never actually listed these features
+
+The owner pointed out that Premium's "what you get" list in Settings → Plan did not mention the voice-sharing
+feature just built. A check found the same gap for image translation (Standard) and document translation
+(Premium) too — the entitlement gates were real, but the user-facing feature lists on `PlansScreen.kt` and
+`LearnScreen.kt`'s plan cards had never been updated for any of the three. **FIXED**: four new bullets added
+(Free's voice trial, Standard's image translation, Premium's document translation and unlimited voice sharing),
+in both places that show them, from the same shared string resources so they cannot drift apart from each other.
+Full unit suite 0 failures, lint clean, all compiles/builds clean. Not yet manually verified on a device.

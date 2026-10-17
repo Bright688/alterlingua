@@ -473,6 +473,7 @@ private fun StandardAndPremiumCards(
             stringResource(R.string.set_plan_standard_feature_everything_free),
             stringResource(R.string.set_plan_standard_feature_full_curriculum),
             stringResource(R.string.set_plan_standard_feature_daily_cap),
+            stringResource(R.string.set_plan_standard_feature_image_translation),
         ),
         owned = tier == com.alterlingua.app.entitlements.Tier.STANDARD || tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
         offer = offers.firstOrNull { it.tier == com.alterlingua.app.entitlements.Tier.STANDARD },
@@ -489,6 +490,8 @@ private fun StandardAndPremiumCards(
             stringResource(R.string.set_plan_premium_feature_everything_standard),
             stringResource(R.string.set_plan_premium_feature_all_languages),
             stringResource(R.string.set_plan_premium_feature_no_cap),
+            stringResource(R.string.set_plan_premium_feature_document_translation),
+            stringResource(R.string.set_plan_premium_feature_voice_share),
         ),
         owned = tier == com.alterlingua.app.entitlements.Tier.PREMIUM,
         // A Standard subscriber already has full curriculum access: no "trial" framing, just a clear upgrade.
