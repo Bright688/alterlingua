@@ -3460,12 +3460,16 @@ hand-rolled WAV-chunk parsing directly (sample rate/channel count/data, an odd-s
 non-RIFF rejection) -- the actual `MediaCodec` encode path itself has no real codec to run against in a plain JVM
 unit test, so it can only be confirmed on a device, consistent with how this project already treats IME/Share
 system integration (CLAUDE.md section 43). Full existing unit suite still passes (extension/mime assertions in
-`SpokenTranslationFlowTest` updated to `.m4a`/`audio/mp4`). Installed on the owner's phone; **not yet re-confirmed
-live** -- the device dropped its USB connection again before an actual voice message could be sent and played back
-with the new build.
+`SpokenTranslationFlowTest` updated to `.m4a`/`audio/mp4`).
+
+**Manually verified live**, once the device reconnected: typed a message in the self-chat, Translate, Voice --
+straight into WhatsApp's own "Send to..." screen as expected -- sent to "Message yourself". The new bubble itself
+looks different from the old broken ones: a grey play triangle and the file's name, not the orange
+headphone/waveform icon the raw-WAV messages got. Tapped Play: it actually played (pause icon, progress bar
+animated to the end), with no "Couldn't process audio" error at any point. The bug is fixed.
 
 ### Manual test for the owner
 
 1. Translate a message (or use the microphone), tap Voice/Insert as voice, pick the chat in WhatsApp, press Send.
 2. Open the sent voice message and tap Play.
-3. Confirm it plays the spoken translation instead of showing "Couldn't process audio."
+3. Confirm it plays the spoken translation instead of showing "Couldn't process audio." (Confirmed 2026-10-17.)

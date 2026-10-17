@@ -1446,5 +1446,7 @@ Opus) and refuses to play raw PCM WAV, something no earlier round of testing had
 sheet accepted it, ready to send" had been confirmed before). **FIXED**: new `SpeechAudioEncoder` re-encodes the
 WAV into AAC-in-MP4 on-device via `MediaCodec`/`MediaMuxer` before the file ever reaches WhatsApp — one shared
 fix point for both the toolbar's Voice button and the microphone's Insert as voice. New `SpeechAudioEncoderTest`
-covers the WAV-chunk parsing (the codec itself needs a real device to test). Full unit suite 0 failures. Installed
-on the owner's phone; not yet re-confirmed live — device dropped its USB connection again mid-test.
+covers the WAV-chunk parsing (the codec itself needs a real device to test). Full unit suite 0 failures.
+**Manually verified live** once the device reconnected: Translate → Voice → straight into WhatsApp's own send
+screen → sent → tapped Play on the resulting message → it actually played (no error), with a visibly different
+bubble style (plain play button + filename) than the broken raw-WAV ones above it in the same chat.
