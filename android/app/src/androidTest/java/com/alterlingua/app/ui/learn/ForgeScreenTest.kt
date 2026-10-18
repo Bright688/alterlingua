@@ -123,11 +123,11 @@ class ForgeScreenTest {
     }
 
     @Test
-    fun lessonMenu_vocabularyOpensThePracticeFlow_othersAreShownAsComingSoon() {
+    fun lessonMenu_vocabularyOpensThePracticeFlow_onlyGrammarIsStillComingSoon() {
         var opened = 0
         val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 3, 0, 2), listOf("un", "deux"), masteredCount = 0)
         composeTestRule.setContent {
-            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = { opened++ }, onOpenReading = {}, onOpenListening = {}, onOpenWriting = {}, onBack = {}) }
+            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = { opened++ }, onOpenReading = {}, onOpenListening = {}, onOpenWriting = {}, onOpenSpeaking = {}, onBack = {}) }
         }
         composeTestRule.onNodeWithTag("lesson_vocabulary").assertIsDisplayed()
         composeTestRule.onNodeWithTag("lesson_vocabulary").performClick()
@@ -144,7 +144,7 @@ class ForgeScreenTest {
         var opened = 0
         val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 3, 0, 2), listOf("un", "deux"), masteredCount = 0)
         composeTestRule.setContent {
-            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = { opened++ }, onOpenListening = {}, onOpenWriting = {}, onBack = {}) }
+            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = { opened++ }, onOpenListening = {}, onOpenWriting = {}, onOpenSpeaking = {}, onBack = {}) }
         }
         composeTestRule.onNodeWithTag("lesson_reading").performClick()
         assertEquals(1, opened)
@@ -155,7 +155,7 @@ class ForgeScreenTest {
         var opened = 0
         val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 3, 0, 2), listOf("un", "deux"), masteredCount = 0)
         composeTestRule.setContent {
-            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = { opened++ }, onOpenWriting = {}, onBack = {}) }
+            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = { opened++ }, onOpenWriting = {}, onOpenSpeaking = {}, onBack = {}) }
         }
         composeTestRule.onNodeWithTag("lesson_listening").performClick()
         assertEquals(1, opened)
@@ -166,9 +166,20 @@ class ForgeScreenTest {
         var opened = 0
         val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 3, 0, 2), listOf("un", "deux"), masteredCount = 0)
         composeTestRule.setContent {
-            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = {}, onOpenWriting = { opened++ }, onBack = {}) }
+            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = {}, onOpenWriting = { opened++ }, onOpenSpeaking = {}, onBack = {}) }
         }
         composeTestRule.onNodeWithTag("lesson_writing").performClick()
+        assertEquals(1, opened)
+    }
+
+    @Test
+    fun lessonMenu_speakingOpensTheSpeakingFlow() {
+        var opened = 0
+        val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 3, 0, 2), listOf("un", "deux"), masteredCount = 0)
+        composeTestRule.setContent {
+            AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = {}, onOpenWriting = {}, onOpenSpeaking = { opened++ }, onBack = {}) }
+        }
+        composeTestRule.onNodeWithTag("lesson_speaking").performClick()
         assertEquals(1, opened)
     }
 
@@ -176,7 +187,7 @@ class ForgeScreenTest {
     fun lessonMenu_backButton_callsOnBack() {
         var back = 0
         val unit = ForgeUnitSummary(CurriculumUnitRange(CefrLevel.A1, 1, 0, 1), listOf("un"), masteredCount = 0)
-        composeTestRule.setContent { AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = {}, onOpenWriting = {}, onBack = { back++ }) } }
+        composeTestRule.setContent { AlterLinguaTheme { LessonMenuScreen(unit, onOpenVocabulary = {}, onOpenReading = {}, onOpenListening = {}, onOpenWriting = {}, onOpenSpeaking = {}, onBack = { back++ }) } }
         composeTestRule.onNodeWithTag("lesson_menu_back").performClick()
         assertEquals(1, back)
     }

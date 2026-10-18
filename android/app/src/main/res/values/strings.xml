@@ -365,6 +365,9 @@
     <string name="lrn_writing_finished_title">Nice writing!</string>
     <string name="lrn_writing_again">Write about more words</string>
     <string name="lrn_writing_unavailable_title">Couldn\'t load writing practice</string>
+    <string name="lrn_speaking_finished_title">Nice speaking!</string>
+    <string name="lrn_speaking_again">Practice more sentences</string>
+    <string name="lrn_speaking_unavailable_title">Couldn\'t load speaking practice</string>
     <string name="set_remind_me_at">Remind me to do my 10-item lesson at %1$s.</string>
     <string name="set_translate_whatsapp_messages">Translate incoming messages</string>
     <string name="set_whatsapp_desc">When someone writes in another language, AlterLingua shows a translation in %1$s as its own notification.</string>

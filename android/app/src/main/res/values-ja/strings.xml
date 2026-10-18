@@ -337,6 +337,9 @@
     <string name="lrn_writing_finished_title">よく書けました！</string>
     <string name="lrn_writing_again">もっと単語について書く</string>
     <string name="lrn_writing_unavailable_title">ライティング練習を読み込めませんでした</string>
+    <string name="lrn_speaking_finished_title">よく話せました！</string>
+    <string name="lrn_speaking_again">もっと練習する</string>
+    <string name="lrn_speaking_unavailable_title">スピーキング練習を読み込めませんでした</string>
     <string name="set_remind_me_at">%1$sに 10 項目のレッスンを知らせる。</string>
     <string name="set_translate_whatsapp_messages">受信メッセージを翻訳</string>
     <string name="set_whatsapp_desc">相手が別の言語で書いたとき、AlterLingua は%1$sの翻訳を独立した通知として表示します。</string>

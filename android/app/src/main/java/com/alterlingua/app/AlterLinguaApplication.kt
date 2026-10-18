@@ -302,6 +302,18 @@ class AlterLinguaApplication : Application() {
     }
 
     /**
+     * The Speaking exercise: the same real sentences Reading and Listening use, said aloud through the
+     * pronunciation engine already built for the daily lesson (PracticeViewModel/PronunciationPractice) but never
+     * wired into a screen until now.
+     */
+    val speakingLessonService: com.alterlingua.app.learning.speaking.SpeakingLessonService by lazy {
+        com.alterlingua.app.learning.speaking.SpeakingLessonService(
+            api = readingApi,
+            languages = { userSettings.settings.first().let { LessonLanguages(it.targetLanguage, it.nativeLanguage) } },
+        )
+    }
+
+    /**
      * Standard and Premium are sold as two separate Google Play subscriptions (CLAUDE.md section 32), not one plan
      * with an add-on. Scaffolding until real products exist in Play Console with the IDs this expects to find
      * (see `com.alterlingua.app.billing.SubscriptionProducts`); until then, [BillingManager.offers] stays empty.

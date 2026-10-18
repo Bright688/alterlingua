@@ -337,6 +337,9 @@
     <string name="lrn_writing_finished_title">¡Buena escritura!</string>
     <string name="lrn_writing_again">Escribir sobre más palabras</string>
     <string name="lrn_writing_unavailable_title">No se pudo cargar la escritura</string>
+    <string name="lrn_speaking_finished_title">¡Bien hablado!</string>
+    <string name="lrn_speaking_again">Practicar más frases</string>
+    <string name="lrn_speaking_unavailable_title">No se pudo cargar la expresión oral</string>
     <string name="set_remind_me_at">Recordarme mi lección de 10 elementos a las %1$s.</string>
     <string name="set_translate_whatsapp_messages">Traducir mensajes entrantes</string>
     <string name="set_whatsapp_desc">Cuando alguien escribe en otro idioma, AlterLingua muestra una traducción en %1$s como su propia notificación.</string>

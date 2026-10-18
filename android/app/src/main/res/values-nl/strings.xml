@@ -337,6 +337,9 @@
     <string name="lrn_writing_finished_title">Goed geschreven!</string>
     <string name="lrn_writing_again">Over meer woorden schrijven</string>
     <string name="lrn_writing_unavailable_title">Kon schrijfoefening niet laden</string>
+    <string name="lrn_speaking_finished_title">Goed gesproken!</string>
+    <string name="lrn_speaking_again">Meer zinnen oefenen</string>
+    <string name="lrn_speaking_unavailable_title">Kon spreekoefening niet laden</string>
     <string name="set_remind_me_at">Herinner me om %1$s aan mijn les van 10 items.</string>
     <string name="set_translate_whatsapp_messages">Binnenkomende berichten vertalen</string>
     <string name="set_whatsapp_desc">Als iemand in een andere taal schrijft, toont AlterLingua een vertaling in het %1$s als eigen melding.</string>
