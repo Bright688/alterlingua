@@ -1473,3 +1473,30 @@ for this first pass, not an oversight (see `docs/entitlements.md`).
 `ReadingLessonViewModelTest`, a new `ForgeScreenTest` case), `compileDebugKotlin`/`compileDebugUnitTestKotlin`/
 `compileDebugAndroidTestKotlin` all clean, `lintDebug` 0 errors/warnings. Not yet manually verified end-to-end on
 the device — see `docs/build-log.md`'s matching entry for the full sourcing account and manual test steps.
+
+## Addendum (2026-10-18, follow-up): Listening, Writing and Speaking — only Grammar is still "Coming soon"
+
+Reading failed to load live on the device; root cause was not a bug — the app's debug build points at a real
+deployed backend (`https://169-58-53-29.sslip.io`, a Contabo VPS), which simply hadn't been redeployed with the
+new `/v1/reading/` route yet. Deployed it (`rsync` + `docker compose up -d --build`), confirmed with a direct
+`curl` before trusting the device again. The owner then asked for every remaining Lesson-menu row to be real, not
+"Coming soon." **Three became real this round, reusing existing infrastructure rather than inventing new content**:
+
+- **Listening** — the exact same Reading sentences/endpoint, presented audio-first (Listen first; text and
+  translation hidden until "Show text"). No new backend work.
+- **Writing** — the Vocabulary curriculum's own word list as prompts, with a plain text field to write a sentence
+  in. No automated grading exists anywhere in this app, so none is faked here — self-assessed, honest about what
+  it is not.
+- **Speaking** — found a complete pronunciation-practice engine (on-device TTS model, microphone repeat, real
+  speech-recognition feedback) already built in the codebase but never wired into any screen. Wired it up using
+  Reading's own sentences as practice material; no new pronunciation infrastructure needed.
+
+**Grammar remains "Coming soon" deliberately** — no clearly-licensed bulk source for structured grammar content
+across 8 languages has been found or vetted, and inventing one would be exactly the fabricated-content problem
+this project avoids elsewhere.
+
+**Status**: all three unit-tested the same way as Reading (service + ViewModel tests, a `ForgeScreenTest` case
+each). Full Android unit suite, `compileDebugKotlin`, `compileDebugAndroidTestKotlin` clean after each. See
+`docs/build-log.md`'s matching entry for the full account, including a safety note about the device surfacing
+pre-existing real WhatsApp conversations during this round (disclosed to the owner at the time, not acted on
+further).

@@ -104,12 +104,17 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   designed conversation UX, a separate larger product decision the owner has not made yet.
 - **No real CEFR validation.** The Forge's A1-C2 banding is a frequency-based heuristic; no linguist has reviewed
   any language's placement.
-- **No real content for Grammar, Listening, Writing or Speaking exercises** — Vocabulary and, as of 2026-10-18,
-  Reading (real sentences from Tatoeba, CC BY 2.0 FR, all 8 languages — see `backend/app/lessons/reading/data/SOURCE.md`)
-  are real. The Lesson menu shows the remaining four honestly as "Coming soon" rather than fabricated content.
-  **Reading has no entitlement gate yet** — every tier gets the same access, a deliberate scope decision for this
-  first pass (no daily goal or mastery tracking either, both Vocabulary-specific concepts this does not invent
-  uninvited for a different exercise type), not an oversight.
+- **No real content for Grammar** — the one exercise type still "Coming soon." Vocabulary, Reading (real sentences
+  from Tatoeba, CC BY 2.0 FR, all 8 languages — see `backend/app/lessons/reading/data/SOURCE.md`), Listening
+  (the same Reading sentences, audio-first), Writing (the Vocabulary curriculum's own words as prompts, no
+  automated grading) and Speaking (Reading's sentences through the pronunciation engine — on-device TTS model,
+  microphone repeat, real speech-recognition feedback, never a fabricated AI score) are all real as of 2026-10-18.
+  No clearly-licensed bulk source for structured grammar explanations across 8 languages has been found or vetted
+  yet; inventing one would be the fabricated-content problem this project avoids everywhere else.
+  **None of Reading/Listening/Writing/Speaking has an entitlement gate yet** — every tier gets the same access, a
+  deliberate scope decision for this first pass (no daily goal or Personal Language Map mastery tracking either,
+  all Vocabulary-specific concepts this does not invent uninvited for a different exercise type), not an
+  oversight.
 - **No AdMob.** `isAdFree(tier)` is real policy; no ad SDK is integrated — this needs the owner's own AdMob account
   and ad unit IDs, which do not exist yet, the same kind of external dependency the Play Billing product IDs were.
 - Granular per-resource-type usage quotas beyond the curriculum trial and `TTS_SHARING`'s monthly count (added
