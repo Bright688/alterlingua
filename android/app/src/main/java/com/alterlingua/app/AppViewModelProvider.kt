@@ -68,6 +68,7 @@ object AppViewModelProvider {
                 AndroidSpeaker(application()),
             )
         }
+        initializer { com.alterlingua.app.ui.learn.WritingLessonViewModel(application().writingLessonService) }
         initializer {
             val app = application()
             PracticeViewModel { scope ->

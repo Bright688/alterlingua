@@ -332,6 +332,11 @@
     <string name="lrn_listening_finished_title">Gut zugehört!</string>
     <string name="lrn_listening_again">Mehr Sätze anhören</string>
     <string name="lrn_listening_unavailable_title">Hörübung konnte nicht geladen werden</string>
+    <string name="lrn_writing_prompt">Schreibe einen Satz mit diesem Wort</string>
+    <string name="lrn_writing_input_hint">Schreibe deinen Satz…</string>
+    <string name="lrn_writing_finished_title">Gut geschrieben!</string>
+    <string name="lrn_writing_again">Über weitere Wörter schreiben</string>
+    <string name="lrn_writing_unavailable_title">Schreibübung konnte nicht geladen werden</string>
     <string name="set_remind_me_at">Erinnere mich um %1$s an meine Lektion mit 10 Einträgen.</string>
     <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>

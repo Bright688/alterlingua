@@ -115,9 +115,9 @@ fun ForgeLevelScreen(
 /**
  * One unit's Lesson menu: the owner's own worked example (French A1 Unit 3, "Introducing Yourself") lists six
  * exercise types every plan shares -- Vocabulary, Grammar, Listening, Reading, Writing, Speaking. Vocabulary (the
- * existing flashcard flow), Reading and Listening (both real sentences, see ReadingLessonScreen/ListeningLessonScreen)
- * have real content; Grammar, Writing and Speaking are shown honestly as "Coming soon" rather than faked, the same
- * pattern already used for billing's "Not available yet".
+ * existing flashcard flow), Reading, Listening and Writing (see ReadingLessonScreen/ListeningLessonScreen/
+ * WritingLessonScreen) have real content; Grammar and Speaking are shown honestly as "Coming soon" rather than
+ * faked, the same pattern already used for billing's "Not available yet".
  */
 @Composable
 fun LessonMenuScreen(
@@ -125,6 +125,7 @@ fun LessonMenuScreen(
     onOpenVocabulary: () -> Unit,
     onOpenReading: () -> Unit,
     onOpenListening: () -> Unit,
+    onOpenWriting: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -137,7 +138,7 @@ fun LessonMenuScreen(
         LessonExerciseRow(stringResource(R.string.lrn_lesson_grammar), enabled = false, onClick = {}, testTag = "lesson_grammar")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_listening), enabled = true, onClick = onOpenListening, testTag = "lesson_listening")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_reading), enabled = true, onClick = onOpenReading, testTag = "lesson_reading")
-        LessonExerciseRow(stringResource(R.string.lrn_lesson_writing), enabled = false, onClick = {}, testTag = "lesson_writing")
+        LessonExerciseRow(stringResource(R.string.lrn_lesson_writing), enabled = true, onClick = onOpenWriting, testTag = "lesson_writing")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_speaking), enabled = false, onClick = {}, testTag = "lesson_speaking")
         OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth().testTag("lesson_menu_back")) {
             Text(stringResource(R.string.lrn_back))

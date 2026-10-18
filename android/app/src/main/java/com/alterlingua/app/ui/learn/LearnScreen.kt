@@ -60,7 +60,7 @@ import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
 
 /** Which of the Learn tab's curriculum-related screens is showing right now (The Forge's own navigation). */
-private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION, READING, LISTENING }
+private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION, READING, LISTENING, WRITING }
 
 /** Google Play's purchase flow needs a real Activity, not just a Context; Compose only hands us the latter directly. */
 private tailrec fun findActivity(context: android.content.Context): android.app.Activity? = when (context) {
@@ -76,6 +76,7 @@ fun LearnRoute(
     curriculumViewModel: CurriculumLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
     readingViewModel: ReadingLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
     listeningViewModel: ReadingLessonViewModel = viewModel(factory = AppViewModelProvider.Factory, key = "listening"),
+    writingViewModel: WritingLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val curriculumState by curriculumViewModel.uiState.collectAsStateWithLifecycle()
@@ -90,6 +91,7 @@ fun LearnRoute(
     val listeningState by listeningViewModel.uiState.collectAsStateWithLifecycle()
     val listeningListening by listeningViewModel.listening.collectAsStateWithLifecycle()
     val listeningCanListen by listeningViewModel.canListen.collectAsStateWithLifecycle()
+    val writingState by writingViewModel.uiState.collectAsStateWithLifecycle()
     val curriculumTier by curriculumViewModel.tier.collectAsStateWithLifecycle()
     val curriculumOffers by curriculumViewModel.offers.collectAsStateWithLifecycle()
     val forgeLevels by curriculumViewModel.forgeLevels.collectAsStateWithLifecycle()
@@ -142,6 +144,7 @@ fun LearnRoute(
                     onOpenVocabulary = { curriculumViewModel.practiceUnit(unit); screen = CurriculumScreen.SESSION },
                     onOpenReading = { readingViewModel.start(); screen = CurriculumScreen.READING },
                     onOpenListening = { listeningViewModel.start(); screen = CurriculumScreen.LISTENING },
+                    onOpenWriting = { writingViewModel.start(); screen = CurriculumScreen.WRITING },
                     onBack = { screen = CurriculumScreen.FORGE_LEVEL },
                     modifier = modifier,
                 )
@@ -183,6 +186,19 @@ fun LearnRoute(
                 OutlinedButton(
                     onClick = { screen = CurriculumScreen.LESSON_MENU },
                     modifier = Modifier.fillMaxWidth().testTag("listening_back"),
+                ) { Text(stringResource(R.string.lrn_back)) }
+            },
+        )
+        CurriculumScreen.WRITING -> WritingLessonScreen(
+            state = writingState,
+            onNext = writingViewModel::next,
+            onRetry = writingViewModel::start,
+            onAgain = writingViewModel::start,
+            modifier = modifier,
+            footer = {
+                OutlinedButton(
+                    onClick = { screen = CurriculumScreen.LESSON_MENU },
+                    modifier = Modifier.fillMaxWidth().testTag("writing_back"),
                 ) { Text(stringResource(R.string.lrn_back)) }
             },
         )

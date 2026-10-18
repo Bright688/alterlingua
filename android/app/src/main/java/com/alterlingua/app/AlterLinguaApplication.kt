@@ -290,6 +290,18 @@ class AlterLinguaApplication : Application() {
     }
 
     /**
+     * The Writing exercise: a prompt word from the standard curriculum -- the same word list Vocabulary already
+     * uses, no separate content or backend endpoint of its own.
+     */
+    val writingLessonService: com.alterlingua.app.learning.writing.WritingLessonService by lazy {
+        com.alterlingua.app.learning.writing.WritingLessonService(
+            api = curriculumApi,
+            meanings = TranslationMeaningProvider(translationApi),
+            languages = { userSettings.settings.first().let { LessonLanguages(it.targetLanguage, it.nativeLanguage) } },
+        )
+    }
+
+    /**
      * Standard and Premium are sold as two separate Google Play subscriptions (CLAUDE.md section 32), not one plan
      * with an add-on. Scaffolding until real products exist in Play Console with the IDs this expects to find
      * (see `com.alterlingua.app.billing.SubscriptionProducts`); until then, [BillingManager.offers] stays empty.

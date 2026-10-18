@@ -332,6 +332,11 @@
     <string name="lrn_listening_finished_title">Bonne écoute !</string>
     <string name="lrn_listening_again">Écouter plus de phrases</string>
     <string name="lrn_listening_unavailable_title">Impossible de charger l\'écoute</string>
+    <string name="lrn_writing_prompt">Écrivez une phrase avec ce mot</string>
+    <string name="lrn_writing_input_hint">Tapez votre phrase…</string>
+    <string name="lrn_writing_finished_title">Bien écrit !</string>
+    <string name="lrn_writing_again">Écrire sur d\'autres mots</string>
+    <string name="lrn_writing_unavailable_title">Impossible de charger l\'écriture</string>
     <string name="set_remind_me_at">Me rappeler ma leçon de 10 éléments à %1$s.</string>
     <string name="set_translate_whatsapp_messages">Traduire les messages reçus</string>
     <string name="set_whatsapp_desc">Quand quelqu’un écrit dans une autre langue, AlterLingua affiche une traduction en %1$s dans sa propre notification.</string>
