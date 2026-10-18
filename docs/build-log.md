@@ -3672,3 +3672,39 @@ speech-recognition -> feedback round trip is still only implemented, not yet man
 `PracticeViewModel`/`PronunciationPractice` had no screen at all before this round and this is the first time any
 of it has been reachable on a real device. The owner should try Repeat themselves on a real device to confirm the
 feedback (GOOD/CLOSE/TRY_AGAIN/NOT_HEARD) actually fires correctly.
+
+## 2026-10-18 (follow-up) — "hope no coming soon anywhere again": one more found, one explained as out of scope
+
+The owner's reaction to the Listening/Writing/Speaking round above. Swept the whole app (`grep`, not guesswork) for
+every remaining "coming soon"/"not available yet" string to give a real, checked answer rather than an assumption.
+Found two, of two very different kinds:
+
+1. **A real one, fixed**: `ReaderCard.kt`'s "Read with help" screen (Learn tab -- paste text, tap a word for its
+   meaning) had a permanently disabled "Listen (coming soon)" button, with its own code comment: "Listening
+   arrives with pronunciation practice (a later milestone)." That milestone already arrived this same round
+   (Speaking, above) -- the on-device `Speaker`/`AndroidSpeaker` text-to-speech this app already uses everywhere
+   else was simply never wired into this one spot. Added `listen()`/`listening`/`canListen` to `ReaderViewModel`
+   (same shape as every other Listen button in this app: speaks the current word in the language being learned,
+   stops on a second tap, stops when help is dismissed or the text is cleared), wired the button to it, and
+   removed the now-unused `rd_listen_coming_soon` string (all 8 locales). `ReaderCardTest`'s own test had to be
+   corrected too -- it was asserting the button stayed disabled, which was true before and would now be wrong.
+
+2. **Not a content gap, so not touched**: `PlansScreen.kt`'s "Not available yet" tag on Standard/Premium when
+   Google Play reports no real subscription products. This is accurate, not a placeholder standing in for missing
+   work -- `SubscriptionProducts`' product IDs genuinely do not exist in Google Play Console yet (`docs/
+   entitlements.md`'s own "What is not real yet" section), and CLAUDE.md section 31 is explicit that real billing
+   stays postponed until its own milestone is explicitly started. Fixing this would mean creating real Play
+   Console products, which needs the owner's own Play Console access, not something this session can do or should
+   attempt to work around.
+
+**Status**: `ReaderViewModelTest` gained 4 new tests (listen speaks the right word/language, a second tap stops
+it, dismissing help stops it, clearing stops it); `ReaderCardTest`'s help-answer test now asserts Listen is
+enabled and actually calls back, plus a new test confirming it stays disabled when the language has no voice.
+Full Android unit suite, `compileDebugKotlin`, `compileDebugAndroidTestKotlin` all clean.
+
+### Manual test for the owner
+
+1. Learn tab → scroll to "Read with help" → paste a sentence in your target language → Show text.
+2. Tap a word: its meaning appears, and a real (enabled) "Play" button now sits where "Listen (coming soon)" used
+   to be.
+3. Tap it: the phone speaks the word in the language you're learning; tap again to stop.

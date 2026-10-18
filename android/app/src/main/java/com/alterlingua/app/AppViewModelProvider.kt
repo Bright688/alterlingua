@@ -102,7 +102,7 @@ object AppViewModelProvider {
                 )
             }
         }
-        initializer { ReaderViewModel(application().onDemandHelp) }
+        initializer { ReaderViewModel(application().onDemandHelp, AndroidSpeaker(application())) }
         initializer {
             val app = application()
             SharedVoiceViewModel(

@@ -457,7 +457,6 @@
     <string name="rd_finding_the_meaning">Recherche du sens…</string>
     <string name="rd_no_meaning">Impossible d’obtenir le sens pour le moment. Vérifiez votre connexion et touchez à nouveau le mot.</string>
     <string name="rd_added_to_your_learning_this">Ajouté à votre apprentissage : ce mot peut apparaître dans une leçon quotidienne.</string>
-    <string name="rd_listen_coming_soon">Écouter (bientôt)</string>
     <string name="mastery_new">Nouveau</string>
     <string name="mastery_learning">En cours</string>
     <string name="mastery_familiar">Familier</string>

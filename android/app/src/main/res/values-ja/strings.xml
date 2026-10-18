@@ -457,7 +457,6 @@
     <string name="rd_finding_the_meaning">意味を調べています…</string>
     <string name="rd_no_meaning">今は意味を取得できませんでした。接続を確認して、もう一度単語をタップしてください。</string>
     <string name="rd_added_to_your_learning_this">学習に追加しました：この単語は毎日のレッスンに出ることがあります。</string>
-    <string name="rd_listen_coming_soon">聞く（近日対応）</string>
     <string name="mastery_new">新規</string>
     <string name="mastery_learning">学習中</string>
     <string name="mastery_familiar">なじみ</string>

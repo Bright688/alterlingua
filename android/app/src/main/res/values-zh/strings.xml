@@ -457,7 +457,6 @@
     <string name="rd_finding_the_meaning">正在查找释义…</string>
     <string name="rd_no_meaning">暂时无法获取释义。请检查网络后再次点按该词。</string>
     <string name="rd_added_to_your_learning_this">已加入您的学习：这个词可能出现在每日课程中。</string>
-    <string name="rd_listen_coming_soon">收听（即将推出）</string>
     <string name="mastery_new">新词</string>
     <string name="mastery_learning">学习中</string>
     <string name="mastery_familiar">熟悉</string>

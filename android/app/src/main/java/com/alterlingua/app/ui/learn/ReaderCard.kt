@@ -35,6 +35,8 @@ import com.alterlingua.app.ui.components.MasteryChip
 @Composable
 fun ReaderRoute(viewModel: ReaderViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val listening by viewModel.listening.collectAsStateWithLifecycle()
+    val canListen by viewModel.canListen.collectAsStateWithLifecycle()
     ReaderCard(
         state = state,
         onInput = viewModel::onInputChanged,
@@ -42,6 +44,9 @@ fun ReaderRoute(viewModel: ReaderViewModel = viewModel(factory = AppViewModelPro
         onAsk = viewModel::ask,
         onDismissHelp = viewModel::dismissHelp,
         onClear = viewModel::clear,
+        onListen = viewModel::listen,
+        listening = listening,
+        canListen = canListen,
     )
 }
 
@@ -57,6 +62,9 @@ fun ReaderCard(
     onAsk: (ReaderSegment) -> Unit,
     onDismissHelp: () -> Unit,
     onClear: () -> Unit,
+    onListen: () -> Unit = {},
+    listening: Boolean = false,
+    canListen: Boolean = false,
 ) {
     val language = state.language?.displayName
     AlterLinguaCard {
@@ -84,7 +92,7 @@ fun ReaderCard(
             }
         } else {
             ReaderText(state.segments, onAsk)
-            state.help?.let { HelpPanel(it, onDismissHelp) }
+            state.help?.let { HelpPanel(it, onDismissHelp, onListen, listening, canListen) }
             TextButton(onClick = onClear, modifier = Modifier.testTag("reader_clear")) { Text(stringResource(R.string.rd_clear_text)) }
         }
     }
@@ -107,7 +115,7 @@ private fun ReaderText(segments: List<ReaderSegment>, onAsk: (ReaderSegment) -> 
 
 /** The answer for one word (Stitch's word-help sheet: meaning, Listen, learning). */
 @Composable
-private fun HelpPanel(help: WordHelpState, onDismiss: () -> Unit) {
+private fun HelpPanel(help: WordHelpState, onDismiss: () -> Unit, onListen: () -> Unit, listening: Boolean, canListen: Boolean) {
     HorizontalDivider()
     Column(Modifier.fillMaxWidth().testTag("reader_help"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         when (help) {
@@ -132,8 +140,9 @@ private fun HelpPanel(help: WordHelpState, onDismiss: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.testTag("reader_added"),
                 )
-                // Listening arrives with pronunciation practice (a later milestone); it is shown, not working.
-                OutlinedButton(onClick = {}, enabled = false, modifier = Modifier.testTag("reader_listen")) { Text(stringResource(R.string.rd_listen_coming_soon)) }
+                OutlinedButton(onClick = onListen, enabled = canListen, modifier = Modifier.testTag("reader_listen")) {
+                    Text(stringResource(if (listening) R.string.voice_stop_listening else R.string.prac_play))
+                }
             }
         }
         TextButton(onClick = onDismiss) { Text(stringResource(R.string.voice_close)) }

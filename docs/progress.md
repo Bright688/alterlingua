@@ -1507,3 +1507,13 @@ prompt with a working text field; Speaking showed a real sentence with a working
 guide and the Listen/Repeat UI. **Not yet verified**: the actual Repeat → speech-recognition → feedback round trip
 for Speaking needs a human voice in the room, which this verification pass could not produce — implemented, not
 confirmed working end-to-end.
+
+## Addendum (2026-10-18, follow-up): the Reader's own Listen button, found and fixed; billing's own placeholder left alone
+
+Asked to confirm no "Coming soon" remained anywhere, not just the Lesson menu. A `grep` sweep (not a guess) found
+two: the Reader's ("Read with help," Learn tab) permanently-disabled "Listen (coming soon)" button — **fixed**,
+wired to the same on-device `Speaker` every other Listen button already uses, since the pronunciation milestone
+its own code comment was waiting on had, in fact, just arrived this same session — and Settings → Plan's "Not
+available yet" tag, which is accurate (no real Google Play Billing products exist yet) and explicitly postponed by
+CLAUDE.md section 31, so left as is. `ReaderViewModelTest`/`ReaderCardTest` updated accordingly. Full unit suite,
+`compileDebugKotlin`, `compileDebugAndroidTestKotlin` clean.
