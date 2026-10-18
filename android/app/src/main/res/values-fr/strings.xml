@@ -322,6 +322,12 @@
     <string name="lrn_lesson_writing">Écriture</string>
     <string name="lrn_lesson_speaking">Expression orale</string>
     <string name="lrn_lesson_coming_soon">Bientôt disponible</string>
+    <string name="lrn_reading_progress">%1$d sur %2$d</string>
+    <string name="lrn_reading_show_translation">Afficher la traduction</string>
+    <string name="lrn_reading_next">Suivant</string>
+    <string name="lrn_reading_finished_title">Bonne lecture !</string>
+    <string name="lrn_reading_again">Lire plus de phrases</string>
+    <string name="lrn_reading_unavailable_title">Impossible de charger la lecture</string>
     <string name="set_remind_me_at">Me rappeler ma leçon de 10 éléments à %1$s.</string>
     <string name="set_translate_whatsapp_messages">Traduire les messages reçus</string>
     <string name="set_whatsapp_desc">Quand quelqu’un écrit dans une autre langue, AlterLingua affiche une traduction en %1$s dans sa propre notification.</string>

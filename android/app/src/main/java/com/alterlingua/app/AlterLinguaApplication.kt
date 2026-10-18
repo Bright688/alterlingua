@@ -46,6 +46,9 @@ import com.alterlingua.app.learning.curriculum.CurriculumApi
 import com.alterlingua.app.learning.curriculum.CurriculumLessonService
 import com.alterlingua.app.learning.curriculum.CurriculumProgressService
 import com.alterlingua.app.learning.curriculum.HttpCurriculumApi
+import com.alterlingua.app.learning.reading.HttpReadingApi
+import com.alterlingua.app.learning.reading.ReadingApi
+import com.alterlingua.app.learning.reading.ReadingLessonService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -236,6 +239,11 @@ class AlterLinguaApplication : Application() {
         HttpCurriculumApi(BuildConfig.TRANSLATION_BASE_URL, apiToken = BuildConfig.API_TOKEN)
     }
 
+    /** The standard Reading practice's sentence lists, fetched online the same way. */
+    val readingApi: ReadingApi by lazy {
+        HttpReadingApi(BuildConfig.TRANSLATION_BASE_URL, apiToken = BuildConfig.API_TOKEN)
+    }
+
     /** The current subscription tier and what it unlocks (CLAUDE.md section 26-27; scaffolding only for now). */
     val entitlements: EntitlementService by lazy { EntitlementService(userSettings) }
 
@@ -265,6 +273,19 @@ class AlterLinguaApplication : Application() {
                     (listOf(settings.targetLanguage) + settings.otherLevels.keys.mapNotNull(com.alterlingua.app.learning.Languages::fromCode)).distinct()
                 }
             },
+        )
+    }
+
+    /**
+     * The Reading exercise: real sentences, a second, separate source from the Vocabulary curriculum above (see
+     * backend/app/lessons/reading/data/SOURCE.md for where they come from). Deliberately simpler: the active target
+     * language only, no Premium language override -- a scope decision for this first pass, not a platform limit.
+     */
+    val readingLessonService: ReadingLessonService by lazy {
+        ReadingLessonService(
+            api = readingApi,
+            meanings = TranslationMeaningProvider(translationApi),
+            languages = { userSettings.settings.first().let { LessonLanguages(it.targetLanguage, it.nativeLanguage) } },
         )
     }
 

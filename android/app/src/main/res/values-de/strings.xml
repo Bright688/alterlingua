@@ -322,6 +322,12 @@
     <string name="lrn_lesson_writing">Schreiben</string>
     <string name="lrn_lesson_speaking">Sprechen</string>
     <string name="lrn_lesson_coming_soon">Demnächst verfügbar</string>
+    <string name="lrn_reading_progress">%1$d von %2$d</string>
+    <string name="lrn_reading_show_translation">Übersetzung anzeigen</string>
+    <string name="lrn_reading_next">Weiter</string>
+    <string name="lrn_reading_finished_title">Gut gelesen!</string>
+    <string name="lrn_reading_again">Mehr Sätze lesen</string>
+    <string name="lrn_reading_unavailable_title">Leseübung konnte nicht geladen werden</string>
     <string name="set_remind_me_at">Erinnere mich um %1$s an meine Lektion mit 10 Einträgen.</string>
     <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>

@@ -1450,3 +1450,26 @@ covers the WAV-chunk parsing (the codec itself needs a real device to test). Ful
 **Manually verified live** once the device reconnected: Translate → Voice → straight into WhatsApp's own send
 screen → sent → tapped Play on the resulting message → it actually played (no error), with a visibly different
 bubble style (plain play button + filename) than the broken raw-WAV ones above it in the same chat.
+
+## Addendum (2026-10-18): Reading is real — all 8 languages, sourced from Tatoeba (CC BY 2.0 FR)
+
+The owner asked for the Lesson menu's "Coming soon" rows to become real, sourced from somewhere free online —
+picked Reading first, all 8 languages from the start. Real, natural sentences from
+[Tatoeba](https://tatoeba.org) (a crowd-contributed multilingual corpus, CC BY 2.0 FR, collectively attributed
+in Settings → Licences the same way FrequencyWords already is), filtered, deduplicated and sampled across the
+length range so each language's list runs genuinely easy to hard — a real quality bug (naively taking the
+shortest sentences collapsed into trivial one-liners for busy languages) was found and fixed before this shipped,
+not after. Capped at 2,000 sentences per language; Chinese (1,011) and Japanese (1,419) came up short of that, an
+honest reflection of what Tatoeba actually has for those languages.
+
+**Built**: backend `GET /v1/reading/{language}` (`ReadingService`, mirrors the Vocabulary curriculum's own
+`CurriculumService` shape exactly); Android `ReadingLessonService`/`ReadingLessonViewModel`/`ReadingLessonScreen`
+(a random 8-sentence session each time, reveal-to-translate, Listen via on-device text-to-speech, Next). The
+Lesson menu's Reading row is no longer disabled. **Deliberately simpler than Vocabulary, stated explicitly**: no
+daily goal, no Personal Language Map mastery tracking, no entitlement gate yet — every tier gets the same access
+for this first pass, not an oversight (see `docs/entitlements.md`).
+
+**Status**: backend 472 tests pass (11 new); Android full unit suite passes (`ReadingLessonServiceTest`,
+`ReadingLessonViewModelTest`, a new `ForgeScreenTest` case), `compileDebugKotlin`/`compileDebugUnitTestKotlin`/
+`compileDebugAndroidTestKotlin` all clean, `lintDebug` 0 errors/warnings. Not yet manually verified end-to-end on
+the device — see `docs/build-log.md`'s matching entry for the full sourcing account and manual test steps.

@@ -63,6 +63,12 @@ object AppViewModelProvider {
             )
         }
         initializer {
+            com.alterlingua.app.ui.learn.ReadingLessonViewModel(
+                application().readingLessonService,
+                AndroidSpeaker(application()),
+            )
+        }
+        initializer {
             val app = application()
             PracticeViewModel { scope ->
                 PronunciationPractice(

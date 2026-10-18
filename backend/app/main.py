@@ -17,6 +17,7 @@ from app.core.errors import AppError, AudioTooLargeError, DocumentTooLargeError
 from app.core.logging import configure_logging, kv
 from app.core.security import check_startup, make_guard
 from app.documents.service import DocumentTranslationService
+from app.lessons.reading.service import ReadingService
 from app.speech.provider import SpeechToTextProvider
 from app.speech.registry import create_stt_provider, create_tts_provider
 from app.speech.service import SpeechTranslationService
@@ -80,6 +81,7 @@ def create_app(
     )
 
     app.state.curriculum_service = CurriculumService()
+    app.state.reading_service = ReadingService()
 
     app.state.document_service = DocumentTranslationService(
         app.state.translation_service, max_paragraphs=settings.document_max_paragraphs

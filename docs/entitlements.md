@@ -104,8 +104,12 @@ a feature's gate is a policy decision in `TierPolicy`, not a tier check wherever
   designed conversation UX, a separate larger product decision the owner has not made yet.
 - **No real CEFR validation.** The Forge's A1-C2 banding is a frequency-based heuristic; no linguist has reviewed
   any language's placement.
-- **No real content for Grammar, Listening, Reading, Writing or Speaking exercises** — only Vocabulary is real. The
-  Lesson menu shows the other five honestly as "Coming soon" rather than fabricated content.
+- **No real content for Grammar, Listening, Writing or Speaking exercises** — Vocabulary and, as of 2026-10-18,
+  Reading (real sentences from Tatoeba, CC BY 2.0 FR, all 8 languages — see `backend/app/lessons/reading/data/SOURCE.md`)
+  are real. The Lesson menu shows the remaining four honestly as "Coming soon" rather than fabricated content.
+  **Reading has no entitlement gate yet** — every tier gets the same access, a deliberate scope decision for this
+  first pass (no daily goal or mastery tracking either, both Vocabulary-specific concepts this does not invent
+  uninvited for a different exercise type), not an oversight.
 - **No AdMob.** `isAdFree(tier)` is real policy; no ad SDK is integrated — this needs the owner's own AdMob account
   and ad unit IDs, which do not exist yet, the same kind of external dependency the Play Billing product IDs were.
 - Granular per-resource-type usage quotas beyond the curriculum trial and `TTS_SHARING`'s monthly count (added

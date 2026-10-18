@@ -114,14 +114,16 @@ fun ForgeLevelScreen(
 
 /**
  * One unit's Lesson menu: the owner's own worked example (French A1 Unit 3, "Introducing Yourself") lists six
- * exercise types every plan shares -- Vocabulary, Grammar, Listening, Reading, Writing, Speaking. Only Vocabulary
- * has real content today (the existing flashcard flow, reused as-is); the rest are shown honestly as "Coming soon"
- * rather than faked, the same pattern already used for billing's "Not available yet".
+ * exercise types every plan shares -- Vocabulary, Grammar, Listening, Reading, Writing, Speaking. Vocabulary (the
+ * existing flashcard flow) and Reading (real sentences, see ReadingLessonScreen) have real content; Grammar,
+ * Listening, Writing and Speaking are shown honestly as "Coming soon" rather than faked, the same pattern already
+ * used for billing's "Not available yet".
  */
 @Composable
 fun LessonMenuScreen(
     unit: ForgeUnitSummary,
     onOpenVocabulary: () -> Unit,
+    onOpenReading: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -133,7 +135,7 @@ fun LessonMenuScreen(
         LessonExerciseRow(stringResource(R.string.lrn_lesson_vocabulary), enabled = true, onClick = onOpenVocabulary, testTag = "lesson_vocabulary")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_grammar), enabled = false, onClick = {}, testTag = "lesson_grammar")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_listening), enabled = false, onClick = {}, testTag = "lesson_listening")
-        LessonExerciseRow(stringResource(R.string.lrn_lesson_reading), enabled = false, onClick = {}, testTag = "lesson_reading")
+        LessonExerciseRow(stringResource(R.string.lrn_lesson_reading), enabled = true, onClick = onOpenReading, testTag = "lesson_reading")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_writing), enabled = false, onClick = {}, testTag = "lesson_writing")
         LessonExerciseRow(stringResource(R.string.lrn_lesson_speaking), enabled = false, onClick = {}, testTag = "lesson_speaking")
         OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth().testTag("lesson_menu_back")) {

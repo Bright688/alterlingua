@@ -1,0 +1,2000 @@
+Pardon ?
+À midi !
+Génial !
+Action !
+Sortez !
+Il ment.
+Je sais.
+Debout !
+Il a ri.
+J'ai ri.
+Je sors.
+Tu mens.
+Étudie !
+De rien.
+C.Q.F.D.
+Écoute !
+Entrez !
+Bon vol.
+Dingue !
+Enculé !
+Allez-y.
+Maison !
+Pardon !
+Et toi ?
+Au fait.
+Par ici.
+Eurêka !
+Coupez !
+Chanmé !
+Dégage !
+Nickel !
+Courez !
+Dommage.
+Hourra !
+Étrange.
+Pas mal.
+Relaxe !
+Ça ira !
+Crétin !
+Laissez.
+Dînons !
+Dormons.
+Désolé !
+Dansons.
+Touché !
+Partez !
+Essaie !
+Restez !
+Sortez !
+Entrez !
+Parlez !
+Achève !
+Endure !
+Oublie !
+Dégage !
+Je pige.
+Foncez !
+Il céda.
+Arrête !
+Oh non !
+Je pars.
+Il dort.
+Allons !
+Compris.
+Glacial.
+Recule !
+Reculez.
+Silence.
+Pousse !
+Ôtez-le.
+Dehors !
+Par là !
+Désolée.
+Je paie.
+Tu dis ?
+Il sert.
+Nageons.
+Avance !
+Ah bon !
+Roulez !
+Prions !
+J'ai bu.
+J'ai vu.
+Du tout.
+Tom ira.
+Je suis.
+Bisous !
+Écoutez.
+Bâtard !
+Je dîne.
+Ça pèle.
+Il a bu.
+Filons !
+On file.
+Et toc !
+Si fait.
+Cessez !
+Ça pue !
+Coupez !
+Bonjour.
+Dis-le !
+De fait.
+Mangez !
+Au lit !
+Buvons !
+Prêtes ?
+Entendu.
+J’adore.
+Menteur.
+Parfait.
+Je vois.
+Rentre !
+Vendus !
+Debout !
+Je prie.
+Ouille !
+Promis ?
+Pas ici.
+Je tire.
+Goûtez !
+Devine !
+Croque !
+Ouvrez !
+Encore !
+Montez !
+Au feu !
+Ah bon ?
+Raconte.
+Saluez !
+Encore ?
+Tom rit.
+Bizarre.
+Lequel ?
+A voté !
+À elles.
+De même.
+Attends.
+Ça aide.
+Complet.
+Tom lit.
+Je bois.
+Il cuit.
+Dormez !
+Regarde.
+Marche !
+Suivant!
+Jamais !
+Chante !
+Joue-le.
+Preum's.
+Câlins !
+Sens ça.
+Ça fond.
+À Noël !
+Je l'ai.
+Sourire.
+Bah oui.
+Je nage.
+Il fume.
+J'ai lu.
+Logique.
+Observe.
+Souris !
+Tourne !
+Ah oui !
+Bonsoir.
+Ordure !
+Épelez !
+J'avoue.
+Arrive !
+Respire.
+Frères !
+Dansez !
+Il fuit.
+Laisse !
+On crie.
+Je crie.
+Je peux.
+Je fume.
+Crotte !
+Tom pue.
+En Uber.
+Yep. OK.
+Je joue.
+Il joue.
+À louer.
+Calmos !
+Appelez.
+Appelle.
+Rigole !
+Salaud !
+Fuyons !
+Erreur !
+Échange.
+Changez.
+Il gèle.
+Un jour.
+Diable !
+Occupé !
+Compte !
+Ça ne va jamais finir.
+Est-ce que tu es sûr ?
+Ça ne me surprend pas.
+Ça dépend du contexte.
+Pourquoi demandes-tu ?
+C’est une bonne idée !
+C'est assez inattendu.
+Ce n'est pas mon type.
+Vouloir c'est pouvoir.
+J'ai pris ma décision.
+Je te donne ma parole.
+La justice coûte cher.
+Je n'aime pas l'école.
+Il est tiré d'affaire.
+On n'a rien sans rien.
+Je paierai par chèque.
+J'ai parlé à des amis.
+Tu as beaucoup changé.
+Je pensais à l'avenir.
+J'ai écrit une lettre.
+Je peux monter à vélo.
+Je pense avec ma tête.
+Mes parents m'adorent.
+Je cherche du travail.
+Hier, j'étais heureux.
+J'ai attrapé un rhume.
+Je veux t'accompagner.
+Mon nom est Hashimoto.
+Je veux aller à Tokyo.
+J'ai un visa étudiant.
+J'ai envie de chanter.
+J'ai parlé de musique.
+J'ai perdu mon crayon.
+J'aime vraiment nager.
+Je soufflai la bougie.
+J'ai bu tout mon lait.
+J'aime la musique pop.
+J'ai un mauvais rhume.
+J'aime jouer du piano.
+Je l'ai aperçu du bus.
+Je ne vais nulle part.
+J'achète une cassette.
+Je l'ai étudié à fond.
+Je n'y suis pour rien.
+J'ai appelé chez Judy.
+J'y suis souvent allé.
+Je l'ai battu au golf.
+Je veux lire ce livre.
+Je sais où tu habites.
+Je vis dans un duplex.
+Ma tante paraît jeune.
+Mon frère vit à Tokyo.
+Ma maison est en bois.
+J'ai un cousin avocat.
+Je n'ai pas de frères.
+Laisse-moi tranquille.
+Savez-vous qui c'est ?
+Il faisait chaud hier.
+Il faisait froid hier.
+Sors-tu avec Sachiko ?
+Partez tout de suite !
+N'avez-vous pas soif ?
+J'ai mauvaise haleine.
+Je vais bien, et toi ?
+Bien, merci. Et vous ?
+Je l'ai appris de toi.
+Enlève tes chaussures.
+Remplissez les blancs.
+Appelez une ambulance.
+Appelle une ambulance.
+Faites un bon voyage !
+Bonjour tout le monde.
+Combien de personnes ?
+Ne fais rien à moitié.
+N'as-tu rien à faire ?
+Montrez-m'en d'autres.
+Fumer nuit à la santé.
+Je t'aimerai toujours.
+Je dois en acheter un.
+Les deux sont vivants.
+Croyez-vous aux OVNI ?
+Aimez-vous l'anglais ?
+Je suis de votre côté.
+Ce film était amusant.
+Ne t'oppose pas à lui.
+Anne est pom-pom girl.
+Je viens d'Angleterre.
+Je vais vous attendre.
+N'avez-vous pas faim ?
+Mon corps me fait mal.
+Êtes-vous tous prêts ?
+Kent est un meneur-né.
+J'aime mon café léger.
+Sydney est loin d'ici.
+Ne parle pas fort ici.
+Viens ici et aide-moi.
+N'en parle pas à papa.
+Que le match commence.
+Judy est intelligente.
+Partons tout de suite.
+Je vous l'ai déjà dit.
+M. Smith boit du café.
+Connais-tu cet hôtel ?
+Je prendrais le jaune.
+Je le sais par on-dit.
+Ne lâche pas le chien.
+Tout le monde le sait.
+Posez-le sur la table.
+Laissez-moi regarder !
+Ne marche pas si vite.
+Ne parle pas comme ça.
+Garde la porte fermée.
+Entrez, je vous prie !
+Voir Naples et mourir.
+Brian a l'air déprimé.
+Faites de votre mieux.
+Je n'en veux pas plus.
+Avez-vous un briquet ?
+Les pommes sont mûres.
+Lucy vient d'Amérique.
+Ne lâche pas la corde.
+Je ne le referai plus.
+Il ferait un bon mari.
+Viens pêcher avec moi.
+Parlez-vous français ?
+C'est un scientifique.
+Il a fini son travail.
+C'est parti mon kiki !
+Je ne peux pas bouger.
+Je me suis bien amusé.
+Je sais à peine nager.
+Mon père était occupé.
+Pour cette fois ça va.
+Mange ce qui te plaît.
+Faisons une pause thé.
+John est un bon élève.
+Au revoir et à demain.
+Je déteste le karaoké.
+J'approuve son projet.
+Il est né dans l'Ohio.
+Il aime vivre à Tokyo.
+Elle étudie ardemment.
+La pièce était sombre.
+J'étudie à l'étranger.
+Quel train prends-tu ?
+Merci pour ta réponse.
+Es-tu allé à Londres ?
+Salut, lui c'est Mike.
+J'ai l'estomac rempli.
+Il était très fatigué.
+Qui a fait ce gâteau ?
+Je travaille avec lui.
+J'ai adoré lui parler.
+Je connais sa famille.
+Je n'en connais aucun.
+J'ai confiance en lui.
+Je l'ai mis en colère.
+J'ai dressé l'oreille.
+J'ai besoin d'étudier.
+Je vais suivre la loi.
+Je ne suis pas occupé.
+J'irai à Tokyo demain.
+Je crois aux fantômes.
+Je descends ici aussi.
+J'ai une mauvaise vue.
+Puis-je essayer ceci ?
+Ma montre a été volée.
+Mon oreille me gratte.
+Excusez ma maladresse.
+Réponds à la question.
+As-tu reçu ma lettre ?
+C'est une indigestion.
+Puis-je aller au lit ?
+Rends-toi présentable.
+Il doit être innocent.
+Je suis incontrôlable.
+Fais ce qui est juste.
+En avez-vous en bleu ?
+Il pleuvait doucement.
+As-tu un stylo rouge ?
+Docteur guérissez-moi.
+Tout espoir a disparu.
+Mes pieds me font mal.
+Il est sûr de réussir.
+J'ai des selles dures.
+Ne sois pas en retard.
+Un oiseau a des ailes.
+Le temps se fait gris.
+Ne parle pas japonais.
+Parlez-vous japonais ?
+Ne riez pas des vieux.
+Je dois manger, aussi.
+Il est grand comment ?
+Il retira son chapeau.
+Il ne t'a pas compris.
+Il boit trop de bière.
+Il plaisante toujours.
+Il va peut-être venir.
+Il viendra, c'est sûr.
+Il n'aime pas le café.
+C’est ce qui est expliqué à la fin.
+Je ne sais pas ce que tu veux dire.
+« Qui est-ce ? » « C'est ta mère. »
+S'il vous plaît, où sont les œufs ?
+"Un chat ?" demanda le vieil homme.
+L'amour n'est jamais un gaspillage.
+Ne pas désirer équivaut à posséder.
+Grâce à toi j'ai perdu mon appétit.
+Ne sois pas inquiet, sois heureux !
+Rome ne s'est pas faite en un jour.
+Es-tu pour ou contre l'avortement ?
+Aaah ! ! Mon ordinateur est cassé !
+Elle est tombée malade ce week-end.
+Il a disparu sans laisser de trace.
+Qui achète ce genre d'œuvre d'art ?
+Les vraies femmes ont des rondeurs.
+Le temps est passé très rapidement.
+Tu n'as pas honte de parler ainsi ?
+Le fleuve a inondé toute la région.
+Le problème s'est résolu tout seul.
+Tous les goûts sont dans la nature.
+Pas de nouvelles, bonnes nouvelles.
+On l'a averti à plusieurs reprises.
+Hier, nous nous sommes bien amusés.
+Je veux savoir qui vient avec nous.
+Comment s'est passé ton entretien ?
+J'ai été grondé par mon professeur.
+Je suis très sensible à la chaleur.
+J'ai vérifié l'heure sur l'horloge.
+J'ai pris ma retraite l'an dernier.
+Je suis en train de jouer du piano.
+Je me suis allongé pour me reposer.
+J'ai déplié la carte sur le bureau.
+J'ai pris son parapluie par erreur.
+J'apprends deux langues étrangères.
+J'ai ma propre chambre à la maison.
+Je ne suis jamais allé en Amérique.
+Je ne supporte plus sa fainéantise.
+J'ai déjà mangé mon petit déjeuner.
+Je suis plutôt meilleur maintenant.
+Je peux courir aussi vite que Bill.
+J'ai assez d'argent pour l'acheter.
+Je viens de finir de lire le livre.
+J'ai un rapport avec cette affaire.
+Cette lecture m'a vraiment stimulé.
+J'ai connaissance de cette coutume.
+J'ai rencontré un certain M. Smith.
+J'ai visité Kyoto il y a longtemps.
+Je ne cours pas aussi vite que Jim.
+Je suis un étudiant de cette école.
+Je vais rester ici plusieurs jours.
+Je me lève d'habitude à six heures.
+Puis-je regarder ton prochain jeu ?
+Je veux que tu chantes une chanson.
+Je l'ai attendu jusqu'à dix heures.
+Je crois que le garçon est honnête.
+Mon père ne sera pas occupé demain.
+Mon père va à l'église le dimanche.
+Mon fils veut ressembler à Lincoln.
+Ma grand-mère habite à la campagne.
+Laissez-moi vous présenter ma sœur.
+J'ai entendu un bruit derrière moi.
+Ne vous appuyez pas sur mon bureau.
+Ma maison se tient sur une colline.
+Ma maison est complètement assurée.
+Je recherche une veste à ma taille.
+Ne mets pas de sucre dans mon café.
+Mon oncle conduit une voiture Ford.
+Nous sommes tous les deux de Tampa.
+Il m'a attendu jusqu'à mon arrivée.
+Les enfants jouent avec les jouets.
+L'Histoire n'est pas sa spécialité.
+Je suis désolé mais je ne peux pas.
+C'était un jour idéal pour marcher.
+C'est comme si je parlais à un mur.
+Je n'ai pu dormir la nuit dernière.
+J'ai rencontré mon ami dans la rue.
+Il faisait terriblement froid hier.
+Je ne suis pas en forme maintenant.
+Ne confonds pas le sucre et le sel.
+Je n'ai pas envie de bière ce soir.
+Noël tombe un dimanche cette année.
+Il fait trop chaud pour travailler.
+Ce matin j'ai beaucoup de courrier.
+L'avez-vous vu à la gare ce matin ?
+J'ai été très occupé cette semaine.
+N'y va pas si tu n'en as pas envie.
+J'ai ouvert la boîte par curiosité.
+Prenez-en tant que vous en voulez !
+Peux-tu voir quelque chose là-bas ?
+Ajoutez la saveur du citron au thé.
+Un chien est un animal intelligent.
+Un chien aboiera sur les étrangers.
+Un chien a un flair très développé.
+J'ai toujours le cafard les lundis.
+Ne jugez jamais sur les apparences.
+J'espère que votre frère est mieux.
+Une foule se rassembla sur le lieu.
+Devez-vous y aller tous les jours ?
+Peux-tu lire ce caractère chinois ?
+Choisissez votre raquette préférée.
+J'ai aimé ton idée et l'ai adoptée.
+J'ai envie que tu viennes avec moi.
+Vous avez tous fait du bon travail.
+Quel âge aurez-vous l'an prochain ?
+Je suis heureux que tu l'aies aimé.
+Un ours ne touchera pas un cadavre.
+Garde l'argent dans un endroit sûr.
+Ne tuez pas la poule aux œufs d'or.
+Un feu est apparu près de chez moi.
+J'ai hâte d'avoir de tes nouvelles.
+Ne fume pas quand tu es en service.
+Je te conseille d'arrêter de fumer.
+Kyoto vaut la peine d'être visitée.
+Dépêche-toi, ou tu seras en retard.
+Je me précipitai hors de la maison.
+Une infirmière prit ma température.
+J'espère que tu as fait bon voyage.
+Ne sois pas en retard pour l'école.
+Je n'ai rien de particulier à dire.
+Rester chez soi n'a rien d'amusant.
+L'été est la saison que je préfère.
+J'aimerais rejoindre le camp d'été.
+Vous restez pour combien de temps ?
+Apporte-moi quelque chose à manger.
+J'ai une idée de ce qui est arrivé.
+La musique rend notre vie heureuse.
+Passez-moi le sel, s'il vous plaît.
+Les choses au loin semblent floues.
+J'ai vu une silhouette s'approcher.
+Dépose-moi à la gare s'il te plaît.
+Nos rues s'inondent quand il pleut.
+Elle cria « À l'aide ! À l'aide ! »
+Peux-tu me prêter cinq cents yens ?
+Commençons à partir de huit heures.
+J'ai peur que nous n'en ayons plus.
+Je suis désolé, mon père est sorti.
+Achille était un ancien héros Grec.
+As-tu du temps libre après-demain ?
+J'aimerais vous dire quelque chose.
+Je peux pas être d'accord avec toi.
+J'ai de bonnes nouvelles pour vous.
+Je vais le faire comme tu l'as dit.
+Je te donnerai tout ce que tu veux.
+Êtes-vous professeur ici ou élève ?
+As-tu bien dormi la nuit dernière ?
+Avez-vous visité la Tour de Tokyo ?
+Ce vase brisé est à mon grand-père.
+Ce bébé est gras et en bonne santé.
+Cet avion s'envolera à cinq heures.
+Un jour, j'ai trouvé une boîte ici.
+C'est exactement ce que je voulais.
+Ce n'est pas un cheval mais un âne.
+Non merci. Je ne fais que regarder.
+Connaissez-vous un bon restaurant ?
+Non, mais j'aime aller au baseball.
+Un clin d'œil fut sa seule réponse.
+J'ai entendu un rossignol japonais.
+Les lapins ont de grandes oreilles.
+Tout le monde est bien à la maison.
+Tout l'argent réuni ne suffira pas.
+Je suis désolée si je t'ai dérangé.
+Kim et moi, nous avons le même âge.
+Aucun des jeux n'était intéressant.
+J'aimerais avoir le ketchup à part.
+Ken et Meg sont tous deux mes amis.
+J'ai peur de ne plus avoir de café.
+Parlons autour d'une tasse de café.
+Commence un nouveau paragraphe ici.
+Asseyez-vous là et réchauffez-vous.
+Faites comme cela, s'il vous plait.
+Êtes-vous membre de cette société ?
+Dans ce pays il y a quatre saisons.
+Peux-tu répondre à cette question ?
+Je ne peux plus supporter ce bruit.
+Connaissez-vous le sens de ce mot ?
+Une partie de ce terrain est à moi.
+Je n'ai pas pu contrôler le cheval.
+Shakespeare est le nom de l'auteur.
+Shakespeare est l'auteur de Hamlet.
+Jane était habillée comme un homme.
+Mais comment peuvent-ils le faire ?
+Jim tourna la clef dans la serrure.
+Jim avait peur du travail physique.
+Jack fait la collection de timbres.
+Pouvez-vous appuyer sur le bouton ?
+George a calculé le coût du voyage.
+Jody a l'air d'avoir vu un fantôme.
+Mange ta soupe sans faire de bruit.
+On appela immédiatement un docteur.
+Je serai de retour dans une minute.
+Je pense que je suis un peu jaloux.
+M. Smith a demandé Jane en mariage.
+C'est là que vous avez fait erreur.
+Gardez un œil sur l'enfant méchant.
+Je garantis le succès du spectacle.
+Peu de gens savent comment on fait.
+Je refuse de consentir à ce projet.
+De quelle gare partent les trains ?
+Une partie de l'histoire est vraie.
+Pour faire cela, il te faut prendre des risques.
+Je ne t'en demanderai pas plus pour aujourd'hui.
+Il y a beaucoup de mots que je ne comprends pas.
+Ça ne sert plus à rien de continuer à réfléchir.
+Eh bien, la nuit est très longue, n'est-ce pas ?
+Quand on est petit, tout nous paraît si grand...
+Quand j’avais ton âge, Pluton était une planète.
+Il est argentin et il donne des cours de tennis.
+Les gens doivent comprendre que le monde évolue.
+La parole est d'argent mais le silence est d'or.
+Ils ont beau étudier, ils sont toujours recalés.
+Normalement, les loups n'attaquent pas les gens.
+Il a trouvé un prétexte pour se battre avec moi.
+Voulez-vous m'écouter pendant quelques minutes ?
+Pourrais-tu me rendre un service s'il te plaît ?
+J'aime les additions mais pas les soustractions.
+Je voulais rencontrer une femme vraiment mature.
+Je regarde la télé après avoir fini mes devoirs.
+Je ne connais pas l'endroit exact où je suis né.
+Je ne connais pas le lieu exact de ma naissance.
+J'ai parlé au garçon qui semblait le plus vieux.
+Je ne suis pas content de ce que vous avez fait.
+Je ne suis pas riche, et ne souhaite pas l'être.
+Je m'en suis fait des amis à la fête de l'école.
+Je ne sais pas comment utiliser le magnétoscope.
+J'ai allumé la radio pour écouter les nouvelles.
+J'ai entendu cette chanson en version française.
+Je ne veux pas être impliqué dans cette affaire.
+J'étais impliqué dans une dispute insignifiante.
+J'ai été arrêté pour l'avoir aidé dans sa fuite.
+J'étais déterminé à l'aider au risque de ma vie.
+Il embauchera quelqu'un qui sait parler anglais.
+Ma mère n'aime pas que je regarde la télévision.
+Mon père est trop têtu pour admettre ses fautes.
+D'après ce que je sais c'est une gentille fille.
+Tout ce que je sais, c'est qu'il vient de Chine.
+Au son de ma voix, mon chien dressait l'oreille.
+Mon succès est en grande partie dû à votre aide.
+Au cours d'un voyage il est facile de se perdre.
+À peine arrivés au lac, nous sommes allés nager.
+Alors que je marchais, il a commencé à pleuvoir.
+Je l'ai rencontré pour la première fois à Kyoto.
+Le patron lui a avancé deux semaines de salaire.
+Les enfants ont d'habitude foi en leurs parents.
+Un monsieur Tanaka est venu pour vous voir hier.
+Va trouver le chauffeur qui est arrivé ici hier.
+Avez-vous un menu spécial pour les végétariens ?
+Crois-tu qu'un peu de sel améliorera la saveur ?
+Combien d'idiomes avons-nous étudiés jusqu'ici ?
+La tour que vous pouvez voir est la tour Eiffel.
+Laissez-moi vous féliciter pour vos fiançailles.
+Beaucoup en ont marre de leur carrière actuelle.
+C'est une bénédiction que d'être en bonne santé.
+Je pense que tu devrais t'excuser auprès d'elle.
+Je suis inquiet de votre attitude irresponsable.
+À en juger d'après le ciel, il fera beau demain.
+L'air est à l'homme ce que l'eau est au poisson.
+Il n'est pas seulement intéressé, il en est fou.
+Les poissons ne peuvent pas vivre hors de l'eau.
+Dépêche-toi, ou tu seras en retard pour l'école.
+Je serai très heureux d'accepter ton invitation.
+Une totale liberté de culte est garantie à tous.
+En général, je préfère la comédie à la tragédie.
+Je n'ai pu me faire comprendre en pays étranger.
+Notre école nous défend d'aller au cinéma seuls.
+Combien de fois dois-tu aller voir le dentiste ?
+Advienne que pourra, je ne changerai pas d'avis.
+J'ai acheté une douzaine de crayons aujourd'hui.
+L'anglais n'est pas facile mais est intéressant.
+L'anglais est enseigné dans la plupart des pays.
+Prenez votre imperméable au cas où il pleuvrait.
+« Aimez-vous les gâteaux ? » « Oui, j’aime ça. »
+N'essaie pas de faire deux choses en même temps.
+Je me suis brûlé la main avec un fer à repasser.
+L'Asie est beaucoup plus grande que l'Australie.
+J'essaierai d'être à la hauteur de vos attentes.
+Cessez de fumer si vous voulez vivre longtemps !
+Je te souhaite une vie conjugale très heureuse !
+Je pense que vous feriez mieux de ne pas sortir.
+Pouvez-vous rendre compréhensible ce qu'il dit ?
+Écoutes-tu tous les jours la radio à la maison ?
+Cette peinture de Rembrandt est une œuvre d'art.
+Ce vilain garçon m'ennuie par ses extravagances.
+Cette société publie un magazine, n'est-ce pas ?
+Laissez-moi devant ce bâtiment, s'il vous plaît.
+Les États-Unis sont composés de cinquante États.
+Les Américains sont des personnes très amicales.
+Toutes sortes de gens sont venus à l'exposition.
+Je ne peux pas me concentrer avec tout ce bruit.
+Mariée à un Italien, maintenant elle vit à Rome.
+Un perroquet peut imiter la voix d'une personne.
+Le concombre est de la même espèce que le melon.
+Kate ne célèbre presque jamais son anniversaire.
+Apportez-moi une tasse de café, s'il vous plaît.
+Quelle distance y a-t-il entre ici et le musée ?
+Aller à cette école nécessite beaucoup d'argent.
+J'ai l'habitude de manger ce type de nourriture.
+Connaissez-vous la manière de prononcer ce mot ?
+Ne penses-tu pas que c'est Tanaka qui l'a fait ?
+Faxez ceci à ce numéro à Tokyo, s'il vous plait.
+Je vous suis reconnaissant de votre gentillesse.
+Jane a un ami japonais qui parle bien l'anglais.
+George a une pomme d'Adam incroyablement grosse.
+Le programme télé semblait vraiment intéressant.
+J'ai rencontré des randonneurs dans la montagne.
+Il y a peu de personnes tuées dans cet accident.
+Il m'a fallu trois jours pour nettoyer la pièce.
+Enregistrez l'émission sur une bande magnétique.
+Ne crie pas comme ça. Je t'entends parfaitement.
+Avez-vous lu l'article sur l'Asie dans le Time ?
+Les gens parlent à propos du phénomène Internet.
+Alors même qu'il parlait, un coup de feu éclata.
+Enfin, la pierre précieuse était dans ses mains.
+L'Allemagne a produit beaucoup de scientifiques.
+Laissez-moi s'il vous plaît prendre votre photo.
+N'oublie pas de poster la lettre, s'il te plaît.
+Ne sachant que faire, je lui demandai de l'aide.
+Je ne peux pas me résoudre à aider un tel homme.
+Il faisait si chaud que j'ai enlevé mon manteau.
+Par-dessus tout, les enfants ont besoin d'amour.
+Un pilote communique avec un aéroport par radio.
+Une équipe de basket-ball comprend cinq joueurs.
+Je ne pouvais rien dire en présence de mon père.
+Harry a réussi à traverser la rivière à la nage.
+Les Bakers ont une ferme en amont de la rivière.
+Madame Baker s'est fait voler son porte-monnaie.
+Dans ses dernières années Beethoven était sourd.
+Hélène se remémora les événements de la journée.
+Paul a gagné beaucoup d'argent l'année dernière.
+Je ne peux pas me sentir chez moi dans un hôtel.
+Macbeth leva une armée pour attaquer son ennemi.
+Meg est curieuse de tout connaître sur le Japon.
+Peux-tu parler un peu plus fort, s'il te plaît ?
+Je dois perdre du poids alors je suis au régime.
+Les bonnes traditions devraient être préservées.
+Puis-je avoir un supplément de riz et de choux ?
+Il semble que Wataru se consacrait à ses études.
+À cause du mauvais temps, le match a été annulé.
+Une fois parti, tu ne pourras plus le récupérer.
+D'un seul regard il sut que l'enfant avait faim.
+Les astronautes sont allés sur la lune en fusée.
+J'ai dû payer une forte somme pour le récupérer.
+Je l'ai rencontrée par hasard à un arrêt de bus.
+Les Japonais sont très attentifs aux sentiments.
+Je n'ai pas eu de ses nouvelles depuis cinq ans.
+Elle a fondu en larmes en entendant la nouvelle.
+Je n'aime pas conduire sur de longues distances.
+J'ai l'intention de descendre au prochain arrêt.
+Je n'ai jamais eu de rêve si étrange auparavant.
+Il peut le faire si c'est un enfant intelligent.
+Ce fut un plaisir de rencontrer un vieux copain.
+Je n'aime pas sortir après la tombée de la nuit.
+Il est facile de prendre de mauvaises habitudes.
+Remettez bien le couteau à sa place après usage.
+Avez-vous déjà vu un si beau coucher de soleil ?
+Aucun autre chien n'est aussi gros que celui-ci.
+Il se fait toujours une joie d'aider les autres.
+Tardant à s'échapper de l'incendie, il est mort.
+Il a dit que la terre tournait autour du soleil.
+Elle a gardé le silence au sujet de ce problème.
+Elle a trois fois plus de dictionnaires que toi.
+Elle a montré son terrier à l'exposition canine.
+Mon père vit à Nagoya depuis plus de quinze ans.
+Il a plu après plusieurs semaines de beau temps.
+Un lis blanc est vraiment magnifique à regarder.
+La jeune fille habillée en blanc est sa fiancée.
+Des deux histoires, la seconde est la meilleure.
+Beaucoup de monde était affamé durant la guerre.
+Elle a refusé de parler de ce qui s'était passé.
+Étudier l'anglais est important pour les jeunes.
+Le musée a dû fermer dû à un manque de finances.
+La fille qui porte une robe blanche est ma sœur.
+« Quelle heure est-il ? » « Il est dix heures. »
+Je ne suis pas toujours à la maison le dimanche.
+Je suis incapable de marcher aussi vite que lui.
+Je ne pense pas qu'il soit fait pour ce travail.
+Je suis resté chez moi parce que j'étais malade.
+Je suis fier que mon père soit un bon cuisinier.
+J’ai oublié de mettre un timbre sur l’enveloppe.
+Ils se séparèrent sur une poignée de main ferme.
+Te souviens-tu du jour où l'on s'est rencontré ?
+Nettoyons entièrement le bureau samedi prochain.
+La nature joue un rôle important dans notre vie.
+Mes mains sont sales. J'ai réparé ma bicyclette.
+L'alcool et le tabac sont mauvais pour la santé.
+Ça m'a pris trois heures pour finir mes devoirs.
+Faites-moi savoir quand vous recevrez le paquet.
+Un arbitre ne doit favoriser aucune des parties.
+L'air pur et l'exercice sont bons pour la santé.
+Une cellule nerveuse réagit à un léger stimulus.
+Il n'est pas poli de regarder fixement les gens.
+Aucun homme ne peut vivre avec et pour lui-même.
+Tous les otages ont été relâchés sains et saufs.
+Et le nom de votre correspondant, je vous prie ?
+Combien y a-t-il de personnes à bord du navire ?
+Mon grand-père a des cheveux blancs comme neige.
+Ma grand-mère n'a jamais changé de style de vie.
+Aucun autre homme ne pourrait faire mon travail.
+N'essaie pas de rejeter la faute sur les autres.
+Beaucoup d'étudiants sont présents à la réunion.
+Pour une raison que j'ignore, je me sens plus vivant la nuit.
+Comment pourrais-je être un robot ? Les robots ne rêvent pas.
+Vu que tu n'es pas surpris, je pense que tu étais au courant.
+Est-ce que tu pourrais retéléphoner plus tard s'il te plaît ?
+Une opinion n'est choquante que lorsque c'est une conviction.
+Le plus lent à promettre est toujours le plus fidèle à tenir.
+Un enfant n’est pas un vase à remplir, mais un feu à allumer.
+La meilleure façon de réaliser ses rêves est de se réveiller.
+Quand tu parles aux autres, tu le fais avec les bras croisés.
+Quand peut-on dire qu'une personne a des problèmes d'alcool ?
+Depuis que Mario m'a menti, je ne lui adresse plus la parole.
+Il ne faut compter que sur soi-même. Et encore, pas beaucoup.
+Ah ! Si j'étais riche, je m'achèterais une maison en Espagne.
+Il faut que j'écrive une lettre. Est-ce que tu as du papier ?
+« As-tu des frères et sœurs ? » « Non, je suis fils unique. »
+J'ai la peau extrêmement blanche et je ne bronze pas du tout.
+Je me suis mis à jour dans tous mes devoirs la nuit dernière.
+Je suis allé pour la première fois à Vienne l'année dernière.
+Je me suis levé de bonne heure pour prendre le premier train.
+Je m'arrangerai pour que vous la rencontriez lors de la fête.
+Quelquefois j'entends mon père chanter dans la salle de bain.
+Je me demandais à quelle heure pourrait commencer le concert.
+Je pense que c'est dommage que vous perdiez une telle chance.
+J'ai rencontré un ami que je n'avais pas vu depuis trois ans.
+Mes étudiants sont en petit nombre, pas plus de cinq en tout.
+Je ne peux pas me permettre d'acheter une voiture d'occasion.
+Je ne peux pas m'offrir une aussi bonne caméra que la tienne.
+Ne me posez pas tant de questions, servez-vous de votre tête.
+Notre voiture tomba en panne d'essence dix minutes plus tard.
+Hier j'ai entendu parler de l'accident pour la première fois.
+Des repas onéreux ne compensent en rien le manque de sommeil.
+Le fait d'être heureuse lui rappelait ce qu'elle avait perdu.
+Le sel était une denrée rare et chère dans les temps anciens.
+La bombe atomique a entièrement détruit la ville d'Hiroshima.
+Ken n'étudie pas seulement l'anglais, mais aussi le français.
+La mère de Ken et son amie vont bientôt arriver à l'aéroport.
+Maintenant que vous avez pris votre décision vous devez agir.
+Un léger rhume m'a empêché d'aller à Ibusuki avec ma famille.
+Beaucoup d'hommes partirent vers l'Ouest à la recherche d'or.
+Dépêchez-vous, ou vous serez en retard pour le dernier train.
+Ne me sentant pas bien, je suis resté à la maison ce jour-là.
+Je suis heureux que cette affaire se soit réglée à l'amiable.
+N'oublie pas de poster cette lettre sur le chemin de l'école.
+Je n'oublierai jamais que j'ai passé un bon moment avec vous.
+Tout ce que nous avons à faire c'est de faire de notre mieux.
+Je me demande si elle me reconnaîtra après toutes ces années.
+Un chauffeur est profondément attaché à son ancienne voiture.
+« Es-tu sûr de vouloir appeler la police ? » lui demandai-je.
+Toute personne de plus de dix-huit ans compte pour un adulte.
+Combien de minutes faut-il pour aller à la gare SNCF à pied ?
+M. Adams a été idiot de donner son accord sur la proposition.
+Je ne peux concevoir que vous ne connaissiez pas son adresse.
+Permettez-moi de vous poser quelques questions, je vous prie.
+Pendant combien de temps étudiez-vous l'anglais chaque jour ?
+Je voudrais me rapprocher pour mieux observer cette peinture.
+Cet homme est mort d'un cancer du poumon la semaine dernière.
+Alice rentra plus tôt du travail avec un sérieux mal de tête.
+Une baleine n'est pas plus un poisson que ne l'est un cheval.
+Kate a eu l'occasion de jouer un rôle important dans un film.
+Puis-je utiliser cet endroit pour faire pousser des légumes ?
+Un homme aussi honnête que John ne pourrait dire un mensonge.
+Tout bien considéré, nous ne pouvons pas dire que c'est faux.
+J'ai trouvé que le problème n'était pas difficile à résoudre.
+C'était le film le plus intéressant que nous ayons jamais vu.
+Je devrai vous renvoyer si vous arrivez si souvent en retard.
+En fait, ce serait une bonne idée de commencer tout de suite.
+Mais je ne pense pas que la piscine soit ouverte ce week-end.
+Il a dit qu'il n'entrerait pas, mais il est finalement entré.
+La télévision joue un rôle important dans la vie quotidienne.
+Il faisait chaud. Je n'ai pas pu le supporter plus longtemps.
+Comment une chose tellement étrange a-t-elle pu se produire ?
+Je n'avais pas d'autre choix que de faire ce qu'il demandait.
+Nick s'est plaint auprès de moi des prix exorbitants à Tokyo.
+Une chauve-souris est autant un oiseau qu'un rat peut l'être.
+Le pain est fait avec de la farine, de l'eau et de la levure.
+Il est difficile d'imaginer une vie sans animal de compagnie.
+Bob ne joue pas que de la guitare, il joue aussi de la flûte.
+Je me suis disputé avec Tom à propos de l'usage de marijuana.
+Il vaut mieux être la tête d'un chien que la queue d'un lion.
+Los Angeles est la deuxième plus grande ville des États-Unis.
+« Son histoire est-elle vraie ? » « J'ai bien peur que non. »
+Elle est allée en Amérique dans le but d'étudier la médecine.
+Un passager fit un malaise mais l'hôtesse de l'air le ranima.
+Un côté de la pièce est appelé « face » et l'autre, « pile ».
+Je fais un jogging tous les matins, avant mon petit déjeuner.
+Je ne suis pas en mesure de faire quoique ce soit à ce sujet.
+Il semble incapable de se sortir rapidement de ses problèmes.
+Seuls quelques émissions de télévision sont dignes d'intérêt.
+Dans le monde, il n'existe aucune sauce comparable à la faim.
+Malgré tout, je n'ai pas pu me résoudre à lui dire la vérité.
+Je n'arrive pas à me rappeler comment utiliser cette machine.
+Comment puis-je me rendre au bureau de poste le plus proche ?
+Non seulement il parle anglais, mais il parle aussi français.
+Il est allé aux États-Unis d'Amérique pour étudier l'anglais.
+L'esclavage a été aboli dans la plupart des régions du monde.
+Dis-moi la raison pour laquelle tu étais en retard à l'école.
+La gare est proche d'ici. Vous serez à l'heure pour le train.
+Ce n'est pas correct de critiquer les gens derrière leur dos.
+Les circonstances ne m'ont pas permises d'aller à l'étranger.
+Je n'ai pas mangé depuis le petit-déjeuner et j'ai très faim.
+J'étais vraiment fatigué, alors je suis allé au lit très tôt.
+Les faits sont au scientifique ce que les mots sont au poète.
+La prochaine fois que tu viens, n'oublie pas de me le rendre.
+Je veux une voiture mais je n'ai pas d'argent pour l'acheter.
+Les livres et les amis devraient être peu nombreux mais bons.
+Il garda le silence pendant tout le temps de l'interrogation.
+Tous les enfants ont besoin d'admirer et de copier quelqu'un.
+Mon grand-père se parle parfois à lui-même quand il est seul.
+M. Tanaka nous a montré beaucoup de photos de son nouveau-né.
+Les intérêts japonais et américains ont divergé sur ce point.
+Ça lui a demandé plusieurs semaines pour se remettre du choc.
+J'ai été heureux d'apprendre qu'il avait réussi à son examen.
+Dix années avaient passé depuis qu'il était allé en Amérique.
+Il est la dernière personne avec qui je voudrais aller skier.
+Il est arrivé en retard, comme c'est souvent le cas avec lui.
+Il a des livres étrangers qu'on ne peut pas trouver au Japon.
+Il a commencé par dire qu'il ne parlerait pas trop longtemps.
+C'est le représentant délégué de sa société en quelque sorte.
+Il parle toujours comme s'il était dans une réunion publique.
+Il cherche conseil auprès de son oncle quand il a des soucis.
+Il ne peut pas parler le français sans faire quelques fautes.
+Il travailla dur dans le but d'acheter une voiture étrangère.
+Il porte des vêtements coûteux et possède beaucoup de bijoux.
+Il nous offrit dix dollars en échange de notre vieille radio.
+Il n'a pas fait grand-chose de plus à part me dire au revoir.
+Il a accumulé une fortune immense au cours de l'après-guerre.
+Il ne connaît pas la différence entre la droite et la gauche.
+En même temps que des milliers d'autres, il a quitté le pays.
+Il a posé quelques questions à la fille debout à côté de lui.
+En grandissant, il apprit à mettre les choses en perspective.
+Bien qu'ils soient jumeaux, ils ont peu d'intérêts en commun.
+Je suis très surpris qu'elle soit devenue membre de la Diète.
+À peine était-elle montée dedans que le train quitta la gare.
+Une paire de boucles d'oreilles est un joli cadeau pour elle.
+Elle a la mauvaise habitude de parler longtemps au téléphone.
+Elle a saisi toutes les occasions pour améliorer son anglais.
+Elle parle l'allemand et le français, sans oublier l'anglais.
+Il était à deux doigts de se faire renverser par une voiture.
+Dès qu'elle a reçu son salaire, elle l'a dépensé en totalité.
+Non seulement elle est gentille, mais elle est aussi honnête.
+Elle était tellement énervée qu'elle n'arrivait pas à parler.
+Je n'ai trouvé mon père ni dans sa chambre ni dans le jardin.
+Aussitôt que nous aurons la réponse, nous vous téléphonerons.
+Et tu dis que je n'ai pas de flair pour ce qui est populaire.
+Les livres sont à l'esprit ce que la nourriture est au corps.
+Je lui ai demandé de ne pas jouer du piano trop tard la nuit.
+Je pense qu'il est important que nous tenions notre promesse.
+Le dîner est prêt, nous pouvons manger quand nous le voulons.
+Quelqu'un nous a volé tout notre argent durant notre absence.
+Les parents ont sans relâche essayé de rechercher leur fille.
+Je ne sentais pas le moustique en train de me piquer le bras.
+Est-ce que cela veut dire que tu ne viendras pas pour aider ?
+« Pour toujours et à jamais ? », demanda le petit lapin noir.
+Une balle en caoutchouc rebondit parce qu'elle est élastique.
+Longez cette rue et vous trouverez la poste sur votre gauche.
+Il nous raconta qu'il était passé par de nombreuses épreuves.
+Quand je serai adulte, je voudrais être professeur d'anglais.
+Le musée dispose d'une fascinante collection d'objets celtes.
+Il a saisi toutes les opportunités qui se présentaient à lui.
+Cette boîte est si grande qu'elle ne rentre pas dans mon sac.
+Il me prit mon parapluie sans se donner la peine de demander.
+En entendant les mauvaises nouvelles elle éclata en sanglots.
+Sa rédaction en anglais comporte peu de fautes sinon aucunes.
+Nous acceptons tout le monde sans distinction de nationalité.
+On rencontre souvent des touristes japonais dans ce quartier.
+On le retrouva étalé et inconscient sur le sol de la cuisine.
+Ce n'est pas facile de trouver son chemin pour aller au parc.
+Je peux vous emprunter votre stylo pendant quelques minutes ?
+Le marchand d'art a garanti l'authenticité de cette peinture.
+Plus nous plongions profondément, plus l'eau devenait froide.
+L'origine de l'univers ne sera probablement jamais expliquée.
+C'est la meilleure période pour voir les cerisiers en fleurs.
+Il n'y a pas trop de doutes à avoir quant au parcours du feu.
+Mon silence ne doit pas être considéré comme une approbation.
+L'entrée est gratuite pour les enfants de moins de trois ans.
+Il était une fois un vieil homme avare qui vivait au village.
+On dirait que le chef de service aime abuser de son autorité.
+Ce que je t'ai dit à son sujet est aussi vrai pour son frère.
+La chaleur du soleil tombe en plein sur le champ de blé vert.
+Le jour arrivera bientôt où l'homme pourra voyager vers Mars.
+Au début, je ne l'aimais pas, mais maintenant je l'aime bien.
+S'il ne vous avait pas aidé, vous auriez probablement échoué.
+Il semble que cette société a également démarré son site web.
+Il faisait trop lourd pour que je m'endorme la nuit dernière.
+Nous sommes allés à Hawai l'an dernier pour la première fois.
+Il est un peu dur d'oreille, alors veuillez parler plus fort.
+L'incendie s'est déclenché après que le personnel fut rentré.
+Mike et sa sœur savent parler français, mais pas le japonais.
+Mon père est vraiment très impliqué dans la bourse à présent.
+Les politiciens ne nous disent jamais leurs arrières-pensées.
+Mon passe-temps est de prendre des photos de fleurs sauvages.
+Les enfants doivent aller au lit sans regarder la télévision.
+Il m'a menti. C'est pour ça que je suis en colère contre lui.
+Si vous souhaitez en savoir davantage, veuillez me contacter.
+Le sept est parfois considéré comme un chiffre porte-bonheur.
+Tu ne dois pas courir à l'intérieur des bâtiments de l'école.
+Tu as dit une chose et ensuite tu as fait juste le contraire.
+C'est étrange à dire, mais il ne connaissait pas la nouvelle.
+Cela ne fait pas de différence pour moi si Fred vient ou pas.
+L'anglais est parlé dans de nombreux pays à travers le monde.
+Ceux qui habitent des maisons de verre ne devraient pas lancer de pierres.
+Un démocrate est un citoyen libre qui se plie à la volonté de la majorité.
+J'ai une grande peur d'être méprisé par ceux que j'aime et à qui je tiens.
+Si vous ne nous écoutez pas, il nous faudra avoir recours à la coercition.
+On va beaucoup manger ce soir alors j'espère que tu ne fais pas de régime.
+Quand ils rencontrent une célébrité, les fans lui demandent un autographe.
+D'après le journal, il y a eu un grand tremblement de terre au Chili hier.
+Je ne pense pas que j'arriverai à terminer tout ce travail cet après-midi.
+La plupart des étudiants s'intéressent à la finance plus qu'à l'industrie.
+La science moderne a transformé beaucoup d'impossibilités en possibilités.
+Beaucoup de groupes ethniques donnent de l'argent comme cadeau de mariage.
+Même en admettant ce que vous dites, je pense toujours que vous avez tort.
+Les changements environnementaux donnent naissance à de nouvelles espèces.
+Tout ce dont nous avons besoin maintenant est l'action, pas la discussion.
+Tous les étudiants en anglais doivent avoir un bon dictionnaire d'anglais.
+L'anglais est une langue universelle et est utilisée dans le monde entier.
+Je pense qu'un film est beaucoup plus entrainant que n'importe quel livre.
+Tout le monde sauf la famille Anderson viendra à la soirée jeudi prochain.
+Il vous faudra au moins une demi-heure pour aller d'ici à la ville à pied.
+Je ne pense pas que cette vieille voiture atteindra le haut de la colline.
+Il est à l'heure actuelle médicalement impossible de guérir cette maladie.
+Un pont de chemin de fer est déjà en construction au-dessus de la rivière.
+Au cours de cet hiver, l'écriture a occupé l'essentiel de mon temps libre.
+Ne pensez-vous pas que la plupart des étudiants japonais travaillent dur ?
+Beth protesta, mais sa mère lui rappela qu'elle était terriblement grosse.
+Tout le monde y était opposé, mais Mary et John se sont mariés quand même.
+Il est grand temps de vous faire couper les cheveux ; ils sont trop longs.
+Le professeur Yukawa a joué un rôle majeur dans la recherche scientifique.
+Je voudrais changer pour une chambre avec vue sur la mer, s'il vous plaît.
+À partir de la colline, nous pouvions voir tous les immeubles de la ville.
+Pouvez-vous me consacrer quelques minutes ? J'ai juste un mot à vous dire.
+Je suis désolé de ne pas pouvoir vous trouver un siège en première classe.
+Les hommes, les chiens, les poissons et les oiseaux sont tous des animaux.
+Plusieurs consommateurs se sont révoltés contre la taxe à la consommation.
+En raison de fortes chutes de neige, le trafic ferroviaire est interrompu.
+Nous avons eu cette chaise pour pas cher car la voisine n'en voulait plus.
+À cause de la longue récession beaucoup de travailleurs sont sans travail.
+Anne était sur le point de quitter la maison lorsque le téléphone a sonné.
+Durant ses sept ans passés au Japon, il a sérieusement étudié le japonais.
+Le Japon exporte un très grand nombre de voitures dans les pays étrangers.
+J'ai une montre fabriquée au Japon qui donne l'heure de façon très exacte.
+Comme c'est souvent le cas avec lui, il était en retard, une fois de plus.
+Il a dit ça, et ce qui était plus surprenant encore, il l'a fait lui-même.
+Il n'est pas le genre de personne à se décourager à la moindre déconvenue.
+Il présenta sa démission pour protester contre la politique de la société.
+Il a toujours laissé le problème de l'éducation de ses enfants à sa femme.
+Il ne sait pas du tout nager, mais quand il faut skier, c'est le meilleur.
+Grâce à ses notes élevées, il sera immanquablement accepté à l'université.
+Elle devrait être là maintenant parce qu'elle est partie il y a une heure.
+Elle partit de chez elle tôt le matin de peur de manquer le premier train.
+Je n'ai pas d'objection à payer des frais spéciaux si cela est nécessaire.
+On parle souvent du base-ball comme du « sport américain par excellence ».
+« Les consommations sont-elles gratuites ? » « Seulement pour les dames. »
+« Tu ferais mieux de ne pas mettre cette robe rouge. » « Pourquoi cela ? »
+"À quoi es-tu toujours en train de penser ?" demanda le petit lapin blanc.
+Nous devons essayer de préserver les vestiges des anciennes civilisations.
+« Ça vous dérange si j'emprunte votre microscope ? » « Non, pas du tout. »
+Pour ces patients, le traitement chirurgical est loin d'être satisfaisant.
+Si je ne pars pas immédiatement, je vais être en retard à mon rendez-vous.
+On ne voit pas d'issue au déficit commercial des États-Unis avec le Japon.
+Dans le système judiciaire américain, il y a douze personnes dans un jury.
+Au commencement de l'histoire américaine, les noirs vivaient en esclavage.
+« Quelle est la distance d'ici à la gare ? » « Environ trois kilomètres. »
+Il est salement enrhumé. Elle se fait beaucoup de soucis quant à sa santé.
+"Exaucé !" dit l'ange, et il disparut en un éclair dans un nuage de fumée.
+« Un café ? » « J'aimerais bien, mais j'ai déjà un rendez-vous de prévu. »
+L'entreprise lui donna une montre en or en reconnaissance de ses services.
+Il y a des différences entre l'anglais britannique et l'anglais américain.
+Ce camion transporte de la nourriture fraiche depuis Aomori jusqu'à Tokyo.
+L'importation depuis les pays asiatiques s'est étendue des derniers temps.
+Si un cambrioleur entrait dans ma chambre, je lui jetterais quelque chose.
+Je n'ai pas parlé à nos nouveaux voisins, je les connais seulement de vue.
+Pendant que nous étions en vacances, un voisin s'est occupé de notre chat.
+Les enfants sont souvent très doués pour apprendre des langues étrangères.
+La plupart des gens qui sont morts du tabac n'étaient pas de gros fumeurs.
+Alain me dit que ça ne marche pas, donc je teste pour savoir si ça marche.
+Pour faire un gâteau, vous devez utiliser des œufs, du beurre et du sucre.
+Quand on nous dit de ne pas venir, nous avons encore plus envie de partir.
+La Suisse est située entre la France, l'Italie, l'Autriche et l'Allemagne.
+Nous faisons confiance à Patty parce qu'elle tient toujours ses promesses.
+Les technologies de chiffrement ont avancé au point d'être plutôt fiables.
+Tu as peut-être raison, mais nous avons une opinion légèrement différente.
+Le nombre de personnes qui visitent cette ville augmente d'année en année.
+On demande à la plupart des athlètes de ne pas s'approcher des cigarettes.
+Il y a beaucoup de villes antiques en Italie. Rome et Venise, par exemple.
+Tu dois être aveugle comme une chauve-souris si tu ne pouvais pas le voir.
+L'interdiction du foulard serait une attaque contre les droits de l'homme.
+On ne voit bien qu'avec les yeux, l'essentiel est invisible pour les yeux.
+Je n'aime pas le thé, donc je bois généralement du café au petit-déjeuner.
+Il voulait venir avec moi à ta rencontre, mais a finalement changé d’avis.
+Prenez votre temps. Nous avons toute l'après-midi pour faire les magasins.
+Il pense que ce qu'elle a dit a du sens, du coup il a accepté son conseil.
+Le Canada et le Mexique sont situés le long des frontières des États-Unis.
+L'Allemagne était alliée avec l'Italie durant la deuxième guerre mondiale.
+Elle se comportait comme si elle avait une bonne connaissance du français.
+John Wayne était une des stars de cinéma les plus populaires de ce siècle.
+Le train a été si bondé que j'ai dû me tenir debout durant tout le chemin.
+Un oiseau prudent choisit son arbre. Un serviteur sage choisit son maître.
+Il semble que ça prendra un moment avant que je ne m'habitue à la vie ici.
+N'importe qui trouverait difficile de courir par une journée aussi chaude.
+Je ne la connais pas et je ne crois pas que je veux la connaître non plus.
+Si j'étais toi, je retournerais à la maison et je ferais une bonne sieste.
+Pendant un moment, j'aimais vraiment le cola - j'en buvais tous les jours.
+Les hommes malheureux, comme ceux qui dorment mal, en sont toujours fiers.
+Le vrai bonheur coûte peu; s'il est cher, il n'est pas d'une bonne espèce.
+Ses pieds étaient découverts, ainsi que le voulait la coutume de l'époque.
+Celui qui porte un soulier sait mieux que quiconque où il est trop étroit.
+Tout le monde est une lune et a un côté obscur qu'il ne montre à personne.
+Je me sens toujours bien après avoir fait ma bonne action pour la journée.
+Mon logiciel n'a jamais de bug. Il a juste des fonctionnalités aléatoires.
+Selon mon expérience, il faut un an pour maîtriser la grammaire française.
+Comment pouvez-vous faire la différence entre un Anglais et un Américain ?
+Il réussit dans toutes les matières et, par-dessus tout, en mathématiques.
+Un observatoire régional sera chargé du suivi de la mise en œuvre du plan.
+Le vieil homme passait la plupart de son temps à se remémorer sa jeunesse.
+Peuple d'Almaty, créons une ville qui soit accueillante pour les enfants !
+Je ne vous mentirai pas, je ne vous trahirai pas, je ne me déroberai pas !
+Ce problème n'est pas si difficile au point de ne pas pouvoir le résoudre.
+« Avez-vous vu mon chat ? » « Non. » « Vous mentez, vous mâchez encore ! »
+Ce sac poubelle en plastique ne contient pas de produits chimiques nocifs.
+Ces plantes sont trop petites, je pense qu'elles n'arrivent pas à grandir.
+On peut autant qualifier un chat de petit tigre, qu'un tigre de gros chat.
+« Comment se fait-il que tu n'es pas venu ? » « Je n'avais pas le choix. »
+En dépit de ses mises en garde, il ne prêta pas attention à cette affaire.
+Les règles concernant la sélection des collaborateurs sont ainsi établies.
+Si tu t'y rends par le bus, tu peux y être dans environ le tiers du temps.
+La Terre est comme une espèce de balle avec un grand aimant à l'intérieur.
+Je ne sais pas quel animal fait là dehors un bruit aussi terrible ce soir.
+Je pense que je serai occupé et n'aurai pas de temps jusqu'après l'examen.
+Les tickets sont valables seulement deux jours, inclus le jour de l'achat.
+Ce courrier vous est adressé suite à l'existence d'un arriéré de paiement.
+Sans votre aide, nous ne serions pas en mesure de mener à bien notre plan.
+De nombreuses personnes se frayèrent un chemin vers la sortie de derrière.
+J'ai besoin de trouver un boulot au pas de course pour payer mes factures.
+Un monde sans animés serait comme une machine à laver sans accès internet.
+Ses journaux intimes formèrent la base du livre qu'elle écrivit plus tard.
+La chose la plus incroyable avec les miracles, c'est qu'ils se produisent.
+Dans de nombreux mots anglais il y a des lettres qui ne se prononcent pas.
+La statue d'Hachiko, le chien fidèle, se dresse devant la gare de Shibuya.
+Tu es bizarre, je ne t'ai pas du tout encore aidée et tu m'appelles génie.
+La petite fille fit un bisou au garçon qui venait de lui offrir une fleur.
+Leur ambition était d'avoir le son de Led Zeppelin et les lyrics de Bowie.
+Les deux jeunes ont déménagé provisoirement dans le petit studio d'un ami.
+Alain désire toujours rester dans sa maison natale, attaché à son enfance.
+Le garçon a commencé sa nouvelle vie à Barcelone d'une manière excellente.
+L'ennemi est bête : Il croit que c'est nous l'ennemi alors que c'est lui !
+La foi rend toutes les choses possibles...l'amour les rend toutes faciles.
+L'argent n'est pas tout, mais si t'as pas d'argent, tu ne peux rien faire.
+Après dix ans comme partenaires en affaires, ils ont décidé de se séparer.
+Les ardeurs du marié se refroidissaient quelques minutes avant le mariage.
+Il a dû comprendre tout seul les événements mystérieux qui se sont passés.
+Les gens qui résident en ville ignorent les joies de la vie à la campagne.
+Les activités de notre club sont constamment gâchées par son comportement.
+Les étudiants n'ont pas d'endroits bon marché où acheter de la nourriture.
+Disposer de quelques piles supplémentaires n'est jamais une mauvaise idée.
+Dieu a créé la Padanie et, réalisant l'erreur, l'a couverte de brouillard.
+Comment cet auteur a pu se retrouver au programme est une énigme pour moi.
+Avez-vous vraiment besoin de poser la question pour connaître la réponse ?
+On doit être respectueux quand on parle et ne pas dire de choses obscènes.
+Peux-tu arranger le coup pour qu'elle figure dans cette émission de télé ?
+La société cessa son activité après plusieurs années de baisse de profits.
+Il loue un studio en centre-ville, orienté plein sud mais vraiment étroit.
+Les extra-terrestres sont souvent dépeints avec des yeux noirs en amandes.
+J'aime, je puis mourir ; j'ai vécu le meilleur et le plus beau des rêves !
+Si je pouvais, je laisserais s'envoler librement tous les oiseaux en cage.
+Je veux juste m'assurer que sa proposition n'est pas un cadeau empoisonné.
+Ça aurait été mieux si tu lui avais demandé quel chemin tu devais prendre.
+Quand j'étais encore petit, j'aimais bien aller me promener sous la pluie.
+Je me suis demandé si je pouvais peut-être rester avec toi quelques jours.
+Tu aurais dû verrouiller toutes les portes, ou à tout le moins les fermer.
+Un pas que l'on fait vers l'autre peut être un tour du monde pour le cœur.
+Je suis de ceux qui aiment réfléchir aux choses avec beaucoup d'attention.
+Si tu te retrouves dans le brouillard, ralentis et allume tes clignotants.
+Nul doute que tu dois être exténué après avoir travaillé toute la journée.
+Les énigmes de Dieu sont plus satisfaisantes que les solutions de l'homme.
+Lorsque j'y repense maintenant, notre vie de famille était très misérable.
+Je me souviens de la nuit où j'ai vu la Voie Lactée pour la première fois.
+Je n'arrive pas à savoir si beaucoup de personnes ont abandonné le projet.
+Les choses qui m'ennuient à mourir sont surtout les tirades du professeur.
+Les relations bâties sur de l'argent finiront lorsque s'épuisera l'argent.
+Quel est l'inconvénient d'utiliser des robots pour le travail en cuisine ?
+Un vrai ami sera à tes côtés dans les bons moments comme dans les mauvais.
+Demain à cette heure-ci je serai en train de travailler à la bibliothèque.
+Les bibliothèques spécialisées collectionnent des écrits relatifs à l'art.
+Nous attribuons le succès d'Edison à l'intelligence et au travail acharné.
+Mon père a envie d'un assistant compétent qui l'aiderait dans son travail.
+On n'est jamais entièrement vêtu que lorsque l'on s'est paré d'un sourire.
+Les progrès de la Science ont apporté de grands changements dans nos vies.
+Ne t'inquiète pas, je suis certain que cela te conviendra à la perfection.
+Il est enrhumé avec la goutte au nez et les larmes qui coulent sans cesse.
+Shakespeare est le plus grand poète que l'Angleterre ait jamais vu naître.
+Si un triangle a deux angles droits, c'est un carré avec un côté en moins.
+Après son diplôme, elle est devenue journaliste dans une agence de presse.
+Tatoeba est vraiment multilingue. Toutes les langues sont interconnectées.
+En Chine, les personnes avec les cheveux blonds, ça ne court pas les rues.
+Ils m'ont accueilli chaleureusement, je me sentais donc comme à la maison.
+Mon frère a pour habitude de consulter le journal avant d'aller au bureau.
+Après une bataille, les pertes en vies humaines sont généralement lourdes.
+Je laisserai une clef à mon voisin pour le cas où tu arriverais avant moi.
+Le discours était parsemé de jargon scientifique que personne n'a compris.
+Aucun écolier ne se plaint jamais d'avoir "mal au lobe frontal de l'hémisphère gauche" !
+La question clé n'est pas qu'est-ce que je peux gagner mais qu'est-ce que j'ai à perdre.
+Ma mère préfère la sélection arbitraire des machines de loterie à mes chiffres fétiches.
+Si seulement on arrêtait d'essayer d'être heureux on pourrait passer un très bon moment.
+Le réel problème n'est pas de savoir si les machines pensent mais si les hommes le font.
+Si vous prenez soin des petites choses, les grandes choses prendront soin d'elles-mêmes.
+Chaque fois que je vois Mary, j'apprends d'elle quelque chose de nouveau et d'important.
+De même que nous avons besoin d'air frais, de même les poissons ont besoin d'eau propre.
+La nuit dernière, j'étais tellement fatigué que je me suis endormi avec la télé allumée.
+Retrouvez-moi dans le vestibule de l'hôtel Impérial à six heures trente de l'après-midi.
+D'un point de vue strictement scientifique, l'histoire ne peut être appelée une science.
+Le cycle d'une entreprise est une succession de périodes de prospérité et de dépression.
+Une république est une nation dirigée non par un roi ou une reine mais par un président.
+George était si fatigué que son docteur lui conseilla de prendre mieux soin de lui-même.
+Personne ne sait exactement de combien de races se compose la population des États-Unis.
+N'oublie pas que, si tu es au régime, sauter le petit-déjeuner ne te sera d'aucune aide.
+J'ai eu beaucoup de difficultés au Mexique, car je ne comprenais pas du tout l'espagnol.
+Une cravate classique est préférable à une cravate criarde pour un entretien d'embauche.
+Chaque printemps, la glace de l'hiver fond dans les ruisseaux, les rivières et les lacs.
+Les êtres humains se distinguent des autres animaux en ce qu'ils peuvent parler et rire.
+Sitôt le nouveau professeur entré dans la classe, les étudiants commencèrent à s'agiter.
+Profitons de la controverse sur « l'exemption » pour repenser notre façon de travailler.
+Je peux vous fournir quelques statistiques prévisionnelles des revenus annuels attendus.
+La situation financière de sa famille était telle qu'il devint professeur par nécessité.
+J'avais presque dix ans lorsque mes parents m'offrirent une boîte de chimiste pour Noël.
+Nous avons tous de l'intérêt pour l'histoire. Dans un sens, nous sommes tous historiens.
+On ne devrait pas confondre la solitude et l'isolement. Ce sont deux choses différentes.
+La vie est l'art de tirer des conclusions complètes à partir d'informations incomplètes.
+Les enfants tètent leur mère quand ils sont jeunes, et leur père quand ils vieillissent.
+Est-ce que le gouvernement prévoie d'augmenter les taxes sur la consommation d'ici peu ?
+Le Japon reste une histoire célèbre de reconstruction après la Deuxième guerre mondiale.
+Mais c'est un pays de savane typique, et nous apprécions des températures plus fraîches.
+À la place de la crème fraîche, n'hésitez pas à utiliser de la ricotta ou du mascarpone.
+Tous les hommes sont mortels, or les Grecs sont des hommes, donc les Grecs sont mortels.
+Les hommes croyaient qu'ils allaient m'appâter avec trois phrases susurrées à l'oreille.
+Ce n'est qu'en acceptant les autres que nous pouvons faire tomber nos propres barrières.
+La terminologie juridique n’est pas compréhensible par la majorité des non-spécialistes.
+Qu'importe le nombre de personnes contre, le gouvernement fera quand même cette réforme.
+Un ambassadeur est un homme honnête envoyé mentir à l'étranger pour le bien de son pays.
+Elle n'a pas pleuré, elle semblait indifférente, mais je sais qu'elle était très triste.
+Les efforts pour maitriser l'incendie en utilisant des chaudières ont rapidement échoué.
+Il y avait des voitures en feu, des gens qui mouraient et personne ne pouvait les aider.
+L'objective de cette entreprise est de gagner la confiance et le respect de nos clients.
+Peut-être qu'il s'est engueulé avec sa femme, mais c'est impossible qu'il l'ait frappée.
+Lorsqu'une phrase n'appartient à personne, comme celle-ci, tu peux la corriger toi-même.
+J'ai ouï dire que ce produit avait toute une réputation auprès des connaisseurs de café.
+Ce n'est pas mon objectif d'enquêter sur l'impact de la théorie d'Emmet sur la biologie.
+Je vais m'acheter un carburateur à membrane pour améliorer la performance de mon moteur.
+Je ne sais pas exactement combien de visiteurs étaient là. Je crois plus de trois cents.
+Quels enfants ! On les envoie acheter des gourmandises et ils reviennent avec un chien !
+Elle est entrée en contact avec la culture japonaise l'an dernier pour la première fois.
+Le pain se fabrique avec de la farine, de l'eau et en ajoutant fréquemment de la levure.
+Elle enseigna de manière approfondie à ses étudiants les bases de la grammaire anglaise.
+Y'a des gens qui ont des enfants parce qu'ils n'ont pas les moyens de s'offrir un chien.
+Malheureusement, nous n'avons pas actuellement en stock l'article que vous avez demandé.
+Il ne se départit jamais de sa curiosité. Il est pour ainsi dire un éternel jeune homme.
+Trop de chemins se rejoignent, nous allons devoir y remédier, par la force s'il le faut.
+S'il faisait si froid c'était que j'avais laissé la fenêtre grande ouverte dans mon dos.
+L'ours noir et blanc qui vit dans les montagnes de Chine et du Tibet est appelé "panda".
+Il est tellement absorbé par le cinéma qu'il regarde tout ce qui lui tombe sous la main.
+Si vous ne faites pas ce que vous aimez, cependant vous pouvez aimer ce que vous faites.
+On ne voit bien qu'avec le tibia. Dans le noir, l'essentiel est invisible pour les yeux.
+Uranus, qui signifie "ciel", est le roi qui gouvernait initialement l'ensemble du monde.
+Vous pourriez au moins tâcher d'être un peu plus poli, même si ça ne vous ressemble pas.
+Il me semble que l'on s'est déjà rencontré. Où ? Je ne me rappelle plus. Le savez-vous ?
+Les dons d'entreprises aux organisations politiques sont placés sous haute surveillance.
+Une fois que vous allumez la mèche, vous avez quinze secondes pour vous mettre à l'abri.
+Les effets secondaires possibles incluent des troubles de la vision et un souffle court.
+Ils nous disent qu'ils partent à quatre et nous demandent si on peut leur faire un prix.
+Quand j'ai rencontré mon ancien professeur, il m'a demandé comment allaient mes parents.
+Le cœur de l'homme est l'endroit où demeure le diable ; je sens parfois en moi un enfer.
+Il n'y a guère de gens qui ne soient honteux de s'être aimés quand ils ne s'aiment plus.
+Lorsque nous croyons tenir la vérité par un endroit, elle nous échappe par mille autres.
+À moins que tu n'aies un meilleur plan pour le dégommer, arrête de me couper la parole !
+Arrête de ronchonner, et viens plutôt boire un coup avec nous, ça te changera les idées.
+Le prix du ticket pour enfants est moitié moins chère que le prix du ticket pour adulte.
+Les passagers dormaient dans leurs cabines lorsque le navire percuta un immense iceberg.
+Si ce n'est pas toi qui as mangé le gâteau que j'ai préparé, c'est ta sœur qui l'a fait.
+Aucun être humain ne sait s'extraire de sa biologie, tu ne vas pas y échapper non plus !
+Les enfants dépendent de leurs parents pour la nourriture, les vêtements et le logement.
+Cela fait peine à voir que des gens meurent de faim même en plein milieu de l'abondance.
+Elle était assise au bar, descendant les verres de whisky les uns à la suite des autres.
+Nous ne serions pas dans cette merde si tu avais fait précisément ce que je t'avais dit.
+Mon voisin est un vieil avare grippe-sou qui ne te donnerait même pas l'heure qu'il est.
+Le train cracha en l'air des nuages de fumée noire tandis qu'il haletait en s'éloignant.
+Les récentes avancées de la médecine introduiront un nouvel âge dans les soins médicaux.
+Je peux vous aider à tracer la carte mais vous devez accomplir le périple par vous-même.
+Le gouvernement étasunien a trois branches : l'exécutif, le législatif et le judiciaire.
+De nos jours, tout terroriste digne de ce nom étudie dans une école technique allemande.
+Il sera chancelant pour quelques heures encore, jusqu'à ce que le médicament se dissipe.
+Après l'interruption, je retournai à ma lecture mais j'avais oublié où j'en étais resté.
+Cette politique a pour objectif d'améliorer l'environnement des villes les plus pauvres.
+Elle enveloppa le cadeau dans du papier de soie et mit un gros nœud rouge sur le dessus.
+Le corps affreusement décomposé d'une jeune fille fut trouvé sur le côté de l'autoroute.
+Le train ralentit et fit beugler son signal tandis qu'il approchait le passage à niveau.
+À l'ère numérique, l'écriture manuelle est lentement en train de devenir un art disparu.
+S'il vous plaît, quand la boîte aux lettres a-t-elle été ouverte pour la dernière fois ?
+Si vous n'avez pas d'inclination pour la musique moderne, le concert ne vous plaira pas.
+Les gens qui n'eurent point de faiblesses sont terribles; on n'a point de prise sur eux.
+Nous devons trouver une heure avec notre prof d'allemand pour rattraper le cours d'hier.
+Comme tous les hommes, il était beaucoup plus éloquent pour demander que pour remercier.
+Il se peut que le nouveau traité soit convenu dans les prochaines deux à trois semaines.
+Si vous pouvez chaque jour penser positivement, ça vous aiderait beaucoup à vivre mieux.
+Toute société qui n'est pas éclairée par des philosophes est trompée par des charlatans.
+Un acronyme est le nom constitué de la lettre ou des lettres initiales d'un mot ou plus.
+Ça ne fait aucune différence si le chat est noir ou blanc tant qu'il attrape des souris.
+Le chemin escarpé menait tout droit à la colline où ils avaient l'habitude de se rendre.
+La seule intention de pécher est ainsi punie. Car qui médite un crime est déjà criminel.
+Jusqu'à présent je parle un allemand horrible, mais je vais essayer de bien l'apprendre.
+Quand il boit, il devient différent. Il se répète et donc je ne veux pas boire avec lui.
+La vache meugle, le coq chante, le cochon grouine, le canard cancane, et le chat miaule.
+L'appartenance à une association de jardins ouvriers n'est pas un motif de licenciement.
+L’état de veuvage chez la femme est presque toujours déterminé par le décès du conjoint.
+Le monde est inquiet au sujet des capacités nucléaires de l'Iran et de la Corée du Nord.
+Un Tiens vaut, se dit-on, mieux que deux Tu l'auras :l'un est sûr, l'autre ne l'est pas.
+Après avoir été innocenté, le concombre tueur prit une retraite bien méritée en Espagne.
+Quand une femme vous dit : "je ferai ton bonheur", c'est toujours au sien qu'elle pense.
+Il semble que j'aie trop bu hier. Ma tête me lance. J'ai complètement la gueule de bois.
+La grenouille et moi nous relayâmes pour deviner ce que pouvait être la recette secrète.
+Un guépard qui est pressé peut atteindre une vitesse de cent-vingt kilomètres à l'heure.
+L’amour réciproque entre hommes est l’unique fondement possible de la vie de l’humanité.
+Bon, maintenant je mets ma nuisette rose, je nettoie bien mon dentier et je vais au lit.
+Au début, dans la mythologie grecque, l'histoire de l'Europe était une histoire d'amour.
+La reine est le chef de l'État en Angleterre, mais elle n'a pas le pouvoir de gouverner.
+Certains pensent que la croyance dans le Père Noël est comparable à la croyance en Dieu.
+Catherine II de Russie, dite la Grande Catherine, fut impératrice de toutes les Russies.
+Quand nous avons démarré cette affaire, aucun d'entre nous n'avait eu aucune expérience.
+Depuis le concert de mardi, j'ai un sifflement dans les oreilles qui ne veut pas partir.
+Chatouille-lui le nez avec une plume pendant qu'elle dort pour voir si elle se réveille.
+Ils ont mis les voiles sur le cap de Bonne-Espérance, et embarqué pour le bout du monde.
+La transformation de la chenille en papillon est un phénomène qui m'a toujours intrigué.
+Il y a du lait partout sur le sol de la cuisine parce que ma femme a cassé la bouteille.
+Tu as laissé ta montre sur la table de chevet, je l'y ai vue ce matin en bordant le lit.
+La censure dans ce pays atteint des niveaux d'absurdité tel que cela en devient risible.
+Ce sont là des pratiques courantes dans le métier auxquelles il faudra que tu te fasses.
+Goethe déclara : « Qui ne connaît pas de langues étrangères ne sait rien de la sienne. »
+Si la vente d'organes est légalisée, des problèmes de santé potentiels peuvent survenir.
+La seule manière de le maîtriser est de le laisser penser qu'il obtient ce qu'il désire.
+Le cœur lui-même n'est ni plus ni moins qu'un muscle gros et dur, ressemblant à du cuir.
+Sergueï demande à Maria si elle sait ce que font maintenant ses anciens copains d'école.
+Le mot français "amour" vient de l'occitan par les Troubadours, sinon ce serait "ameur".
+Je trouve que c'est crevant de croquer des pommes, je préfère donc avaler de la compote.
+Les drapeaux subsistent habituellement plus longtemps que les idéaux qu'ils soutiennent.
+Il y a une interdiction de stationner dans la rue de la Gare demain, à cause de travaux.
+On ne meurt pas d'être né, ni d'avoir vécu, ni de vieillesse. On meurt de quelque chose.
+Les femmes sont étonnantes : ou elles ne pensent à rien, ou elles pensent à autre chose.
+Les deux équipes qui jouent ce soir sont les Géants de Yomiuri et les Tigres de Hanshin.
+Beaucoup d'espérantophones se plaignent du nombre croissant de néologismes en espéranto.
+Cette question occupe une place de choix dans l'émergence d'une immigration clandestine.
+On peut tout dire en espéranto, cependant, je voudrais garder pour moi quelques secrets.
+Mais lorsque j'ai vu l'état de la station de train, j'ai commencé à regretter mon choix.
+Quand bien même on lui proposerait un portefeuille ministériel, notre leader refuserait.
+À chaque fois qu'il regarde ses neveux, une lueur de nostalgie apparaît dans son regard.
+Il fut aisé de trouver des places dans le train parce qu'il y avait si peu de passagers.
+Je travaille pour le moment en tant qu'inspecteur pour une organisation gouvernementale.
+Si vous adhérez au club, vous bénéficiez du droit d'utilisation de tous ses équipements.
+Dans le folklore japonais, les bakenekos sont des chats possédant des pouvoirs magiques.
+À cause du réchauffement climatique, les villes pourraient être complétement submergées.
+L'inspecteur tint le verre à vin dans la lumière pour vérifier les empreintes digitales.
+Cette application vous permet de calculer rapidement l'indice de masse corporelle - IMC.
+Les effets sur la santé de l'utilisation du téléphone cellulaire sont encore incertains.
+Je ne pouvais rien sentir d'autre que le couteau, tandis qu'il s'enfonçait dans mon dos.
+Il n'y avait pas d'objection de la part de ceux présents au rendez-vous de l'après-midi.
+Si vous ne faites rien plus tard, pourquoi ne venez-vous pas prendre une tasse de café ?
+Peux-tu m'expliquer pourquoi tu penses que ces lois ne sont désormais plus applicables ?
+Nous sommes à moins de la moitié du chemin du sommet. Êtes-vous vraiment déjà fatigués ?
+Nous sommes à moins de la moitié du chemin du sommet. Êtes-vous vraiment déjà fatiguée ?
+Quel est ce morceau ? Je l'ai déjà entendu quelque part mais le titre ne me revient pas.
+Les machines tournantes sont incontournables dans la propulsion aéronautique subsonique.
+Selon la légende, cette forêt serait hantée, aussi les gens n'y mettaient pas les pieds.
+J'ai entendu dire qu'ils ont beaucoup de problèmes avec les tunnels en Nouvelle-Zélande.
+La nécessité d'une préparation théorique et pratique est claire comme de l'eau de roche.
+Je propose de reporter la décision jusqu'à ce que soient reçues toutes les propositions.
+Il enseigne à une classe comportant visiblement de nombreux élèves insoumis et rebelles.
+Il traîne constamment toute une bande de jeunes nanas derrière lui, où qu'il apparaisse.
+Le seul moment où les imprimantes ne fonctionnent pas c'est lorsque vous en avez besoin.
+Nous sommes effrayés par nos propres péchés lorsque nous les apercevons chez les autres.
+Vous ne pouvez pas juste venir ici et commencer à donner des ordres aux gens à la ronde.
+Des vêtements que les uns ne veulent pas avoir, les autres les prennent bien volontiers.
+Le système de chauffage de notre résidence universitaire ne fonctionne pas correctement.
+Je ne peux pas vérifier si votre courriel est correct ou pas parce qu'il est trop court.
+Les populations de la Chine et de l'Inde font paraître les autres états comme des nains.
+Faites attention à ce que vous prétendez être parce que vous êtes ce que vous prétendez.
+Les trois quarts des habitants du pays vivent en-dessous du niveau officiel de pauvreté.
+Les trois quarts des habitants du pays vivent au-dessous du niveau officiel de pauvreté.
+L'amélioration du système éducatif est la tâche centrale du ministère nouvellement créé.
+On a découvert le mensonge de Nixon parce qu'il avait mis son propre bureau sous écoute.
+Les mensonges grossiers que ce politicien nous sert font réfléchir le Baron Munchhausen.
+Pouvez-vous encore vous souvenir de quand nous nous sommes rencontrés la première fois ?
+Pouvez-vous encore vous souvenir où nous nous sommes rencontrées pour la première fois ?
+Arrivez-vous à vous rappeler le moment où nous nous sommes rencontrés la première fois ?
+Je pensais que ce que je donnais à manger à mon chien n'avait pas vraiment d'importance.
+Je ne peux pas vous dire combien je suis heureux que vous soyez venu nous rendre visite.
+Ne voudriez-vous pas plutôt consacrer votre temps à faire quelque chose qui vous plaît ?
+Combien de temps par semaine passez-vous à faire des choses amusantes avec vos enfants ?
+Combien de temps as-tu consacré à effectuer des recherches avant de commencer à écrire ?
+Je réalisai que même si je voulais manger, je ne disposais pas de suffisamment de temps.
+Elle a réussi à avoir l'argent par lui alors qu'il avait dit qu'il ne lui donnerait pas.
+Passer du temps avec votre bien-aimée devrait être en tête de la liste de vos priorités.
+Plus je passe de temps à faire ça, moins j'en ai pour faire des choses que j'aime faire.
+Je suppose que derrière chaque chose que l'on doit faire, il y a quelque chose que l'on veut faire...
+On ne peut que connaître le passé, pas le changer. On ne peut que changer le futur, pas le connaître.
+En théorie, il n'y a pas de différence entre la théorie et la pratique. Mais, en pratique, il y en a.
+La formation et le mouvement des ouragans sont capricieux, même avec notre technologie contemporaine.
+« Que veulent dire les initiales O.V.N.I. ? » « Cela signifie Objet Volant Non-Identifié, je crois. »
+Madame Green, de qui mes enfants reçoivent des leçons de chant, tiendra un récital dimanche prochain.
+C'est presque difficile de croire que toutes ces choses ont été faites à la main il y a si longtemps.
+Avoir quelques notions d'espagnol contribuera largement à rendre ton séjour au Mexique plus agréable.
+Bob a donné à Tina presque toute sa collection de timbres, et n'en a gardé que quelques-uns pour lui.
+Il est revenu non-pas parce qu'il avait le mal du pays, mais parce qu'il n'avait plus assez d'argent.
+Comme cela est souvent le cas avec elle, elle est arrivée en retard à la réunion de cette après-midi.
+Il est américain, mais comme il est né et a été élevé au Japon, il parle presque couramment japonais.
+Les procureurs au tribunal doivent étayer leurs affirmations pour prouver qu'un suspect est coupable.
+Il est amusant de savoir que la beauté des jardins japonais ne se retrouve dans aucune autre culture.
+Cette montre en or est la prunelle de mes yeux. Mère me l'a donnée comme souvenir à la fin de sa vie.
+Je voudrais pouvoir vivre à un rythme plus relâché, au lieu d'avoir à regarder l'heure tout le temps.
+Tout comme le corps a besoin d'exercice, l'esprit a besoin de stimulation pour rester en bonne santé.
+Vous devez vous en aller… poursuivit Anna Sergeevna en chuchotant. Vous m’entendez, Dmitri Dmitrich ?
+Même si cela ne fait qu'une semaine qu'il apprend le chinois, il connaît déjà beaucoup de caractères.
+Elle s'est fait berner dans le scandale des faux certificats d'or et a perdu presque tout son argent.
+Les pigeons peuvent retrouver leur chemin jusqu'à leur nid avec l'aide du champ magnétique terrestre.
+Dieu est le créateur. Le ciel et la terre et les hommes, tout a été créé par Dieu sauf Dieu lui-même.
+De plus, cette chambre n'est pas munie d'air climatisé ou de rien de tel. Il n'y a qu'un ventilateur.
+Si seulement son mari l'aidait, la source de la plupart de ses problèmes à la maison serait éliminée.
+Celui qui n'a pas vécu au dix-huitième siècle avant la Révolution ne connaît pas la douceur de vivre.
+Je te téléphone, d'une pour t'inviter à manger, et de deux pour t'annoncer que mon fils va se marier.
+Ne faut-il pas faire de nos champs, de toute notre vie, une immense œuvre d'art à quatre dimensions ?
+Comme c'est mon jour de congé aujourd'hui, je m'accorde un bac de glace à la noix au format familial.
+C'est laid, jaune vif, et ça ne va avec rien. Mais au moins tu ne te feras pas écraser dans le noir !
+En un sens, la vie est cruelle. Elle garde en réserve des problèmes majeurs pour chacun d'entre nous.
+Arrête de faire cela, on t'a dit mille fois que ça ne servait à rien ! Autant pisser dans un violon !
+Les journaux, les magazines et les émissions d'information nous disent ce qui se passe dans le monde.
+On dit que la voix de Björk serait plus excitante que le fait de recevoir une carte postale du Japon.
+Attention casse-pieds ! Si ça ne te dérange pas alors lis après le soulignage (en inversion couleur).
+Sa reprise de « All along the watchtower » en hommage à Jimi Hendrix a laissé les fans sur leur faim.
+Je me demande si je n'irais pas quelque part pour changer d'air, puisque mon médecin me le conseille.
+Je suis du genre à devenir nerveux devant un public, donc je ne suis pas bon pour faire des discours.
+Monsieur Kasimir Bein, je n'ai reçu ni lettre de votre part, ni de vos nouvelles, que se passe-t-il ?
+À l'heure du courrier électronique, je suis tellement heureux quand un ami m'envoie une vraie lettre.
+La cour d'appel a confirmé hier l'ordonnance de référé interdisant à mon mari de porter mes culottes.
+Je sais que télécharger de la musique de l'Internet sans payer est mal, mais je le fais tout de même.
+Cette phrase est - à quelques petites modifications près - une phrase qu'on peut trouver sur Tatoeba.
+Il paraît que la plupart des accidents d'avion a lieu lors des phases d'atterrissage et de décollage.
+L'entreprise a rapidement aiguillé son activité hors de son cœur de métier dans les dernières années.
+Tu me parais être tout à fait le genre de gars qui ne fait jamais quoi que ce soit qu'il ne veut pas.
+Le délire d'un homme est appelé une insanité. Le délire de milliers d'hommes est appelé une religion.
+Ça ne sert à rien de faire des caprices, tu ne te lèves pas avant d'avoir fini ta soupe à la tortue !
+Nous sommes dans une période de crise, mais la véritable mutation n'est pas encore tout à fait prête.
+Dans un dictionnaire comme celui-ci, il faudrait au moins deux phrases avec le mot « réfrigérateur ».
+Le vieux paysan est représenté sur le dos d’un noble, qui s’appuie, pour ne pas tomber, sur un clerc.
+Ça t'apprendra à vouloir faire ton malin, maintenant tu as l'air fin avec ta cheville dans le plâtre.
+Les hommes sont par nature indifférents les uns aux autres; mais les femmes sont par nature ennemies.
+Si les actions sont plus importantes que les mots, pourquoi la plume est-elle plus forte que l'épée ?
+J'ai appris à l'instant que tu étais malade, donc j'ai quitté le travail pour venir te rendre visite.
+Il s'est éclipsé sur la pointe des pieds, comme s'il ne voulait pas qu'on s'aperçoive de son absence.
+Je reviens tout juste des États-Unis, je suis arrivé hier, c'est pourquoi je pense encore en anglais.
+Le drapeau indien est dit tricolore parce qu'il porte trois couleurs: le safran, le blanc et le vert.
+Je n'arrive pas à croire qu'il ait eu les couilles de demander une augmentation de salaire au patron.
+Je vous conseille d'utiliser des équerres en acier zingué pour fixer la planche en noyer à la solive.
+Le porte-parole a indiqué aux attachés de presse la direction de la salle de la conférence de presse.
+Les réductions d'impôts sont souvent utilisées comme outil fiscal principal pour stimuler l'économie.
+Cet hôtel fait vraiment l'effort particulier pour faire en sorte que leurs hôtes se sentent chez eux.
+Mon grand-père amassa une grande fortune à la bourse puis la perdit entièrement du jour au lendemain.
+Sans la connaissance des langues étrangères tu ne pourras jamais comprendre le silence des étrangers.
+Tous les yeux étaient collés au poste de télévision tandis que tombaient les résultats de l'élection.
+Nous avons trouvé un pépin dans le programme qui devra être traité avant que nous puissions procéder.
+Elle parle cinq langues étrangères, mais quand elle veut jurer, elle parle dans sa langue maternelle.
+La première chose que vous entendez en arrivant à Vegas est le ching ching ching des machines à sous.
+Le pirate informatique obtint l'accès à des fichiers sensibles dans la base de données de la société.
+Elle va ruiner sa vie si elle épouse ce bon-à-rien. Quelqu'un devrait lui inculquer quelque bon sens.
+« Entre seulement et dis au patron que tu veux une augmentation. » « Plus facile à dire qu'à faire. »
+Il pleuvait lorsque je me levai, mais à l'après-midi, le ciel s'était éclairci et le soleil brillait.
+Nous suivons un cours intensif de premiers soins avant notre expédition de deux semaines en montagne.
+Le discours du Premier ministre était pensé de façon à susciter la colère des partis de l'opposition.
+L'art d'enseigner n'est que l'art d'éveiller la curiosité des jeunes âmes pour la satisfaire ensuite.
+Qu’en dis-tu, Mary, toi qui es une fille réfléchie, qui lis des livres savants et fais des extraits ?
+Ces ombres ressemblaient à un dinosaure géant, avec un très long cou et une énorme gueule sans dents.
+Le mouvement des nuages est devenu inquiétant. On ferait mieux de sortir avec un parapluie à la main.
+«Savais-tu que la fille du voisin est déjà mariée ?» «Pas possible ! Elle a seulement dix-huit ans !»
+Les pickpockets les moins inoccupés sont précisément ceux qui ont toujours les mains dans les poches.
+L'avantage des médecins, c'est que lorsqu'ils commettent une erreur, ils l'enterrent tout de suite...
+Quand on se fait vieux, on se réveille chaque matin avec l'impression que le chauffage ne marche pas.
+Le peuple ne goûte de la liberté, comme de liqueurs violentes, que pour s'enivrer et devenir furieux.
+La croyance à certaines vérités n'est venue à tous que parce qu'elle était d'abord venue à quelqu'un.
+La poupée vécut très longtemps bien soignée, bien aimée ; mais petit à petit elle perdit ses charmes.
+Les universités doivent aujourd'hui toujours faire financer leurs projets de recherche par des tiers.
+Ah, toutes ces bricoles à la mode ! On cuit encore toujours mieux avec des poêles en émail ou en fer.
+La guerre est désormais déclarée sur Tatoeba entre le clan des énonciateurs et celui des numéroteurs.
+Il est possible que l'eau potable contienne du chlore, du plomb, ou d'autres contaminants similaires.
+Tu serais peut-être capable de passer inaperçu en ville, mais dans un village, ce n'est pas possible.
+Mourir n'est pas le contraire de vivre : on passe sa vie à vivre et on ne passe pas sa mort à mourir.
+Nous avons réellement, de nos jours, tout en commun avec l'Amérique, hormis, bien entendu, la langue.
+« Tu me prends pour un con là ! » « Si je te prends pour un con ? Oh non ! Loin de moi cette idée ! »
+On peut trouver un dictionnaire d'espéranto vers et depuis une quantité énorme de langues nationales.
+J'ai entendu qu'un prêtre homo a été promu au rang d'évêque, mais ça s'est révélé être une invention.
+J'ai ramassé un chaton. Il était assis dans un coin du parc et a tremblé de tout son corps et miaulé.
+En général les journalistes ne se gênent pas pour s'introduire dans la sphère privée des autres gens.
+Cette enseigne a pignon sur rue, je ne connais pas une personne ici qui n'en a jamais entendu parler.
+Un sourire moqueur apparaît sur ses lèvres lorsqu'il passe à côté du monument à la célébrité décédée.
+L'immigration de masse provenant de sociétés extra-européennes a donné lieu à une réaction xénophobe.
+Qui nous protégera contre les Anglais, les Navarrois, et tous les malandrins qui courent la campagne?
+On roulait tranquillement sur cette route de campagne quand on a vu surgir un sanglier de nulle part.
+Il fit tout ce qui est possible pour assurer que nous disposions de tout ce dont nous aurions besoin.
+Il est certainement beau et intelligent mais il y a quelque chose en lui que je n'arrive pas à aimer.
+Loin de n'être que l'objet de leur relation ambiguë, Mary était le sujet de toute l'attention de Tom.
+Tom, laissé seul au début des phrases, n'arrivait pas à s'habituer à l'éloignement croissant de Mary.
+Tom accusa finalement Mary de s'être mise, métaphoriquement parlant, dans le rôle de l'éternel objet.
+S'étant réconciliés après une longue brouille, Tom et Mary se retrouvèrent au milieu de cette phrase.
+Tom et Mary se retrouvèrent alors côte à côte au début de cette phrase et entreprirent de l'explorer.
+Tes résultats scolaires sont vraiment très faibles, tu dois absolument mettre plus de cœur à étudier.
+Les femmes les plus agréables sont celles, qui connaissent plusieurs langues et ne les emploient pas.
+Quand on n'a pas d'argent, on ne pense qu'à ça. Quand on a de l'argent, on ne pense toujours qu'à ça.
+Ça prendra un peu de temps jusqu'à ce que nous ayons assez d'argent pour acheter un nouveau tracteur.
+Certains parents se plaignirent à propos des photos de nus dans les livres de cours de leurs enfants.
+En raison d'une grave maladie, il ne peut pas mouvoir son corps comme la plupart des gens le peuvent.
+Être de mauvaise humeur donne lieu à de graves maladies, rire aux éclats augmente l'espérance de vie.
+On sait que le propre du génie est de fournir des idées aux crétins une vingtaine d'années plus tard.
+Je n'ai pas réussi à ravoir cette tache de café sur ma chemise, et ce n'est pas faute d'avoir essayé.
+Peu importe la route que tu suis, le trajet jusqu'à la ville ne te prendra pas plus de vingt minutes.
+Dans cette université, on propose depuis tout récemment la matière: « techniques de l'environnement »
+A la première approche, nous n'étions pas familier. Nous avons appris à nous connaître avec le temps.
+Qui veut encourir un péril doit être audacieux, et quand ça sent le roussi, être également téméraire.
+J'ai intégré la recherche Tatoeba dans la barre de recherche de Firefox et je l'utilise très souvent.
+Après la collecte et le choix du matériau, tu as besoin de l'hémisphère créatif droit de ton cerveau.
+Le panda est endémique de la province du Sichuan et ne vit à l'état sauvage dans aucun autre endroit.
+En considérant votre manque d'expérience, vous vous êtes assez bien comportés dans cette compétition.
+Rien ne le surprend, il sait déjà tout avant que tu ne le lui racontes, même encore plus précisément.
+Rien de tout ce qui existe n'a jamais exercé sur moi un si fort pouvoir qu'une belle figure de femme.
+Je recommande également de visiter au moins une ville que les touristes ne visitent pas, d'ordinaire.
+Il nota ses observations au crayon dans un vieux cahier élimé. D'ordinateur portable, point de trace.
+Le défunt Freddie Mercury, ancien chanteur principal de Queen, avait une tessiture de quatre octaves.
+L'homme au téléphone m'a dit que si je ne paie pas la rançon, je ne reverrai plus mon petit Jeannot !
+J'ai toujours donné à manger à mon chien la nourriture canine qui se présente dans le grand sac vert.
+Pensez-vous que vos parents ont passé suffisamment de temps avec vous lorsque vous étiez adolescent ?
+Je passe autant de temps à travailler au jardin en un jour que ce que mon frère passe en une semaine.
+L'employé répondit : Alors... tout montre que l'hiver prochain sera un peu plus froid que d’habitude.
+Toute la vie est basée sur la chimie et tous les êtres vivants sont constitués de composés chimiques.
+Cette année, le rythme de croissance de notre entreprise dépasse largement celui de l'année dernière.
+Un jour, Christophe Colomb trouva le Saint Graal mais le jeta parce qu'il n'en aimait pas la couleur.
+Sans nom, il représente l'origine de l'univers ; avec un nom, il constitue la mère de tous les êtres.
+Déconnectez l'alimentation du modem, attendez environ une minute, puis connectez de nouveau le câble.
+Saint Martin a donné la moitié de son manteau à un pauvre : comme ça, ils ont eu froid tous les deux.
+Pour certains citadins la campagne est intolérable parce que son silence rejoint leur vide intérieur.
+Je crois que les phrases d'exemples font partie intégrante de l'assistance aux apprenants en langues.
+La vie serait un plaisir si tout le monde n'accomplissait que la moitié de ce qu'il exige des autres.
+Hier, j'ai vécu un moment très amer : j'ai appris le décès accidentel d'un ancien camarade de classe.
+Nous parvînmes en une vallée dont la forêt était dense, où j'entendis le vent mugir entre les arbres.
+À chaque fois que je tente d'apprendre par moi-même le C++, je me retrouve coincé avec les pointeurs.
+La mort et la vulgarité sont les deux seuls faits du dix-neuvième siècle qu'on ne peut pas justifier.
+La liberté est un bien dont l'existence apporte moins de plaisir que l'absence n'apporte de douleurs.
+Nous vivons dans un siècle où les idées superflues surabondent, et qui n’a pas les idées nécessaires.
+Tout bruit modulé n’est pas un chant, et toutes les voix qui exécutent de beaux airs ne chantent pas.
+J'ai eu un programme très chargé la semaine dernière, mais cette semaine, je suis relativement libre.
+Si tu manges un déjeuner léger, tu éviteras probablement une baisse d'énergie en milieu d'après-midi.
+Son exposé sur l'auteur yidiche de son choix sera prolongé par l'étude détaillée d'une œuvre célèbre.
+Il te suffit de télécharger l'application, de l'installer et de l'ouvrir. C'est aussi simple que ça !
+Les démocrates n'ont pas encore choisi leur candidat, mais dans tous les cas ils sont sûrs de perdre.
+Je ne suis pas d'humeur, ce soir, à faire de pareilles folies et surtout, Corny, pour vingt dollars !
+Le général, sans s’interrompre, le frappa sur la tête de son lourd bâton d’ivoire ; le Barbare tomba.
+Au fait, as-tu disposé du moindre temps restant pour aller visiter tandis que tu te trouvais là-bas ?
+Je n'arrive pas à croire que tu ne sois pas tout au moins disposée à envisager d'autres possibilités.
+Si tu veux montrer tes talents de forces spéciales, va plutôt travailler dans une agence de sécurité.
+Elle est une de mes bonnes amies et elle t'apprécie beaucoup, alors essaie de la dissuader gentiment.
+Tom venait juste de téléphoner à son esthéticienne, quand Marie a senti ses joues brûler de jalousie.
+La longueur d'un côté d'un triangle est toujours inférieure à la somme des longueurs des deux autres.
+Ces trois heures au volant m'ont éreinté. Arrêtons-nous à la première aire de repos que nous verrons.
+Si elles avaient suivi les conseils de leurs médecins, elles ne seraient peut-être pas dans cet état.
+Nous avons mangé à de nombreux bons restaurants, mais votre nourriture a été la meilleure de toutes !
+La puissance de l'État ukrainien a du mal à fermer le canal de télécommunication de l'opposition TVi.
+Les dérivées de la distance, relativement au temps, sont la vitesse, l'accélération et les secousses.
+En dépit de la protection du gouvernement, il fut la victime d'une tentative d'assassinat qui le tua.
+Nous étions, à ce moment-là, en train de parler de quelque chose, mais je ne me souviens pas de quoi.
+Le paradis n'est pas sur la terre, mais il y en a des morceaux. Il y a sur la terre un paradis brisé.
+Je n'ai jamais appris l'allemand, ça ne nous empêche pourtant pas d'échangées des idées en espéranto.
+La poterie apparaît habituellement dans une culture, postérieurement à l'apparition de l'agriculture.
+Les vieux dormirent sur le plancher de la cabane tandis que les autres bivouaquèrent dehors, en face.
+Rien ne comble davantage d'aise que de trouver les gens qu'on puisse irriter pour le reste de la vie.
+Il aurait fait l'impossible pour satisfaire les désirs de sa bien-aimée; mais rien n'était suffisant.
+La journée est clarté et la nuit, obscurité. Au matin, tout s'éclaircit et au soir, tout s'obscurcit.
+Après votre réponse, j'en ai la conviction : il y a énormément de personnes intelligentes en Russie !
+Celui qui est dans l'erreur supplée, par la véhémence, ce qui lui fait défaut en vérité et en forces.
+Facebook peut être exploité par les États-Unis pour collecter les informations personnelles des gens.
+Avez-vous déjà eu des problèmes cardiaques: inflammation, infarctus ou autre insuffisance cardiaque ?
+Avez-vous déjà souffert de gonorrhée, de syphilis ou d'une autre maladie sexuellement transmissible ?
+Toutes les personnes, avec lesquelles vous avez eu des relations sexuelles, doivent se faire soigner.
+J'espère que tu sais que la dernière chose que je veuille faire est de m'y rendre sans ta permission.
+Est-ce amusant de faire peur aux enfants et d’arrêter les gens en pleine nuit dans leur propre pays ?
+Je pense que ce qui m'a le plus impressionné, c'est la façon dont Tom pouvait parler à n'importe qui.
+Quand vous avez un problème avec les rats et les souris, vous pouvez les effrayer avec des ultrasons.
+Les plaques d'égout sont rondes afin qu'elles ne puissent pas tomber accidentellement dans leur trou.
+À huit heures, il faudra que je me mette en route. Autrement, j'arriverai trop tard à l'arrêt de bus.
+Les larmes que mon père retenait à peine se mirent à rouler, brûlantes comme des rivières enflammées.
+Aujourd'hui, vous pouvez peut-être nous donner quelques conseils sur l'utilisation des dictionnaires.
+Ceux qui sont incapables de se distinguer en pleine lumière tentent souvent de le faire dans l'ombre.
+Tu dois exister, si tu veux ressentir du plaisir. Si tu ne veux pas souffrir, tu ne dois pas exister.
+Qui suis-je ? D'où viens-je ? Y a-t-il une vie après la mort ? Quel est le sens de la vie terrestre ?
+Quelques-unes, dont les jambes étaient rompues, allaient en sautillant, comme des autruches blessées.
+Une vie bien remplie procure une mort heureuse comme une journée bien remplie procure un bon sommeil.
+Pour tenter d'oublier les événements de la journée, il éteignit la lumière et sombra dans le sommeil.
+Je vous dois bien plus que vous ne me devez, lui dis-je. Je vous dois la vie de ma fiancée, de Marie.
+Je n'aime pas quand les mathématiciens qui en savent beaucoup plus que moi ne savent pas s'exprimer explicitement.
+Le fromage est un aliment solide fabriqué à partir du lait de vache, de chèvre, de brebis, et d'autres mammifères.
+Nous sommes hantés par une vie idéale, et c'est parce que nous avons en nous le début et la possibilité pour cela.
+Les choses anciennes que mon père a laissées quand il est mort se révélèrent n'être qu'un bric-à-brac sans valeur.
+Elle était très timide à propos de son problème urgent, et elle demanda au gynécologue de bien vouloir l'examiner.
+Et bien sûr, un orateur communique habituellement de deux manières : oralement aussi bien qu'à travers ses gestes.
+D'un côté nous avons essuyé une lourde perte, mais d'un autre côté nous avons beaucoup appris de cette expérience.
+Je n'ai pas eu de tes nouvelles. Je me demandais si peut-être mon courrier électronique ne t'était jamais parvenu.
+Des cambrioleurs sont entrés par effraction dans notre appartement et ont volé le manteau de fourrure de ma femme.
+Au cours d'une excursion en montagne, je mâchouillais du pain dur et rassis quand je tombai sur un énorme serpent.
+Ah, maintenant, je m'en souviens. J'avais mis un préservatif ; ce que je fais rarement, voire pratiquement jamais.
+Le vieil âge ne fait pas de nous des enfants comme on le dit. Il nous trouve simplement toujours de vrais enfants.
+M. Thiers formulait la morale de la classe bourgeoise, dont il incarna l’égoïsme féroce et l’intelligence étroite.
+Quand on part à l'étranger, c'est utile d'apprendre au moins quelques formules de politesse dans la langue locale.
+Si le dégoût du monde conférait à lui seul la sainteté, je ne vois pas comment je pourrais éviter la canonisation.
+Sur le piano était imprimé un avertissement : S'il vous plaît, ne tirez pas sur le pianiste. Il fait de son mieux.
+Je me suis éveillé à l'aube ce matin, pour constater que les cultures avaient été ruinées par des oiseaux voraces.
+Lorsque le fermier tombe raide mort de son tracteur, ça veut dire qu'il doit y avoir un réacteur à l'orée du bois.
+La guerre n'est pas un désastre comme un tremblement de terre ou un tsunami. Elle ne vient pas sans avertissement.
+Il y a quelques jours, ma copine Sophie a déménagé d'Edmonton, en Alberta, vers Victoria, en Colombie-Britannique.
+Pendant l'époque stalinienne, les prisonniers des camps de concentration devenaient esclaves au service de l'État.
+Bien que la plupart des îles de l'océan aient été cartographiées, les fonds océaniques sont généralement inconnus.
+Puis-je t'emprunter tes lunettes de soleil bleues en forme de guitare électrique pour la Bad Taste Party de Susi ?
+Je ne suis pas d'accord avec la théorie selon laquelle on doit apprendre le latin pour mieux comprendre l'anglais.
+La restructuration sans conviction, qui ne peut même pas réduire les coûts, met en péril le rétablissement de JAL.
+Même avec des diplômes, Nancy n’arrive pas à parler aussi vite et aussi bien que les enfants des écoles primaires.
+Le verre se propagea brusquement quand la technique de soufflage du verre fut découverte dans l'antiquité romaine.
+Depuis les cent dernières années, il y a eu vingt-sept morts signalées dues aux morsures d'araignées en Australie.
+Les problèmes actuels du pays sont une conséquence des choix politiques incompétents des gouvernements successifs.
+Maintenant que l'examen a commencé, je ne veux plus entendre un bruit ! Le premier que j'entends parler aura zéro.
+C'est une œuvre ancienne. Elle est déraisonnablement longue car je l'ai réalisée selon mes envies sans storyboard.
+Les analyses chimiques pratiquées sur les résidus au fond des cuves ont décelé le pigment rouge typique du raisin.
+J'ai une collection de serviettes de toilette que j'ai dérobées aux différents hôtels dans lesquels j'ai séjourné.
+Désolé, chérie, il n'y a aucun moyen que je puisse prendre toute une soirée pour un bavardage autour de cocktails.
+Mon père me donne de l'argent de poche hebdomadaire que j'utilise pour acheter des bandes dessinées et des glaces.
+Le monde moderne est une foule de voitures de course très rapides toutes arrêtées et prises dans un embouteillage.
+Ce qui est illogique pour un mathématicien, est tout à fait normal pour un musicien : sept plus sept égale treize.
+Nous nous rendîmes tôt au théâtre, de sorte que nous puissions être assurés que chacun pourrait avoir un fauteuil.
+Veuillez déposer toutes vos affaires au fond de la classe, ne gardez avec vous qu'un crayon à papier et une gomme.
+La solitude est à l'esprit ce que la diète est au corps, mortelle lorsqu'elle est trop longue, quoique nécessaire.
+Si tu te trouves piégé par un ours dans la forêt, ta meilleure option est de te mettre au sol et de faire le mort.
+L'univers tente de nous instruire de toutes les manières, mais nous n'y prêtons pas attention la plupart du temps.
+Coupez les radis et les carottes en quartiers et coupez les autres légumes en morceaux de la taille d'une bouchée.
+Non, tu ne peux pas te mettre la passoire sur la tête ; tu feras l'astronaute après que j'aurai égoutté les pâtes.
+Il y a peu de chances que les extrêmes, très polarisés, se rallient aux partis modérés pour former des coalitions.
+Ah, maintenant je m'en souviens. J'ai utilisé un préservatif; chose que je fais rarement ou plutôt presque jamais.
+D'après le bulletin météorologique, il fera aujourd'hui jusqu'à trente-deux degrés. Ça va être une journée chaude.
+Tu es la seule personne que je connaisse qui ne prend pas un médicament ou un autre au moins une fois par semaine.
+J'étais sidéré d'apprendre qu'elle est morte d'une overdose. Elle m'a toujours semblé être une personne si droite.
+Le chirurgien plastique réussit à reconstruire la main du patient après plusieurs opérations longues et délicates.
+La crainte est un ressort qu'il faut ménager ; il ne faut jamais faire de loi sévère lorsqu'une plus douce suffit.
+Ne te fais aucun souci là-dessus ; ce n'est qu'un mauvais souvenir qui se dissipera aux premiers rayons du soleil.
+Le prince ne se hâtait nullement, très intéressé, s'attardant au contraire à regarder la manœuvre des machinistes.
+Le craquement du papier journal me manque parfois, mais je ne regrette pas l'encre fraîche qui tachait les doigts.
+Les réseaux sociaux permettent aux hommes de retrouver leur instinct de prédation en meute, à l'instar des hyènes.
+Il n'a pas d'intérêt pour quelque sport impliquant un travail d'équipe ou des réponses rapides à d'autres joueurs.
+Tom ergotait à propos des phrases le concernant alors que Mary faisait du mieux qu'elle pouvait pour les traduire.
+Si tu veux qu'un traducteur allemand traduise ta phrase sur Tatoeba, t'as intérêt à lui passer pas mal de pommade.
+De nombreux sites web à destination de la jeunesse impressionnent davantage par leur aspect, que par leur contenu.
+Le fait que le sens profond de nos propres phrases nous échappe est-il un signe de génie ou bien d'abrutissement ?
+Beaucoup de gens voudraient être connus. Cependant, beaucoup de gens célèbres aimeraient ne pas être aussi connus.
+Le génocide arménien a causé un total de un million et demi de morts, entre les hommes, les femmes et les enfants.
+Veuillez m'excuser de ne pas avoir compris. Peut-être pouvez-vous traduire cela dans l'une des langues suivantes :
+Mes camarades se plaignent tous que Sarkozy, après son ascension au pouvoir, ait contrôlé la liberté de la presse.
+Une personne dont l'indice de masse corporelle se situe entre vingt-cinq et vingt-neuf est considérée en surpoids.
+Si tu pouvais revenir une fois dans le passé pour recommencer une nouvelle vie, tu voudrais y revenir à quel âge ?
+Veuillez faire bouillir juste un peu les œufs, de manière à ce que même les blancs ne soient pas tout à fait durs.
+À force d'envoyer des manuscrits les uns après les autres, ça a fini par payer, un magazine m'a finalement publié.
+Je pense aussi que si les Espagnols n'avaient pas découvert l'Amérique latine, d'autres l'auraient fait peu après.
+Enfin au bord du Nil et des canaux, ils construisirent de nombreuses machines hydrauliques simples mais efficaces.
+Le garçon s'agitait avec impatience dans le fauteuil, espérant que le directeur le renverrait rapidement chez lui.
+Rien n'est plus simple que de s'exprimer avec difficulté, et rien n'est plus difficile que de le faire simplement.
+Couper du bois est à ce point apprécié car en pratiquant cette activité, on en constate immédiatement le résultat.
+Tandis que certains disent que ça ne durera que quelques minutes, d'autres pressentent que ça peut durer des mois.
+Elle éprouvait un besoin pressant de parler avec son partenaire, de tout ce qu'elle avait vécu ces derniers temps.
+J'avais seize ans lorsque je me suis mise avec mon petit ami. J'étais encore vierge et sans expériences sexuelles.
+Mon fils se contenterait d'une toilette de chat si je ne faisais attention à ce qu'il se lave des pieds à la tête.
+Les panneaux solaires prennent la lumière du Soleil et de la Lune et la transforment en électricité ou en chaleur.
+En lisant des livres, nous pouvons marcher en compagnie des grands et des bons de chaque lieu et de chaque époque.
+Afin de calmer les marchés, le couple Merkozy affiche désormais un rire permanent sur toutes les photos de presse.
+L'un des chasseurs a été touché par une balle et a dû être amené à l'hôpital où il se remet maintenant rapidement.
+Ici, les transports sont en auto-contrôle : il n'y a par exemple pas de barrière à franchir pour accéder au métro.
+Je pourrais dire qu'il n'y a pas de questions stupides, mais nous savons bien tous les deux que ce n'est pas vrai.
+Je ne pense pas que je m'exprimerai jamais comme un locuteur natif et je ne pense pas vraiment que j'en ai besoin.
+Selon mon expérience personnelle, je sais que la moindre rencontre avec lui laisse un mauvais goût dans la bouche.
+Si on passe trop de temps au soleil sans mettre de crème solaire, il est probable qu'on attrape un coup de soleil.
+Ça m'est égal, combien de fois vous dites que vous m'aimez. Je sais que vos sentiments pour elle n'ont pas changé.
+L'escroquerie n'a pas été démasquée pendant des années parce que les imitations semblaient vraies à s'y méprendre.
+Je sais que certains en prennent ombrage, mais c'est plus fort que moi, il faut que je vérifie toutes les phrases.
+Le problème avec le monde n'est pas que les gens ne sachent trop peu mais qu'ils sachent trop de choses inexactes.
+L'article trois de la Déclaration universelle des droits de l'Homme garantit à tout être humain le droit de vivre.
+La confiance est le sentiment de pouvoir croire à quelqu'un, même après que l'on sait qu'à sa place, on mentirait.
+Regarde les succès qu'ont eu des gens fatigués et découragés qui ont pris la décision d'essayer une dernière fois.
+Je me suis complétement saoulé hier soir - tellement saoulé que je me demande comment j'ai pu rentrer à la maison.
+Fait et passé, au siège social, date que dessus et après lecture intégrale et commentée, les comparants ont signé.
+Je ne sais pas pour le moment où je l'ai laissée, mais je suis certain de l'avoir eue en mains aujourd'hui encore.
+Le Conseil constitutionnel a déclaré que cette loi était en désaccord avec le principe de présomption d'innocence.
+Tu ne peux pas cacher le fait que tu traverses une mauvaise passe. Les mauvaises nouvelles voyagent vite, tu sais.
+Sa persévérance, sa forte volonté et son enthousiasme au travail lui permettent d'atteindre d'ambitieux objectifs.
+Il prit part à cette organisation à but non lucratif pour contribuer à ce que sa vision du monde devienne réalité.
+C'est la première fois que je contribue à Tatoeba alors je suis un peu nerveux...veuillez être gentilles avec moi.
+C'est la première fois que je contribue à Tatoeba alors je suis un peu nerveuse...veuillez être gentille avec moi.
+Tout citoyen hongrois dispose du droit à jouir de la protection de la Hongrie au cours de son séjour à l'étranger.
+Tu sais que le masque de la nuit est sur mon visage ; sans cela, tu verrais une virginale couleur colorer ma joue.
+Les deux filles, tout à fait décontractées et insouciantes, dansèrent dans la liberté et la gaieté de leurs cœurs.
+Comme sa femme vient d'accoucher, mon frère m'a informé qu'il n'était peut-être pas ces derniers temps au travail.
+Il semble que ç'ait été un cadeau pour le cinquantième anniversaire de l'accession au trône de la Reine Élisabeth.
+Je pense que nous nous sommes rencontrées auparavant, mais si ça ne vous évoque rien, il se peut que je me trompe.
+Tout d'abord, gardez fermement en tête la prévention de la criminalité ! Avant de sortir, verrouillez les portes !
+La curiosité n'est rien à côté de la vanité. La plupart du temps, on veut seulement savoir pour pouvoir en parler.
+Je teste ces bon Dieu d'espaces fines invisibles ici ; et là je teste les normales ; car il y en a marre à la fin.
+Ce n'est pas le temps qui passe plus vite qu'autrefois, mais nous qui passons devant lui en nous hâtant davantage.
+La fréquence des thématiques dans les phrases des contributeurs révèle beaucoup sur leurs mœurs et leurs préjugés.
+À une époque où la tromperie et le mensonge sont toujours d'actualité, dire la vérité est un acte révolutionnaire.
+Il prit le balai, le considéra et se mit à frotter maladroitement le parquet en soulevant un ouragan de poussière.
+Ce n'était que le commencement d'un enchaînement de malheurs qui devaient se dérouler avec une étonnante rapidité.
+Ah ! ma chère miss, je serais heureuse de vous voir devenir la femme d'un bon fermier et être une de nos voisines.
+Ceci est un quiz qui vous indique quel est le candidat aux présidentielles américaines qui vous convient le mieux.
+Après la mort de mon père, il devint évident que ma mère était incompétente pour gérer les finances de la famille.
+Lorsque son équipe favorite remporta la victoire, il brandit son fanion en sautillant et glapit comme un blaireau.
+J'ai habité de nombreuses mégapoles. Je n'aime pas habiter en ville. J'aime maintenant la banlieue ou la campagne.
+Aurais-je eu le culot d'aller le voir et eussé-je trouvé la force de le lui demander, sans doute m'aurait-il aidé.
+Je me suis brûlé au palais et je ne sais pas si je dois plutôt prendre rendez-vous avec un médecin ou un dentiste.
+La manière de se déplacer de mon ami était chancelante et les grelots de son chapeau tintaient lorsqu'il marchait.
+L'entreprise fournit des tenues de travail aux employées mais on attend d'elles qu'elles les lavent régulièrement.
+Ceux qui n'ont pas de connaissances ne peuvent rien faire et ceux qui ne peuvent rien faire ne peuvent pas manger.
+Des journalistes chinois, dans un quotidien de premier plan, se sont mis en grève pour s'élever contre la censure.
+Passer du temps à l'étranger devrait-il être institué comme partie intégrante de l'éducation de tous les enfants ?
+À première vue, Totoro ressemble au croisement d'un réveil avec une bouillotte, un chat, un lièvre et un pingouin.
+Il y a une belle forme de l'hypocrisie : faire un effort sur soi-même — et une belle forme de l'égoïsme : l'amour.
+La Corée du Nord, bien qu'elle soit une dictature, n'acceptera jamais d'être annihilée par le bulldozer américain.
+Je veux présenter mes excuses pour la manière dont je t'ai parlé la dernière fois que nous nous sommes rencontrés.
+La victime, dont le mariage secret allait être révélé à la famille, paressait mener une vie paisible et ordinaire.
+La fleur est courte, mais la joie qu’elle a donnée une minute n’est pas de ces choses qui ont commencement ou fin.
+Un premier amour jette dans le cœur de profondes racines qui étouffent jusqu'aux germes des sentiments antérieurs.
+Tous les gens sont mégalomanes. Ceux qui le montrent, on les traite de malades ; ceux qui le cachent, de modestes.
+Le vieil homme était édenté et imberbe, mais cela ne l’empêchait pas de murmurer entre ses dents et dans sa barbe.
+Lors de cette élection, il y a eu beaucoup de nouveautés et d'histoires qui seront racontées pour des générations.
+Après mes vingt ans d'absence, et sans nouvelles de ma part, mes parents n'ont pas hésité à me faire bonne figure.
+Allons, renoncez à votre voyage insensé ; car, sans vous offenser, votre entreprise est périlleuse et sans profit.
+Un site de paris sportifs, c'est un site où les gens qui ne font pas de sport font des paris sur ceux qui en font.
+Les forces d'occupation ont effectué un ratissage dans lequel plusieurs civils, dont des mineurs, ont été arrêtés.
+Je me suis fait soldat ; mais je n’étais pas assez brave. Je me suis fait moine ; mais je n’étais pas assez dévot.
+L'épouse meurtrière prétendit que les traces de griffures sur son visage étaient dues à des coupures en se rasant.
+Au moment où vous prendrez conscience que je suis partie, je serai à des kilomètres. N'essayez pas de me trouver !
+Au contraire, tous les pays doivent assurer la promotion de leurs langues nationales à travers la diversification.
+Le pays le plus riche de l'Union Européenne est-il plus riche que l'État le plus riche des États-Unis d'Amérique ?
+Un taux d'intérêt un peu plus bas peut épargner des milliers de dollars au cours de la durée d'un prêt immobilier.
+Je pense qu’il n’y a pas grand intérêt à ce que tu ailles à l’école si c’est pour remuer le couteau dans la plaie.
+Les grands cygnes nagèrent autour du nouveau venu, et lui caressèrent le cou de leurs becs, en guise de bienvenue.
+Au cours de l’enquête de police, un certain nombre de sympathisants d’extrême-gauche furent placés en garde à vue.
+Selon la NASA, l'existence d'une forme de vie extra-terrestre sera confirmée au cours des vingt prochaines années.
+L'apprenti marin, assis sur un tabouret dans un bar, commanda une bière en attendant son panier de fish and chips.
+Les colons, aussi bien que le gouvernement qui les représente, sont tous des racistes, qu'ils le veuillent ou non.
+Les néoconservateurs américains ne visent rien d'autre que la dislocation territoriale de la Fédération de Russie.
+Le chevalier et le dragon décidèrent de laisser de côté épée et souffle de feu et de discuter de leurs différents.
+Il y a quelques décennies, l'Amérique latine était encore rurale, on n'écrivait pas pareil au Mexique ou au Chili.
+Une bonne carrière, lorsque tu ne maîtrises pas l'arabe et que tu n'as aucune culture, c'est de devenir jihadiste.
+Le congé maternité est une indemnité disponible dans la plupart des pays, à l'exception des États-Unis d'Amérique.
+Comment, mon enfant, ton mari s’enferme avec des femmes nues, et tu as la simplicité de croire qu’il les dessine ?
+L'homme n'est rien en lui-même. Il n'est qu'une chance infinie. Mais il est le responsable infini de cette chance.
+Il devenait grincheux, critiquait constamment les mets que cuisinait son épouse et se plaignait de maux d'estomac.
+Tout ce qu'il nous reste à faire, c'est de faire consciencieusement notre travail et de sagement obéir aux ordres.
+Tom mange principalement des fruits et des légumes, et mange de la viande environ une fois par semaines seulement.
+Dans les couloirs s’organisaient des rondes et des farandoles. Une musique, quelque part, jouait un pas de menuet…
+La nouvelle de la mort du comte Besoukhow nous est parvenue avant votre lettre, et mon père en a été très affecté.
+J'espère vivement que l'intervention chirurgicale ne sera pas trop désagréable et que tu vas récupérer rapidement.
+Nous ne pouvons pas tout le temps raconter le même mensonge aux gens. Des fois nous devons en imaginer un nouveau.
+Les sept péchés capitaux sont : l'orgueil, l'envie, l'avarice, la colère, la luxure, la gourmandise et la paresse.
+Elle leva les yeux et vit à deux pas d’elle Anatole qui embrassait la jeune Française, en lui parlant à l’oreille.
+Si vous êtes arrêté dans la rue, jetez ces limailles magnétiques dans le visage du robot et courez pour votre vie.
+Selon la théorie des ensembles, je n'aime pas l'ensemble de toutes les bières - à savoir, celle-ci en particulier.
+Et soudain, au plus calme de la nuit, vint à mes oreilles un son clair, retentissant et reconnaissable entre tous.
+Du café, de la viande, des pommes de terre, des fruits, des noix, du fromage et un livre. Que te faut-il de plus ?
+Vous ne pouvez dompter votre esprit dédaigneux, moqueur et hautain, qu'en le tenant comme enchaîné par le silence.
+Quand elle est allée à Oojima en bateau, elle s'est sentie nauséeuse à bord et a vomi tout ce qu'elle avait mangé.
+Il est dans la nature de l'homme d'endurer patiemment la nature des choses, mais non la mauvaise volonté d'autrui.
+Tom a dû dormir dans le salon sur le canapé, parce que le chien de Maria ne l'a pas laissé entrer dans la chambre.
+Le spectacle n’est pas un ensemble d’images, mais un rapport social entre des personnes, médiatisé par des images.
+Tom et Mary ont réservé une chambre avec deux lits, mais quand ils sont arrivés à l'hôtel, il n'y avait qu'un lit.
+Les quatre premiers garçons qui ont été secourus ont maintenant la possibilité de manger de la nourriture normale.
+Les voitures qu'on fabrique de nos jours sont différentes de celles qu'on fabriquait dans les années soixante-dix.
+Le bon Dieu ne peut plus se défendre le pauvre, heureusement qu’il y’a maintenant ceux qui viennent à son secours.
+La Kabylie produit beaucoup : de l'huile d'olive, des figues, des figues de barbarie, des grenades et des raisins.
+« Arriveras-tu à soumettre ton manuscrit à temps ? » « Ben ouais, il faudra bien. Une promesse est une promesse. »
+Quand je suis sorti de prison, la première chose que je voulais faire était de manger dans mon restaurant préféré.
+En traitant une verrue à l'azote liquide, il peut se former une cloque qui peut éventuellement se remplir de sang.
+« Eh bien, comment as-tu trouvé le film ? » « C'est le policier le plus captivant que j'aie vu depuis longtemps. »
+Je ne veux pas vous faire de mal, mais si vous vous mettez sur mon chemin, vous ne me laisserez pas trop de choix.
+Il ne parle pas un traître mot de français, mais d'un autre côté, il parle l'anglais comme s'il avait grandi avec.
+Les arabes algériens haïssent les kabyles par pure jalousie. Car les kabyles sont respectueux des autres cultures.
+Les musulmans algériens passent leur temps à menacer Israël mais ne passent jamais à l'action car ils sont lâches.
+Les musulmans rêvent de dominer le monde c'est pour cela qu'ils haïssent Israël qui leur a damé le pion en Orient.
+Un homme d'affaires qui lit Business Week est perdu pour la gloire. Celui qui lit Proust est destinés au meilleur.
+Les valeurs d'une société préoccupée exclusivement par la recherche du profit ne sont pas tout à fait rassurantes.
+Quand je suis sorti de prison, la première chose que j'ai voulu faire était de manger dans mon restaurant préféré.
+Pour développer des nouveaux matériaux, il faut utiliser tous les outils disponibles : expériences et simulations.
+Ce qui me fait le plus peur, c'est qu'on doive expliquer aux gens comment et pourquoi se laver les mains au savon.
+Tom est allé dans la forêt pour cueillir des champignons. Il n'est toujours pas revenu. Je vais aller le chercher.
+Rien ne m'énerve plus que des animateurs débiles qui donne leurs avis sur des sujets dont ils ne connaissent rien.
+J'ai navigué autour de la Méditerranée dans une goélette quand j'avais dix-sept ans, déclama-t-elle lentement et soigneusement.
+Loin de réfuter la thèse selon laquelle la race est responsable d'un QI plus faible, les données de Lynn ne font que l'appuyer.
+Quant à moi, plutôt que d'essayer d'être un homme cosmopolite et sympa, j'aimerais être quelqu'un du terroir à l'esprit ouvert.
+Il y a aussi un type d'idéalisme qui dit que même sans force ou sans intelligence, on peut faire n'importe quoi si on persiste.
+Tout litige relatif à cet accord relèvera de la justice belge et le tribunal de Bruxelles sera seul compétent pour le résoudre.
+Le gouvernement chinois contrôlait l'Internet pour empêcher les gens de connaître la vérité du massacre de la place Tian'anmen.
+À cause du changement dans les lois matrimoniales canadiennes, plusieurs homosexuels américains sont allés se marier au Canada.
+Comment fais-tu pour regarder un documentaire sur la famine en Éthiopie en mangeant un big mac, tu n'as vraiment aucune morale.
+À Singapour, une façon de punir les criminels est de les fouetter, ou de les frapper plusieurs fois avec une canne, sur le dos.
+La science, mon garçon, est faite d’erreurs, mais d’erreurs qu’il est bon de commettre, car elles mènent peu à peu à la vérité.
+De quelle manière la Révolution et les principes qu’elle fait triompher marquent-ils une rupture dans l’histoire de la France ?
+Des langues qui ne se seraient jamais retrouvées ensemble dans un système traditionnel peuvent être connectées grâce à Tatoeba.
+La réussite ou non de la pâte brisée dépend uniquement de la qualité de la farine, en aucun cas des talents culinaires de Qdii.
+La police s'est chargée de faire descendre tous les passagers de l'appareil et de les ramener dans les bâtiments de l'aéroport.
+As-tu déjà, dans ta voiture et après un long moment sans conduite, appuyé par inadvertance sur le frein et sur l'accélérateur ?
+Moi aussi j'ai vraiment le sentiment d'avoir passé une journée détendue avec ma famille pour la première fois depuis longtemps.
+Il y a eu de nombreux génocides dans l'histoire, mais le plus célèbre (ou tristement célèbre) est celui perpétré par les Nazis.
+Souvenez-vous que le nom d'une personne est pour elle le son le plus doux et le plus important dans quelque langue que ce soit.
+Il n'avait jamais pardonné à Adélaïde de n'avoir pas de ces seins lourds, de ces fesses bien larges, qui honorent les familles.
+C’est une vérité universellement admise, qu’un célibataire en possession d’une fortune solide se doit de vouloir prendre femme.
+Les mathématiciens sont des artistes créatifs, leurs œuvres étant des échafaudages élaborés d'idées et des preuves esthétiques.
+Relire ses vieux clavardages est souvent instructif. Ça donne une bonne idée de l'insondabilité des problèmes de communication.
+En d'autres mots, le langage est une chose que nous apprenons et enseignons, pas quelque chose que nous savons instinctivement.
+Alexandre le rencontra et lui dit : « Demande-moi ce que tu veux et tu l'auras. » Il lui répondit : « Ôte-toi de mon soleil ! »
+Puissent les dieux te donner un mari, un foyer et la grâce de la paix, car il n'y a rien de plus grand et de meilleur que cela.
+Sophie allait tous les matins avec sa maman dans la basse-cour, où il y avait des poules de différentes espèces et très belles.
+On s'étudie trois semaines, on s'aime trois mois, on se dispute trois ans, on se tolère trente ans et les enfants recommencent.
+Si tu veux construire quelque chose en l'air, c'est toujours mieux de construire des vrais châteaux que des châteaux de cartes.
+Beaucoup a changé depuis les années septante, bien que les cheveux longs ne soient toujours pas vraiment encore passés de mode.
+Pourquoi suis-je le seul dont ils se plaignent ? Ils veulent juste faire de moi un exemple et m'utilisent comme bouc émissaire.
+Il n'est pas nécessaire de lui demander de se convaincre qu'il est, de cœur et d'esprit, lié à sa classe, à sa classe ouvrière.
+Les histoires qui circulaient à propos du vieux cimetière étaient contradictoires, mais néanmoins elles vous glaçaient le sang.
+Ce qui m’étonne toujours, c’est de voir la haine et le mépris que les gauchistes ont pour l’Occident, sa culture et son peuple.
+J'ai cessé d'acheter des journaux en version papier il y a déjà quelques années ; je ne les lis plus qu'en format électronique.
+Si vous êtes parent, ne vous laissez pas aller à pencher en direction d'une voie professionnelle particulière pour vos enfants.
+Les nouvelles aux États-Unis d'Amérique rapportent que l'ouragan Irène est aussi grand que l'Europe, ce qui est un peu exagéré.
+Il souhaitait tellement avoir son propre monument, qu'il décida de mourir, ce qui n'eut qu'une pierre tombale pour conséquence.
+« Que fais-tu avec le fumier ? » « Je le dispense sur les fraises. » « C'est dégoûtant ! Nous les mangeons avec de la crème ! »
+Le cœur des Hommes est tel un lopin de terre, si vous n'y avez pas planté une bonne graine, il n'en sortira pas de bons fruits.
+Pour se préserver contre les excessives montées des eaux, ils construisirent de puissantes digues et creusèrent des réservoirs.
+Les traducteurs ont souvent tendance - consciemment ou pas - à « expliquer » un texte, à le rendre plus logique que l'original.
+Qu'importe votre objectif principal lors de la lecture, les livres ne manquent jamais de procurer contentement et satisfaction.
+Les « Loups Gris » sont un mouvement ultra-nationaliste turc, néo-fasciste, anti-kurde, qui nie le génocide du peuple arménien.
+Si vous avez encore besoin d'ouvrir vos yeux aux mondes, allez voir les échoppes souterraines en dessous de la place du peuple.
+Beaucoup de gens qui ont jusqu'à présent dépensé de l'argent à passer du bon temps doivent être plus prudents avec leur argent.
+Je ne comprends pas que les enfants veuillent grandir immédiatement et puis qu'ils désirent ensuite être à nouveau des enfants.
+L'audience de lecture de l'acte d'accusation d'aujourd'hui offre au prévenu sa première occasion d'exposer son cas en personne.
+Les niveaux croissants de pollution contribuèrent à l'effet de serre qui conduirait à la fonte partielle des calottes polaires.
+Le parlementaire a révélé la conspiration et n'y est pas allé par quatre chemins quant aux mesures draconiennes pour l'écraser.
+Étant donné que je n'ai reçu aucune réponse, je me demandais s'il était possible que mon courrier ne vous ait jamais été livré.
+Persécuter un pauvre militant des droits de l'homme aveugle et sa famille est un signe de faiblesse de la part d'une dictature.
+À partir de là, le paysage se modifiait : des collines apparaissaient et d'imposantes chaînes de montagnes barraient l'horizon.
+Les minorités nationales vivant en Hongrie disposent du droit à établir leurs propres administrations locales et territoriales.
+Sais-tu, il y a encore un point que je voulais discuter avec toi : ne crois-tu pas également que notre relation manque d'élan ?
+Le mauvais poète est d'ordinaire inconscient, là où il devrait être conscient, et conscient, là où il devrait être inconscient.
+Les enfants commencent par aimer leurs parents ; après un temps ils les jugent ; rarement, voire jamais ils ne leur pardonnent.
+En Amérique les jeunes sont toujours prêts à donner à ceux qui sont plus âgés qu'eux les pleins bénéfices de leur inexpérience.
+Malheureusement, de nombreux projets ne fonctionnent jamais, restant pour toujours des déclarations d'intention, sur le papier.
+Un nom respectable - monnaie au cours vraiment substantiel qui se négocie admirablement pour qui comprend comment la présenter.
+Pourquoi leur parler dans une langue qu'ils ne comprennent pas dans leur propre pays ? Pourquoi n'apprends-tu pas leur langue ?
+Je n'arrive pas à croire que vous ne soyez pas disposées à au moins envisager la possibilité qu'il y ait une autre explication.
+Pour les nouveaux logiciels, le fournisseur nous a donné la possibilité de les tester pendant une semaine avant de les acheter.
+Bien que l'astrologie ne repose pas sur des bases scientifiques, elle est très populaire et beaucoup de gens semblent y croire.
+La presse n'a eu de cesse de pourchasser le Président au sujet de son renoncement à sa promesse de ne pas augmenter les impôts.
+Les latino-américains savent très peu de choses de l'histoire des peuples indigènes qui habitaient ici il y a quelques siècles.
+Nous sommes ici-bas pour rire. Nous ne le pourrons plus au purgatoire ou en enfer. Et, au paradis, ce ne serait pas convenable.
+Il est mon meilleur ami, car nous avons de bons rapports et je peux lui confier des choses que je ne dirais à personne d'autre.
+J'ai conscience d'avoir parfois inséré la même phrase dans Tatoeba plus de dix fois, mais, chaque fois, pour de bonnes raisons.
+Nous les femmes avons besoin de la beauté pour que les hommes nous aiment, et de la stupidité pour que nous aimions les hommes.
+Pour moi, Donald Rumsfeld n'était pas seulement un homme d'État américain, mais également un brillant théoricien de la torture.
+La plupart des hommes choisissent leur épouse pour la vie sous un éclairage sous lequel ils ne choisiraient jamais une cravate.
+Le Japon refuse de reconnaître que les langues ryukyu sont des langues à part entière, et non de simples dialectes du japonais.
+De ce que j'en sais, les personnes regardant les séries coréennes sont principalement des femmes n'ayant rien de mieux à faire.
+Certaines personnes espèrent s'enrichir en étudiant l'intelligence artificielle. Moi je m'enrichis grâce à l'idiotie naturelle.
+Nous avions trouvé un petit café sympa, assoyons-nous à une table sous une grosse ombrelle et commandons des rafraîchissements.
+Entendez vous dans nos campagnes Mugir ces féroces soldats? Ils viennent jusque dans vos bras, Égorger vos fils, vos compagnes!
+La femme est une personne humaine, avant qu'elle ne soit aimée, parfois aussi après; quand elle est aimée, elle est un miracle.
+L'exiguïté de notre jardin à nous peut receler bien davantage de choses que tout l'espace derrière la Grande Muraille de Chine.
+Georges Moustaki était un chanteur français très populaire, dont les textes poétiques étaient accessibles à un large auditoire.
+Je trouve que tu gâches ton talent à faire des petites conneries, alors que la connerie, tu as l'étoffe pour en devenir le roi.
+L'un des meilleurs usages d'Internet est d'apprendre l'espéranto et de prendre contact avec les représentants d'autres peuples.
+Le locataire est obligé d'user paisiblement des locaux suivant la destination qui leur a été donnée par le contrat de location.
+Les illustrations commémoratives de Google rythment désormais notre vie comme le faisaient autrefois les carillons des églises.
+Il y a des choses que la liberté et la démocratie rendent laides, et ce ne sont pas toujours ces choses-là qui sont condamnées.
+La bibliothèque municipale a été complètement rénovée et offre désormais deux fois plus d'espace pour les livres qu'auparavant.
+Timide, elle est restée silencieuse durant un quart d'heure avant d'oser m'aborder et de me poser des questions sur mon exposé.
+Sans la moustache brune qui se dessinait finement sur sa lèvre, on aurait pu le prendre pour une jeune fille déguisée en homme.
+Si vous souhaitez donner un pourboire au chauffeur de taxi, donnez-lui plus qu'il ne faut et dites-lui : « Gardez la monnaie. »
+La manipulation du clavier d'un ordinateur ne nécessite pas autant d'efforts que l'utilisation d'une machine à écrire manuelle.
+« Et si tu prenais un peu de vacances ? » « Ah ben ça, c’est pas l’envie qui me manque. » « C’est quoi, alors ? » « L’argent. »
+Les policiers soupçonnaient qu'il existait un lien entre la voiture abandonnée et le cadavre trouvé trois kilomètres plus loin.
+Je me suis tellement bien entendu avec le gars assis à côté de moi dans le bar que nous avons bu ensemble jusqu'au petit matin.
+On peut être anthropophage et brave homme, répondit Conseil, comme on peut être gourmand et honnête. L'un n'exclut pas l'autre.
+Les extrémités du corps se refroidissaient déjà, et je vis que la mort s'approchait, sans qu'il me parût possible de l'enrayer.
+Rares sont les morsures d'araignées qui peuvent entraîner une fièvre. Cependant, une piqûre de scorpion peut entraîner la mort.
+« Regarde ces beaux motifs. Cette araignée n'est-elle pas une beauté de la nature ? » « Et moi, alors. Ne suis-je pas belle ? »
+L'association entre trolls et ponts a une longue histoire qui se prolonge jusqu'à nos jours dans la culture populaire anglaise.
+Que ceux qui allument des cierges en plein midi pour te célébrer supportent ceux qui se contentent de la lumière de ton soleil.
+On a toujours tort d'essayer d'avoir raison devant des gens qui ont toutes les bonnes raisons de croire qu'ils n'ont pas tort !
+J'interroge votre âme et votre esprit : la vie vaudrait-elle qu'on se donne tant de peine, si son pendant n'était pas la mort ?
+Le journal raconte qu'un lion s'est échappé du zoo et qu'il pourrait, à présent, être dans n'importe quelle partie de la ville.
+Dans le monde orwellien dans lequel nous vivons, il sera désormais interdit de qualifier certains régimes racistes de racistes.
+Sans la perspective de la mort, l'être humain ne donnerait aucune valeur à la vie. Elle ne porterait peut-être même pas de nom.
+De la grande salle obscurcie, par les larges fenêtres, nous regardions silencieusement dans le ciel gris la déroute des nuages.
+La Société pour la protection de la nature a été établie par des amoureux de la nature pour protéger la beauté qui les entoure.
+À mesure qu’approche le soir, une inquiétude incompréhensible m’envahit, comme si la nuit cachait pour moi une menace terrible.
+Je suis né avec tous les instincts et les sens de l’homme primitif, tempérés par des raisonnements et des émotions de civilisé.
+Pour trouver cinquante personnes pour une fête, on doit envoyer à New York cent invitations. A Hollywood, vingt-cinq suffisent.
+Un secret, ce n'est pas quelque chose qui ne se raconte pas. Mais c'est une chose qu'on se raconte à voix basse, et séparément.
+Dans les rêves tourmentés de Marie, des Finlandais intrépides luttaient contre des ennemis fictifs et de faux amis imaginaires.
+La philosophie ne consiste-t-elle pas, après tout, à faire semblant d'ignorer ce que l'on sait et de savoir ce que l'on ignore?
+Plus de cent experts en robotique pressent les Nations Unies d'agir de façon à empêcher le développement des « robots tueurs ».
+Le prince Hippolyte était étalé dans un fauteuil à la Voltaire, les jambes jetées négligemment par-dessus les bras du fauteuil.
+En voyant fondre en larmes cette fille habituellement impassible, Pierre lui saisit la main avec émotion et lui demanda pardon.
+Il ne vit plus rien que bien haut au-dessus de lui un ciel immense, profond, où voguaient mollement de légers nuages grisâtres.
+Ce qui paraissait être une plage de sable blanc étaient, en réalité, des millions et des millions de petits coquillages blancs.
+Le gangster local avait l'habitude de conduire à travers la ville, s'arrêtant de temps en temps pour discuter avec les enfants.
+Seul, j'ai encore l'illusion de faire partie d'une forme d'humanité, mais au milieu d'autres humains, je me sens vraiment seul.
+Les remèdes sont eux-mêmes de véritables maux qui usent la nature, et dont il ne faut se servir que dans les pressants besoins.
+L'usine accueille tous les jours trois camions chargés de fèves de cacao, soit l'équivalent de soixante-douze tonnes de fèves !
+« Est-ce vous, me dit-elle, ou bien une vaine ombre ? / Ah ! si vous habitez dans la demeure sombre, / où mon Hector est-il ? »
+Elle dit ; et soudain / d'un long ruisseau de pleurs elle inonde son sein / et fait entendre au loin sa plainte attendrissante.
+Tant que durera le Colisée, Rome durera ; quand le Colisée tombera, Rome tombera ; quand Rome tombera, le monde entier tombera.
+Aucune circonstance, aucun but, aucune loi, quelle qu'elle soit, ne peut jamais rendre licite un acte intrinsèquement illicite.
+La vitesse de la lumière étant supérieure à celle du son, bien des gens ont l'air brillant jusqu'à ce qu'ils ouvrent la bouche.
+Ayant brisé le miroir, Roksolana s'inquiéta : elle croyait aux présages, et un miroir brisé lui promettait sept ans de malheur.
+Les musulmans algériens imposent la construction de mosquées en Occident mais interdisent la construction d'églises en Algérie.
+Les paramètres de confidentialité de votre téléphone intelligent permettent à ce logiciel d'application de vous suivre partout.
+Autrefois, on arrangeait les choses d'un simple regard ; maintenant, on n'y arrive pas même en guerroyant; ou c'est tout comme.
+Accueillir des invités, c'est les faire se sentir chez eux, alors même que c'est exactement là que vous voudriez qu'ils soient.
+Dans l'ensemble des réels, les bornes supérieure et inférieure d'un intervalle non vide sont ses extrémités, si elles existent.
+C'est la lumière de l'obscurité qui va nous éblouir, nous autres qui regardons la cécité comme aussi blanche qu'un agneau noir.
+Malgré les défis et un avenir incertain, les étudiants journalistes continuent de perfectionner leur art, un article à la fois.
+De telles phrases ne sont pas du tout comprises par une personne normale. Elles entrent par une oreille et sortent par l'autre.
+De sa voix onctueuse et caressante, ce collectionneur de japoneries et de calomnies débinait férocement tous ses contemporains.
+Des solutions simples, comme les capteurs de proximité, peuvent être utilisées pour réaliser d'importantes économies d'énergie.
+Les pangolins sont menacés d'extinction principalement à cause du braconnage et du commerce pour répondre à la demande en Asie.
+Où préféreriez-vous acheter la nourriture, les jouets les équipements et/ou les produits de soins de vos animaux de compagnie ?
+Si l'armée algérienne est si compétente, pourquoi ne devrait-elle pas affronter l'armée israélienne pour libérer la Palestine ?
+Au cours des deux dernières semaines, avez-vous été en contact étroit avec une personne présentant des symptômes de la grippe ?
+Les Pères Blancs nous faisaient lire des livres. Dans l'un d'eux, on parlait de Jugurtha, enchaîné puis emmené de force à Rome.
+Oh ! fuir, partir ! fuir les lieux connus, les hommes, les mouvements pareils aux mêmes heures, et les mêmes pensées, surtout !
+Certes, l'homme est mortel, mais il n'y aurait encore là que demi-mal. Le malheur, c'est que l'homme meurt parfois inopinément.
+Pendant le ramadan, les musulmans doivent s'abstenir de manger, de boire et d'avoir des relations sexuelles pendant la journée.
+Essayer de lire un texte en toki pona, c'est comme essayer de dire à quoi ressemble une tache d'encre sur un test de Rorschach.
+Nous nous laissâmes enflammer tous deux. Nous nous aimions avec tant de fureur, qu’il semblait qu’on eût jeté un sort sur nous.
+La science, mon garçon, est faite d'erreurs, mais d'erreurs qu'il est bon de commettre, car elles mènent peu à peu à la vérité.
+Quand les gens disent qu'ils ne veulent rien comme cadeau, c'est en général le signe qu'ils veulent quelque chose comme cadeau.
+L'Afghanistan a des frontières avec six pays : la Chine, l'Iran, le Pakistan, le Tadjikistan, le Turkménistan et l'Ouzbékistan.
+J'avais à me faire vacciner contre le tétanos après m'être coupé le petit doigt avec le tranchant cranté d'un couteau à beurre.
+Le manuel de fin de partie de Mark Dvoretsky est considéré comme l'un des meilleurs livres jamais publiés sur la fin de partie.
+Dans une finale de tour, chaque camp n'a qu'une tour, quelques pions et le roi. C'est le type de fin de partie le plus courant.
+Alors qu'ils sautaient pour prendre le ballon de la tête, les deux joueurs se cognèrent violemment la tête l'un contre l'autre.
+Je reste toujours complice des mots, et si je suis séduit par le silence, je n’ose y entrer, je rôde seulement à sa périphérie.
+J'ai trois trésors que je garde précieusement : le premier est amour, le second est modération, et le troisième est simplicité.
+Allez-y ! Dites ce qui vous vient à l’esprit après avoir lu ce passage. Jetez-vous à l’eau, ne pensez pas trop à l’orthographe.
+Peut-être que le libre arbitre est une illusion et que le monde est complètement déterministe, comme certains le prétendraient.
+Le réchauffement climatique est un problème technique qui doit trouver des solutions techniques, pas des chimères idéologiques.
+Le composé ionique de formule NaCl, plus connu sous le nom de sel de cuisine, est formé d'anions chlorure et de cations sodium.
+La théorie moderne de l'évolution, dans toutes ses variantes, fait exclusivement appel à des processus sans esprit et aveugles.
+Les Japonais ne ressentent pas le besoin de papoter quand s'installe le silence, ce que les Occidentaux trouvent inconfortable.
+Vladimir attribue la naissance du peuple russe à un mélange entre les peuples nomades d'Asie et la population slave autochtone.
+Ce texte en espéranto est une traduction mot à mot de l'anglais et dans cette mesure, il est donc difficilement compréhensible.
+Ce texte en espéranto est une traduction littérale à partir de l'anglais et c'est pourquoi il est difficilement compréhensible.
+En musique, rien ne m'impressionne (et ne me touche) plus que l'interprétation des Variations Goldberg de Bach par Glenn Gould.
+C'est incroyable ! Presque rien n'a changé depuis que j'ai quitté cette maison avec mes parents, il y a une vingtaine d'années.
+Je suis perplexe devant ceux qui ne sont pas rebutés par ceux qui fulminent dans le dos de personnes qu'ils ne connaissent pas.
+Ce travail de longue haleine met en valeur la coexistence de toutes les cultures qui ont érigé notre histoire et notre société.
+Ne fais jamais ce que tu ne peux défaire avant d'avoir réfléchi à ce que tu ne pourras plus faire une fois que tu l'auras fait.
+Souvent, la conduite d’un homme échauffé de vin n’est que l’effet de ce qui se passe au fond de son cœur dans les autres temps.
+« Hé, tu as fini tes devoirs ? » « Non, j'y travaille encore. Et toi ? » « Ouais, j'ai fini les miens il y a quelques heures. »
+De tous les animaux, l'homme est le seul qui boit sans soif, qui mange sans faim, et qui parle sans avoir quelque chose à dire.
+Elle a réalisé son rêve de devenir artiste, mais non sans peine, car elle a dû faire face à beaucoup de critiques et de rejets.
+Les photos ne représentent qu'un instantané figé d'une personne et ne donnent qu'une vision limitée de qui elle est réellement.
+Ils t'ont dit que ce Dieu parle uniquement l'arabe, ça veut donc dire qu'un gamin qui a grandi en Suisse est meilleur que lui ?
+Elle dépasse le chien, atteint la rivière, enlève ses bottes et ses chaussettes et enfonce ses pieds dans le sable de la plage.
+Les noms des jours de la semaine correspondent aux sept luminaires, ou en langage moderne: aux sept astres visibles à l'œil nu.
+Ce qu'il reste de la Vendée, après les colonnes infernales, va bientôt disparaître sous les assauts des vagues de l'Atlantique.
+L'amour de ma vie est actuellement en train de tourner tout autour de moi et son apparition dans ma vie va me faire tout drôle.
+Mon ascendant Scorpion m'apporte tout son lot de belles qualités à posséder, mais aussi son lot de défauts très préjudiciables.
+La classe naturelle, soit tu l'incarnes, soit tu ne l'incarnes pas du tout, normalement elle est innée en toi dès la naissance.
+Ce jeune homme a finalement porté le dernier coup fatal à ses parents qui n'ont pas survécu aux blessures qu'il leur a infligé.
+J’ai suivi une conférence sur les techniques d’encadrement pour mettre en valeur les œuvres d’art, c’était vraiment instructif.
+Certaines personnes marquent plus notre existence que d'autres, et certaines personnes marquent plus notre esprit que d'autres.
+J’ai lu un article sur l’éthique de l’environnement et les responsabilités intergénérationnelles, c’était vraiment intéressant.
+Le respect des règles d’étiquette montre une attention aux détails qui fait toute la différence dans les interactions sociales.
+Les découvertes géographiques ont souvent été précédées par des hypothèses mathématiques sur la forme et la taille de la Terre.
+La physique des vagues est essentielle pour comprendre les phénomènes marins et assurer la sécurité des expéditions océaniques.
+Il est très curieux que les Portugais comprennent l'essentiel de ce que disent les Galiciens mais que l'inverse n'est pas vrai.
+Je dois d’abord vérifier l’horaire de travail pour voir si quelqu’un d’autre a déjà demandé des vacances pour cette période-ci.
+Parfois ils commencent la rédaction d'un poème d'amour mais à la fin ils se retrouvent en train d'écrire un poème en tamazight.
+Après plusieurs heures passées à jouer de la guitare, ses doigts étaient endoloris, mais son cœur était rempli de contentement.
+Y a-t-il quelque chose que tu as pris avec toi lors de ton dernier voyage que tu ne prendrais pas lors de ton prochain voyage ?
+Le monde est trop dangereux à vivre, pas à cause de ceux qui font le mal, mais à cause de ceux qui regardent et laissent faire.
+Je suis en train de créer un vocabulaire de base en turc. Je ne sais pas encore combien de mots et d'expressions il contiendra.
+« Qu'est-ce que tu vas faire aujourd'hui ? » « Rien. » « C'est ce que tu as fait hier. » « Oui, mais je n'ai pas encore fini. »
+Il a fréquenté de nombreuses femmes, mais n'en a épousé qu'une seule. Cependant, elle n'était pas le véritable amour de sa vie.
+De larges pans de la société blanche sont plus préoccupés par la tranquillité et le statu quo que par la justice et l'humanité.
+« Moi aussi, j'ai quelque chose à te dire : je vais me marier. » « Félicitations ! Je vous souhaite tout le bonheur du monde. »
+L'étude du turc nous donne l'occasion de formuler des phrases sur les sujets les plus divers. La culture turque est très riche.

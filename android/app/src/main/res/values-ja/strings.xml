@@ -322,6 +322,12 @@
     <string name="lrn_lesson_writing">ライティング</string>
     <string name="lrn_lesson_speaking">スピーキング</string>
     <string name="lrn_lesson_coming_soon">近日公開</string>
+    <string name="lrn_reading_progress">%2$d 件中 %1$d 件目</string>
+    <string name="lrn_reading_show_translation">翻訳を表示</string>
+    <string name="lrn_reading_next">次へ</string>
+    <string name="lrn_reading_finished_title">よく読めました！</string>
+    <string name="lrn_reading_again">もっと読む</string>
+    <string name="lrn_reading_unavailable_title">読解練習を読み込めませんでした</string>
     <string name="set_remind_me_at">%1$sに 10 項目のレッスンを知らせる。</string>
     <string name="set_translate_whatsapp_messages">受信メッセージを翻訳</string>
     <string name="set_whatsapp_desc">相手が別の言語で書いたとき、AlterLingua は%1$sの翻訳を独立した通知として表示します。</string>

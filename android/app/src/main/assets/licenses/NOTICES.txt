@@ -587,3 +587,14 @@ OpenSubtitles 2018 corpus. Licensed under the Creative Commons Attribution-Share
 The lists used here (English, Français, Español, Deutsch, Italiano, Nederlands, 中文, 日本語) are the top ~3,000 words
 of each language, filtered to remove punctuation, digits and non-word fragments. This adaptation is offered under
 the same CC BY-SA 4.0 licence as the original.
+
+========================================================================
+Tatoeba (Reading practice sentences) - CC BY 2.0 FR
+========================================================================
+Example sentences from Tatoeba (https://tatoeba.org), licensed under the Creative Commons Attribution 2.0 France
+licence (https://creativecommons.org/licenses/by/2.0/fr/deed.en).
+
+The sentences used here (English, Français, Español, Deutsch, Italiano, Nederlands, 中文, 日本語) were chosen from
+Tatoeba's bulk sentence export, filtered for length and to remove digits, URLs and stray characters, then sampled
+across the length range so the result runs genuinely easy to hard rather than only the shortest sentences
+available.

@@ -3502,3 +3502,78 @@ unchanged). Not yet visually confirmed on the device -- it disconnected again be
 1. Open Home with a populated daily lesson (ten items).
 2. Confirm it now reads as a clean, consistent vertical list -- each item the same shape, divided by a thin line,
    with no pill wrapping onto multiple lines or crowding its neighbours.
+
+## 2026-10-18 — Reading is real: all 8 languages, no more "Coming soon"
+
+**The owner's own words**, seeing the Lesson menu's five "Coming soon" rows: "i shouldnt be seeing comming soon
+you need to add curriculum and be getting it from a free online places." Asked which exercise type to start with
+and whether to scope it to English↔Français first or all 8 languages at once (a large effort either way, and the
+project's own documented decision had deliberately left these five as honest placeholders rather than fabricated
+content -- `docs/entitlements.md`'s "What is not real yet"): **Reading, all 8 languages from the start.**
+
+### Sourcing the content responsibly
+
+"Free online" is not the same as "freely redistributable in a commercial app" -- most reading passages or grammar
+explanations you can view online are still copyrighted. Researched this properly before writing any code:
+
+- **[Tatoeba](https://tatoeba.org)**, a crowd-contributed multilingual sentence corpus, was the only candidate
+  found with a genuinely clear bulk-reuse licence (CC BY 2.0 FR) and real coverage of all 8 languages -- the same
+  kind of clearly-licensed, attributable source the Vocabulary curriculum already uses (Hermit Dave's
+  FrequencyWords, CC BY-SA 4.0).
+- Tatoeba also publishes a CC0 (no-attribution-needed) subset, tried first -- but it turned out to have real
+  content only for English (41,513 sentences) and French (14,202); the other six languages had 1-50 sentences
+  each, unusable. Checked Tatoeba's own FAQ for how to attribute the *full* (CC BY 2.0 FR) corpus instead: a single
+  collective credit suffices for bulk text reuse ("you just need to write somewhere that some/all of your
+  sentences are from Tatoeba... released under CC-BY 2.0 FR") -- no per-sentence author citation needed, unlike
+  audio. That made the full corpus usable for all 8 languages, added to `app/src/main/assets/licenses/NOTICES.txt`
+  (Settings → Licences) alongside FrequencyWords' own entry.
+- Downloaded each language's full sentence export (89,190 sentences for Chinese up to 2,039,120 for English),
+  filtered (8-140 characters; no digits, URLs or stray control characters; deduplicated). **Found and fixed a real
+  quality bug along the way**: for busy languages, simply taking the shortest N surviving sentences collapsed
+  entirely into trivial one-liners ("He smiled.", "Seriously?") with zero difficulty progression, since millions of
+  short candidates exist. Fixed by bucketing into 10 equal-width length bands and sampling up to 200 per band, so
+  the final list runs genuinely easy to hard -- confirmed by spot-checking: English's longest kept sentences are
+  real multi-clause quotes and news-style fragments, Chinese's include a complete classical idiom story (叶公好龙).
+  Capped at 2,000 sentences per language; Chinese (1,011) and Japanese (1,419) came up short of that cap -- an
+  honest reflection of what Tatoeba actually has, not a bug. Full sourcing/filtering account:
+  `backend/app/lessons/reading/data/SOURCE.md`.
+
+### What was built
+
+**Backend** (`backend/app/lessons/reading/`): `ReadingService` (pages through one language's sentence list,
+mirrors `app/vocabulary/service.py`'s own shape exactly) behind `GET /v1/reading/{language}` (`ReadingPage`
+schema, `offset`/`limit` paging, `le=50` cap). No translations are stored -- sentences only, the same principle
+the Vocabulary curriculum already follows ("meanings are supplied... from the translation provider, on the
+Android side").
+
+**Android**: `ReadingApi`/`HttpReadingApi` (mirrors `CurriculumApi`/`HttpCurriculumApi`), `ReadingLessonService`
+(a session of 8 sentences from a *random* starting point each time -- simply starting at offset 0 every session
+would show the exact same 8 sentences forever once naive sequential paging was considered), `ReadingLessonViewModel`
+and `ReadingLessonScreen` (tap to reveal the translation, Listen via the phone's own text-to-speech, Next). Wired
+into the Lesson menu's Reading row (`ForgeScreen.kt`'s `LessonMenuScreen`, now enabled) and a new `READING` screen
+state in `LearnScreen.kt`'s navigation.
+
+**Deliberately simpler than Vocabulary, as a stated scope decision, not an oversight**: no daily goal, no Personal
+Language Map mastery tracking, and **no entitlement gate yet** -- every tier gets the same access for this first
+pass. Vocabulary's trial-word-count and daily-goal concepts are specific to that exercise's own mechanics; inventing
+an equivalent for Reading without being asked would be exactly the kind of scattered, premature commercial-logic
+guess CLAUDE.md warns against. `docs/entitlements.md` updated to say so explicitly.
+
+### Verification
+
+Backend: 11 new tests (`tests/test_reading.py`, mirrors `test_vocabulary.py`'s own structure) plus the full
+existing suite -- 472 tests, 0 failures. Android: `ReadingLessonServiceTest` (11 tests, including the backend's
+own `le=50` page-cap and the random-start-offset behaviour) and `ReadingLessonViewModelTest` (7 tests, including
+Listen/stop and that Next interrupts any ongoing speech) plus a new `ForgeScreenTest` case confirming the Reading
+row now actually opens something. `compileDebugKotlin`, `compileDebugUnitTestKotlin`, `compileDebugAndroidTestKotlin`
+and the full unit suite all clean. Not yet manually verified end-to-end on the device.
+
+### Manual test for the owner
+
+1. Learn tab → open a unit → Lesson menu → Reading (no longer "Coming soon").
+2. Confirm a real sentence appears, with a progress indicator and step dots.
+3. Tap the card (or "Show translation"): a real translation appears, fetched from the usual translation provider.
+4. Tap Listen: the phone speaks the sentence in the language it's written in.
+5. Tap Next through all 8 sentences; confirm "Nice reading!" appears at the end, with a button to read more.
+6. Try this for more than one target language (e.g. switch to 日本語 or 中文 in onboarding/Settings) to confirm
+   content exists for languages beyond English/Français.

@@ -350,6 +350,12 @@
     <string name="lrn_lesson_writing">Writing</string>
     <string name="lrn_lesson_speaking">Speaking</string>
     <string name="lrn_lesson_coming_soon">Coming soon</string>
+    <string name="lrn_reading_progress">%1$d of %2$d</string>
+    <string name="lrn_reading_show_translation">Show translation</string>
+    <string name="lrn_reading_next">Next</string>
+    <string name="lrn_reading_finished_title">Nice reading!</string>
+    <string name="lrn_reading_again">Read more sentences</string>
+    <string name="lrn_reading_unavailable_title">Couldn\'t load reading practice</string>
     <string name="set_remind_me_at">Remind me to do my 10-item lesson at %1$s.</string>
     <string name="set_translate_whatsapp_messages">Translate incoming messages</string>
     <string name="set_whatsapp_desc">When someone writes in another language, AlterLingua shows a translation in %1$s as its own notification.</string>

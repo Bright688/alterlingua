@@ -60,7 +60,7 @@ import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
 
 /** Which of the Learn tab's curriculum-related screens is showing right now (The Forge's own navigation). */
-private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION }
+private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION, READING }
 
 /** Google Play's purchase flow needs a real Activity, not just a Context; Compose only hands us the latter directly. */
 private tailrec fun findActivity(context: android.content.Context): android.app.Activity? = when (context) {
@@ -74,11 +74,15 @@ fun LearnRoute(
     modifier: Modifier = Modifier,
     viewModel: LearnViewModel = viewModel(factory = AppViewModelProvider.Factory),
     curriculumViewModel: CurriculumLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    readingViewModel: ReadingLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val curriculumState by curriculumViewModel.uiState.collectAsStateWithLifecycle()
     val curriculumListening by curriculumViewModel.listening.collectAsStateWithLifecycle()
     val curriculumCanListen by curriculumViewModel.canListen.collectAsStateWithLifecycle()
+    val readingState by readingViewModel.uiState.collectAsStateWithLifecycle()
+    val readingListening by readingViewModel.listening.collectAsStateWithLifecycle()
+    val readingCanListen by readingViewModel.canListen.collectAsStateWithLifecycle()
     val curriculumTier by curriculumViewModel.tier.collectAsStateWithLifecycle()
     val curriculumOffers by curriculumViewModel.offers.collectAsStateWithLifecycle()
     val forgeLevels by curriculumViewModel.forgeLevels.collectAsStateWithLifecycle()
@@ -129,6 +133,7 @@ fun LearnRoute(
                 LessonMenuScreen(
                     unit = unit,
                     onOpenVocabulary = { curriculumViewModel.practiceUnit(unit); screen = CurriculumScreen.SESSION },
+                    onOpenReading = { readingViewModel.start(); screen = CurriculumScreen.READING },
                     onBack = { screen = CurriculumScreen.FORGE_LEVEL },
                     modifier = modifier,
                 )
@@ -140,6 +145,22 @@ fun LearnRoute(
                 }
             }
         }
+        CurriculumScreen.READING -> ReadingLessonScreen(
+            state = readingState,
+            onNext = readingViewModel::next,
+            onRetry = readingViewModel::start,
+            onAgain = readingViewModel::start,
+            onListen = readingViewModel::listen,
+            listening = readingListening,
+            canListen = readingCanListen,
+            modifier = modifier,
+            footer = {
+                OutlinedButton(
+                    onClick = { screen = CurriculumScreen.LESSON_MENU },
+                    modifier = Modifier.fillMaxWidth().testTag("reading_back"),
+                ) { Text(stringResource(R.string.lrn_back)) }
+            },
+        )
         CurriculumScreen.FORGE_LEVEL -> {
             val range = openLevelRange
             if (range != null) {
