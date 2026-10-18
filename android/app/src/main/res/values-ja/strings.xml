@@ -328,6 +328,10 @@
     <string name="lrn_reading_finished_title">よく読めました！</string>
     <string name="lrn_reading_again">もっと読む</string>
     <string name="lrn_reading_unavailable_title">読解練習を読み込めませんでした</string>
+    <string name="lrn_listening_show_text">テキストを表示</string>
+    <string name="lrn_listening_finished_title">よく聞けました！</string>
+    <string name="lrn_listening_again">もっと聞く</string>
+    <string name="lrn_listening_unavailable_title">リスニング練習を読み込めませんでした</string>
     <string name="set_remind_me_at">%1$sに 10 項目のレッスンを知らせる。</string>
     <string name="set_translate_whatsapp_messages">受信メッセージを翻訳</string>
     <string name="set_whatsapp_desc">相手が別の言語で書いたとき、AlterLingua は%1$sの翻訳を独立した通知として表示します。</string>

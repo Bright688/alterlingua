@@ -60,7 +60,7 @@ import com.alterlingua.app.ui.theme.AlterLinguaTheme
 import com.alterlingua.app.ui.theme.extendedColors
 
 /** Which of the Learn tab's curriculum-related screens is showing right now (The Forge's own navigation). */
-private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION, READING }
+private enum class CurriculumScreen { CARDS, FORGE_LEVELS, FORGE_LEVEL, LESSON_MENU, SESSION, READING, LISTENING }
 
 /** Google Play's purchase flow needs a real Activity, not just a Context; Compose only hands us the latter directly. */
 private tailrec fun findActivity(context: android.content.Context): android.app.Activity? = when (context) {
@@ -75,6 +75,7 @@ fun LearnRoute(
     viewModel: LearnViewModel = viewModel(factory = AppViewModelProvider.Factory),
     curriculumViewModel: CurriculumLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
     readingViewModel: ReadingLessonViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    listeningViewModel: ReadingLessonViewModel = viewModel(factory = AppViewModelProvider.Factory, key = "listening"),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val curriculumState by curriculumViewModel.uiState.collectAsStateWithLifecycle()
@@ -83,6 +84,12 @@ fun LearnRoute(
     val readingState by readingViewModel.uiState.collectAsStateWithLifecycle()
     val readingListening by readingViewModel.listening.collectAsStateWithLifecycle()
     val readingCanListen by readingViewModel.canListen.collectAsStateWithLifecycle()
+    // Listening reuses ReadingLessonService/ReadingLessonViewModel entirely (same sentences, same backend
+    // endpoint) with its own ViewModel instance (key = "listening") so its position/listening state never
+    // collides with Reading's own, even though both are the same class.
+    val listeningState by listeningViewModel.uiState.collectAsStateWithLifecycle()
+    val listeningListening by listeningViewModel.listening.collectAsStateWithLifecycle()
+    val listeningCanListen by listeningViewModel.canListen.collectAsStateWithLifecycle()
     val curriculumTier by curriculumViewModel.tier.collectAsStateWithLifecycle()
     val curriculumOffers by curriculumViewModel.offers.collectAsStateWithLifecycle()
     val forgeLevels by curriculumViewModel.forgeLevels.collectAsStateWithLifecycle()
@@ -134,6 +141,7 @@ fun LearnRoute(
                     unit = unit,
                     onOpenVocabulary = { curriculumViewModel.practiceUnit(unit); screen = CurriculumScreen.SESSION },
                     onOpenReading = { readingViewModel.start(); screen = CurriculumScreen.READING },
+                    onOpenListening = { listeningViewModel.start(); screen = CurriculumScreen.LISTENING },
                     onBack = { screen = CurriculumScreen.FORGE_LEVEL },
                     modifier = modifier,
                 )
@@ -158,6 +166,23 @@ fun LearnRoute(
                 OutlinedButton(
                     onClick = { screen = CurriculumScreen.LESSON_MENU },
                     modifier = Modifier.fillMaxWidth().testTag("reading_back"),
+                ) { Text(stringResource(R.string.lrn_back)) }
+            },
+        )
+        CurriculumScreen.LISTENING -> ListeningLessonScreen(
+            state = listeningState,
+            onNext = listeningViewModel::next,
+            onRetry = listeningViewModel::start,
+            onAgain = listeningViewModel::start,
+            onListen = listeningViewModel::listen,
+            onReveal = listeningViewModel::reveal,
+            listening = listeningListening,
+            canListen = listeningCanListen,
+            modifier = modifier,
+            footer = {
+                OutlinedButton(
+                    onClick = { screen = CurriculumScreen.LESSON_MENU },
+                    modifier = Modifier.fillMaxWidth().testTag("listening_back"),
                 ) { Text(stringResource(R.string.lrn_back)) }
             },
         )

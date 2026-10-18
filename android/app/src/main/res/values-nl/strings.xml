@@ -328,6 +328,10 @@
     <string name="lrn_reading_finished_title">Goed gelezen!</string>
     <string name="lrn_reading_again">Meer zinnen lezen</string>
     <string name="lrn_reading_unavailable_title">Kon leesoefening niet laden</string>
+    <string name="lrn_listening_show_text">Tekst tonen</string>
+    <string name="lrn_listening_finished_title">Goed geluisterd!</string>
+    <string name="lrn_listening_again">Meer zinnen beluisteren</string>
+    <string name="lrn_listening_unavailable_title">Kon luisteroefening niet laden</string>
     <string name="set_remind_me_at">Herinner me om %1$s aan mijn les van 10 items.</string>
     <string name="set_translate_whatsapp_messages">Binnenkomende berichten vertalen</string>
     <string name="set_whatsapp_desc">Als iemand in een andere taal schrijft, toont AlterLingua een vertaling in het %1$s als eigen melding.</string>

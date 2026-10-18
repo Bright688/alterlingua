@@ -328,6 +328,10 @@
     <string name="lrn_reading_finished_title">Gut gelesen!</string>
     <string name="lrn_reading_again">Mehr Sätze lesen</string>
     <string name="lrn_reading_unavailable_title">Leseübung konnte nicht geladen werden</string>
+    <string name="lrn_listening_show_text">Text anzeigen</string>
+    <string name="lrn_listening_finished_title">Gut zugehört!</string>
+    <string name="lrn_listening_again">Mehr Sätze anhören</string>
+    <string name="lrn_listening_unavailable_title">Hörübung konnte nicht geladen werden</string>
     <string name="set_remind_me_at">Erinnere mich um %1$s an meine Lektion mit 10 Einträgen.</string>
     <string name="set_translate_whatsapp_messages">Eingehende Nachrichten übersetzen</string>
     <string name="set_whatsapp_desc">Wenn jemand in einer anderen Sprache schreibt, zeigt AlterLingua eine Übersetzung auf %1$s als eigene Benachrichtigung.</string>

@@ -328,6 +328,10 @@
     <string name="lrn_reading_finished_title">阅读愉快！</string>
     <string name="lrn_reading_again">阅读更多句子</string>
     <string name="lrn_reading_unavailable_title">无法加载阅读练习</string>
+    <string name="lrn_listening_show_text">显示文字</string>
+    <string name="lrn_listening_finished_title">听得真棒！</string>
+    <string name="lrn_listening_again">听更多句子</string>
+    <string name="lrn_listening_unavailable_title">无法加载听力练习</string>
     <string name="set_remind_me_at">在 %1$s 提醒我完成 10 项课程。</string>
     <string name="set_translate_whatsapp_messages">翻译收到的消息</string>
     <string name="set_whatsapp_desc">当有人用其他语言写消息时，AlterLingua 会以独立通知显示%1$s译文。</string>

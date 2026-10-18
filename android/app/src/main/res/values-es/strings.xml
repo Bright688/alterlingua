@@ -328,6 +328,10 @@
     <string name="lrn_reading_finished_title">¡Buena lectura!</string>
     <string name="lrn_reading_again">Leer más frases</string>
     <string name="lrn_reading_unavailable_title">No se pudo cargar la lectura</string>
+    <string name="lrn_listening_show_text">Mostrar texto</string>
+    <string name="lrn_listening_finished_title">¡Buena escucha!</string>
+    <string name="lrn_listening_again">Escuchar más frases</string>
+    <string name="lrn_listening_unavailable_title">No se pudo cargar la escucha</string>
     <string name="set_remind_me_at">Recordarme mi lección de 10 elementos a las %1$s.</string>
     <string name="set_translate_whatsapp_messages">Traducir mensajes entrantes</string>
     <string name="set_whatsapp_desc">Cuando alguien escribe en otro idioma, AlterLingua muestra una traducción en %1$s como su propia notificación.</string>
