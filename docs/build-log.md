@@ -3652,3 +3652,23 @@ before that session ended -- rerun, not yet confirmed at the time of writing).
 4. **Speaking**: tap it, confirm it shows the familiar pronunciation-practice card (Listen, Repeat, feedback) for
    a real sentence, and Next moves through 8 sentences before "Nice speaking!"
 5. For all three (and Reading), try a non-Français target language to confirm it isn't English/Français-only.
+
+### Manually verified (2026-10-18), on the owner's own connected phone
+
+All three confirmed live, Lesson menu → Unit 1, Français (Standard/Premium plan already active on this device):
+
+- Only **Grammar** still read "Coming soon"; Listening, Reading, Writing and Speaking were all enabled.
+- **Listening**: "1 of 8," Play prominent, sentence and translation hidden; "Show text" revealed a real pair
+  ("Ma maison est en bois." / "My house is made of wood.") fetched live from the deployed backend.
+- **Writing**: a real curriculum word and its meaning appeared ("sérieusement" / "seriously"), "1 of 5," with a
+  working text field -- nothing graded, as designed.
+- **Speaking**: a real sentence ("Hier, j'étais heureux.") with Play/Repeat and, notably, the *existing*
+  `PronunciationGuide` already produced a real phonetic guide ("hee-uh-ruh zh'ay-teh HUH-ruh") for it without any
+  new code -- confirming the already-built pronunciation engine really did just need wiring, nothing more.
+
+Did not attempt to actually record speech for Speaking (that needs a human voice in the room, not something this
+session can produce) -- the screen, data and Listen/Repeat flow are confirmed live; **the actual Repeat ->
+speech-recognition -> feedback round trip is still only implemented, not yet manually verified**, since
+`PracticeViewModel`/`PronunciationPractice` had no screen at all before this round and this is the first time any
+of it has been reachable on a real device. The owner should try Repeat themselves on a real device to confirm the
+feedback (GOOD/CLOSE/TRY_AGAIN/NOT_HEARD) actually fires correctly.

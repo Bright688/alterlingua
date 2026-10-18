@@ -1500,3 +1500,10 @@ each). Full Android unit suite, `compileDebugKotlin`, `compileDebugAndroidTestKo
 `docs/build-log.md`'s matching entry for the full account, including a safety note about the device surfacing
 pre-existing real WhatsApp conversations during this round (disclosed to the owner at the time, not acted on
 further).
+
+**Manually verified live (2026-10-18)** on the owner's phone: Lesson menu shows only Grammar as "Coming soon";
+Listening showed a real hidden-then-revealed sentence/translation pair; Writing showed a real curriculum word
+prompt with a working text field; Speaking showed a real sentence with a working `PronunciationGuide` phonetic
+guide and the Listen/Repeat UI. **Not yet verified**: the actual Repeat → speech-recognition → feedback round trip
+for Speaking needs a human voice in the room, which this verification pass could not produce — implemented, not
+confirmed working end-to-end.
