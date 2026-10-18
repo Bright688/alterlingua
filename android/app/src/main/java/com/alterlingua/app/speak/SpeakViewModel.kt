@@ -17,6 +17,7 @@ class SpeakViewModel(create: (CoroutineScope) -> SpokenTranslationFlow) : ViewMo
 
     fun chooseTarget(language: Language) = flow.chooseTarget(language)
     fun start() = flow.start()
+    fun sendTyped(text: String) = flow.sendTyped(text)
     fun stop() = flow.stop()
     fun permissionAnswered(granted: Boolean) = flow.permissionAnswered(granted)
     fun retry() = flow.retry()

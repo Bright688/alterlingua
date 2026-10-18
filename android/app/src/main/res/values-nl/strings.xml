@@ -64,6 +64,7 @@
     <string name="voice_insert">Als tekst invoegen</string>
     <string name="voice_insert_as_voice">Als spraakbericht invoegen</string>
     <string name="voice_edit">Bewerken</string>
+    <string name="voice_translate_failed">Vertalen is mislukt. Tik op Vertalen om het opnieuw te proberen.</string>
     <string name="voice_listen">Beluisteren</string>
     <string name="voice_stop_listening">Stop</string>
     <string name="voice_record_again">Opnieuw opnemen</string>
@@ -493,6 +494,8 @@
     <string name="vm_intro_lang">Spreek in het %1$s. AlterLingua vertaalt het en spreekt het uit in de taal die je kiest. Je luistert eerst en deelt het daarna.</string>
     <string name="vm_intro_own">Spreek in je eigen taal. AlterLingua vertaalt het en spreekt het uit in de taal die je kiest. Je luistert eerst en deelt het daarna.</string>
     <string name="vm_record">Opnemen</string>
+    <string name="vm_type_instead">Typ in plaats daarvan</string>
+    <string name="vm_type_placeholder">Typ wat je wilt zeggen…</string>
     <string name="vm_alterlingua_needs_the_microphone_to">AlterLingua heeft de microfoon nodig om je bericht op te nemen. De opname wordt verwijderd zodra ze is vertaald.</string>
     <string name="vm_recording">Opnemen… %1$d s</string>
     <string name="vm_working">Vertalen naar het %1$s en de stem maken…</string>

@@ -8,6 +8,10 @@ import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.TranslationInteraction
 import com.alterlingua.app.share.Speaker
+import com.alterlingua.app.translation.TranslationApi
+import com.alterlingua.app.translation.TranslationFailure
+import com.alterlingua.app.translation.TranslationRequest
+import com.alterlingua.app.translation.TranslationResult
 import com.alterlingua.app.translation.VoiceApi
 import com.alterlingua.app.translation.VoiceFailure
 import com.alterlingua.app.translation.VoiceResult
@@ -101,6 +105,8 @@ private data class PendingSpeech(val sourceCode: String, val transcript: String,
  *   screen is destroyed; old leftovers are swept when the screen opens.
  * - Transcript and translation are held in memory only, never logged or saved. Only when the user shares does the translated
  *   text go to the learning engine (as with the keyboard microphone).
+ * - Typing instead of speaking (CLAUDE.md 23) skips the recording and transcription step only: the typed text still goes
+ *   through the same text-translate backend, the same on-device speech, and the same Result/Listen/Share screen.
  */
 class SpokenTranslationFlow(
     private val scope: CoroutineScope,
@@ -109,6 +115,8 @@ class SpokenTranslationFlow(
     private val spokenFiles: SpokenAudioFiles,
     private val player: VoicePlayer,
     private val api: VoiceApi,
+    /** Translates typed text (sendTyped); the recorded path keeps using [api], which transcribes and translates together. */
+    private val translationApi: TranslationApi,
     private val speaker: Speaker,
     private val languages: suspend () -> SpokenLanguages,
     private val hasPermission: () -> Boolean,
@@ -121,6 +129,8 @@ class SpokenTranslationFlow(
 
     private var recording: File? = null
     private var pending: PendingSpeech? = null
+    /** The last typed text sent, kept only so Retry can resend it if the translate step itself failed. */
+    private var lastTyped: String? = null
     private var ticker: Job? = null
     private var request: Job? = null
     private var peak = 0f
@@ -207,8 +217,38 @@ class SpokenTranslationFlow(
             request = scope.launch { speakLocally(stillPending) }
             return
         }
-        val file = recording ?: return
-        send(file)
+        val file = recording
+        if (file != null) return send(file)
+        val text = lastTyped ?: return
+        sendTyped(text)
+    }
+
+    /** Type instead of speaking: the typed text is translated and then spoken on the device, same as a recording. */
+    fun sendTyped(text: String) {
+        if (state.value.phase is SpeakPhase.Recording || state.value.phase is SpeakPhase.Working) return
+        if (text.isBlank()) return
+        discardEverything()
+        lastTyped = text
+        val target = state.value.target ?: return
+        state.value = state.value.copy(phase = SpeakPhase.Working)
+        request = scope.launch {
+            val source = state.value.spoken?.code ?: "auto"
+            val result = try {
+                withTimeout(requestTimeoutMillis) { translationApi.translate(TranslationRequest(text = text, target = target.code, source = source)) }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: TimeoutCancellationException) {
+                TranslationResult.Failure(TranslationFailure.TIMEOUT)
+            }
+            when (result) {
+                is TranslationResult.Failure -> {
+                    val failure = result.failure.toVoiceFailure()
+                    state.value = state.value.copy(phase = SpeakPhase.Problem(failure, failure.canRetry))
+                }
+                is TranslationResult.Success ->
+                    speakLocally(PendingSpeech(result.translation.sourceLanguage, text, target, result.translation.text))
+            }
+        }
     }
 
     private fun send(file: File) {
@@ -303,12 +343,25 @@ class SpokenTranslationFlow(
         player.stop()
         deleteRecording()
         pending = null
+        lastTyped = null
         (state.value.phase as? SpeakPhase.Result)?.let { spokenFiles.delete(it.value.audioFile) }
     }
 
     private fun deleteRecording() {
         recording?.let { recordings.delete(it) }
         recording = null
+    }
+
+    /** Maps the text-translate backend's failures onto the same [VoiceFailure] vocabulary the recorded path already
+     * shows messages for (CLAUDE.md: one language-aware service, not separate behaviour per input path). */
+    private fun TranslationFailure.toVoiceFailure(): VoiceFailure = when (this) {
+        TranslationFailure.OFFLINE -> VoiceFailure.OFFLINE
+        TranslationFailure.BACKEND_UNAVAILABLE -> VoiceFailure.BACKEND_UNAVAILABLE
+        TranslationFailure.TIMEOUT -> VoiceFailure.TIMEOUT
+        TranslationFailure.NOT_CONFIGURED -> VoiceFailure.NOT_CONFIGURED
+        TranslationFailure.UNSUPPORTED_LANGUAGE, TranslationFailure.UNSUPPORTED_PAIR -> VoiceFailure.UNSUPPORTED_TARGET
+        TranslationFailure.SOURCE_UNDETECTED -> VoiceFailure.UNCLEAR_SPEECH
+        else -> VoiceFailure.TRANSLATION_FAILED
     }
 
     companion object {

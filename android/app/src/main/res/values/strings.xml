@@ -82,6 +82,7 @@
     <string name="voice_insert">Insert as text</string>
     <string name="voice_insert_as_voice">Insert as voice</string>
     <string name="voice_edit">Edit</string>
+    <string name="voice_translate_failed">Couldn\'t translate. Tap Translate to try again.</string>
     <string name="voice_listen">Listen</string>
     <string name="voice_stop_listening">Stop</string>
     <string name="voice_record_again">Record again</string>
@@ -523,6 +524,8 @@
     <string name="vm_intro_lang">Speak in %1$s. AlterLingua translates it and speaks it in the language you choose. You listen first, then share it.</string>
     <string name="vm_intro_own">Speak in your language. AlterLingua translates it and speaks it in the language you choose. You listen first, then share it.</string>
     <string name="vm_record">Record</string>
+    <string name="vm_type_instead">Type instead</string>
+    <string name="vm_type_placeholder">Type what you want to say…</string>
     <string name="vm_alterlingua_needs_the_microphone_to">AlterLingua needs the microphone to record your message. The recording is deleted as soon as it has been translated.</string>
     <string name="vm_recording">Recording… %1$ds</string>
     <string name="vm_working">Translating to %1$s and creating the voice…</string>

@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
@@ -18,9 +19,15 @@ import java.io.File
 class SpeakScreenTest {
     @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    private fun show(state: SpeakState, chosen: MutableList<Language> = mutableListOf(), onShare: () -> Unit = {}, onListen: () -> Unit = {}) {
+    private fun show(
+        state: SpeakState,
+        chosen: MutableList<Language> = mutableListOf(),
+        onShare: () -> Unit = {},
+        onListen: () -> Unit = {},
+        onType: (String) -> Unit = {},
+    ) {
         composeTestRule.setContent {
-            AlterLinguaTheme { SpeakScreen(state, { chosen += it }, {}, {}, {}, {}, onListen, onShare, {}, {}) }
+            AlterLinguaTheme { SpeakScreen(state, { chosen += it }, {}, {}, onType, {}, {}, onListen, onShare, {}, {}) }
         }
     }
 
@@ -49,5 +56,14 @@ class SpeakScreenTest {
         show(SpeakState(Languages.English, Languages.Spanish, SpeakPhase.Recording(2_000, 0.3f)))
         composeTestRule.onNodeWithTag("speak_target_fr").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("speak_stop").assertIsDisplayed()
+    }
+
+    @Test fun idle_typeInsteadRevealsAFieldThatSendsTheTypedText() {
+        var typed: String? = null
+        show(SpeakState(Languages.English, Languages.Spanish), onType = { typed = it })
+        composeTestRule.onNodeWithTag("speak_type_instead").performClick()
+        composeTestRule.onNodeWithTag("speak_type_field").performTextInput("Are you coming tomorrow?")
+        composeTestRule.onNodeWithTag("speak_type_send").performClick()
+        assertEquals("Are you coming tomorrow?", typed)
     }
 }

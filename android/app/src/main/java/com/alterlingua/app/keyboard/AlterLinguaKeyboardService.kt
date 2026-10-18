@@ -86,6 +86,7 @@ class AlterLinguaKeyboardService : InputMethodService() {
             recorder = MediaRecorderVoiceRecorder(this),
             player = MediaPlayerVoicePlayer(),
             api = (application as AlterLinguaApplication).voiceApi,
+            translationApi = (application as AlterLinguaApplication).translationApi,
             files = VoiceFiles.forContext(this),
             hasPermission = { ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED },
             traits = { controller.editorTraits },
@@ -491,6 +492,8 @@ class AlterLinguaKeyboardService : InputMethodService() {
             }
             VoiceAction.INSERT -> voice.insertTranslation()
             VoiceAction.EDIT -> voice.edit()
+            VoiceAction.CONFIRM_EDIT -> voice.confirmEdit()
+            VoiceAction.CANCEL_EDIT -> voice.cancelEdit()
             VoiceAction.LISTEN -> voice.listen()
             VoiceAction.RECORD_AGAIN -> voice.recordAgain()
             VoiceAction.RETRY -> voice.retry()

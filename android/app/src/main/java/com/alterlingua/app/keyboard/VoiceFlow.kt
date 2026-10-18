@@ -5,6 +5,10 @@ import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.TranslationInteraction
+import com.alterlingua.app.translation.TranslationApi
+import com.alterlingua.app.translation.TranslationFailure
+import com.alterlingua.app.translation.TranslationRequest
+import com.alterlingua.app.translation.TranslationResult
 import com.alterlingua.app.translation.VoiceApi
 import com.alterlingua.app.translation.VoiceFailure
 import com.alterlingua.app.translation.VoiceResult
@@ -34,7 +38,11 @@ sealed interface VoiceUiState {
 
     data class Translating(val target: Language) : VoiceUiState
 
-    /** [translation] is what will be inserted; while [editing] it is the text being edited. */
+    /**
+     * [translation] is what will be inserted. While [editing], [originalText] is the text being edited; confirming
+     * it re-translates ([translating]) and replaces [translation], or leaves [translateFailed] set so the user can
+     * try again without losing the edit.
+     */
     data class Result(
         val original: Language?,
         val originalText: String,
@@ -42,6 +50,8 @@ sealed interface VoiceUiState {
         val translation: String,
         val playing: Boolean = false,
         val editing: Boolean = false,
+        val translating: Boolean = false,
+        val translateFailed: Boolean = false,
     ) : VoiceUiState
 
     /** [heard] is the recognised text, when the words were understood but something later failed. */
@@ -63,6 +73,8 @@ class VoiceFlow(
     private val recorder: VoiceRecorder,
     private val player: VoicePlayer,
     private val api: VoiceApi,
+    /** Re-translates the original text after it is edited (CLAUDE.md section 20: edit the original, not the translation). */
+    private val translationApi: TranslationApi,
     private val files: VoiceFiles,
     private val hasPermission: () -> Boolean,
     private val traits: () -> EditorTraits,
@@ -83,12 +95,14 @@ class VoiceFlow(
     private var recordingFile: File? = null
     private var ticker: Job? = null
     private var upload: Job? = null
+    private var retranslate: Job? = null
     private var peakLevel = 0f
     private var elapsed = 0L
     private val levels = ArrayDeque<Float>()
     private val edited = StringBuilder()
+    private var originalBeforeEdit: String? = null
 
-    /** True while the user is editing the translation with the keyboard. */
+    /** True while the user is editing the original with the keyboard. */
     val isEditing: Boolean get() = (state as? VoiceUiState.Result)?.editing == true
 
     /** The microphone button, and Record again. */
@@ -221,16 +235,19 @@ class VoiceFlow(
         }
     }
 
-    /** Edit the translation with the keyboard before inserting it. */
+    /** Edit the original (what was heard) with the keyboard; confirming it re-translates before Insert returns. */
     fun edit() {
         val current = state as? VoiceUiState.Result ?: return
         player.stop()
+        retranslate?.cancel()
+        retranslate = null
+        originalBeforeEdit = current.originalText
         edited.setLength(0)
-        edited.append(current.translation)
-        set(current.copy(editing = true, playing = false))
+        edited.append(current.originalText)
+        set(current.copy(editing = true, playing = false, translating = false, translateFailed = false))
     }
 
-    /** Text typed while editing. */
+    /** Text typed while editing the original. */
     val editTarget: TextTarget = object : TextTarget {
         override fun commitText(text: String) = update { edited.append(text) }
 
@@ -248,9 +265,47 @@ class VoiceFlow(
 
         private fun update(change: () -> Unit) {
             val current = state as? VoiceUiState.Result ?: return
-            if (!current.editing) return
+            if (!current.editing || current.translating) return
             change()
-            set(current.copy(translation = edited.toString()))
+            set(current.copy(originalText = edited.toString(), translateFailed = false))
+        }
+    }
+
+    /** The editing header's close button: discards the edit, keeping whatever was last translated. */
+    fun cancelEdit() {
+        val current = state as? VoiceUiState.Result ?: return
+        if (!current.editing) return
+        retranslate?.cancel()
+        retranslate = null
+        val restored = originalBeforeEdit ?: current.originalText
+        originalBeforeEdit = null
+        set(current.copy(originalText = restored, editing = false, translating = false, translateFailed = false))
+    }
+
+    /** The editing header's primary button: translates the edited original, then shows the new translation. */
+    fun confirmEdit() {
+        val current = state as? VoiceUiState.Result ?: return
+        if (!current.editing || current.translating) return
+        val text = edited.toString().trim()
+        if (text.isBlank()) return
+        val source = current.original?.code ?: "auto"
+        set(current.copy(originalText = text, translating = true, translateFailed = false))
+        retranslate = scope.launch {
+            val result = try {
+                withTimeout(requestTimeoutMillis) {
+                    translationApi.translate(TranslationRequest(text = text, target = current.target.code, source = source))
+                }
+            } catch (_: TimeoutCancellationException) {
+                TranslationResult.Failure(TranslationFailure.TIMEOUT)
+            }
+            val latest = state as? VoiceUiState.Result ?: return@launch
+            when (result) {
+                is TranslationResult.Success -> {
+                    originalBeforeEdit = null
+                    set(latest.copy(translation = result.translation.text, editing = false, translating = false))
+                }
+                is TranslationResult.Failure -> set(latest.copy(translating = false, translateFailed = true))
+            }
         }
     }
 
@@ -297,6 +352,8 @@ class VoiceFlow(
         ticker = null
         upload?.cancel()
         upload = null
+        retranslate?.cancel()
+        retranslate = null
         recorder.cancel()
         player.stop()
         discard()
@@ -308,6 +365,7 @@ class VoiceFlow(
         removeRecording()
         levels.clear()
         edited.setLength(0)
+        originalBeforeEdit = null
         elapsed = 0
         peakLevel = 0f
     }

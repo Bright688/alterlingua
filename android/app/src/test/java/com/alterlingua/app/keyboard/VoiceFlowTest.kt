@@ -6,6 +6,11 @@ import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.TranslationInteraction
+import com.alterlingua.app.translation.TranslationApi
+import com.alterlingua.app.translation.TranslationFailure
+import com.alterlingua.app.translation.TranslationRequest
+import com.alterlingua.app.translation.TranslationResult
+import com.alterlingua.app.translation.Translation
 import com.alterlingua.app.translation.VoiceApi
 import com.alterlingua.app.translation.VoiceFailure
 import com.alterlingua.app.translation.VoiceResult
@@ -79,6 +84,18 @@ private class FakeVoiceApi(var handler: suspend (Call) -> VoiceResult) : VoiceAp
     }
 }
 
+/** Re-translates an edited original (VoiceFlow.confirmEdit). By default echoes a recognisable "edited: <text>"
+ * translation so tests can tell the retranslation apart from the voice recording's own first answer. */
+private class FakeTextTranslationApi(var handler: suspend (TranslationRequest) -> TranslationResult = {
+    TranslationResult.Success(Translation("edited: ${it.text}", it.source, it.target))
+}) : TranslationApi {
+    val requests = mutableListOf<TranslationRequest>()
+    override suspend fun translate(request: TranslationRequest): TranslationResult {
+        requests += request
+        return handler(request)
+    }
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class VoiceFlowTest {
 
@@ -96,6 +113,7 @@ class VoiceFlowTest {
         val recorder: FakeRecorder,
         val player: FakePlayer,
         val api: FakeVoiceApi,
+        val translationApi: FakeTextTranslationApi,
         val files: VoiceFiles,
         val dir: File,
         val languages: Array<VoiceLanguages>,
@@ -112,6 +130,7 @@ class VoiceFlowTest {
         target: Language = Languages.Spanish,
         permission: Boolean = true,
         api: FakeVoiceApi = FakeVoiceApi { answer(it) },
+        translationApi: FakeTextTranslationApi = FakeTextTranslationApi(),
         maxRecordingMillis: Long = 60_000,
     ): Setup {
         val dir = folder.newFolder()
@@ -123,13 +142,13 @@ class VoiceFlowTest {
         val states = mutableListOf<VoiceUiState>()
         val granted = booleanArrayOf(permission)
         val flow = VoiceFlow(
-            recorder = recorder, player = player, api = api, files = files,
+            recorder = recorder, player = player, api = api, translationApi = translationApi, files = files,
             hasPermission = { granted[0] }, traits = { traits },
             languages = { languages[0] }, insert = { inserted += it },
             scope = backgroundScope, maxRecordingMillis = maxRecordingMillis,
         )
         flow.onStateChanged = { states += it }
-        return Setup(flow, recorder, player, api, files, dir, languages, inserted, states, granted)
+        return Setup(flow, recorder, player, api, translationApi, files, dir, languages, inserted, states, granted)
     }
 
     /** Records for [millis] and stops. */
@@ -184,7 +203,7 @@ class VoiceFlowTest {
         val heard = mutableListOf<TranslationInteraction>()
         val s = setup(target = Languages.Japanese)
         val flow = VoiceFlow(
-            s.recorder, s.player, s.api, s.files, { true }, { plainText }, { VoiceLanguages(Languages.English, Languages.Japanese) },
+            s.recorder, s.player, s.api, s.translationApi, s.files, { true }, { plainText }, { VoiceLanguages(Languages.English, Languages.Japanese) },
             { }, backgroundScope, learning = LearningRecorder { heard += it },
         )
         flow.start(); runCurrent(); advanceTimeBy(2_000); runCurrent(); flow.stop(); runCurrent()
@@ -197,7 +216,7 @@ class VoiceFlowTest {
         val heard = mutableListOf<TranslationInteraction>()
         val s = setup()
         val flow = VoiceFlow(
-            s.recorder, s.player, s.api, s.files, { true }, { plainText }, { VoiceLanguages(Languages.English, Languages.Spanish) },
+            s.recorder, s.player, s.api, s.translationApi, s.files, { true }, { plainText }, { VoiceLanguages(Languages.English, Languages.Spanish) },
             { }, backgroundScope, learning = LearningRecorder { heard += it },
         )
         flow.start(); runCurrent(); advanceTimeBy(2_000); runCurrent(); flow.stop(); runCurrent()
@@ -454,31 +473,78 @@ class VoiceFlowTest {
     }
 
     @Test
-    fun editingChangesWhatIsInserted() = runTest {
+    fun editingTheOriginal_retranslatesIt_andThenCanBeInserted() = runTest {
         val s = setup(target = Languages.French)
         record(s)
         s.flow.edit()
         assertTrue(s.flow.isEditing)
 
-        s.flow.editTarget.commitText(" 🙂")
-        assertEquals("Tu viens demain ? 🙂", (s.flow.state as VoiceUiState.Result).translation)
-        s.flow.editTarget.deleteBackward() // removes the whole emoji, not half of it
-        assertEquals("Tu viens demain ? ", (s.flow.state as VoiceUiState.Result).translation)
-        s.flow.editTarget.commitText("Merci")
+        s.flow.editTarget.commitText(" please")
+        assertEquals("Are you coming tomorrow? please", (s.flow.state as VoiceUiState.Result).originalText)
+        s.flow.editTarget.deleteBackward() // removes the trailing "e"
+        assertEquals("Are you coming tomorrow? pleas", (s.flow.state as VoiceUiState.Result).originalText)
+        assertEquals("Tu viens demain ?", (s.flow.state as VoiceUiState.Result).translation) // unchanged until confirmed
+
+        s.flow.confirmEdit(); runCurrent()
+        val confirmed = s.flow.state as VoiceUiState.Result
+        assertFalse(confirmed.editing)
+        assertFalse(confirmed.translating)
+        assertEquals("edited: Are you coming tomorrow? pleas", confirmed.translation)
+        assertEquals("en", s.translationApi.requests.single().source)
+        assertEquals("fr", s.translationApi.requests.single().target)
 
         s.flow.insertTranslation()
-        assertEquals(listOf("Tu viens demain ? Merci"), s.inserted)
+        assertEquals(listOf("edited: Are you coming tomorrow? pleas"), s.inserted)
     }
 
     @Test
-    fun anEmptiedTranslation_cannotBeInserted() = runTest {
+    fun anEmptiedOriginal_cannotBeRetranslated() = runTest {
         val s = setup()
         record(s)
         s.flow.edit()
-        repeat(40) { s.flow.editTarget.deleteBackward() }
-        s.flow.insertTranslation()
-        assertTrue(s.inserted.isEmpty())
-        assertTrue(s.flow.state is VoiceUiState.Result)
+        repeat(60) { s.flow.editTarget.deleteBackward() }
+        s.flow.confirmEdit(); runCurrent()
+        assertTrue(s.translationApi.requests.isEmpty())
+        assertTrue((s.flow.state as VoiceUiState.Result).editing) // still editing: nothing to translate yet
+    }
+
+    @Test
+    fun aFailedRetranslation_keepsTheEditAndCanBeRetried() = runTest {
+        var succeed = false
+        val s = setup(
+            target = Languages.French,
+            translationApi = FakeTextTranslationApi { if (succeed) TranslationResult.Success(Translation("Merci", it.source, it.target)) else TranslationResult.Failure(TranslationFailure.BACKEND_UNAVAILABLE) },
+        )
+        record(s)
+        s.flow.edit()
+        s.flow.editTarget.commitText(" merci")
+
+        s.flow.confirmEdit(); runCurrent()
+        var result = s.flow.state as VoiceUiState.Result
+        assertTrue(result.editing) // the edit is not lost
+        assertTrue(result.translateFailed)
+        assertEquals("Tu viens demain ?", result.translation) // the old translation is kept, not blanked
+
+        succeed = true
+        s.flow.confirmEdit(); runCurrent()
+        result = s.flow.state as VoiceUiState.Result
+        assertFalse(result.editing)
+        assertEquals("Merci", result.translation)
+    }
+
+    @Test
+    fun cancellingTheEdit_restoresTheOriginalAndKeepsTheOldTranslation() = runTest {
+        val s = setup(target = Languages.French)
+        record(s)
+        s.flow.edit()
+        s.flow.editTarget.commitText(" please")
+
+        s.flow.cancelEdit()
+        val result = s.flow.state as VoiceUiState.Result
+        assertFalse(result.editing)
+        assertEquals("Are you coming tomorrow?", result.originalText)
+        assertEquals("Tu viens demain ?", result.translation)
+        assertTrue(s.translationApi.requests.isEmpty())
     }
 
     @Test

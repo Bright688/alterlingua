@@ -64,6 +64,7 @@
     <string name="voice_insert">Insertar como texto</string>
     <string name="voice_insert_as_voice">Insertar como voz</string>
     <string name="voice_edit">Editar</string>
+    <string name="voice_translate_failed">No se pudo traducir. Toca Traducir para volver a intentarlo.</string>
     <string name="voice_listen">Escuchar</string>
     <string name="voice_stop_listening">Detener</string>
     <string name="voice_record_again">Grabar de nuevo</string>
@@ -493,6 +494,8 @@
     <string name="vm_intro_lang">Habla en %1$s. AlterLingua lo traduce y lo dice en el idioma que elijas. Primero lo escuchas y luego lo compartes.</string>
     <string name="vm_intro_own">Habla en tu idioma. AlterLingua lo traduce y lo dice en el idioma que elijas. Primero lo escuchas y luego lo compartes.</string>
     <string name="vm_record">Grabar</string>
+    <string name="vm_type_instead">Escribir en su lugar</string>
+    <string name="vm_type_placeholder">Escribe lo que quieres decir…</string>
     <string name="vm_alterlingua_needs_the_microphone_to">AlterLingua necesita el micrófono para grabar tu mensaje. La grabación se elimina en cuanto se traduce.</string>
     <string name="vm_recording">Grabando… %1$d s</string>
     <string name="vm_working">Traduciendo a %1$s y creando la voz…</string>

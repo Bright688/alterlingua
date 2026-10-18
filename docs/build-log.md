@@ -3708,3 +3708,106 @@ Full Android unit suite, `compileDebugKotlin`, `compileDebugAndroidTestKotlin` a
 2. Tap a word: its meaning appears, and a real (enabled) "Play" button now sits where "Listen (coming soon)" used
    to be.
 3. Tap it: the phone speaks the word in the language you're learning; tap again to stop.
+
+## 2026-10-18 (follow-up 2) — Two owner requests: edit the original (not the translation) in the keyboard's voice
+message, and a typed alternative to the Home voice message
+
+**Goal, request 1:** The owner sent screenshots of the keyboard's voice-message review screen (Original / Translated
+/ Insert as text / Insert as voice / Edit / Listen / Record again) and said: *"i should be able to edit this
+original text and then it translate and i insert as a voice."* Checked the code first rather than assuming --
+`VoiceFlow.edit()` existed and worked, but it edited the **translation** directly (seeded from `current.translation`,
+written back into `current.copy(translation = ...)`); there was no way to edit the original and have it re-translate,
+and "Insert as voice" was not even reachable while editing (the editing header only showed a single Insert button).
+
+**What was built (request 1):**
+- `VoiceFlow.kt`: `edit()` now seeds its buffer from `originalText`, not `translation`. `VoiceUiState.Result` gained
+  `translating` and `translateFailed` flags. A new `confirmEdit()` sends the edited original through the existing
+  `TranslationApi` (the same backend the keyboard toolbar's own Translate uses -- CLAUDE.md 23, one language-aware
+  service, not a second one for this screen) and replaces `translation` with the answer; editing ends only on
+  success, so a failure keeps the edit on screen with `translateFailed = true` and the same text, never losing it.
+  A new `cancelEdit()` (the header's close button) discards the edit and restores the pre-edit original and
+  translation untouched. `VoiceFlow` now takes a `TranslationApi` alongside its existing `VoiceApi`.
+- `VoicePanel.kt`: the editing header now shows the **original** (with the cursor), a "Translate" button (reusing
+  the existing `toolbar_translate` string rather than inventing a near-duplicate one) that is replaced by a spinner
+  while `translating`, and the close button now fires `CANCEL_EDIT` instead of the panel-wide `CANCEL` (closing the
+  edit no longer throws away the whole recording). Two new `VoiceAction`s (`CONFIRM_EDIT`, `CANCEL_EDIT`) wired in
+  `AlterLinguaKeyboardService.onVoiceAction`.
+- New string `voice_translate_failed` in all 8 locales ("Couldn't translate. Tap Translate to try again.").
+- Only "Insert as text" / "Insert as voice" change meaning here: they now always act on a translation that has
+  actually been through the edited original, never a stale one left over from before an edit.
+
+**Goal, request 2:** Mid-reply to the above, the owner asked for a second thing: *"in the app itself in the home
+after the record a voice add the one you insert a text and it translate and convert to a voice and then we can
+share it"* -- a typed alternative to the Home screen's "Record a voice message" flow (`SpeakScreen`/
+`SpokenTranslationFlow`, CLAUDE.md milestone 22), for when speaking isn't convenient: type the message, it is
+translated and spoken on the device exactly like a recording, then Listen/Share work the same way.
+
+**What was built (request 2):**
+- `SpokenTranslationFlow.kt`: new `sendTyped(text)`. Skips recording and transcription only -- it still calls the
+  same text-translate backend (`TranslationApi`, not the audio one) and the same on-device `Speaker` synthesis, and
+  lands on the exact same `SpeakPhase.Result` (Listen, Share) as a recording would. A failed translate maps onto
+  the same `VoiceFailure` vocabulary the recorded path already has messages for (`TranslationFailure.toVoiceFailure()`),
+  so `SpeakScreen`'s existing Problem UI needs no changes. Retry resends the same typed text if the translate step
+  itself failed, or (if synthesis failed) reuses the existing `pending`-based retry with no network call, same as
+  the recorded path.
+- `SpeakScreen.kt`: the Idle state now shows "Type instead" under the Record button; tapping it reveals a text
+  field and a "Translate" button (the existing `toolbar_translate` string again) in place of the link.
+- `SpeakViewModel`/`SpeakActivity`/`AppViewModelProvider`: plumbing only (`sendTyped`, `translationApi`).
+- New strings `vm_type_instead` / `vm_type_placeholder`, all 8 locales.
+
+**Decisions and why:**
+- Neither feature got a new backend endpoint or a second translation path -- both reuse the exact `TranslationApi`
+  the keyboard toolbar's own Translate button already calls, per CLAUDE.md 6.11/6.12 (one language-aware service).
+- The Problem-phase UI is shared between typed and recorded failures rather than branching by origin, since the
+  message the user needs ("couldn't translate", "no voice for that language") does not depend on how the text
+  arrived. The one place this is a visible (accepted) simplification: after a typed-origin failure, the Problem
+  screen's "Record again" button starts a recording rather than re-showing the text field -- tapping "Try again"
+  (Retry) is the button that correctly resends the same typed text; "Record again" restarting fresh via voice
+  instead of text is a minor, deliberately-accepted label mismatch rather than new state threaded through the
+  ViewModel just for a button label.
+
+**Problems encountered and how they were fixed:**
+- Two new `KeyboardViewTest` cases failed on the real device (not in a plain JVM unit test) the first time: both
+  clicked/asserted on a button labelled "Translate" and found the keyboard's own **main toolbar** Translate button
+  instead of the voice panel's editing header one -- the two sit in the same overlapping `FrameLayout` and the
+  main toolbar's button is only hidden via `visibility = GONE` on its *container*, which does not change the
+  child button's own `.visibility` property. Fixed by adding an `isActuallyVisible()` helper that walks the parent
+  chain, and using it instead of a raw `.visibility` check.
+
+**Verification performed:**
+- **Implemented and unit-tested**: `VoiceFlowTest` gained 5 new tests (retranslate on confirm, blank-original guard,
+  failed retranslation keeps the edit and can be retried, cancelling an edit restores both original and
+  translation) and the old "edit the translation directly" test was replaced to match the new behaviour.
+  `SpokenTranslationFlowTest` gained 5 new tests for `sendTyped` (happy path, blank guard, failed-translate retry,
+  no-voice-for-target is not retryable, ignored while recording/working). Full Android unit suite,
+  `compileDebugKotlin`, `compileDebugUnitTestKotlin`, `compileDebugAndroidTestKotlin`, and `lintDebug` all clean.
+- **Manually verified on the owner's real device** (after fixing the visibility bug above): `KeyboardViewTest` and
+  `SpeakScreenTest`, including the two new editing-header tests and the new "type instead" test, all pass when run
+  as real instrumentation on the connected Infinix X6728B (not just the emulated/robolectric-style JVM suite).
+  Also walked the real Home → "Record a voice message" → "Type instead" flow by hand: typed a message, watched it
+  reach "Translating to Français and creating the voice…", and confirmed real learning signals appeared on Home
+  afterwards (a new Personal Language Map entry and a generated micro-lesson) -- the full communicate-then-learn
+  loop (CLAUDE.md section 5) firing for a typed message, not just a recorded one. This created a small amount of
+  real (if scratch/gibberish) local learning data on the device from manual typing during the walkthrough; nothing
+  was sent anywhere (Share was never tapped), but the owner may want to clear it via Settings → Erase learning data.
+- **Not yet manually verified**: the keyboard voice-message edit fix (request 1) needs a real recording to test end
+  to end -- this session cannot produce a human voice. Automated coverage (unit + real-device instrumentation) is
+  the full extent of what could be checked here; the owner should try it by hand: speak into the AlterLingua
+  microphone, tap Edit, change the English, tap Translate, confirm the French updates, then try Insert as voice.
+
+### Manual test for the owner
+
+**Keyboard voice-message edit:**
+1. Open WhatsApp (or any text field) with the AlterLingua keyboard active, tap the microphone, speak a sentence.
+2. On the result, tap Edit: the **English** (original) now shows, editable, with a "Translate" button.
+3. Change the English text, tap Translate: a brief spinner, then the French translation updates to match.
+4. "Insert as voice" and "Insert as text" both now use the updated translation.
+5. Try editing again and tapping the header's close (✕) instead of Translate: the edit is discarded, the previous
+   translation is unchanged.
+
+**Home typed voice message:**
+1. Home tab → "Record a voice message".
+2. Tap "Type instead" (new, under Record): a text field and a "Translate" button appear.
+3. Type a message, tap Translate: "Translating to <language> and creating the voice…", then the usual You
+   said/translation/Listen/Share result.
+4. Listen and Share work exactly as they do after a recording.

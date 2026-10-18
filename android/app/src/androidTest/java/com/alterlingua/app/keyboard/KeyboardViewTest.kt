@@ -61,6 +61,15 @@ class KeyboardViewTest {
         if (root is ViewGroup) for (i in 0 until root.childCount) addAll(toolbarButtons(root.getChildAt(i)))
     }
 
+    /** `View.visibility` is a view's own flag; a GONE container still leaves its children individually VISIBLE. This
+     * walks up the parent chain, since several panels (voice, captured note, the plain toolbar) overlap in the same
+     * FrameLayout and only one is meant to be shown at a time. */
+    private fun View.isActuallyVisible(): Boolean {
+        if (visibility != View.VISIBLE) return false
+        val parent = parent as? View ?: return true
+        return parent.isActuallyVisible()
+    }
+
     private fun AlterLinguaKeyboardView.chip(label: String) = toolbarButtons(this).firstOrNull { it.label == label }
 
     @Test
@@ -214,6 +223,34 @@ class KeyboardViewTest {
             actions,
         )
         assertTrue("Share voice is not offered yet", toolbarButtons(view).none { it.label?.contains("Share", ignoreCase = true) == true })
+    }
+
+    @Test
+    fun editingShowsTheOriginal_andConfirmingOrClosingFiresTheRightAction() = onMain {
+        val view = AlterLinguaKeyboardView(context)
+        val actions = mutableListOf<ToolbarAction>()
+        view.onToolbarAction = { actions += it }
+        view.renderVoice(
+            VoiceUiState.Result(Languages.English, "Are you coming tomorrow?", Languages.French, "Tu viens demain ?", editing = true),
+        )
+        assertTrue(texts(view).any { it.startsWith("Are you coming tomorrow?") }) // the original, not the translation
+        // The main toolbar has its own (hidden) "Translate" button in the same view tree while the voice panel
+        // is showing; only the visible one is the editing header's.
+        toolbarButtons(view).first { it.label == "Translate" && it.isActuallyVisible() }.performClick()
+        toolbarButtons(view).first { it.contentDescription == "Close" }.performClick()
+        assertEquals(
+            listOf(VoiceAction.CONFIRM_EDIT, VoiceAction.CANCEL_EDIT).map { ToolbarAction.Voice(it) },
+            actions,
+        )
+    }
+
+    @Test
+    fun editingWhileTranslating_hasNoTranslateButton_justAProgressIndicator() = onMain {
+        val view = AlterLinguaKeyboardView(context)
+        view.renderVoice(
+            VoiceUiState.Result(Languages.English, "Are you coming tomorrow?", Languages.French, "Tu viens demain ?", editing = true, translating = true),
+        )
+        assertTrue(toolbarButtons(view).none { it.label == "Translate" && it.isActuallyVisible() })
     }
 
     @Test

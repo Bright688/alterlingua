@@ -37,6 +37,7 @@ class SpeakActivity : LocalizedActivity() {
                     onChooseTarget = viewModel::chooseTarget,
                     onRecord = viewModel::start,
                     onStop = viewModel::stop,
+                    onType = viewModel::sendTyped,
                     onAllowMicrophone = { permission.launch(Manifest.permission.RECORD_AUDIO) },
                     onRetry = viewModel::retry,
                     onListen = viewModel::listen,

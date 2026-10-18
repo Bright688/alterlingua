@@ -95,6 +95,7 @@ object AppViewModelProvider {
                     spokenFiles = SpokenAudioFiles(File(app.cacheDir, "spoken_audio")),
                     player = MediaPlayerVoicePlayer(),
                     api = app.voiceApi,
+                    translationApi = app.translationApi,
                     speaker = AndroidSpeaker(app),
                     languages = { app.userSettings.settings.first().let { SpokenLanguages(it.nativeLanguage, it.targetLanguage) } },
                     hasPermission = { ContextCompat.checkSelfPermission(app, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED },

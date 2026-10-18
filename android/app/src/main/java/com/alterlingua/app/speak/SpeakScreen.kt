@@ -18,10 +18,15 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -43,6 +48,7 @@ fun SpeakScreen(
     onChooseTarget: (Language) -> Unit,
     onRecord: () -> Unit,
     onStop: () -> Unit,
+    onType: (String) -> Unit,
     onAllowMicrophone: () -> Unit,
     onRetry: () -> Unit,
     onListen: () -> Unit,
@@ -81,7 +87,31 @@ fun SpeakScreen(
             }
 
             when (phase) {
-                SpeakPhase.Idle -> Button(onClick = onRecord, enabled = state.target != null, modifier = Modifier.fillMaxWidth().testTag("speak_record")) { Text(stringResource(R.string.vm_record)) }
+                SpeakPhase.Idle -> {
+                    var typing by rememberSaveable { mutableStateOf(false) }
+                    var typed by rememberSaveable { mutableStateOf("") }
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onRecord, enabled = state.target != null, modifier = Modifier.fillMaxWidth().testTag("speak_record")) { Text(stringResource(R.string.vm_record)) }
+                        if (!typing) {
+                            TextButton(onClick = { typing = true }, modifier = Modifier.fillMaxWidth().testTag("speak_type_instead")) {
+                                Text(stringResource(R.string.vm_type_instead))
+                            }
+                        } else {
+                            OutlinedTextField(
+                                value = typed,
+                                onValueChange = { typed = it },
+                                placeholder = { Text(stringResource(R.string.vm_type_placeholder)) },
+                                enabled = state.target != null,
+                                modifier = Modifier.fillMaxWidth().testTag("speak_type_field"),
+                            )
+                            Button(
+                                onClick = { onType(typed); typed = "" },
+                                enabled = state.target != null && typed.isNotBlank(),
+                                modifier = Modifier.fillMaxWidth().testTag("speak_type_send"),
+                            ) { Text(stringResource(R.string.toolbar_translate)) }
+                        }
+                    }
+                }
                 SpeakPhase.NeedsPermission -> AlterLinguaCard {
                     Column(Modifier.testTag("speak_permission"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(stringResource(R.string.vm_alterlingua_needs_the_microphone_to), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)

@@ -8,6 +8,11 @@ import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.TranslationInteraction
 import com.alterlingua.app.share.Speaker
+import com.alterlingua.app.translation.Translation
+import com.alterlingua.app.translation.TranslationApi
+import com.alterlingua.app.translation.TranslationFailure
+import com.alterlingua.app.translation.TranslationRequest
+import com.alterlingua.app.translation.TranslationResult
 import com.alterlingua.app.translation.VoiceApi
 import com.alterlingua.app.translation.VoiceFailure
 import com.alterlingua.app.translation.VoiceResult
@@ -82,9 +87,20 @@ class SpokenTranslationFlowTest {
         override fun shutdown() = Unit
     }
 
+    /** The text-translate backend used by [SpokenTranslationFlow.sendTyped]. */
+    private class FakeTextApi : TranslationApi {
+        val requests = mutableListOf<TranslationRequest>()
+        var answer: (TranslationRequest) -> TranslationResult = { TranslationResult.Success(Translation("translation in ${it.target}", it.source, it.target)) }
+        override suspend fun translate(request: TranslationRequest): TranslationResult {
+            requests += request
+            return answer(request)
+        }
+    }
+
     private val recorder = FakeRecorder()
     private val player = FakePlayer()
     private val api = FakeApi()
+    private val textApi = FakeTextApi()
     private val speaker = FakeSpeaker()
     private val heard = mutableListOf<TranslationInteraction>()
     private var permission = true
@@ -96,7 +112,7 @@ class SpokenTranslationFlowTest {
 
     private fun TestScope.flow() = SpokenTranslationFlow(
         scope = backgroundScope, recorder = recorder, recordings = VoiceFiles(recordingsDir), spokenFiles = SpokenAudioFiles(spokenDir) { now },
-        player = player, api = api, speaker = speaker, languages = { SpokenLanguages(spoken, target) }, hasPermission = { permission }, learning = { heard += it },
+        player = player, api = api, translationApi = textApi, speaker = speaker, languages = { SpokenLanguages(spoken, target) }, hasPermission = { permission }, learning = { heard += it },
     ).also { it.open(); runCurrent() }
 
     private fun TestScope.record(f: SpokenTranslationFlow, millis: Long = 1_500) {
@@ -314,5 +330,57 @@ class SpokenTranslationFlowTest {
         recorder.startOk = false
         val f = flow(); f.start()
         assertEquals(VoiceFailure.MIC_UNAVAILABLE, (f.phase() as SpeakPhase.Problem).failure)
+    }
+
+    // ---- typing instead of speaking ----
+
+    @Test fun typedTextIsTranslatedAndSpoken_sameAsARecording() = runTest {
+        val f = flow()
+        f.sendTyped("Are you coming tomorrow?"); runCurrent()
+        val r = f.result()
+        assertEquals("Are you coming tomorrow?", r.transcript)
+        assertEquals("translation in es", r.translation)
+        assertEquals(Languages.Spanish, r.target)
+        assertEquals(listOf("en", "es"), textApi.requests.single().let { listOf(it.source, it.target) })
+        assertEquals(listOf("translation in es" to "es"), speaker.synthesized)
+        assertTrue("no recording is ever made for typed text", recordings() == 0)
+    }
+
+    @Test fun blankTypedText_doesNothing() = runTest {
+        val f = flow()
+        f.sendTyped("   ")
+        assertEquals(SpeakPhase.Idle, f.phase())
+        assertTrue(textApi.requests.isEmpty())
+    }
+
+    @Test fun aFailedTypedTranslation_isAProblem_andRetrySendsTheSameTextAgain() = runTest {
+        var succeed = false
+        textApi.answer = { if (succeed) TranslationResult.Success(Translation("hola", it.source, it.target)) else TranslationResult.Failure(TranslationFailure.BACKEND_UNAVAILABLE) }
+        val f = flow()
+        f.sendTyped("hello"); runCurrent()
+        val problem = f.phase() as SpeakPhase.Problem
+        assertEquals(VoiceFailure.BACKEND_UNAVAILABLE, problem.failure)
+        assertTrue(problem.canRetry)
+
+        succeed = true
+        f.retry(); runCurrent()
+        assertEquals("hola", f.result().translation)
+        assertEquals(listOf("hello", "hello"), textApi.requests.map { it.text })
+    }
+
+    @Test fun aTypedTranslationWithNoVoiceOnThisPhone_isNotRetryable() = runTest {
+        speaker.voice = false
+        val f = flow()
+        f.sendTyped("hello"); runCurrent()
+        val problem = f.phase() as SpeakPhase.Problem
+        assertEquals(VoiceFailure.NO_VOICE_FOR_TARGET, problem.failure)
+        assertFalse(problem.canRetry)
+    }
+
+    @Test fun typingWhileRecordingOrWorking_isIgnored() = runTest {
+        val f = flow()
+        f.start()
+        f.sendTyped("hello")
+        assertTrue(f.phase() is SpeakPhase.Recording)
     }
 }

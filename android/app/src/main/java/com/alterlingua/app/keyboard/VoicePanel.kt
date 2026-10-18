@@ -20,6 +20,12 @@ import java.util.Locale
 enum class VoiceAction {
     STOP, CANCEL, ALLOW_MICROPHONE, INSERT, EDIT, LISTEN, RECORD_AGAIN, RETRY, INSERT_HEARD,
 
+    /** The editing header's primary button: re-translates the edited original. */
+    CONFIRM_EDIT,
+
+    /** The editing header's close button: discards the edit and returns to the last translation. */
+    CANCEL_EDIT,
+
     /** "Voice" on the recorded-and-translated result: on-device text-to-speech, then Android's own Share sheet,
      * exactly like the keyboard toolbar's own Translate-then-Voice flow (same quota, same [TranslatedVoiceFlow]). */
     SPEAK_TRANSLATION,
@@ -205,17 +211,34 @@ class VoicePanel(
         }
     }
 
-    /** Editing: the keys are visible, so only the header shows the text being edited, with the Insert button. */
+    /**
+     * Editing: the keys are visible, so only the header shows the original being edited (CLAUDE.md section 20:
+     * edit the original, not the translation). Confirming re-translates it; the keys keep typing the original the
+     * whole time, including while the previous attempt is shown as failed.
+     */
     private fun renderEditing(state: VoiceUiState.Result) {
         wantsTallHeader = true
         coversKeys = false
-        val preview = text(state.translation + "▏", 15f, bold = true, color = colors.text, maxLines = 3)
+        val textColor = if (state.translateFailed) ERROR_RED else colors.text
+        val cursor = if (state.translating) "" else "▏"
+        val preview = text(state.originalText + cursor, 15f, bold = true, color = textColor, maxLines = 3)
+        if (state.translateFailed) preview.contentDescription = context.getString(R.string.voice_translate_failed)
         header.addView(preview, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        if (state.translating) {
+            header.addView(
+                ProgressBar(context).apply { isIndeterminate = true; indeterminateTintList = ColorStateList.valueOf(colors.actionKey) },
+                LinearLayout.LayoutParams((24 * density).toInt(), (24 * density).toInt()).apply { leftMargin = (8 * density).toInt() },
+            )
+        } else {
+            header.addView(
+                button(context.getString(R.string.toolbar_translate), ToolbarButtonStyle.PRIMARY, VoiceAction.CONFIRM_EDIT),
+                LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (34 * density).toInt()).apply { leftMargin = (6 * density).toInt() },
+            )
+        }
         header.addView(
-            button(context.getString(R.string.voice_insert), ToolbarButtonStyle.PRIMARY, VoiceAction.INSERT),
+            closeButton(VoiceAction.CANCEL_EDIT),
             LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (34 * density).toInt()).apply { leftMargin = (6 * density).toInt() },
         )
-        header.addView(closeButton(), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (34 * density).toInt()).apply { leftMargin = (6 * density).toInt() })
     }
 
     private fun renderFailed(state: VoiceUiState.Failed) {
@@ -240,7 +263,7 @@ class VoicePanel(
         if (closable) header.addView(closeButton(), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (34 * density).toInt()))
     }
 
-    private fun closeButton() = ToolbarButtonView(context, ToolbarButtonStyle.TONAL, colors) { onAction(VoiceAction.CANCEL) }.apply {
+    private fun closeButton(action: VoiceAction = VoiceAction.CANCEL) = ToolbarButtonView(context, ToolbarButtonStyle.TONAL, colors) { onAction(action) }.apply {
         leadingIcon = ContextCompat.getDrawable(context, R.drawable.ic_tool_close)
         contentDescription = context.getString(R.string.voice_close)
     }
