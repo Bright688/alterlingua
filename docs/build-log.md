@@ -3473,3 +3473,32 @@ animated to the end), with no "Couldn't process audio" error at any point. The b
 1. Translate a message (or use the microphone), tap Voice/Insert as voice, pick the chat in WhatsApp, press Send.
 2. Open the sent voice message and tap Play.
 3. Confirm it plays the spoken translation instead of showing "Couldn't process audio." (Confirmed 2026-10-17.)
+
+## 2026-10-18 — Today's micro-lesson redesigned: it looked scattered
+
+**The owner's own words, with a screenshot:** "look at the way its scattered and not well designed. some are even
+stacking on top of another. it doesnt look presentable." The Home tab's "Today's micro-lesson" card showed its ten
+items as a wrapping `FlowRow` of pill-shaped chips, each packing the French term and its English meaning onto one
+line inside a single `Surface`. Short items (`pas de problème (no problem)`) looked fine, but longer ones (`à moi
+sans me facturer autant (to me without charging me that much)`) had no width cap, so the term+meaning text wrapped
+to two or three lines *inside the same pill* once the row ran out of horizontal space -- producing wildly
+different pill shapes and sizes sitting next to each other in the flow, exactly the "scattered"/"stacking" look in
+the screenshot.
+
+**Fixed**: replaced the `FlowRow` of pills with a plain vertical list -- the same divided-list pattern already
+used for "useful words and phrases" on the shared-voice-note screen (`SharedVoiceScreen.kt`): each item is its own
+full-width row (term bold on its own line, meaning muted beneath it), separated by a thin `HorizontalDivider`
+(`MaterialTheme.extendedColors.cardBorder`, the same divider color/style used throughout the app). Every row is
+now a consistent shape regardless of how long its term or meaning is -- a short item is just a shorter row, not a
+differently-shaped pill crowding its neighbours. Nothing was truncated: a long phrase's full text is still shown,
+it simply wraps within its own row without affecting any other row's shape.
+
+**Status:** `compileDebugKotlin`, `testDebugUnitTest` and `compileDebugAndroidTestKotlin` all clean -- no existing
+test depended on the removed chip structure (`AppNavigationTest` only checks the summary text's own tag, which is
+unchanged). Not yet visually confirmed on the device -- it disconnected again before `installDebug` could run.
+
+### Manual test for the owner
+
+1. Open Home with a populated daily lesson (ten items).
+2. Confirm it now reads as a clean, consistent vertical list -- each item the same shape, divided by a thin line,
+   with no pill wrapping onto multiple lines or crowding its neighbours.
