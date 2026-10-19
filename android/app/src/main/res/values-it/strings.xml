@@ -504,6 +504,12 @@
     <string name="vm_you_said">Hai detto</string>
     <string name="vm_sharing_opens_android_s_share">Condividere apre il pannello di condivisione di Android. Scegli la chat, poi premi tu Invia in quell’app.</string>
     <string name="vm_audio_is_sent_securely_to">L’audio viene inviato in modo sicuro per essere tradotto e letto, ed eliminato dopo l’elaborazione. Non viene inviato nulla a nessuno finché non lo condividi e premi tu Invia.</string>
+    <string name="speak_history">Cronologia</string>
+    <string name="sph_title">Cronologia messaggi vocali</string>
+    <string name="sph_empty">Nessun messaggio vocale ancora. I messaggi che traduci e leggi appariranno qui.</string>
+    <string name="sph_delete">Elimina</string>
+    <string name="sph_clear_all">Cancella cronologia</string>
+    <string name="sph_clear_all_body">Questo rimuove tutti i messaggi vocali salvati da questo elenco. Non può essere annullato.</string>
     <string name="pv_no_audio_title">Niente da tradurre</string>
     <string name="pv_no_audio_msg">Nessun audio è arrivato con la condivisione. Condividi una nota vocale da WhatsApp e scegli AlterLingua.</string>
     <string name="pv_not_content_title">Impossibile aprire questo elemento</string>

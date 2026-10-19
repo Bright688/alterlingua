@@ -81,6 +81,12 @@ class AlterLinguaApplication : Application() {
     /** Builds the Progress report from the real map and daily counts. */
     val progressService: ProgressService by lazy { ProgressService(languageMap, progressLog) }
 
+    /** Past translated voice messages (recorded or typed), in their own private database. See [SpokenHistoryEntry]'s
+     * privacy note: kept only because the owner explicitly asked to see history, not by CLAUDE.md's usual default. */
+    val spokenHistoryStore: com.alterlingua.app.speak.SpokenHistoryStore by lazy {
+        com.alterlingua.app.speak.RoomSpokenHistoryStore(com.alterlingua.app.speak.SpokenHistoryDatabase.create(this))
+    }
+
     /** Today's saved lesson (terms, meanings and counts only). */
     val lessonStore: DailyLessonStore by lazy { DataStoreDailyLessonStore.create(this) }
 
@@ -89,7 +95,11 @@ class AlterLinguaApplication : Application() {
 
     /** "Delete all learning data" in Settings. */
     val learningDataEraser: LearningDataEraser by lazy {
-        LearningDataEraser(languageMap, progressLog, lessonStore, temporaryAudio, forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear(); liveChatStatus.clear(); capturedNotes.clearAll() })
+        LearningDataEraser(
+            languageMap, progressLog, lessonStore, temporaryAudio,
+            forgetMessages = { incomingTranslator.clear(); liveChatTranslator.clear(); liveChatStatus.clear(); capturedNotes.clearAll() },
+            spokenHistory = spokenHistoryStore,
+        )
     }
 
     /** The chosen app language, kept up to date for code that cannot wait for a settings read (null: the phone's language). */

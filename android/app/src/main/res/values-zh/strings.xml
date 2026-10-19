@@ -504,6 +504,12 @@
     <string name="vm_you_said">您说的是</string>
     <string name="vm_sharing_opens_android_s_share">分享会打开 Android 的分享面板。请选择聊天，然后在那个应用里自己点按发送。</string>
     <string name="vm_audio_is_sent_securely_to">音频会被安全地发送以进行翻译和朗读，处理后即删除。在您分享并亲自点按发送之前，不会向任何人发送任何内容。</string>
+    <string name="speak_history">历史记录</string>
+    <string name="sph_title">语音消息历史记录</string>
+    <string name="sph_empty">还没有语音消息。你翻译并朗读的消息会显示在这里。</string>
+    <string name="sph_delete">删除</string>
+    <string name="sph_clear_all">清除历史记录</string>
+    <string name="sph_clear_all_body">这会从列表中删除所有已保存的语音消息，且无法撤销。</string>
     <string name="pv_no_audio_title">没有可翻译的内容</string>
     <string name="pv_no_audio_msg">分享中没有音频。请从 WhatsApp 分享一条语音消息并选择 AlterLingua。</string>
     <string name="pv_not_content_title">无法打开该项目</string>

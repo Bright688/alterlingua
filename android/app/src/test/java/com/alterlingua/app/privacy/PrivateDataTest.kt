@@ -12,6 +12,8 @@ import com.alterlingua.app.learning.map.InMemoryLanguageMapStore
 import com.alterlingua.app.learning.map.LanguageMapService
 import com.alterlingua.app.learning.progress.InMemoryProgressStore
 import com.alterlingua.app.learning.progress.ProgressLog
+import com.alterlingua.app.speak.InMemorySpokenHistoryStore
+import com.alterlingua.app.speak.SpokenHistoryEntry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -70,6 +72,7 @@ class PrivateDataTest {
     private val log = ProgressLog(progressStore, { now }, { java.time.ZoneOffset.UTC })
     private val map = LanguageMapService(mapStore, clock = { now }, progress = log)
     private val lessons = InMemoryDailyLessonStore()
+    private val spokenHistory = InMemorySpokenHistoryStore()
     private var forgotten = 0
 
     private suspend fun fill() {
@@ -78,12 +81,13 @@ class PrivateDataTest {
             map.recordLearningEvent(LearningEvent("e", now, InteractionKind.INCOMING_MESSAGE, language, "en", listOf(candidate)))
         }
         lessons.save(DailyLesson("2026-09-21", "fr", emptyList()))
+        spokenHistory.add(SpokenHistoryEntry(createdAtMillis = now, sourceLanguage = null, targetLanguage = com.alterlingua.app.learning.Languages.French, transcript = "hi", translation = "salut"))
     }
 
     private fun eraser(forget: suspend () -> Unit = { forgotten++ }) =
-        LearningDataEraser(map, log, lessons, TemporaryAudioFolders(cache()) { now }, forget)
+        LearningDataEraser(map, log, lessons, TemporaryAudioFolders(cache()) { now }, forget, spokenHistory)
 
-    @Test fun erasingRemovesEveryLanguagesMap_theProgressHistory_todaysLesson_andTheAudio() = runTest {
+    @Test fun erasingRemovesEveryLanguagesMap_theProgressHistory_todaysLesson_theVoiceHistory_andTheAudio() = runTest {
         fill()
         val leftover = TemporaryAudioFolders.NAMES.map { audio("x.wav", it, 0) }
         assertTrue(eraser().eraseAll())
@@ -93,6 +97,7 @@ class PrivateDataTest {
         }
         assertNull(lessons.load())
         assertTrue(leftover.none { it.exists() })
+        assertTrue(spokenHistory.recent().isEmpty())
         assertEquals(1, forgotten)
     }
 

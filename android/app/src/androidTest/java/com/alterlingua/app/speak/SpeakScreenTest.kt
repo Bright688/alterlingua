@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import com.alterlingua.app.learning.Language
 import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.ui.theme.AlterLinguaTheme
@@ -25,9 +26,10 @@ class SpeakScreenTest {
         onShare: () -> Unit = {},
         onListen: () -> Unit = {},
         onType: (String) -> Unit = {},
+        onOpenHistory: () -> Unit = {},
     ) {
         composeTestRule.setContent {
-            AlterLinguaTheme { SpeakScreen(state, { chosen += it }, {}, {}, onType, {}, {}, onListen, onShare, {}, {}) }
+            AlterLinguaTheme { SpeakScreen(state, { chosen += it }, {}, {}, onType, {}, {}, onListen, onShare, {}, {}, onOpenHistory) }
         }
     }
 
@@ -65,5 +67,31 @@ class SpeakScreenTest {
         composeTestRule.onNodeWithTag("speak_type_field").performTextInput("Are you coming tomorrow?")
         composeTestRule.onNodeWithTag("speak_type_send").performClick()
         assertEquals("Are you coming tomorrow?", typed)
+    }
+
+    @Test fun theHistoryButtonIsReported() {
+        var opened = 0
+        show(SpeakState(Languages.English, Languages.Spanish), onOpenHistory = { opened++ })
+        composeTestRule.onNodeWithTag("speak_history").performClick()
+        assertEquals(1, opened)
+    }
+
+    @Test fun result_editRevealsTheOriginal_andTranslateSendsTheEditedText() {
+        var typed: String? = null
+        val result = SpokenResult("en", "Are you coming tomorrow?", Languages.Spanish, "¿Vienes mañana?", File("x.wav"), "audio/wav")
+        show(SpeakState(Languages.English, Languages.Spanish, SpeakPhase.Result(result)), onType = { typed = it })
+        composeTestRule.onNodeWithTag("speak_edit").performClick()
+        composeTestRule.onNodeWithTag("speak_edit_field").performTextReplacement("Are you coming tomorrow morning?")
+        composeTestRule.onNodeWithTag("speak_edit_confirm").performClick()
+        assertEquals("Are you coming tomorrow morning?", typed)
+    }
+
+    @Test fun result_cancellingTheEdit_leavesTheOriginalTranscriptShown() {
+        val result = SpokenResult("en", "Are you coming tomorrow?", Languages.Spanish, "¿Vienes mañana?", File("x.wav"), "audio/wav")
+        show(SpeakState(Languages.English, Languages.Spanish, SpeakPhase.Result(result)))
+        composeTestRule.onNodeWithTag("speak_edit").performClick()
+        composeTestRule.onNodeWithTag("speak_edit_field").performTextReplacement("something else")
+        composeTestRule.onNodeWithTag("speak_edit_cancel").performClick()
+        composeTestRule.onNodeWithTag("speak_transcript").assertIsDisplayed()
     }
 }

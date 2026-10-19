@@ -504,6 +504,12 @@
     <string name="vm_you_said">Du hast gesagt</string>
     <string name="vm_sharing_opens_android_s_share">Beim Teilen öffnet sich das Android-Teilen-Menü. Wähle den Chat und tippe dann selbst in dieser App auf Senden.</string>
     <string name="vm_audio_is_sent_securely_to">Das Audio wird sicher zum Übersetzen und Sprechen gesendet und nach der Verarbeitung gelöscht. An niemanden wird etwas gesendet, bis du es teilst und selbst auf Senden tippst.</string>
+    <string name="speak_history">Verlauf</string>
+    <string name="sph_title">Verlauf der Sprachnachrichten</string>
+    <string name="sph_empty">Noch keine Sprachnachrichten. Nachrichten, die du übersetzt und aussprichst, erscheinen hier.</string>
+    <string name="sph_delete">Löschen</string>
+    <string name="sph_clear_all">Verlauf löschen</string>
+    <string name="sph_clear_all_body">Dadurch werden alle gespeicherten Sprachnachrichten aus dieser Liste entfernt. Dies kann nicht rückgängig gemacht werden.</string>
     <string name="pv_no_audio_title">Nichts zu übersetzen</string>
     <string name="pv_no_audio_msg">Mit dem Teilen kam kein Audio an. Teile eine Sprachnachricht aus WhatsApp und wähle AlterLingua.</string>
     <string name="pv_not_content_title">Dieses Element kann nicht geöffnet werden</string>

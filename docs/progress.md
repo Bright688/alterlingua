@@ -937,6 +937,31 @@ just recorded. Unit-tested (`SpokenTranslationFlowTest`, 5 new tests) and instru
 (`SpeakScreenTest`). Not yet tried with the Share step actually completing into a real WhatsApp chat (only the
 inbox was viewed, never Send).
 
+### 2026-10-19 addendum: Edit (on this screen, not just the keyboard) and voice-message History
+
+Owner's follow-up, after seeing the typed result: *"you didnt allow me to be able to edit what i type and also
+you suppose to add history so i can see history."*
+
+- **Edit**: the Result screen now has an **Edit** button that reveals the original text (typed or heard) in an
+  editable field, with Translate (confirm) and Cancel. Confirming reuses `sendTyped` exactly -- no new flow
+  method was needed, since "edit then resend" is precisely what that function already does (discard the old
+  result and audio, re-translate, re-synthesize). This means Edit also fixes a bad *transcription* from a
+  recording, not only a typing mistake.
+- **History**: a new "History" button opens a list of past translated voice messages (recorded or typed), newest
+  first -- date, the original text, the target language, the translation -- with per-entry Delete and a confirmed
+  Clear-all. Backed by a new encrypted Room database (`spoken_history.db`, same SQLCipher pattern as the other
+  local databases), capped at 200 entries. **This is a deliberate, explicitly-requested exception to CLAUDE.md
+  section 25's usual preference against keeping full message text** -- see `docs/privacy.md`'s own dated section
+  and the full build-log entry for the reasoning. Wired into Settings' existing "Delete all learning data".
+- Unit-tested (`SpokenTranslationFlowTest` +3, new `SpokenHistoryViewModelTest` with 4 tests, `PrivateDataTest`
+  extended). Instrumentation tests added for both (`SpeakScreenTest`'s new Edit/History cases, new
+  `SpokenHistoryScreenTest`) and **run on the owner's real device (Infinix X6728B) once it reconnected — all
+  pass**. Compile, the full unit suite and lint are clean.
+- **MANUALLY VERIFIED** end to end on the real device: typed a message via "Type instead", edited the result
+  (changed the English, re-translated — the French genuinely updated, not just appended to), opened History and
+  saw both the original and edited messages with correct timestamps, deleted one entry, and confirmed "Clear
+  history" (with its confirmation dialog) correctly empties the list.
+
 ## Milestone 23 detail: privacy and security audit
 
 **Status: IMPLEMENTED, not MANUALLY VERIFIED.** Full report: `docs/privacy.md`. Backend 209 of 209 tests pass (8 new); Android lint, debug build, instrumented-test compile and 693 of 693 unit tests pass (23 new). No new product features were added.

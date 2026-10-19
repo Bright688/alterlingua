@@ -4,6 +4,7 @@ import com.alterlingua.app.keyboard.VoiceFiles
 import com.alterlingua.app.keyboard.VoicePlayer
 import com.alterlingua.app.keyboard.VoiceRecorder
 import com.alterlingua.app.learning.Language
+import com.alterlingua.app.learning.Languages
 import com.alterlingua.app.learning.engine.InteractionKind
 import com.alterlingua.app.learning.engine.LearningRecorder
 import com.alterlingua.app.learning.engine.TranslationInteraction
@@ -103,8 +104,10 @@ private data class PendingSpeech(val sourceCode: String, val transcript: String,
  * - The recording is deleted as soon as it has been transcribed and translated (kept only while Try again can use it
  *   to retry that step). The generated speech is deleted when the user records again, leaves the screen, or the
  *   screen is destroyed; old leftovers are swept when the screen opens.
- * - Transcript and translation are held in memory only, never logged or saved. Only when the user shares does the translated
- *   text go to the learning engine (as with the keyboard microphone).
+ * - Transcript and translation are never logged. Only when the user shares does the translated text go to the
+ *   learning engine (as with the keyboard microphone). Each finished message is also saved to [history] (own
+ *   language text, CLAUDE.md section 25's usual preference against this is a deliberate, explicit exception --
+ *   see [SpokenHistoryEntry]'s own privacy note), so the owner can review and delete past messages.
  * - Typing instead of speaking (CLAUDE.md 23) skips the recording and transcription step only: the typed text still goes
  *   through the same text-translate backend, the same on-device speech, and the same Result/Listen/Share screen.
  */
@@ -121,6 +124,8 @@ class SpokenTranslationFlow(
     private val languages: suspend () -> SpokenLanguages,
     private val hasPermission: () -> Boolean,
     private val learning: LearningRecorder = LearningRecorder.None,
+    private val history: SpokenHistoryStore = SpokenHistoryStore.None,
+    private val clock: () -> Long = System::currentTimeMillis,
     private val maxRecordingMillis: Long = MAX_MILLIS,
     private val requestTimeoutMillis: Long = 120_000,
 ) {
@@ -295,6 +300,17 @@ class SpokenTranslationFlow(
         state.value = state.value.copy(
             phase = SpeakPhase.Result(SpokenResult(speech.sourceCode, speech.transcript, speech.target, speech.translation, generated, SpokenAudioFiles.AUDIO_TYPE)),
         )
+        scope.launch {
+            history.add(
+                SpokenHistoryEntry(
+                    createdAtMillis = clock(),
+                    sourceLanguage = Languages.fromCode(speech.sourceCode),
+                    targetLanguage = speech.target,
+                    transcript = speech.transcript,
+                    translation = speech.translation,
+                ),
+            )
+        }
     }
 
     /** Listen: plays the generated speech, so the user can check it before sharing. */

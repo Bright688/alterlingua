@@ -12,13 +12,17 @@ is named. Where something needs a person on a phone, it says so.
 | Personal Language Map | Room `language_map.db` (phone, private) | Until "Delete all learning data" or uninstall | Words and short phrases (at most 6 words) met in your messages, counts, states, a meaning in your language, dates. **Never a whole message, sender, chat or time of day.** |
 | Progress history | Room `progress.db` (phone, private) | Same | Per language and day: numbers only (words met, assisted, lesson cards, practice attempts, state counts) |
 | Today's lesson | DataStore `daily_lesson` (phone) | Until the next lesson or erase | Up to three words or phrases, meanings, counts, reasons |
+| **Voice-message history (added 2026-10-19)** | Room `spoken_history.db` (phone, private) | Until deleted (per entry, "Clear history" or "Delete all learning data") or uninstall; capped at the most recent 200 | **Full transcript and translation text of past translated voice messages (recorded or typed) -- a deliberate, named exception to this file's usual preference, built at the owner's explicit request. See the dated section below.** |
 | Translated-notification text | Memory only | Until the WhatsApp notification is dismissed or the process ends | The translated lines of one conversation (at most 5) |
 | "Already translated" list | Memory only | 2 hours, at most 300 | One-way hashes, no text |
 | Voice recordings and generated speech | App-private cache folders | Deleted when processed; a start-up sweep removes anything older than an hour | Audio (see section 4) |
 | Message and audio content on the server | Nowhere | Processed in memory or a private temporary file, deleted at once | See section 3 |
 
 Nothing is backed up (`allowBackup=false`, empty backup and device-transfer rules). Nothing is written to shared or external storage.
-The databases are not encrypted by the app; they rely on Android's app sandbox and the phone's own encryption.
+**Update 2026-10-19**: the Personal Language Map, progress history and voice-message history databases are now encrypted at rest
+with SQLCipher (own passphrase, generated once and kept in the Android Keystore); this superseded the line below, which was true
+only of the earlier, unencrypted databases: ~~the databases are not encrypted by the app; they rely on Android's app sandbox and
+the phone's own encryption~~.
 
 **User control.** Settings has *Delete all learning data* (with a confirmation): it removes the Personal Language Map of every
 language, the progress history, today's lesson, temporary audio, and the in-memory message state. Settings are kept. *Learn from my
@@ -284,3 +288,27 @@ The default chains are now: translation Groq, then Cloudflare (Qwen); speech rec
 - **The same recording can reach the speech provider up to three times** for one voice note (a plain attempt and two attempts forced to the languages the user works with), and the levelled copy goes to the provider instead of the original for those two. If Groq fails or hears nothing, Cloudflare may receive the same attempts. Only language codes (never words, audio or file names) are logged: which attempts ran, which won, and how sure the engine was.
 - **The app is told when a recording was unclear** so it can say some words may be wrong; that is a label, not content.
 - **A new audio decoder (PyAV, which bundles ffmpeg's codecs) now parses uploaded audio on the server**, isolated in that subprocess. The file's type is still checked from its first bytes before anything is decoded.
+
+## Voice-message history (added 2026-10-19) — a deliberate exception to section 1's usual preference
+
+The owner explicitly asked to be able to see a history of past translated voice messages (Home tab's "Record a
+voice message" screen). This is a genuine, named exception to this document's general rule of discarding full
+message text and keeping only counts/learning signals: CLAUDE.md section 53 puts an explicit current instruction
+from the project owner ahead of the file's own general defaults, and this is that case.
+
+- **What is kept:** the full transcript and translation text (own-language and target-language) of every message
+  that reaches a result on that screen, whether spoken or typed, plus both language codes and the time. It is the
+  same text that was already in memory for that screen regardless -- this feature is "keep it a little longer and
+  let the user see it", not a new kind of collection.
+- **Where:** a new local, SQLCipher-encrypted Room database (`spoken_history.db`), the same encryption and the
+  same sandboxing as the Personal Language Map and progress databases. **It is never sent to the backend for
+  storage** — the backend already saw the text once, transiently, to translate it (as it must to do that at all;
+  see section 2), but this history itself is written and read only on the phone.
+- **Not kept:** the generated audio. Only the text is saved; re-hearing a past message would need on-device
+  text-to-speech to run again (not built in this first version — see docs/progress.md).
+- **Size and user control:** capped at the most recent 200 messages (older ones are pruned automatically); the
+  user can delete one entry, clear all of them with a confirmation dialog, or clear them along with everything
+  else via Settings → "Delete all learning data".
+- **Not changed:** nothing about what leaves the phone (section 2), what the backend keeps (section 3, still
+  nothing), or audio handling (section 4). This section only concerns what is now kept *longer on the phone* than
+  before.

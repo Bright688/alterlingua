@@ -534,6 +534,12 @@
     <string name="vm_you_said">You said</string>
     <string name="vm_sharing_opens_android_s_share">Sharing opens Android\'s share sheet. Choose the chat, then press Send in that app yourself.</string>
     <string name="vm_audio_is_sent_securely_to">Audio is sent securely to be translated and spoken, and deleted after processing. Nothing is sent to anyone until you share it and press Send yourself.</string>
+    <string name="speak_history">History</string>
+    <string name="sph_title">Voice message history</string>
+    <string name="sph_empty">No voice messages yet. Messages you translate and speak will appear here.</string>
+    <string name="sph_delete">Delete</string>
+    <string name="sph_clear_all">Clear history</string>
+    <string name="sph_clear_all_body">This removes every saved voice message from this list. This cannot be undone.</string>
     <string name="pv_no_audio_title">Nothing to translate</string>
     <string name="pv_no_audio_msg">No audio came with the share. Share a voice note from WhatsApp and choose AlterLingua.</string>
     <string name="pv_not_content_title">Can\'t open that item</string>

@@ -504,6 +504,12 @@
     <string name="vm_you_said">あなたの発言</string>
     <string name="vm_sharing_opens_android_s_share">共有すると Android の共有シートが開きます。チャットを選び、そのアプリで自分で送信を押してください。</string>
     <string name="vm_audio_is_sent_securely_to">音声は翻訳と読み上げのために安全に送信され、処理後に削除されます。共有して自分で送信を押すまで、誰にも何も送られません。</string>
+    <string name="speak_history">履歴</string>
+    <string name="sph_title">音声メッセージの履歴</string>
+    <string name="sph_empty">まだ音声メッセージはありません。翻訳して読み上げたメッセージがここに表示されます。</string>
+    <string name="sph_delete">削除</string>
+    <string name="sph_clear_all">履歴を消去</string>
+    <string name="sph_clear_all_body">このリストに保存されているすべての音声メッセージが削除されます。元に戻すことはできません。</string>
     <string name="pv_no_audio_title">翻訳するものがありません</string>
     <string name="pv_no_audio_msg">共有に音声が含まれていませんでした。WhatsApp の音声メモを共有して AlterLingua を選んでください。</string>
     <string name="pv_not_content_title">この項目を開けません</string>

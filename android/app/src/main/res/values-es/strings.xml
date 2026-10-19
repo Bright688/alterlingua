@@ -504,6 +504,12 @@
     <string name="vm_you_said">Dijiste</string>
     <string name="vm_sharing_opens_android_s_share">Compartir abre la hoja de compartir de Android. Elige el chat y pulsa Enviar tú mismo en esa app.</string>
     <string name="vm_audio_is_sent_securely_to">El audio se envía de forma segura para traducirlo y locutarlo, y se elimina tras procesarlo. No se envía nada a nadie hasta que lo compartas y pulses Enviar tú mismo.</string>
+    <string name="speak_history">Historial</string>
+    <string name="sph_title">Historial de mensajes de voz</string>
+    <string name="sph_empty">Aún no hay mensajes de voz. Los mensajes que traduzcas y locutes aparecerán aquí.</string>
+    <string name="sph_delete">Eliminar</string>
+    <string name="sph_clear_all">Borrar historial</string>
+    <string name="sph_clear_all_body">Esto elimina todos los mensajes de voz guardados de esta lista. No se puede deshacer.</string>
     <string name="pv_no_audio_title">Nada que traducir</string>
     <string name="pv_no_audio_msg">No llegó ningún audio con lo compartido. Comparte una nota de voz desde WhatsApp y elige AlterLingua.</string>
     <string name="pv_not_content_title">No se puede abrir ese elemento</string>

@@ -6,12 +6,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Alignment
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
@@ -55,6 +57,7 @@ fun SpeakScreen(
     onShare: () -> Unit,
     onRecordAgain: () -> Unit,
     onClose: () -> Unit,
+    onOpenHistory: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val phase = state.phase
@@ -64,7 +67,15 @@ fun SpeakScreen(
             modifier = Modifier.systemBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(stringResource(R.string.speak_title), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.speak_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton(onClick = onOpenHistory, modifier = Modifier.testTag("speak_history")) { Text(stringResource(R.string.speak_history)) }
+            }
             Text(
                 text = state.spoken?.let { stringResource(R.string.vm_intro_lang, it.nativeName) } ?: stringResource(R.string.vm_intro_own),
                 style = MaterialTheme.typography.bodyMedium,
@@ -129,7 +140,7 @@ fun SpeakScreen(
                         Text(state.target?.let { stringResource(R.string.vm_working, it.nativeName) } ?: stringResource(R.string.vm_working_generic), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
-                is SpeakPhase.Result -> Result(phase.value, onListen, onShare, onRecordAgain)
+                is SpeakPhase.Result -> Result(phase.value, onListen, onShare, onRecordAgain, onType)
                 is SpeakPhase.Problem -> {
                     val text = SharedVoiceMessages.forVoice(phase.failure)
                     AlterLinguaCard {
@@ -155,14 +166,41 @@ fun SpeakScreen(
 }
 
 @Composable
-private fun Result(result: SpokenResult, onListen: () -> Unit, onShare: () -> Unit, onRecordAgain: () -> Unit) {
+private fun Result(result: SpokenResult, onListen: () -> Unit, onShare: () -> Unit, onRecordAgain: () -> Unit, onType: (String) -> Unit) {
+    // Edit resets to the original text whenever a *new* result arrives (a different transcript), but not on every
+    // recomposition of the same result (for example while `playing` toggles).
+    var editing by rememberSaveable(result.transcript) { mutableStateOf(false) }
+    var editedText by rememberSaveable(result.transcript) { mutableStateOf(result.transcript) }
     AlterLinguaCard {
         Text(stringResource(R.string.vm_you_said), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(result.transcript, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.testTag("speak_transcript"))
+        if (editing) {
+            OutlinedTextField(
+                value = editedText,
+                onValueChange = { editedText = it },
+                modifier = Modifier.fillMaxWidth().testTag("speak_edit_field"),
+            )
+        } else {
+            Text(result.transcript, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.testTag("speak_transcript"))
+        }
     }
     AlterLinguaCard {
         Text(result.target.nativeName, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(result.translation, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("speak_translation"))
+    }
+    if (editing) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { onType(editedText); editing = false },
+                enabled = editedText.isNotBlank(),
+                modifier = Modifier.weight(1f).testTag("speak_edit_confirm"),
+            ) { Text(stringResource(R.string.toolbar_translate)) }
+            OutlinedButton(
+                onClick = { editing = false; editedText = result.transcript },
+                modifier = Modifier.weight(1f).testTag("speak_edit_cancel"),
+            ) { Text(stringResource(R.string.voice_cancel)) }
+        }
+    } else {
+        OutlinedButton(onClick = { editing = true }, modifier = Modifier.fillMaxWidth().testTag("speak_edit")) { Text(stringResource(R.string.voice_edit)) }
     }
     OutlinedButton(onClick = onListen, modifier = Modifier.fillMaxWidth().testTag("speak_listen")) { Text(if (result.playing) "Stop" else "Listen") }
     Button(onClick = onShare, modifier = Modifier.fillMaxWidth().testTag("speak_share")) { Text(stringResource(R.string.speak_share_title)) }

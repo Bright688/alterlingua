@@ -3,6 +3,7 @@ package com.alterlingua.app.privacy
 import com.alterlingua.app.learning.lessons.DailyLessonStore
 import com.alterlingua.app.learning.map.LanguageMapService
 import com.alterlingua.app.learning.progress.ProgressLog
+import com.alterlingua.app.speak.SpokenHistoryStore
 import java.io.File
 
 /**
@@ -34,9 +35,9 @@ class TemporaryAudioFolders(private val cacheDir: File, private val clock: () ->
 
 /**
  * "Delete all learning data": removes everything AlterLingua has learned from the user's messages and practice: the
- * Personal Language Map of every language, the progress history, today's lesson, and any temporary audio. The user's
- * settings (languages, mode, switches) are kept. Every step is tried even if another fails, and the result says whether all
- * of them worked.
+ * Personal Language Map of every language, the progress history, today's lesson, saved voice-message history, and
+ * any temporary audio. The user's settings (languages, mode, switches) are kept. Every step is tried even if
+ * another fails, and the result says whether all of them worked.
  */
 class LearningDataEraser(
     private val map: LanguageMapService,
@@ -45,6 +46,7 @@ class LearningDataEraser(
     private val audio: TemporaryAudioFolders,
     /** Forgets in-memory message state (translated-notification text and the list of messages already translated). */
     private val forgetMessages: suspend () -> Unit = {},
+    private val spokenHistory: SpokenHistoryStore = SpokenHistoryStore.None,
 ) {
     suspend fun eraseAll(): Boolean {
         var everything = true
@@ -61,6 +63,7 @@ class LearningDataEraser(
         step { progress.deleteAll() }
         step { lessons.clear() }
         step { audio.deleteAll() }
+        step { spokenHistory.deleteAll() }
         step { forgetMessages() }
         return everything
     }

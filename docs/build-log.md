@@ -3811,3 +3811,94 @@ translated and spoken on the device exactly like a recording, then Listen/Share 
 3. Type a message, tap Translate: "Translating to <language> and creating the voice…", then the usual You
    said/translation/Listen/Share result.
 4. Listen and Share work exactly as they do after a recording.
+
+## 2026-10-19 — Two more owner requests on the Home voice-message screen: edit what you typed, and history
+
+Reaction to the 2026-10-18 work above: *"you didnt allow me to be able to edit what i type and also you suppose
+to add history so i can see history"*, with a screenshot of a real (if unrelated, sensitive) translated message on
+the Result screen.
+
+**Request 1: Edit on the Home screen's Result (not just the keyboard).** The Home "Record a voice message" screen
+(`SpeakScreen`'s `Result()`) had no Edit control at all -- confirmed by reading the code first rather than assuming.
+Added one: an "Edit" button reveals the original text (what you typed, or what was heard, pre-filled) in an
+editable field, with **Translate** (confirm) and **Cancel** buttons. Confirming calls the same `onType`/`sendTyped`
+already wired for "Type instead" -- **no new flow logic was needed**: `sendTyped` already discards the old result
+and audio, re-translates, and re-synthesizes, which is exactly "edit and resend". Cancelling restores the
+original transcript untouched. This also means Edit now works whether the original message was typed **or**
+recorded, fixing a transcription mistake either way, not just a typed one.
+
+**Request 2: History.** Added a full local history of past translated voice messages (recorded or typed),
+reachable from a new "History" button next to the screen's title.
+
+- `SpokenHistory.kt`: `SpokenHistoryEntry` (own privacy note on the class: CLAUDE.md section 25 normally prefers
+  discarding full message text, but this is a deliberate, explicit exception because the owner asked to see
+  history, not counts) and the `SpokenHistoryStore` interface, plus an in-memory fake for tests
+  (`InMemorySpokenHistoryStore`, matching the existing `InMemoryProgressStore`/`InMemoryLanguageMapStore` pattern).
+- `SpokenHistoryDatabase.kt`: a new, separate encrypted Room database (`spoken_history.db`, SQLCipher, the same way
+  as `ProgressDatabase` and `LanguageMapDatabase` -- its own file rather than a new table bolted onto an existing
+  database, matching how this app already keeps one concern per database). Capped at 200 entries (oldest pruned
+  on every insert), so it cannot grow without bound.
+- `SpokenTranslationFlow`: saves one history entry every time a message reaches the Result phase (recorded or
+  typed), with the real time, both languages, the transcript and the translation. A failed translation is never
+  saved. The class's own privacy-promises comment was updated to say this plainly rather than leave the old,
+  now-inaccurate "never saved" claim in place.
+- `SpokenHistoryScreen.kt` / `SpokenHistoryViewModel.kt` / `SpokenHistoryActivity.kt`: a simple list, newest first,
+  each row showing the date, the original text, the target language and the translation, with a per-row Delete
+  and a "Clear history" action (its own confirmation dialog, since it is irreversible). No audio is kept per
+  history entry (TTS is cheap to regenerate; keeping an audio file per saved message indefinitely would work
+  against the "delete temporary audio" default far more than keeping the text does) -- this first version shows
+  text only, no re-Listen from history; that can be added later if wanted.
+- Plumbed into "Erase learning data" in Settings (`LearningDataEraser` gained a `spokenHistory` step), so the
+  existing privacy control also clears this.
+
+**Decision and why (the one real tension with CLAUDE.md here):** section 25 states a clear preference for
+discarding full message text and keeping only learning signals. This feature is the deliberate, named exception
+the owner asked for. It is scoped as narrowly as the request allows: local only (never sent to the backend for
+storage, unlike translation itself which must reach the backend to be translated at all), encrypted at rest like
+every other local database in this app, capped in size, and deletable per-entry or all at once, including through
+the account-wide erase control. Per CLAUDE.md section 53 (explicit current instruction outranks the file's own
+general defaults), this was built as asked rather than talked out of.
+
+**Problems encountered and how they were fixed:** none technical. Manually walking the "Type instead" flow on the
+owner's real device while testing the fixes above (see the 2026-10-18 entry) had already, as a side effect,
+produced one real (if garbled/scratch) history-worthy translation before this history feature existed to show
+it -- that data only became visible once History existed, which is part of why it was useful to build this.
+
+**Verification performed:**
+- **Unit-tested**: `SpokenTranslationFlowTest` gained 3 new tests (a recorded message is saved to history, a typed
+  one is too, a failed one is not). `SpokenHistoryViewModelTest` (new, 4 tests): loads newest-first, deleting one
+  entry leaves the others, Clear all empties the list, starts empty. `PrivateDataTest` extended to confirm erasing
+  learning data also clears voice-message history.
+- **Instrumentation tests added and run on the owner's real device** (Infinix X6728B, once it reconnected):
+  `SpeakScreenTest`'s new History-button and Edit cases (reveals the original, Translate sends the edited text,
+  Cancel restores the original transcript unchanged), and the new `SpokenHistoryScreenTest` (empty state, an
+  entry's content, per-row delete, Clear-all's confirm/cancel, Back) -- all pass as real instrumentation, not just
+  compiled.
+- Full Android unit suite (1,138+ tests), `compileDebugKotlin`, `compileDebugUnitTestKotlin`,
+  `compileDebugAndroidTestKotlin`, `lintDebug` all clean.
+- **Manually walked through on the real device, end to end**: fresh onboarding (the phone had been reinstalled
+  since the last round) → Home → "Record a voice message" → "Type instead" → typed "Are you coming tomorrow?" →
+  Translate → got the real French result. Tapped **Edit**, changed the text to "Are you coming tomorrow morning",
+  tapped Translate again: the French translation correctly updated to "Tu viens demain matin ?" (a genuine
+  re-translation, not a text splice). Opened **History**: both messages were there, newest first, with real
+  timestamps and the correct text for each. **Delete** on one entry removed only that one. **Clear history**
+  showed its confirmation dialog, and confirming it correctly emptied the list (the empty-state message reappeared,
+  and the Clear-history button itself disappeared along with the list, exactly as designed). The keyboard's own
+  voice-message edit fix (the first request in this entry) was not re-tried with a live recording this round --
+  that still needs a human voice, which this session cannot produce; its instrumentation tests passed on-device
+  via `KeyboardViewTest`, as recorded in the earlier entry.
+
+### Manual test for the owner
+
+**Edit on the Home voice-message screen:**
+1. Home tab → "Record a voice message" → type or record a message → let it translate.
+2. On the result, tap **Edit**: the original text becomes an editable field with Translate/Cancel buttons.
+3. Change the text, tap **Translate**: it re-translates and re-speaks, replacing the result.
+4. Try again, but tap **Cancel** instead: the original text and translation are unchanged.
+
+**History:**
+1. On the same screen, tap **History** (next to the title).
+2. Past messages appear, newest first: date, what you said, the target language, the translation.
+3. Tap **Delete** on one: it disappears, the others stay.
+4. Tap **Clear history**: a confirmation appears; **Cancel** leaves everything; confirming empties the list.
+5. Settings → "Delete all learning data" also clears this list.

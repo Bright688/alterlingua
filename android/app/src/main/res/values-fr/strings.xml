@@ -504,6 +504,12 @@
     <string name="vm_you_said">Vous avez dit</string>
     <string name="vm_sharing_opens_android_s_share">Le partage ouvre la feuille de partage d’Android. Choisissez la conversation, puis appuyez vous-même sur Envoyer dans cette appli.</string>
     <string name="vm_audio_is_sent_securely_to">L’audio est envoyé de façon sécurisée pour être traduit et prononcé, puis supprimé après traitement. Rien n’est envoyé à personne tant que vous ne partagez pas et n’appuyez pas vous-même sur Envoyer.</string>
+    <string name="speak_history">Historique</string>
+    <string name="sph_title">Historique des messages vocaux</string>
+    <string name="sph_empty">Aucun message vocal pour l\'instant. Les messages que vous traduisez et prononcez apparaîtront ici.</string>
+    <string name="sph_delete">Supprimer</string>
+    <string name="sph_clear_all">Effacer l\'historique</string>
+    <string name="sph_clear_all_body">Cela supprime tous les messages vocaux enregistrés de cette liste. Cette action est irréversible.</string>
     <string name="pv_no_audio_title">Rien à traduire</string>
     <string name="pv_no_audio_msg">Aucun audio n’accompagnait le partage. Partagez une note vocale depuis WhatsApp et choisissez AlterLingua.</string>
     <string name="pv_not_content_title">Impossible d’ouvrir cet élément</string>

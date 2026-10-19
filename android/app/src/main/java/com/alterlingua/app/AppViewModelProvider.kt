@@ -100,10 +100,12 @@ object AppViewModelProvider {
                     languages = { app.userSettings.settings.first().let { SpokenLanguages(it.nativeLanguage, it.targetLanguage) } },
                     hasPermission = { ContextCompat.checkSelfPermission(app, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED },
                     learning = app.learningRecorder,
+                    history = app.spokenHistoryStore,
                 )
             }
         }
         initializer { ReaderViewModel(application().onDemandHelp, AndroidSpeaker(application())) }
+        initializer { com.alterlingua.app.speak.SpokenHistoryViewModel(application().spokenHistoryStore) }
         initializer {
             val app = application()
             SharedVoiceViewModel(

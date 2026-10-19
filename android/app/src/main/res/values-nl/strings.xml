@@ -504,6 +504,12 @@
     <string name="vm_you_said">Je zei</string>
     <string name="vm_sharing_opens_android_s_share">Delen opent het deelvenster van Android. Kies de chat en druk zelf op Verzenden in die app.</string>
     <string name="vm_audio_is_sent_securely_to">De audio wordt veilig verstuurd om te worden vertaald en uitgesproken en na verwerking verwijderd. Er wordt niets naar iemand gestuurd totdat je het deelt en zelf op Verzenden drukt.</string>
+    <string name="speak_history">Geschiedenis</string>
+    <string name="sph_title">Geschiedenis spraakberichten</string>
+    <string name="sph_empty">Nog geen spraakberichten. Berichten die je vertaalt en uitspreekt verschijnen hier.</string>
+    <string name="sph_delete">Verwijderen</string>
+    <string name="sph_clear_all">Geschiedenis wissen</string>
+    <string name="sph_clear_all_body">Dit verwijdert alle opgeslagen spraakberichten uit deze lijst. Dit kan niet ongedaan worden gemaakt.</string>
     <string name="pv_no_audio_title">Niets om te vertalen</string>
     <string name="pv_no_audio_msg">Er kwam geen audio mee met het delen. Deel een spraaknotitie vanuit WhatsApp en kies AlterLingua.</string>
     <string name="pv_not_content_title">Kan dat item niet openen</string>

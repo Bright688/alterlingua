@@ -103,6 +103,7 @@ class SpokenTranslationFlowTest {
     private val textApi = FakeTextApi()
     private val speaker = FakeSpeaker()
     private val heard = mutableListOf<TranslationInteraction>()
+    private val history = InMemorySpokenHistoryStore()
     private var permission = true
     private var spoken: Language = Languages.English
     private var target: Language = Languages.Spanish
@@ -112,7 +113,8 @@ class SpokenTranslationFlowTest {
 
     private fun TestScope.flow() = SpokenTranslationFlow(
         scope = backgroundScope, recorder = recorder, recordings = VoiceFiles(recordingsDir), spokenFiles = SpokenAudioFiles(spokenDir) { now },
-        player = player, api = api, translationApi = textApi, speaker = speaker, languages = { SpokenLanguages(spoken, target) }, hasPermission = { permission }, learning = { heard += it },
+        player = player, api = api, translationApi = textApi, speaker = speaker, languages = { SpokenLanguages(spoken, target) }, hasPermission = { permission },
+        learning = { heard += it }, history = history, clock = { now },
     ).also { it.open(); runCurrent() }
 
     private fun TestScope.record(f: SpokenTranslationFlow, millis: Long = 1_500) {
@@ -382,5 +384,33 @@ class SpokenTranslationFlowTest {
         f.start()
         f.sendTyped("hello")
         assertTrue(f.phase() is SpeakPhase.Recording)
+    }
+
+    // ---- history (owner's explicit request; see SpokenHistoryEntry's privacy note) ----
+
+    @Test fun aRecordedMessage_isSavedToHistory() = runTest {
+        val f = flow()
+        record(f)
+        val saved = history.recent().single()
+        assertEquals(now, saved.createdAtMillis)
+        assertEquals(Languages.English, saved.sourceLanguage)
+        assertEquals(Languages.Spanish, saved.targetLanguage)
+        assertEquals("Are you coming tomorrow?", saved.transcript)
+        assertEquals("translation in es", saved.translation)
+    }
+
+    @Test fun aTypedMessage_isSavedToHistory() = runTest {
+        val f = flow()
+        f.sendTyped("hello"); runCurrent()
+        val saved = history.recent().single()
+        assertEquals("hello", saved.transcript)
+        assertEquals("translation in es", saved.translation)
+    }
+
+    @Test fun aFailedMessage_isNotSavedToHistory() = runTest {
+        textApi.answer = { TranslationResult.Failure(TranslationFailure.BACKEND_UNAVAILABLE) }
+        val f = flow()
+        f.sendTyped("hello"); runCurrent()
+        assertTrue(history.recent().isEmpty())
     }
 }

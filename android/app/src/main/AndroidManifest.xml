@@ -119,6 +119,14 @@
             android:label="@string/speak_title" />
 
         <!--
+            Past translated voice messages. Opened from the Translated-voice-message screen only.
+        -->
+        <activity
+            android:name=".speak.SpokenHistoryActivity"
+            android:exported="false"
+            android:label="@string/sph_title" />
+
+        <!--
             Lets the Share sheet read one generated voice message, with a temporary permission granted per share. It covers only
             the folder named in res/xml/spoken_audio_paths.xml and is not exported.
         -->

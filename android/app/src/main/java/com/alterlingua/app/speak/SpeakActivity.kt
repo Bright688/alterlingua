@@ -47,6 +47,7 @@ class SpeakActivity : LocalizedActivity() {
                         viewModel.release()
                         finish()
                     },
+                    onOpenHistory = { startActivity(Intent(this@SpeakActivity, SpokenHistoryActivity::class.java)) },
                 )
             }
         }
