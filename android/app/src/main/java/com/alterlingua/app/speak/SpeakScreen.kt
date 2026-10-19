@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,14 +68,19 @@ fun SpeakScreen(
             modifier = Modifier.systemBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Column {
+                // History sits on its own line, right-aligned, so the title always has the full width to wrap --
+                // some locales' translation of "Translated voice message" run long (CLAUDE.md 6.1/6.2).
+                TextButton(
+                    onClick = onOpenHistory,
+                    modifier = Modifier.align(Alignment.End).testTag("speak_history"),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
+                ) { Text(stringResource(R.string.speak_history)) }
                 Text(
                     stringResource(R.string.speak_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f),
                 )
-                TextButton(onClick = onOpenHistory, modifier = Modifier.testTag("speak_history")) { Text(stringResource(R.string.speak_history)) }
             }
             Text(
                 text = state.spoken?.let { stringResource(R.string.vm_intro_lang, it.nativeName) } ?: stringResource(R.string.vm_intro_own),

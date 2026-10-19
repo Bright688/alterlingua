@@ -3902,3 +3902,22 @@ it -- that data only became visible once History existed, which is part of why i
 3. Tap **Delete** on one: it disappears, the others stay.
 4. Tap **Clear history**: a confirmation appears; **Cancel** leaves everything; confirming empties the list.
 5. Settings → "Delete all learning data" also clears this list.
+
+## 2026-10-19 (follow-up) — Heading didn't fit: "fix the heading well seems too large and doesnt fit properly"
+
+The owner sent a screenshot of the Home "Record a voice message" screen right after the Edit/History round above:
+the title ("Translated voice message") and the new "History" link were sharing one row (`Row(verticalAlignment =
+Alignment.CenterVertically) { Text(title, Modifier.weight(1f)); TextButton("History") }`); the title is long
+enough at `headlineSmall` size to wrap to two lines, and with History vertically centered against that two-line
+block it landed awkwardly next to the first line with an odd gap above it -- exactly what the screenshot showed.
+
+**Fix**: stopped trying to share one row. History now sits on its own line, right-aligned, directly above the
+title; the title gets the Column's full width below it and can wrap as needed without fighting anything for
+space. This is also the more robust fix for a multilingual app (CLAUDE.md 6.1/6.2) -- some of the other seven
+languages' translations of "Translated voice message" run longer than the English, so a fix that only worked by
+coincidence at this exact string length would have broken again in French or German.
+
+**Verification**: `compileDebugKotlin`, the full unit suite (same count as before, nothing changed there), and
+`SpeakScreenTest` (including the History-button test) all pass, the last one run as real instrumentation on the
+owner's device. **Manually confirmed visually on the owner's device**: the title now reads on one line with
+History sitting cleanly above it, no wrap, no overlap.
